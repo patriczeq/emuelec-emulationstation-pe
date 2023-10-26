@@ -4603,33 +4603,33 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 
 	const std::string wlMode = apInlineInfo("mode");
 	s->addWithLabel(_("MODE"), std::make_shared<TextComponent>(mWindow, wlMode, font, color));
-	bool wlModeAP = !wlMode.compare(std::string("AP"));//wlMode.compare("AP") == 0;
+	bool wlModeAP = wlMode == "AP";
 	
 	s->addGroup(_("MODE SELECTION"));
 
-	if(!wlModeAP)
+	/*if(!wlModeAP)
 	{
 		s->addEntry(_("START AP MODE"), false, [this, indow]() { 
-				/*std::string msg = _("REALLY START AP MODE?\n");
+				std::string msg = _("REALLY START AP MODE?\n");
 							msg = msg + apInlineInfo("ssid");
 				window->pushGui(new GuiMsgBox(window, msg,
 					 _("YES"),[]{
 					 	runSystemCommand("ap.sh start 12345678", "", nullptr);
 					 },
-					 _("NO"), nullptr));*/
-			}, "iconNetwork");
+					 _("NO"), nullptr));
+			});
 	}
 	else
 	{
 		s->addEntry(_("START STA MODE"), false, [window]() { 
-				/*std::string msg = _("REALLY START STA MODE?");
+				std::string msg = _("REALLY START STA MODE?");
 				window->pushGui(new GuiMsgBox(window, msg,
 					 _("YES"),[]{
 					 	runSystemCommand("ap.sh stop", "", nullptr);
 					 },
-					 _("NO"), nullptr));*/
-			}, "iconNetwork");
-	}
+					 _("NO"), nullptr));
+			});
+	}*/
 
 	s->addGroup(_("SETTINGS"));
 
@@ -4637,23 +4637,17 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
 	const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
 
-	if (baseWifiEnabled && !wlModeAP)
-	{
+	//if (baseWifiEnabled && !wlModeAP)
+	//{
 		s->addInputTextRow(_("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
 		s->addInputTextRow(_("WIFI KEY"), "wifi.key", true);
-	}
+	/*}
 	else if(wlModeAP)
 	{
 		s->addEntry(_("RESTART AP"), false, [window]() { 
 			
-		}, "iconRestart");
+		});
 		s->addEntry(_("SHOW LEASES"), true, [window]() { 
-			
-		}, "iconAdvanced");
-	}
-	/*else if(wlMode == "AP")
-	{
-		s->addEntry(_("SHOW LEASES"), false, [window]() { 
 			
 		});
 	}*/
