@@ -4578,11 +4578,22 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	auto s = new GuiSettings(mWindow, _("NETWORK SETTINGS").c_str());
 	s->addGroup(_("INFORMATION"));
 
+	auto status = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->ping() ? _("CONNECTED") : _("NOT CONNECTED"), font, color);
+	s->addWithLabel(_("INTERNET STATUS"), status);
+
+	// Wifi enable
+	auto enable_wifi = std::make_shared<SwitchComponent>(mWindow);	
+	enable_wifi->setState(baseWifiEnabled);
+	s->addWithLabel(_("ENABLE WIFI"), enable_wifi, selectWifiEnable);
+
+#if !WIN32
+	// Hostname
+	s->addInputTextRow(_("HOSTNAME"), "system.hostname", false);
+#endif
+
 	auto ip = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->getIpAdress(), font, color);
 	s->addWithLabel(_("IP ADDRESS"), ip);
 
-	auto status = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->ping() ? _("CONNECTED") : _("NOT CONNECTED"), font, color);
-	s->addWithLabel(_("INTERNET STATUS"), status);
 
 	// Network Indicator
 	auto networkIndicator = std::make_shared<SwitchComponent>(mWindow);
@@ -4594,50 +4605,51 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	s->addWithLabel(_("MODE"), std::make_shared<TextComponent>(mWindow, wlMode, font, color));
 	bool wlModeAP = wlMode.compare("AP") == 0;
 	
+	s->addGroup(_("MODE SELECTION"));
+
 	if(!wlModeAP)
-		{
-			s->addEntry(_("START AP MODE"), false, [this, indow]() { 
-					std::string msg = _("REALLY START AP MODE?\n");
-								msg = msg + apInlineInfo("ssid");
-					window->pushGui(new GuiMsgBox(window, msg,
-						 _("YES"),[]{
-						 	runSystemCommand("ap.sh start 12345678", "", nullptr);
-						 },
-						 _("NO"), nullptr));
-				});
-		}
+	{
+		s->addEntry(_("START AP MODE"), false, [this, indow]() { 
+				std::string msg = _("REALLY START AP MODE?\n");
+							msg = msg + apInlineInfo("ssid");
+				window->pushGui(new GuiMsgBox(window, msg,
+					 _("YES"),[]{
+					 	runSystemCommand("ap.sh start 12345678", "", nullptr);
+					 },
+					 _("NO"), nullptr));
+			}, "iconNetwork");
+	}
 	else
-		{
-			s->addEntry(_("START STA MODE"), false, [window]() { 
-					std::string msg = _("REALLY START STA MODE?");
-					window->pushGui(new GuiMsgBox(window, msg,
-						 _("YES"),[]{
-						 	runSystemCommand("ap.sh stop", "", nullptr);
-						 },
-						 _("NO"), nullptr));
-				});
-		}
+	{
+		s->addEntry(_("START STA MODE"), false, [window]() { 
+				std::string msg = _("REALLY START STA MODE?");
+				window->pushGui(new GuiMsgBox(window, msg,
+					 _("YES"),[]{
+					 	runSystemCommand("ap.sh stop", "", nullptr);
+					 },
+					 _("NO"), nullptr));
+			}, "iconNetwork");
+	}
 
 	s->addGroup(_("SETTINGS"));
-
-#if !WIN32
-	// Hostname
-	s->addInputTextRow(_("HOSTNAME"), "system.hostname", false);
-#endif
-
-	// Wifi enable
-	auto enable_wifi = std::make_shared<SwitchComponent>(mWindow);	
-	enable_wifi->setState(baseWifiEnabled);
-	s->addWithLabel(_("ENABLE WIFI"), enable_wifi, selectWifiEnable);
 
 	// window, title, settingstring,
 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
 	const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
 
-	if (baseWifiEnabled)
+	if (baseWifiEnabled && !wlModeAP)
 	{
 		s->addInputTextRow(_("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
 		s->addInputTextRow(_("WIFI KEY"), "wifi.key", true);
+	}
+	else if(wlModeAP)
+	{
+		s->addEntry(_("RESTART AP"), false, [window]() { 
+			
+		}, "iconRestart");
+		s->addEntry(_("SHOW LEASES"), true, [window]() { 
+			
+		}, "iconAdvanced");
 	}
 	/*else if(wlMode == "AP")
 	{
