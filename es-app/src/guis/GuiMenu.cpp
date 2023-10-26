@@ -4561,8 +4561,8 @@ void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data,
 
 std::string GuiMenu::apInlineInfo(std::string cmd)
 	{
-		std::vector<std::string> result = ApiSystem::getInstance()->getScriptResults("ap.sh " + cmd);
-		return result.at(0);
+		//std::vector<std::string> result = ApiSystem::getInstance()->getScriptResults("ap.sh " + cmd);
+		return getShOutput("ap.sh " + cmd);
 	}
 
 void GuiMenu::openNetworkSettings(bool selectWifiEnable)
@@ -4613,8 +4613,9 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 				std::string msg = _("REALLY START AP MODE?\n");
 							msg = msg + apInlineInfo("ssid");
 				window->pushGui(new GuiMsgBox(window, msg,
-					 _("YES"),[]{
+					 _("YES"),[this]{
 					 	runSystemCommand("ap.sh start 12345678", "", nullptr);
+					 	openNetworkSettings();
 					 },
 					 _("NO"), nullptr));
 			});
@@ -4624,8 +4625,9 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 		s->addEntry(_("START STA MODE"), false, [window]() { 
 				std::string msg = _("REALLY START STA MODE?");
 				window->pushGui(new GuiMsgBox(window, msg,
-					 _("YES"),[]{
+					 _("YES"),[this]{
 					 	runSystemCommand("ap.sh stop", "", nullptr);
+					 	openNetworkSettings();
 					 },
 					 _("NO"), nullptr));
 			});
@@ -4637,20 +4639,34 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
 	const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
 
-	//if (baseWifiEnabled && !wlModeAP)
-	//{
+	if (baseWifiEnabled && !wlModeAP)
+	{
 		s->addInputTextRow(_("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
 		s->addInputTextRow(_("WIFI KEY"), "wifi.key", true);
-	/*}
+	}
 	else if(wlModeAP)
 	{
-		s->addEntry(_("RESTART AP"), false, [window]() { 
-			
-		});
+		s->addWithLabel(_("CONNECTED CLIENTS"), std::make_shared<TextComponent>(mWindow, apInlineInfo("clients"), font, color));
 		s->addEntry(_("SHOW LEASES"), true, [window]() { 
-			
+			auto ll = new GuiSettings(window, _("LEASES").c_str());
+			std::vector<std::string> leases = ApiSystem::getInstance()->getScriptResults("ap.sh leases");
+			for (auto lease : leases)
+			{
+				/*std::vector<std::string> tokens = Utils::String::split(bssid, ';');
+
+				std::string _bssid 	= Utils::String::toUpper(tokens.at(0));
+				std::string _rssi 	= tokens.at(1);
+				std::string _ssid 	= Utils::String::trim(tokens.at(2));
+				std::string _title =  _rssi + "dBm " + _ssid;
+*/
+				ll->addEntry(lease, true, [] { 
+					
+				}, "iconControllers");
+			}
+
+			mWindow->pushGui(ll);
 		});
-	}*/
+	}
 	
 	s->addSaveFunc([baseWifiEnabled, baseSSID, baseKEY, enable_wifi, window]
 	{
