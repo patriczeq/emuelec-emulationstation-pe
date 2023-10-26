@@ -4607,9 +4607,9 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	
 	s->addGroup(_("MODE SELECTION"));
 
-	/*if(!wlModeAP)
+	if(!wlModeAP)
 	{
-		s->addEntry(_("START AP MODE"), false, [this, indow]() { 
+		s->addEntry(_("START AP MODE"), false, [this, window]() { 
 				std::string msg = _("REALLY START AP MODE?\n");
 							msg = msg + apInlineInfo("ssid");
 				window->pushGui(new GuiMsgBox(window, msg,
@@ -4629,7 +4629,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 					 },
 					 _("NO"), nullptr));
 			});
-	}*/
+	}
 
 	s->addGroup(_("SETTINGS"));
 
