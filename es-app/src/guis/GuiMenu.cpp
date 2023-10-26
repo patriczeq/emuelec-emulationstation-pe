@@ -338,7 +338,7 @@ if (!isKidUI)
 void GuiMenu::openESP01Menu()
 	{
 	  	Window* window = mWindow;
-		auto s = new GuiSettings(window, "H4CK3R SHORTCUTS");
+		auto s = new GuiSettings(window, "H4CK TH3 FK1N W0RLD!");
 
 		s->addGroup(_("SYSTEM"));
 			s->addEntry(_("REBOOT ESP01"), false, [window] {
@@ -4564,16 +4564,49 @@ std::string GuiMenu::apInlineInfo(std::string cmd)
 		//std::vector<std::string> result = ApiSystem::getInstance()->getScriptResults("ap.sh " + cmd);
 		return getShOutput("ap.sh " + cmd);
 	}
+void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::string ipaddr, std::string hostname)
+	{
+		Window *window = mWindow;
+		auto s = new GuiSettings(window, ipaddr);
+
+		auto macaddrLabel = std::make_shared<TextComponent>(mWindow, macaddr, font, color);
+		std::string vendor = "?";
+		const std::string cmd = "hacks.sh vendor " + bssid;
+		std::vector<std::string> vendorRes = ApiSystem::getInstance()->getScriptResults(cmd);
+		if(vendorRes.size() > 0)
+			{
+				vendor = vendorRes.at(0);
+			}
+		auto vendorLabel = std::make_shared<TextComponent>(mWindow, vendor, font, color);
+		auto leaseLabel = std::make_shared<TextComponent>(mWindow, ipaddr, font, color);
+		auto hostnameLabel = std::make_shared<TextComponent>(mWindow, hostname, font, color);
+		s->addGroup(_("INFO"));
+
+		s->addWithLabel("HOSTNAME", hostnameLabel);
+		s->addWithLabel("MAC", macaddrLabel);
+		s->addWithLabel("VENDOR", vendorLabel);
+		s->addWithLabel("LEASETIME", leaseLabel);
+
+		s->addGroup(_("TOOLS"));
+	}
+
 void GuiMenu::openAPleases()
 	{
 		Window *window = mWindow;
-		auto s = new GuiSettings(window, _("LEASES").c_str());
+		auto s = new GuiSettings(window, _("DHCP LEASES").c_str());
 		
 		const std::string cmd = "ap.sh leases";
 		std::vector<std::string> leases = ApiSystem::getInstance()->getScriptResults(cmd);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
+
+		s->addEntry(_("RELOAD"), false, [s, this]() { 
+			delete s;
+			openAPleases();
+		}, "iconRestart");
+
+		s->addGroup(_("CLIENTS"));
 
 		for (auto lease : leases)
 		{
@@ -4586,7 +4619,9 @@ void GuiMenu::openAPleases()
 
 			std::string title = ipaddr + " " + hostname;
 			auto macaddrLabel = std::make_shared<TextComponent>(mWindow, macaddr, font, color);
-			s->addWithLabel(title, macaddrLabel);
+			s->addWithLabel(title, macaddrLabel, [leasetime, macaddr, ipaddr, hostname, this]() { 
+				openDHCPclient(leasetime, macaddr, ipaddr, hostname);
+			}, "iconNetwork");
 
 		}
 
@@ -4626,8 +4661,6 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 
 	s->addGroup(_("INFORMATION"));
 
-	auto status = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->ping() ? _("CONNECTED") : _("NOT CONNECTED"), font, color);
-	s->addWithLabel(_("INTERNET STATUS"), status);
 
 	// Wifi enable
 	auto enable_wifi = std::make_shared<SwitchComponent>(mWindow);	
@@ -4651,6 +4684,10 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 
 	const std::string wlMode = apInlineInfo("mode");
 	s->addWithLabel(_("MODE"), std::make_shared<TextComponent>(mWindow, wlMode, font, color));
+
+	auto status = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->ping() ? _("CONNECTED") : _("NOT CONNECTED"), font, color);
+	s->addWithLabel(_("INTERNET STATUS"), status);
+
 	bool wlModeAP = wlMode == "AP";
 	
 	s->addGroup(_("MODE SELECTION"));
@@ -4701,7 +4738,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 		s->addWithLabel(_("AP SSID"), apSSID);
 		s->addWithLabel(_("AP KEY"), apPWD);
 
-		s->addEntry(_("SHOW LEASES"), true, [this]() { 
+		s->addEntry(_("DHCP LEASES"), true, [this]() { 
 			openAPleases();
 		});
 	}
