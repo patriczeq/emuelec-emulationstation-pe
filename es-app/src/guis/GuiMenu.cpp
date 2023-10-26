@@ -4593,7 +4593,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	const std::string wlMode = apInlineInfo("mode");
 	s->addWithLabel(_("MODE"), std::make_shared<TextComponent>(mWindow, wlMode, font, color));
 
-	if(wlMode == "STA")
+	/*if(wlMode == "STA")
 		{
 			s->addEntry(_("START AP MODE"), false, [this, indow]() { 
 					std::string msg = _("REALLY START AP MODE?\n");
@@ -4615,7 +4615,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 						 },
 						 _("NO"), nullptr));
 				});
-		}
+		}*/
 
 	s->addGroup(_("SETTINGS"));
 
@@ -4633,17 +4633,17 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
 	const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
 
-	if (baseWifiEnabled && wlMode == "STA")
+	if (baseWifiEnabled)
 	{
 		s->addInputTextRow(_("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
 		s->addInputTextRow(_("WIFI KEY"), "wifi.key", true);
 	}
-	else if(wlMode == "AP")
+	/*else if(wlMode == "AP")
 	{
 		s->addEntry(_("SHOW LEASES"), false, [window]() { 
 			
 		});
-	}
+	}*/
 	
 	s->addSaveFunc([baseWifiEnabled, baseSSID, baseKEY, enable_wifi, window]
 	{
