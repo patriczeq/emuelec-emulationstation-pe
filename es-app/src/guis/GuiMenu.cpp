@@ -4571,12 +4571,23 @@ void GuiMenu::openAPleases()
 		
 		const std::string cmd = "ap.sh leases";
 		std::vector<std::string> leases = ApiSystem::getInstance()->getScriptResults(cmd);
-		
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+	
 		for (auto lease : leases)
 		{
-			s->addEntry(lease, false, [] { 
-				runSystemCommand("uname", "", nullptr);
-			}, "iconControllers");
+			std::vector<std::string> tokens = Utils::String::split(lease, ' ');
+
+			std::string leasetime 	= tokens.at(0);
+			std::string macaddr 	= Utils::String::toUpper(tokens.at(1));
+			std::string ipaddr 		= tokens.at(2);
+			std::string hostname 	= tokens.at(3);
+
+			std::string title = ipaddr + " " + hostname;
+			auto macaddrLabel = std::make_shared<TextComponent>(mWindow, macaddr, font, color);
+			s->addWithLabel(title, macaddrLabel);
+
 		}
 
 		window->pushGui(s);
@@ -4595,7 +4606,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	auto s = new GuiSettings(mWindow, _("NETWORK SETTINGS").c_str());
 	s->addEntry(_("RELOAD"), false, [s, this]() { 
 		delete s;
-		openNetworkSettings(true);
+		openNetworkSettings();
 	}, "iconRestart");
 
 	s->addGroup(_("INFORMATION"));
@@ -4638,7 +4649,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 					 _("YES"),[s, this]{
 					 	runSystemCommand("ap.sh start 12345678", "", nullptr);
 					 	delete s;
-						openNetworkSettings(true);
+						openNetworkSettings();
 					 },
 					 _("NO"), nullptr));
 			});
@@ -4651,7 +4662,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 					 _("YES"),[s, this]{
 					 	runSystemCommand("ap.sh stop", "", nullptr);
 					 	delete s;
-						openNetworkSettings(true);
+						openNetworkSettings();
 					 },
 					 _("NO"), nullptr));
 			});
