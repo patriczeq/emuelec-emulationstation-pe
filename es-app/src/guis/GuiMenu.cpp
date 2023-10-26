@@ -4609,6 +4609,15 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 		openNetworkSettings();
 	}, "iconRestart");
 
+	//Start WebFileBrowser
+	s->addEntry(_("START WEB FILE BROWSER"), false, [window, s, this]() { 
+		std::string response = apInlineInfo("startwebfiles");
+		window->pushGui(new GuiMsgBox(window, response,
+					 _("OK"),nullptr));
+		delete s;
+		openNetworkSettings();
+	}, "iconAdvanced");
+
 	s->addGroup(_("INFORMATION"));
 
 	auto status = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->ping() ? _("CONNECTED") : _("NOT CONNECTED"), font, color);
@@ -4684,8 +4693,8 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 		auto apSSID = std::make_shared<TextComponent>(mWindow, apInlineInfo("ssid"), font, color);
 		auto apPWD = std::make_shared<TextComponent>(mWindow, "12345678", font, color);
 		s->addWithLabel(_("AP SSID"), apSSID);
-		s->addWithLabel(_("AP KEY"), apSSID);
-		
+		s->addWithLabel(_("AP KEY"), apPWD);
+
 		s->addEntry(_("SHOW LEASES"), true, [this]() { 
 			openAPleases();
 		});
