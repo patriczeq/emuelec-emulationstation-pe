@@ -4590,8 +4590,8 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	s->addWithLabel(_("SHOW NETWORK INDICATOR"), networkIndicator);
 	s->addSaveFunc([networkIndicator] { Settings::getInstance()->setBool("ShowNetworkIndicator", networkIndicator->getState()); });
 
-	auto mode = std::make_shared<TextComponent>(mWindow, apInlineInfo("mode"), font, color);
-	s->addWithLabel(_("MODE"), mode);
+	auto mode = apInlineInfo("mode");
+	s->addWithLabel(_("MODE"), std::make_shared<TextComponent>(mWindow, mode, font, color));
 
 	if(mode == "STA")
 		{
