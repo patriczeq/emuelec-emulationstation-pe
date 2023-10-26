@@ -95,6 +95,7 @@ private:
 	void openDEAUTHMenu(std::string bssid, std::string rssi, std::string ssid);
 	// wifi ap helper
 	std::string apInlineInfo(std::string cmd);
+	void openAPleases();
 
 
 #ifdef _ENABLEEMUELEC
