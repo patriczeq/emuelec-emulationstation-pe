@@ -4612,12 +4612,16 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	//Start WebFileBrowser
 	bool webfilesStatus = apInlineInfo("webfiles") == "1";
 	s->addEntry(webfilesStatus ? _("STOP WEB FILE BROWSER") : _("START WEB FILE BROWSER"), false, [window, s, this, webfilesStatus]() { 
-		std::string response = webfilesStatus ? apInlineInfo("stopwebfiles") : apInlineInfo("startwebfiles");
-		window->pushGui(new GuiMsgBox(window, response,
-					 _("OK"),[s,this]{
-					 	delete s;
-						openNetworkSettings();
-					 }));
+		if(webfilesStatus)
+		{
+			runSystemCommand("ap.sh stopwebfiles", "", nullptr);
+		}
+		else
+		{
+			runSystemCommand("ap.sh startwebfiles", "", nullptr);
+		}
+		delete s;
+		openNetworkSettings();
 	}, "iconAdvanced");
 
 	s->addGroup(_("INFORMATION"));
