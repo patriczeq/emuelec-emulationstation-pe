@@ -4574,7 +4574,7 @@ void GuiMenu::openAPleases()
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
-	
+
 		for (auto lease : leases)
 		{
 			std::vector<std::string> tokens = Utils::String::split(lease, ' ');
@@ -4681,8 +4681,11 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	}
 	else if(wlModeAP)
 	{
-		auto connCli = std::make_shared<TextComponent>(mWindow, apInlineInfo("clients"), font, color);
-		s->addWithLabel(_("CONNECTED CLIENTS"), connCli);
+		auto apSSID = std::make_shared<TextComponent>(mWindow, apInlineInfo("ssid"), font, color);
+		auto apPWD = std::make_shared<TextComponent>(mWindow, "12345678", font, color);
+		s->addWithLabel(_("AP SSID"), apSSID);
+		s->addWithLabel(_("AP KEY"), apSSID);
+		
 		s->addEntry(_("SHOW LEASES"), true, [this]() { 
 			openAPleases();
 		});
