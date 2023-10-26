@@ -4559,6 +4559,12 @@ void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data,
 	win->pushGui(new GuiWifi(win, title, data, onsave));
 }
 
+std::string GuiMenu::apInlineInfo(std::string cmd)
+	{
+		std::vector<std::string> result = ApiSystem::getInstance()->getScriptResults("ap.sh " + cmd);
+		return result.at(0);
+	}
+
 void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 {
 	bool baseWifiEnabled = SystemConf::getInstance()->getBool("wifi.enabled");
@@ -4584,14 +4590,14 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	s->addWithLabel(_("SHOW NETWORK INDICATOR"), networkIndicator);
 	s->addSaveFunc([networkIndicator] { Settings::getInstance()->setBool("ShowNetworkIndicator", networkIndicator->getState()); });
 
-	auto mode = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->getScriptResults("ap.sh mode").at(0), font, color);
+	auto mode = std::make_shared<TextComponent>(mWindow, apInlineInfo("mode"), font, color);
 	s->addWithLabel(_("MODE"), mode);
 
 	if(mode == "STA")
 		{
-			s->addEntry(_("START AP MODE"), false, [window]() { 
+			s->addEntry(_("START AP MODE"), false, [this, indow]() { 
 					std::string msg = _("REALLY START AP MODE?\n");
-								msg+= ApiSystem::getInstance()->getScriptResults("ap.sh ssid").at(0);
+								msg+= apInlineInfo("ssid");
 					window->pushGui(new GuiMsgBox(window, msg,
 						 _("YES"),[]{
 						 	runSystemCommand("ap.sh start 12345678", "", nullptr);

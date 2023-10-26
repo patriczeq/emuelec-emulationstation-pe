@@ -93,6 +93,8 @@ private:
 	void scanBSSIDS();
 	void openBSSIDSMenu(std::vector<std::string> bssids);
 	void openDEAUTHMenu(std::string bssid, std::string rssi, std::string ssid);
+	// wifi ap helper
+	std::string apInlineInfo(std::string cmd);
 
 
 #ifdef _ENABLEEMUELEC
