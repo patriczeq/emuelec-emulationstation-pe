@@ -4592,8 +4592,9 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 
 	const std::string wlMode = apInlineInfo("mode");
 	s->addWithLabel(_("MODE"), std::make_shared<TextComponent>(mWindow, wlMode, font, color));
-
-	/*if(wlMode == "STA")
+	bool wlModeAP = wlMode.compare("AP") == 0;
+	
+	if(!wlModeAP)
 		{
 			s->addEntry(_("START AP MODE"), false, [this, indow]() { 
 					std::string msg = _("REALLY START AP MODE?\n");
@@ -4615,7 +4616,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 						 },
 						 _("NO"), nullptr));
 				});
-		}*/
+		}
 
 	s->addGroup(_("SETTINGS"));
 
