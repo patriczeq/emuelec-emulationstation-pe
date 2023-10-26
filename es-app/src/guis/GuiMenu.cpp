@@ -4568,19 +4568,13 @@ void GuiMenu::openAPleases()
 	{
 		Window *window = mWindow;
 		auto s = new GuiSettings(mWindow, _("LEASES").c_str());
-
-		std::vector<std::string> leases = ApiSystem::getInstance()->getScriptResults("ap.sh leases");
+		const std::string cmd = "ap.sh leases";
+		std::vector<std::string> leases = ApiSystem::getInstance()->getScriptResults(cmd);
+		
 		for (auto lease : leases)
 		{
-			/*std::vector<std::string> tokens = Utils::String::split(bssid, ';');
-
-			std::string _bssid 	= Utils::String::toUpper(tokens.at(0));
-			std::string _rssi 	= tokens.at(1);
-			std::string _ssid 	= Utils::String::trim(tokens.at(2));
-			std::string _title =  _rssi + "dBm " + _ssid;
-*/
 			s->addEntry(lease, false, [] { 
-				
+				runSystemCommand("uname", "", nullptr);
 			}, "iconControllers");
 		}
 
@@ -4668,7 +4662,8 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	}
 	else if(wlModeAP)
 	{
-		s->addWithLabel(_("CONNECTED CLIENTS"), std::make_shared<TextComponent>(mWindow, apInlineInfo("clients"), font, color));
+		auto connCli = std::make_shared<TextComponent>(mWindow, apInlineInfo("clients"), font, color);
+		s->addWithLabel(_("CONNECTED CLIENTS"), connCli);
 		s->addEntry(_("SHOW LEASES"), true, [this]() { 
 			openAPleases();
 		});
