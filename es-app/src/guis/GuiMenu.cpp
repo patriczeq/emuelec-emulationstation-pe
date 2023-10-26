@@ -4626,25 +4626,27 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 
 	if(!wlModeAP)
 	{
-		s->addEntry(_("START AP MODE"), false, [this, window]() { 
+		s->addEntry(_("START AP MODE"), false, [s, this, window]() { 
 				std::string msg = _("REALLY START AP MODE?\n");
 							msg = msg + apInlineInfo("ssid");
 				window->pushGui(new GuiMsgBox(window, msg,
-					 _("YES"),[&]{
+					 _("YES"),[s, this]{
 					 	runSystemCommand("ap.sh start 12345678", "", nullptr);
-					 	delete this;
+					 	delete s;
+						openNetworkSettings(true);
 					 },
 					 _("NO"), nullptr));
 			});
 	}
 	else
 	{
-		s->addEntry(_("START STA MODE"), false, [this,window]() { 
+		s->addEntry(_("START STA MODE"), false, [s, this, window]() { 
 				std::string msg = _("REALLY START STA MODE?");
 				window->pushGui(new GuiMsgBox(window, msg,
-					 _("YES"),[&]{
+					 _("YES"),[s, this]{
 					 	runSystemCommand("ap.sh stop", "", nullptr);
-					 	delete this;
+					 	delete s;
+						openNetworkSettings(true);
 					 },
 					 _("NO"), nullptr));
 			});
