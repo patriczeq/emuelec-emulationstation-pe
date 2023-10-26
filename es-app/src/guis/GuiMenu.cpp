@@ -4564,7 +4564,7 @@ std::string GuiMenu::apInlineInfo(std::string cmd)
 		//std::vector<std::string> result = ApiSystem::getInstance()->getScriptResults("ap.sh " + cmd);
 		return getShOutput("ap.sh " + cmd);
 	}
-/*void GuiMenu::openAPleases()
+void GuiMenu::openAPleases()
 	{
 		Window *window = mWindow;
 		auto s = new GuiSettings(window, _("LEASES").c_str());
@@ -4581,7 +4581,7 @@ std::string GuiMenu::apInlineInfo(std::string cmd)
 
 		window->pushGui(s);
 
-	}*/
+	}
 void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 {
 	bool baseWifiEnabled = SystemConf::getInstance()->getBool("wifi.enabled");
@@ -4593,6 +4593,11 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	Window *window = mWindow;
 
 	auto s = new GuiSettings(mWindow, _("NETWORK SETTINGS").c_str());
+	s->addEntry(_("RELOAD"), false, [s, this]() { 
+		delete s;
+		openNetworkSettings(true);
+	}, "iconRestart");
+
 	s->addGroup(_("INFORMATION"));
 
 	auto status = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->ping() ? _("CONNECTED") : _("NOT CONNECTED"), font, color);
@@ -4665,11 +4670,11 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	}
 	else if(wlModeAP)
 	{
-		/*auto connCli = std::make_shared<TextComponent>(mWindow, apInlineInfo("clients"), font, color);
+		auto connCli = std::make_shared<TextComponent>(mWindow, apInlineInfo("clients"), font, color);
 		s->addWithLabel(_("CONNECTED CLIENTS"), connCli);
 		s->addEntry(_("SHOW LEASES"), true, [this]() { 
 			openAPleases();
-		});*/
+		});
 	}
 	
 	s->addSaveFunc([baseWifiEnabled, baseSSID, baseKEY, enable_wifi, window]
