@@ -228,7 +228,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 	}, "iconKodi");	
 #endif
 
-		addEntry(_("H4CK3R SHORTCUTS").c_str(), true, [this] { openESP01Menu(); }, "iconHack"); /* < emuelec */
+		addEntry(_("H4CK TH3 W0RLD").c_str(), true, [this] { openESP01Menu(); }, "iconHack"); /* < emuelec */
 #ifdef _ENABLEEMUELEC
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::WIFI))
 			addEntry(_("NETWORK SETTINGS").c_str(), true, [this] { openNetworkSettings(); }, "iconNetwork");   
@@ -4584,6 +4584,33 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	s->addWithLabel(_("SHOW NETWORK INDICATOR"), networkIndicator);
 	s->addSaveFunc([networkIndicator] { Settings::getInstance()->setBool("ShowNetworkIndicator", networkIndicator->getState()); });
 
+	auto mode = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->getScriptResults("ap.sh mode").at(0), font, color);
+	s->addWithLabel(_("MODE"), mode);
+
+	if(mode == "STA")
+		{
+			s->addEntry(_("START AP MODE"), false, [window]() { 
+					std::string msg = _("REALLY START AP MODE?\n");
+								msg+= ApiSystem::getInstance()->getScriptResults("ap.sh ssid").at(0);
+					window->pushGui(new GuiMsgBox(window, msg,
+						 _("YES"),[]{
+						 	runSystemCommand("ap.sh start 12345678", "", nullptr);
+						 },
+						 _("NO"), nullptr));
+				});
+		}
+	else
+		{
+			s->addEntry(_("START STA MODE"), false, [window]() { 
+					std::string msg = _("REALLY START STA MODE?\n");
+					window->pushGui(new GuiMsgBox(window, msg,
+						 _("YES"),[]{
+						 	runSystemCommand("ap.sh stop", "", nullptr);
+						 },
+						 _("NO"), nullptr));
+				});
+		}
+
 	s->addGroup(_("SETTINGS"));
 
 #if !WIN32
@@ -4600,10 +4627,16 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
 	const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
 
-	if (baseWifiEnabled)
+	if (baseWifiEnabled && mode == "STA")
 	{
 		s->addInputTextRow(_("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
 		s->addInputTextRow(_("WIFI KEY"), "wifi.key", true);
+	}
+	else if(mode == "AP")
+	{
+		s->addEntry(_("SHOW LEASES"), false, [window]() { 
+			
+		});
 	}
 	
 	s->addSaveFunc([baseWifiEnabled, baseSSID, baseKEY, enable_wifi, window]
@@ -4733,6 +4766,11 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 				quitES(QuitMode::QUIT);
 			}, _("NO"), nullptr));
 		}, "iconControllers");
+
+		s->addEntry(_("START EMULATIONSTATION"), false, [window] {
+			quitES(QuitMode::QUIT);
+			runSystemCommand("emustation46", "", nullptr);
+		}, "iconEmuelec");
 		
 		s->addEntry(_("REBOOT FROM NAND"), false, [window] {
 			window->pushGui(new GuiMsgBox(window, _("REALLY REBOOT FROM NAND?"), _("YES"),
