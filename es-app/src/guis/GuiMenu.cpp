@@ -4603,7 +4603,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 
 	const std::string wlMode = apInlineInfo("mode");
 	s->addWithLabel(_("MODE"), std::make_shared<TextComponent>(mWindow, wlMode, font, color));
-	bool wlModeAP = wlMode.compare("AP") == 0;
+	bool wlModeAP = !wlMode.compare(std::string("AP"));//wlMode.compare("AP") == 0;
 	
 	s->addGroup(_("MODE SELECTION"));
 
