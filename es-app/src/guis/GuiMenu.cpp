@@ -4567,7 +4567,8 @@ std::string GuiMenu::apInlineInfo(std::string cmd)
 void GuiMenu::openAPleases()
 	{
 		Window *window = mWindow;
-		auto s = new GuiSettings(mWindow, _("LEASES").c_str());
+		auto s = new GuiSettings(window, _("LEASES").c_str());
+		
 		const std::string cmd = "ap.sh leases";
 		std::vector<std::string> leases = ApiSystem::getInstance()->getScriptResults(cmd);
 		
@@ -4578,7 +4579,7 @@ void GuiMenu::openAPleases()
 			}, "iconControllers");
 		}
 
-		mWindow->pushGui(s);
+		window->pushGui(s);
 
 	}
 void GuiMenu::openNetworkSettings(bool selectWifiEnable)
@@ -4662,11 +4663,11 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	}
 	else if(wlModeAP)
 	{
-		auto connCli = std::make_shared<TextComponent>(mWindow, apInlineInfo("clients"), font, color);
+		/*auto connCli = std::make_shared<TextComponent>(mWindow, apInlineInfo("clients"), font, color);
 		s->addWithLabel(_("CONNECTED CLIENTS"), connCli);
 		s->addEntry(_("SHOW LEASES"), true, [this]() { 
 			openAPleases();
-		});
+		});*/
 	}
 	
 	s->addSaveFunc([baseWifiEnabled, baseSSID, baseKEY, enable_wifi, window]
