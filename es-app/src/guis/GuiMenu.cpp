@@ -4610,12 +4610,14 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	}, "iconRestart");
 
 	//Start WebFileBrowser
-	s->addEntry(_("START WEB FILE BROWSER"), false, [window, s, this]() { 
-		std::string response = apInlineInfo("startwebfiles");
+	bool webfilesStatus = apInlineInfo("webfiles") == "1";
+	s->addEntry(webfilesStatus ? _("STOP WEB FILE BROWSER") : _("START WEB FILE BROWSER"), false, [window, s, this, webfilesStatus]() { 
+		std::string response = webfilesStatus ? apInlineInfo("stopwebfiles") : apInlineInfo("startwebfiles");
 		window->pushGui(new GuiMsgBox(window, response,
-					 _("OK"),nullptr));
-		delete s;
-		openNetworkSettings();
+					 _("OK"),[s,this]{
+					 	delete s;
+						openNetworkSettings();
+					 }));
 	}, "iconAdvanced");
 
 	s->addGroup(_("INFORMATION"));
