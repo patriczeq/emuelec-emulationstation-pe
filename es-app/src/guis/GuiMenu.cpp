@@ -351,20 +351,15 @@ void GuiMenu::scanMPServers()
 			[this, window](std::vector<std::string> servers)
 			{
 				mWaitingLoad = false;
-				openMPServers(servers);
+				//openMPServers(servers);
 			}
 		));	
 	}
 
 void GuiMenu::openMPServers(std::vector<std::string> servers)
 	{
-		Window* window = mWindow;
+		/*Window* window = mWindow;
 		auto s = new GuiSettings(window, (servers.size() == 0 ? _("NO SERVER FOUND!") : _("SELECT SERVER TO CONNECT")).c_str());
-		/*
-avahi-browse -d local _odroid-gs._udp -t -r -p | grep IPv4 | grep =;
-
-=;wlan0;IPv4;ODROID-GO\032Advance\032\04044\0586D\058A1\041;_odroid-gs._udp;local;OGAred.local;192.168.1.111;1234;"title=(unknown)"
-		*/
 		if (servers.size() > 0)
 		{
 			for (auto server : servers)
@@ -382,7 +377,7 @@ avahi-browse -d local _odroid-gs._udp -t -r -p | grep IPv4 | grep =;
 			}
 		}
 
-		window->pushGui(s);
+		window->pushGui(s);*/
 	}
 
 /**
