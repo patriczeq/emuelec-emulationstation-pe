@@ -4609,14 +4609,14 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 					 _("OK"), nullptr));
 
 		});
-		
+
 		s->addEntry("DEAUTHENTICATE!", true, [this, s, window, macaddr] { 
 			
 			std::string msg = _("DEAUTH CLIENT\n");
 							msg = macaddr + "\n?"
 
 			window->pushGui(new GuiMsgBox(window, msg,
-					 _("YES"),[s, this]{
+					 _("YES"),[s, macaddr, this]{
 					 	runSystemCommand("ap.sh deauth " + macaddr, "", nullptr);
 					 	delete s;
 						openAPleases();
