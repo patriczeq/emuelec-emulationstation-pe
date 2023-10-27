@@ -229,7 +229,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 #endif
 
 		addEntry(_("H4CK TH3 W0RLD").c_str(), true, [this] { openESP01Menu(); }, "iconHack");
-		addEntry(_("MULTIPLAYER CLIENT").c_str(), true, [this] { scanMPServers(); }, "iconControllers");
+		addEntry(_("MULTIPLAYER CLIENT").c_str(), true, [this] { scanMPServers(); }, "iconMultiplayer");
 
 #ifdef _ENABLEEMUELEC
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::WIFI))
@@ -375,7 +375,7 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 				s->addEntry(_title, true, [window, this, _ip] { 
 					std::string cmd = "playertoo " + _ip;
 					ApiSystem::getInstance()->launchApp(window, cmd);
-				}, "iconControllers");
+				}, "iconSystem");
 			}
 		}
 
@@ -4963,11 +4963,6 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 				quitES(QuitMode::QUIT);
 			}, _("NO"), nullptr));
 		}, "iconControllers");
-
-		s->addEntry(_("START EMULATIONSTATION"), false, [window] {
-			quitES(QuitMode::QUIT);
-			runSystemCommand("emustation46", "", nullptr);
-		}, "iconEmuelec");
 		
 		s->addEntry(_("REBOOT FROM NAND"), false, [window] {
 			window->pushGui(new GuiMsgBox(window, _("REALLY REBOOT FROM NAND?"), _("YES"),

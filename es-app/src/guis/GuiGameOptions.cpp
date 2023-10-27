@@ -68,7 +68,7 @@ if (game->getType() == GAME)
 			{
 				ViewController::get()->launch(game);
 				this->close();
-			});
+			}, isImageViewer ? "iconScraper" : "iconController");
 		// PLAYERTOO
 		mMenu.addEntry(_("LAUNCH MULTIPLAYER HOST"), false, [window, game, this]
 			{
@@ -76,7 +76,7 @@ if (game->getType() == GAME)
 				options.hostMP = true;
 				ViewController::get()->launch(game, options);
 				this->close();
-			});
+			}, "iconMultiplayer");
  
 		if (SaveStateRepository::isEnabled(game))
 		{
