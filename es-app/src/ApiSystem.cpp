@@ -485,6 +485,21 @@ bool ApiSystem::launchKodi(Window *window)
 	return exitCode == 0;
 }
 
+bool ApiSystem::launchApp(Window *window, std::string command)
+{
+	LOG(LogDebug) << "ApiSystem::launchApp";
+
+	ApiSystem::launchExternalWindow_before(window);
+
+	int exitCode = system(command.c_str());
+	if (WIFEXITED(exitCode))
+		exitCode = WEXITSTATUS(exitCode);
+
+	ApiSystem::launchExternalWindow_after(window);
+
+	return exitCode == 0;
+}
+
 bool ApiSystem::launchFileManager(Window *window) 
 {
 	LOG(LogDebug) << "ApiSystem::launchFileManager";
@@ -501,6 +516,8 @@ bool ApiSystem::launchFileManager(Window *window)
 
 	return exitCode == 0;
 }
+
+
 
 bool ApiSystem::launchErrorWindow(Window *window) 
 {

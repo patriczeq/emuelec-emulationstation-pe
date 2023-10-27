@@ -351,15 +351,16 @@ void GuiMenu::scanMPServers()
 			[this, window](std::vector<std::string> servers)
 			{
 				mWaitingLoad = false;
-				//openMPServers(servers);
+				openMPServers(servers);
 			}
 		));	
 	}
 
 void GuiMenu::openMPServers(std::vector<std::string> servers)
 	{
-		/*Window* window = mWindow;
+		Window* window = mWindow;
 		auto s = new GuiSettings(window, (servers.size() == 0 ? _("NO SERVER FOUND!") : _("SELECT SERVER TO CONNECT")).c_str());
+		
 		if (servers.size() > 0)
 		{
 			for (auto server : servers)
@@ -368,16 +369,17 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 
 				std::string _name 	= tokens.at(6);
 				std::string _ip 	= tokens.at(7);
+
 				std::string _title	= _name + "(" + _ip + ")";
 
-				s->addEntry(_title, true, [this, _ip] { 
-					window->pushGui(new GuiMsgBox(window, _("CONNECT..."),
-						 _("OK"),nullptr));
+				s->addEntry(_title, true, [window, this, _ip] { 
+					std::string cmd = "playertoo " + _ip;
+					ApiSystem::getInstance()->launchApp(window, cmd);
 				}, "iconControllers");
 			}
 		}
 
-		window->pushGui(s);*/
+		window->pushGui(s);
 	}
 
 /**

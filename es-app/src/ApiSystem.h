@@ -147,6 +147,7 @@ public:
 	virtual bool isReadyFlagSet();
 
     virtual bool launchKodi(Window *window);
+    bool launchApp(Window *window, std::string command);
     bool launchFileManager(Window *window);
     bool launchErrorWindow(Window *window);
 
