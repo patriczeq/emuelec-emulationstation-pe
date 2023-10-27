@@ -4625,15 +4625,13 @@ void GuiMenu::openAPleases()
 			std::string hostname 	= tokens.at(3);
 
 			std::string title = ipaddr + " " + hostname;
-			/*auto macaddrLabel = std::make_shared<TextComponent>(mWindow, macaddr, font, color);
-			s->addWithLabel(title, macaddrLabel, [leasetime, macaddr, ipaddr, hostname, this]() { 
-				openDHCPclient(leasetime, macaddr, ipaddr, hostname);
-			}, "iconNetwork");*/
-
+			auto macaddrLabel = std::make_shared<TextComponent>(mWindow, macaddr, font, color);
+			s->addWithLabel(title, macaddrLabel);
+/*
 			s->addEntry(title, true, [this, leasetime, macaddr, ipaddr, hostname] { 
 				openDHCPclient(leasetime, macaddr, ipaddr, hostname);
 			}, "iconNetwork");
-
+*/
 		}
 
 		window->pushGui(s);
