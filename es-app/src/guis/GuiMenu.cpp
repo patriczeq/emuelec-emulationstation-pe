@@ -4590,11 +4590,25 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 		s->addGroup(_("INFO"));
 
 		s->addWithLabel("HOSTNAME", 	hostnameLabel);
-		s->addWithLabel("MAC", 			macaddrLabel);
+		s->addWithLabel("MAC ADDR",		macaddrLabel);
 		s->addWithLabel("VENDOR", 		vendorLabel);
 		s->addWithLabel("LEASETIME", 	leaseLabel);
 
 		s->addGroup(_("TOOLS"));
+		s->addEntry("PING", true, [this, window, ipaddr] { 
+			//ping 192.168.1.1 -c 1
+			const std::string cmd = "ping " + ipaddr + " -c 1";
+			std::vector<std::string> results = ApiSystem::getInstance()->getScriptResults(cmd);
+			std::string result = "";
+
+			for (auto line : results)
+				{
+					result = result + line + "\n";
+				}
+			window->pushGui(new GuiMsgBox(window, result,
+					 _("OK"), nullptr));
+
+		});
 
 		window->pushGui(s);
 	}
@@ -4602,20 +4616,21 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 void GuiMenu::openAPleases()
 	{
 		Window *window = mWindow;
-		auto s = new GuiSettings(window, _("DHCP LEASES").c_str());
-		
-		const std::string cmd = "ap.sh leases";
-		std::vector<std::string> leases = ApiSystem::getInstance()->getScriptResults(cmd);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		s->addEntry(_("RELOAD"), false, [s, this]() { 
+		auto s = new GuiSettings(window, _("DHCP LEASES").c_str());
+		
+		const std::string cmd = "ap.sh leases";
+		std::vector<std::string> leases = ApiSystem::getInstance()->getScriptResults(cmd);
+		
+		/*s->addEntry(_("RELOAD"), false, [s, this]() { 
 			delete s;
 			openAPleases();
 		}, "iconRestart");
 
-		s->addGroup(_("CLIENTS"));
+		s->addGroup(_("CLIENTS"));*/
 
 		if(leases.size() > 0)
 		{
