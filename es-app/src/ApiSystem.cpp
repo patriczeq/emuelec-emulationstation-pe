@@ -497,6 +497,9 @@ bool ApiSystem::launchApp(Window *window, std::string command)
 
 	ApiSystem::launchExternalWindow_after(window);
 
+	// restart Framebuffer! :) found solution
+	system(_("fbset -depth 32").c_str());
+	
 	return exitCode == 0;
 }
 

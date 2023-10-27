@@ -370,7 +370,7 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 				std::string _name 	= tokens.at(6);
 				std::string _ip 	= tokens.at(7);
 
-				std::string _title	= _name + "(" + _ip + ")";
+				std::string _title	= _name + " (" + _ip + ")";
 
 				s->addEntry(_title, true, [window, this, _ip] { 
 					std::string cmd = "playertoo " + _ip;
