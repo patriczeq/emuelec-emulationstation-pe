@@ -4609,7 +4609,7 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 
 		}, "iconSystem");
 
-
+		/*
 		s->addEntry(_("DEAUTHENTICATE!"), false, [s, this, window, macaddr]() { 
 				window->pushGui(new GuiMsgBox(window, _("DEAUTH CLIENT?");,
 					 _("YES"),[s, this, macaddr]{
@@ -4618,7 +4618,7 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 						openAPleases();
 					 },
 					 _("NO"), nullptr));
-			}, "iconQuit");
+			}, "iconQuit");*/
 
 		window->pushGui(s);
 	}
