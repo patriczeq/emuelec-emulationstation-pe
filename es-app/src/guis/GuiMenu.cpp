@@ -4564,15 +4564,17 @@ std::string GuiMenu::apInlineInfo(std::string cmd)
 		//std::vector<std::string> result = ApiSystem::getInstance()->getScriptResults("ap.sh " + cmd);
 		return getShOutput("ap.sh " + cmd);
 	}
-/*
+
 void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::string ipaddr, std::string hostname)
 	{
-		Window *window = mWindow;
+		Window* window = mWindow;
 		auto s = new GuiSettings(window, ipaddr);
-
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
 
 		std::string vendor = "?";
-		const std::string cmd = "hacks.sh vendor " + bssid;
+		const std::string cmd = "hacks.sh vendor " + macaddr;
 		std::vector<std::string> vendorRes = ApiSystem::getInstance()->getScriptResults(cmd);
 		if(vendorRes.size() > 0)
 			{
@@ -4595,7 +4597,7 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 		s->addGroup(_("TOOLS"));
 
 		window->pushGui(s);
-	}*/
+	}
 
 void GuiMenu::openAPleases()
 	{
@@ -4626,12 +4628,12 @@ void GuiMenu::openAPleases()
 
 			std::string title = ipaddr + " " + hostname;
 			auto macaddrLabel = std::make_shared<TextComponent>(mWindow, macaddr, font, color);
-			s->addWithLabel(title, macaddrLabel);
-/*
+			//s->addWithLabel(title, macaddrLabel);
+
 			s->addEntry(title, true, [this, leasetime, macaddr, ipaddr, hostname] { 
 				openDHCPclient(leasetime, macaddr, ipaddr, hostname);
 			}, "iconNetwork");
-*/
+
 		}
 
 		window->pushGui(s);
