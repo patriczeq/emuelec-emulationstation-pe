@@ -4578,7 +4578,7 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 			{
 				vendor = vendorRes.at(0);
 			}
-
+/*
 		auto leaseLabel 	= std::make_shared<TextComponent>(mWindow, leasetime, font, color);
 		auto macaddrLabel 	= std::make_shared<TextComponent>(mWindow, macaddr, font, color);
 		auto ipaddrLabel 	= std::make_shared<TextComponent>(mWindow, ipaddr, font, color);
@@ -4591,7 +4591,7 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 		s->addWithLabel("MAC", 			macaddrLabel);
 		s->addWithLabel("VENDOR", 		vendorLabel);
 		s->addWithLabel("LEASETIME", 	leaseLabel);
-
+*/
 		s->addGroup(_("TOOLS"));
 
 		window->pushGui(s);
