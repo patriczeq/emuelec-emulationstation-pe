@@ -4564,6 +4564,7 @@ std::string GuiMenu::apInlineInfo(std::string cmd)
 		//std::vector<std::string> result = ApiSystem::getInstance()->getScriptResults("ap.sh " + cmd);
 		return getShOutput("ap.sh " + cmd);
 	}
+
 void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::string ipaddr, std::string hostname)
 	{
 		Window *window = mWindow;
@@ -4591,7 +4592,9 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 		s->addWithLabel("VENDOR", 		vendorLabel);
 		s->addWithLabel("LEASETIME", 	leaseLabel);
 
-		//s->addGroup(_("TOOLS"));
+		s->addGroup(_("TOOLS"));
+
+		window->pushGui(s);
 	}
 
 void GuiMenu::openAPleases()
@@ -4622,8 +4625,12 @@ void GuiMenu::openAPleases()
 			std::string hostname 	= tokens.at(3);
 
 			std::string title = ipaddr + " " + hostname;
-			auto macaddrLabel = std::make_shared<TextComponent>(mWindow, macaddr, font, color);
+			/*auto macaddrLabel = std::make_shared<TextComponent>(mWindow, macaddr, font, color);
 			s->addWithLabel(title, macaddrLabel, [leasetime, macaddr, ipaddr, hostname, this]() { 
+				openDHCPclient(leasetime, macaddr, ipaddr, hostname);
+			}, "iconNetwork");*/
+
+			s->addEntry(title, true, [this, leasetime, macaddr, ipaddr, hostname] { 
 				openDHCPclient(leasetime, macaddr, ipaddr, hostname);
 			}, "iconNetwork");
 
@@ -4632,6 +4639,7 @@ void GuiMenu::openAPleases()
 		window->pushGui(s);
 
 	}
+
 void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 {
 	bool baseWifiEnabled = SystemConf::getInstance()->getBool("wifi.enabled");
