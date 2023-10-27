@@ -282,7 +282,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		}
 #endif
 
-		//addEntry(_("SCRAPER").c_str(), true, [this] { openScraperSettings(); }, "iconScraper");		
+		addEntry(_("SCRAPER").c_str(), true, [this] { openScraperSettings(); }, "iconScraper");		
 
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::BATOCERASTORE) || ApiSystem::getInstance()->isScriptingSupported(ApiSystem::THEMESDOWNLOADER) ||
 			(ApiSystem::getInstance()->isScriptingSupported(ApiSystem::THEBEZELPROJECT) && ApiSystem::getInstance()->isScriptingSupported(ApiSystem::DECORATIONS)) ||
@@ -4605,12 +4605,11 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 				{
 					result = result + line + "\n";
 				}
-			window->pushGui(new GuiMsgBox(window, result,
-					 _("OK"), nullptr));
+			window->pushGui(new GuiMsgBox(window, result,_("OK"), nullptr));
 
 		});
 
-		s->addEntry("DEAUTHENTICATE!", true, [this, s, window, macaddr] { 
+		/*s->addEntry("DEAUTHENTICATE!", true, [this, s, window, macaddr] { 
 			
 			std::string msg = _("DEAUTH CLIENT\n");
 							msg = macaddr + "\n?"
@@ -4623,7 +4622,7 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 					 },
 					 _("NO"), nullptr));
 
-		});
+		});*/
 
 		window->pushGui(s);
 	}

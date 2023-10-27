@@ -389,7 +389,7 @@ if (game->getType() == GAME)
 	{
 		mMenu.addGroup(_("OPTIONS"));
 		
-		/*mMenu.addEntry(_("SCRAPE"), false, [this, game]
+		mMenu.addEntry(_("SCRAPE"), false, [this, game]
 		{
 			ScraperSearchParams scraperParams;
 			scraperParams.game = game;
@@ -408,7 +408,7 @@ if (game->getType() == GAME)
 			mWindow->pushGui(scr);
 
 			close();
-		});*/
+		});
 
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::EVMAPY) && game->getType() != FOLDER)
 		{
