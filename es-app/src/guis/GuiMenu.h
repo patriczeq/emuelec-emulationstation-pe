@@ -82,7 +82,7 @@ private:
 	void addVersionInfo();
 	void openCollectionSystemSettings();
 	void openConfigInput();	
-	void openScraperSettings();
+	//void openScraperSettings();
 	void openScreensaverOptions();	
 	void openSoundSettings();
 	void openUISettings();
@@ -97,7 +97,7 @@ private:
 	std::string apInlineInfo(std::string cmd);
 	void openAPleases();
 	void openDHCPclient(std::string leasetime, std::string macaddr, std::string ipaddr, std::string hostname);
-	
+
 
 
 #ifdef _ENABLEEMUELEC
