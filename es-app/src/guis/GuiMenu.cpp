@@ -4569,7 +4569,7 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 		Window *window = mWindow;
 		auto s = new GuiSettings(window, ipaddr);
 
-		auto macaddrLabel = std::make_shared<TextComponent>(mWindow, macaddr, font, color);
+
 		std::string vendor = "?";
 		const std::string cmd = "hacks.sh vendor " + bssid;
 		std::vector<std::string> vendorRes = ApiSystem::getInstance()->getScriptResults(cmd);
@@ -4577,17 +4577,21 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 			{
 				vendor = vendorRes.at(0);
 			}
-		auto vendorLabel = std::make_shared<TextComponent>(mWindow, vendor, font, color);
-		auto leaseLabel = std::make_shared<TextComponent>(mWindow, ipaddr, font, color);
-		auto hostnameLabel = std::make_shared<TextComponent>(mWindow, hostname, font, color);
+
+		auto leaseLabel 	= std::make_shared<TextComponent>(mWindow, leasetime, font, color);
+		auto macaddrLabel 	= std::make_shared<TextComponent>(mWindow, macaddr, font, color);
+		auto ipaddrLabel 	= std::make_shared<TextComponent>(mWindow, ipaddr, font, color);
+		auto hostnameLabel 	= std::make_shared<TextComponent>(mWindow, hostname, font, color);
+		auto vendorLabel 	= std::make_shared<TextComponent>(mWindow, vendor, font, color);
+
 		s->addGroup(_("INFO"));
 
-		s->addWithLabel("HOSTNAME", hostnameLabel);
-		s->addWithLabel("MAC", macaddrLabel);
-		s->addWithLabel("VENDOR", vendorLabel);
-		s->addWithLabel("LEASETIME", leaseLabel);
+		s->addWithLabel("HOSTNAME", 	hostnameLabel);
+		s->addWithLabel("MAC", 			macaddrLabel);
+		s->addWithLabel("VENDOR", 		vendorLabel);
+		s->addWithLabel("LEASETIME", 	leaseLabel);
 
-		s->addGroup(_("TOOLS"));
+		//s->addGroup(_("TOOLS"));
 	}
 
 void GuiMenu::openAPleases()
