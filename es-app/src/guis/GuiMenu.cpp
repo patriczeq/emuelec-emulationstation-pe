@@ -228,7 +228,9 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 	}, "iconKodi");	
 #endif
 
-		addEntry(_("H4CK TH3 W0RLD").c_str(), true, [this] { openESP01Menu(); }, "iconHack"); /* < emuelec */
+		addEntry(_("H4CK TH3 W0RLD").c_str(), true, [this] { openESP01Menu(); }, "iconHack");
+		addEntry(_("MULTIPLAYER CLIENT").c_str(), true, [this] { scanMPServers(); }, "iconControllers");
+
 #ifdef _ENABLEEMUELEC
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::WIFI))
 			addEntry(_("NETWORK SETTINGS").c_str(), true, [this] { openNetworkSettings(); }, "iconNetwork");   
@@ -330,6 +332,58 @@ if (!isKidUI)
 	}
 }
 
+
+/**
+ *  MultiPlayer
+ */
+
+void GuiMenu::canMPServers()
+	{
+		Window* window = mWindow;
+
+		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING GAME SERVERS..."), 
+			[this, window](auto gui)
+			{
+				mWaitingLoad = true;
+				return ApiSystem::getInstance()->getScriptResults("avahi-browse -d local _odroid-gs._udp -t -r -p | grep IPv4 | grep =;");
+			},
+			[this, window](std::vector<std::string> servers)
+			{
+				mWaitingLoad = false;
+				openMPServers(servers);
+			}
+		));	
+	}
+
+void GuiMenu::openMPServers(std::vector<std::string> servers)
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, (servers.size() == 0 ? _("NO SERVER FOUND!") : _("SELECT SERVER TO CONNECT")).c_str());
+		/*
+avahi-browse -d local _odroid-gs._udp -t -r -p | grep IPv4 | grep =;
+
+=;wlan0;IPv4;ODROID-GO\032Advance\032\04044\0586D\058A1\041;_odroid-gs._udp;local;OGAred.local;192.168.1.111;1234;"title=(unknown)"
+		*/
+		if (servers.size() > 0)
+		{
+			for (auto server : servers)
+			{
+				std::vector<std::string> tokens = Utils::String::split(server, ';');
+
+				std::string _name 	= tokens.at(6);
+				std::string _ip 	= tokens.at(7);
+				std::string _title	= _name + "(" + _ip + ")";
+
+				s->addEntry(_title, true, [this, _ip] { 
+					window->pushGui(new GuiMsgBox(window, _("CONNECT..."),
+						 _("OK"),nullptr));
+				}, "iconControllers");
+			}
+		}
+
+		window->pushGui(s);
+	}
+
 /**
  * 
  * ESP01 Deauther
@@ -388,6 +442,7 @@ void GuiMenu::openESP01Menu()
 
 		window->pushGui(s);
 	}
+
 void GuiMenu::scanBSSIDS()
 	{
 		Window* window = mWindow;
