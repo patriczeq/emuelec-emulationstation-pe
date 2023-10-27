@@ -361,7 +361,14 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, (servers.size() == 0 ? _("NO SERVER FOUND!") : _("SELECT SERVER TO CONNECT")).c_str());
 		
-		if (servers.size() > 0)
+		if (servers.size() == 0)
+		{
+			s->addEntry(_("RELOAD"), true, [this, s] { 
+					delete s;
+					scanMPServers();
+				}, "iconRestart");
+		}
+		else
 		{
 			for (auto server : servers)
 			{
