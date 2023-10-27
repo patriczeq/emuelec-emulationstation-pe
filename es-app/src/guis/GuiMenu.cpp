@@ -337,7 +337,7 @@ if (!isKidUI)
  *  MultiPlayer
  */
 
-void GuiMenu::canMPServers()
+void GuiMenu::scanMPServers()
 	{
 		Window* window = mWindow;
 
