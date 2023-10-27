@@ -82,7 +82,7 @@ private:
 	void addVersionInfo();
 	void openCollectionSystemSettings();
 	void openConfigInput();	
-	//void openScraperSettings();
+	void openScraperSettings();
 	void openScreensaverOptions();	
 	void openSoundSettings();
 	void openUISettings();
