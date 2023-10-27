@@ -4617,25 +4617,28 @@ void GuiMenu::openAPleases()
 
 		s->addGroup(_("CLIENTS"));
 
-		for (auto lease : leases)
+		if(leases.size() > 0)
 		{
-			std::vector<std::string> tokens = Utils::String::split(lease, ' ');
+			for (auto lease : leases)
+				{
+					std::vector<std::string> tokens = Utils::String::split(lease, ' ');
 
-			std::string leasetime 	= tokens.at(0);
-			std::string macaddr 	= Utils::String::toUpper(tokens.at(1));
-			std::string ipaddr 		= tokens.at(2);
-			std::string hostname 	= tokens.at(3);
+					std::string leasetime 	= tokens.at(0);
+					std::string macaddr 	= Utils::String::toUpper(tokens.at(1));
+					std::string ipaddr 		= tokens.at(2);
+					std::string hostname 	= tokens.at(3);
 
-			std::string title = ipaddr + " " + hostname;
-			auto macaddrLabel = std::make_shared<TextComponent>(mWindow, macaddr, font, color);
-			//s->addWithLabel(title, macaddrLabel);
+					std::string title = ipaddr + " " + hostname;
+					auto macaddrLabel = std::make_shared<TextComponent>(mWindow, macaddr, font, color);
+					//s->addWithLabel(title, macaddrLabel);
 
-			s->addEntry(title, true, [this, leasetime, macaddr, ipaddr, hostname] { 
-				openDHCPclient(leasetime, macaddr, ipaddr, hostname);
-			}, "iconNetwork");
+					s->addEntry(title, true, [this, leasetime, macaddr, ipaddr, hostname] { 
+						openDHCPclient(leasetime, macaddr, ipaddr, hostname);
+					}, "iconNetwork");
 
+				}
 		}
-
+		
 		window->pushGui(s);
 
 	}
