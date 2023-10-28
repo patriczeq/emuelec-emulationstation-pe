@@ -70,10 +70,10 @@ if(isAudio)
 	mMenu.addEntry(_("PLAY"), false, [_path, this]
 		{
 			AudioManager::getInstance()->playMusic(_path);
-			AudioManager::getInstance()->playSong(_path, true);
+			AudioManager::getInstance()->playSong(_path);
 			this->close();
 		}, "iconSound");
-	
+
 }
 else
 {
