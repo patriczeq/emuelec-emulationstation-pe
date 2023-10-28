@@ -70,6 +70,7 @@ if(isAudio)
 	mMenu.addGroup(_("MUSIC"));
 	mMenu.addEntry(_("PLAY IN BACKGROUND"), false, [_path, this]
 		{
+			AudioManager::getInstance()->playMusic(_path);
 			AudioManager::getInstance()->playSong(_path);
 			this->close();
 		}, "iconSound");
