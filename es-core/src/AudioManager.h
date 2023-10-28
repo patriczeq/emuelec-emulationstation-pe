@@ -52,7 +52,7 @@ public:
 	void playRandomMusic(bool continueIfPlaying = true);
 	void stopMusic(bool fadeOut=true);
 
-	void playSong(std::string song);
+	void playSong(const std::string& song);
 	
 	inline const std::string getSongName() const { return mCurrentSong; }
 

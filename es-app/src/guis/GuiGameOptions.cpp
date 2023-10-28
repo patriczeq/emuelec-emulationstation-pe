@@ -54,7 +54,8 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 	addChild(&mMenu);
 
 	bool isImageViewer = game->getSourceFileData()->getSystem()->hasPlatformId(PlatformIds::IMAGEVIEWER);
-	bool isAudio = Utils::FileSystem::isAudio(game->getPath());
+	const std::string _path = game->getPath();
+	bool isAudio = Utils::FileSystem::isAudio(_path);
 
 	bool hasManual = ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::PDFEXTRACTION) && Utils::FileSystem::exists(game->getMetadata(MetaDataId::Manual));
 	bool hasMagazine = ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::PDFEXTRACTION) && Utils::FileSystem::exists(game->getMetadata(MetaDataId::Magazine));
@@ -63,12 +64,13 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 	bool hasAlternateMedias = game->getSourceFileData()->getFileMedias().size() > 0;
 	bool hasCheevos = game->hasCheevos();
 
+
 if(isAudio)
 {
 	mMenu.addGroup(_("MUSIC"));
-	mMenu.addEntry(_("PLAY IN BACKGROUND"), false, [window, game, this]
+	mMenu.addEntry(_("PLAY IN BACKGROUND"), false, [_path, this]
 		{
-			AudioManager::playSong(game->getPath());
+			AudioManager::playSong(_path);
 			this->close();
 		}, "iconSound");
 }

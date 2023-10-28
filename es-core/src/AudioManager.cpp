@@ -327,7 +327,7 @@ void AudioManager::setSongName(const std::string& song)
 	mSongNameChanged = true;
 }
 
-void AudioManager::playSong(std::string song)
+void AudioManager::playSong(const std::string& song)
 {
 	if (song == mCurrentSong)
 		return;
