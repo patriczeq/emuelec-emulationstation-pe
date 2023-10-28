@@ -395,6 +395,7 @@ void GuiMenu::openESP01Menu()
 		s->addGroup(_("SYSTEM"));
 			s->addEntry(_("REBOOT ESP01"), false, [window] {
 				runSystemCommand("hacks.sh espconn reboot", "", nullptr);
+				window->displayNotificationMessage(_("REBOOT MESSAGE SENT"));
 			}, "iconRestart");
 
 		s->addGroup(_("WIFI AP DEAUTH"));
@@ -405,26 +406,27 @@ void GuiMenu::openESP01Menu()
 				window->pushGui(new GuiMsgBox(window, _("DEAUTHORIZE ALL APs?"),
 					_("YES"), [] {
 						runSystemCommand("hacks.sh espconn killall", "", nullptr);
+						window->displayNotificationMessage(_("DEAUTH ALL RUNNING!"));
 					}, _("NO"),nullptr));
 			});
 		s->addGroup(_("WIFI BACONS/PACKETS"));
 			s->addEntry(_("SEND RANDOM BACONS"), false, [window] {
 					runSystemCommand("hacks.sh espconn beacon", "", nullptr);
-					window->pushGui(new GuiMsgBox(window, _("RANDOM BACON SCRIPT STARTED!"), _("OK"), nullptr));
+					window->displayNotificationMessage(_("RANDOM BACON SCRIPT STARTED!"));
 				});
 			s->addEntry(_("CLONE APs"), false, [window] {
 					window->pushGui(new GuiMsgBox(window, _("SEND DEAUTH PACKETS?"),
 					_("YES"), [window] {
 						runSystemCommand("hacks.sh espconn clonedeauth", "", nullptr);
-						window->pushGui(new GuiMsgBox(window, _("CLONE & DEAUTH SCRIPT STARTED!"), _("OK"), nullptr));
+						window->displayNotificationMessage(_("CLONE & DEAUTH SCRIPT STARTED!"));
 					}, _("NO"), [window] {
 						runSystemCommand("hacks.sh espconn clonebeacon", "", nullptr);
-						window->pushGui(new GuiMsgBox(window, _("CLONE APs SCRIPT STARTED!"), _("OK"), nullptr));
+						window->displayNotificationMessage(_("CLONE APs SCRIPT STARTED!"));
 					}));
 				});
 			s->addEntry(_("DEAUTH DETECTOR"), false, [window] {
 					runSystemCommand("hacks.sh espconn deauthdetect", "", nullptr);
-					window->pushGui(new GuiMsgBox(window, _("DEAUTH DETECTOR RUNNING!\nCHECK ESP01 LED."), _("OK"), nullptr));
+					window->displayNotificationMessage(_("DEAUTH DETECTOR RUNNING!"));
 				});
 
 
@@ -515,6 +517,7 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 					window->pushGui(new GuiMsgBox(window, msg,
 						_("DEAUTH!"), [bssid, ssid] {
 							runSystemCommand("hacks.sh espconn deauthap " + bssid + " " + ssid, "", nullptr);
+							window->displayNotificationMessage(_("DEAUTH AP SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
 				},"iconSystem");
 
@@ -523,6 +526,7 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 					window->pushGui(new GuiMsgBox(window, msg,
 						_("DEAUTH!"), [bssid, ssid] {
 							runSystemCommand("hacks.sh espconn deauthapclone " + bssid + " " + ssid, "", nullptr);
+							window->displayNotificationMessage(_("DEAUTH+CLONE BSSID SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
 				},"iconSystem");
 			s->addEntry(_("FAKE AP, DEAUTH"), true, [bssid, ssid, window]() { 
@@ -530,6 +534,7 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 					window->pushGui(new GuiMsgBox(window, msg,
 						_("DEAUTH!"), [bssid, ssid] {
 							runSystemCommand("hacks.sh espconn deauthapcaptive " + bssid + " " + ssid, "", nullptr);
+							window->displayNotificationMessage(_("DEAUTH+FAKE AP SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
 				},"iconSystem");
 		// -------------------------------------------------------------------------------------
@@ -537,6 +542,7 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 		// -------------------------------------------------------------------------------------
 			s->addEntry(_("STOP"), false, [bssid, ssid, window]() { 
 					runSystemCommand("hacks.sh espconn stop", "", nullptr);
+					window->displayNotificationMessage(_("STOP MESSAGE SENT"));
 				}, "iconQuit");
 		// -------------------------------------------------------------------------------------
 		s->addGroup(_("AP INFO"));

@@ -67,15 +67,16 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 
 if(isAudio)
 {
-	mMenu.addGroup(_("MUSIC"));
-	mMenu.addEntry(_("PLAY IN BACKGROUND"), false, [_path, this]
+	mMenu.addEntry(_("PLAY"), false, [_path, this]
 		{
 			AudioManager::getInstance()->playMusic(_path);
-			AudioManager::getInstance()->playSong(_path);
+			AudioManager::getInstance()->playSong(_path, true);
 			this->close();
 		}, "iconSound");
+	
 }
-
+else
+{
 if (game->getType() == GAME)
 	{
 		mMenu.addGroup(_("GAME"));
@@ -480,6 +481,8 @@ if (game->getType() == GAME)
 			close();
 		});
 	}
+
+}
 
 	if (Renderer::isSmallScreen())
 	{	
