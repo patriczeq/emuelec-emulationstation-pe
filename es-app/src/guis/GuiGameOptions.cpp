@@ -68,7 +68,7 @@ if(isAudio)
 	mMenu.addGroup(_("MUSIC"));
 	mMenu.addEntry(_("PLAY IN BACKGROUND"), false, [window, game, this]
 		{
-			//AudioManager::playSong(game->getPath());
+			AudioManager::playSong(game->getPath());
 			this->close();
 		}, "iconSound");
 }
