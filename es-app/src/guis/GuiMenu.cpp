@@ -4778,8 +4778,8 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	const std::string wlMode = apInlineInfo("mode");
 	s->addWithLabel(_("MODE"), std::make_shared<TextComponent>(mWindow, wlMode, font, color));
 
-	auto status = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->ping() ? _("CONNECTED") : _("NOT CONNECTED"), font, color);
-	s->addWithLabel(_("INTERNET STATUS"), status);
+	//auto status = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->ping() ? _("CONNECTED") : _("NOT CONNECTED"), font, color);
+	//s->addWithLabel(_("INTERNET STATUS"), status);
 
 	bool wlModeAP = wlMode == "AP";
 	
