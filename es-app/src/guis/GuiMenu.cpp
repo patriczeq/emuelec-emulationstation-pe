@@ -404,7 +404,7 @@ void GuiMenu::openESP01Menu()
 			});
 			s->addEntry(_("DEAUTH ALL APs"), false, [window] {
 				window->pushGui(new GuiMsgBox(window, _("DEAUTHORIZE ALL APs?"),
-					_("YES"), [] {
+					_("YES"), [window] {
 						runSystemCommand("hacks.sh espconn killall", "", nullptr);
 						window->displayNotificationMessage(_("DEAUTH ALL RUNNING!"));
 					}, _("NO"),nullptr));
@@ -515,7 +515,7 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 			s->addEntry(_("JUST DEAUTH"), true, [bssid, ssid, window]() { 
 					std::string msg = _("DEAUTH all STS on AP: ") +"\n" + ssid + "\n"+ bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("DEAUTH!"), [bssid, ssid] {
+						_("DEAUTH!"), [window, bssid, ssid] {
 							runSystemCommand("hacks.sh espconn deauthap " + bssid + " " + ssid, "", nullptr);
 							window->displayNotificationMessage(_("DEAUTH AP SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
@@ -524,7 +524,7 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 			s->addEntry(_("CLONE BSSID, DEAUTH"), true, [bssid, ssid, window]() { 
 					std::string msg = _("DEAUTH and clone BSSID AP: ") +"\n" + ssid + "\n"+ bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("DEAUTH!"), [bssid, ssid] {
+						_("DEAUTH!"), [window, bssid, ssid] {
 							runSystemCommand("hacks.sh espconn deauthapclone " + bssid + " " + ssid, "", nullptr);
 							window->displayNotificationMessage(_("DEAUTH+CLONE BSSID SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
@@ -532,7 +532,7 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 			s->addEntry(_("FAKE AP, DEAUTH"), true, [bssid, ssid, window]() { 
 					std::string msg = _("DEAUTH and fake AP: ") +"\n" + ssid + "\n"+ bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("DEAUTH!"), [bssid, ssid] {
+						_("DEAUTH!"), [window, bssid, ssid] {
 							runSystemCommand("hacks.sh espconn deauthapcaptive " + bssid + " " + ssid, "", nullptr);
 							window->displayNotificationMessage(_("DEAUTH+FAKE AP SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
