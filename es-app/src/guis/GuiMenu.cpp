@@ -345,7 +345,7 @@ void GuiMenu::scanMPServers()
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
-				const std::string cmd = "avahi-browse -d local _odroid-gs._udp -t -r -p | grep IPv4 | grep =;";
+				const std::string cmd = "avahi-browse -d local _odroid-gs._udp -t -r -p -l | grep IPv4 | grep =;";
 				return ApiSystem::getInstance()->getScriptResults(cmd);
 			},
 			[this, window](std::vector<std::string> servers)
