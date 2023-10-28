@@ -26,6 +26,7 @@
 #include "SaveStateRepository.h"
 #include "guis/GuiSaveState.h"
 #include "SystemConf.h"
+#include "AudioManager.h"
 
 #ifdef _ENABLEEMUELEC
 #include <regex>
@@ -53,6 +54,8 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 	addChild(&mMenu);
 
 	bool isImageViewer = game->getSourceFileData()->getSystem()->hasPlatformId(PlatformIds::IMAGEVIEWER);
+	bool isAudio = Utils::FileSystem::isAudio(game->getPath());
+
 	bool hasManual = ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::PDFEXTRACTION) && Utils::FileSystem::exists(game->getMetadata(MetaDataId::Manual));
 	bool hasMagazine = ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::PDFEXTRACTION) && Utils::FileSystem::exists(game->getMetadata(MetaDataId::Magazine));
 	bool hasMap = Utils::FileSystem::exists(game->getMetadata(MetaDataId::Map));
@@ -60,7 +63,17 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 	bool hasAlternateMedias = game->getSourceFileData()->getFileMedias().size() > 0;
 	bool hasCheevos = game->hasCheevos();
 
-if (game->getType() == GAME)
+if(isAudio)
+{
+	mMenu.addGroup(_("MUSIC"));
+	mMenu.addEntry(_("PLAY IN BACKGROUND"), false, [window, game, this]
+			{
+				std::string path = game->getPath();
+				AudioManager::playMusic(path);
+				this->close();
+			}, "iconSound");
+}
+if (game->getType() == GAME && !isAudio)
 	{
 		mMenu.addGroup(_("GAME"));
 
@@ -133,6 +146,8 @@ if (game->getType() == GAME)
 				close();
 			});
 		}
+
+
 
 			if (hasManual || hasMap || hasCheevos || hasMagazine || hasVideo || hasAlternateMedias)
 	{

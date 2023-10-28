@@ -408,7 +408,7 @@ void ISimpleGameListView::launchSelectedGame()
 				mWindow->pushGui(new GuiSaveState(mWindow, cursor, [this, cursor](SaveState state)
 				{
 					Sound::getFromTheme(getTheme(), getName(), "launch")->play();
-
+					
 					LaunchGameOptions options;
 					options.saveStateInfo = state;
 					ViewController::get()->launch(cursor, options);
