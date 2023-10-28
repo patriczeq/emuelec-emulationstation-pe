@@ -68,12 +68,12 @@ if(isAudio)
 	mMenu.addGroup(_("MUSIC"));
 	mMenu.addEntry(_("PLAY IN BACKGROUND"), false, [window, game, this]
 			{
-				std::string path = game->getPath();
-				AudioManager::playMusic(path);
+				AudioManager::playSong(game->getPath());
 				this->close();
 			}, "iconSound");
 }
-if (game->getType() == GAME && !isAudio)
+
+if (game->getType() == GAME)
 	{
 		mMenu.addGroup(_("GAME"));
 

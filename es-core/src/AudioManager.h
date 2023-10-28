@@ -51,6 +51,8 @@ public:
 
 	void playRandomMusic(bool continueIfPlaying = true);
 	void stopMusic(bool fadeOut=true);
+
+	void playSong(const std::string& song);
 	
 	inline const std::string getSongName() const { return mCurrentSong; }
 
@@ -72,7 +74,7 @@ public:
 	static int getMaxMusicVolume();
 
 private:
-	void playSong(const std::string& song);
+	//void playSong(const std::string& song);
 	void setSongName(const std::string& song);
 	void addLastPlayed(const std::string& newSong, int totalMusic);
 	bool songWasPlayedRecently(const std::string& song);
