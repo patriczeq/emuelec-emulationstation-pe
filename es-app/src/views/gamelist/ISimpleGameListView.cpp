@@ -1,4 +1,5 @@
 #include "views/gamelist/ISimpleGameListView.h"
+#include "utils/FileSystemUtil.h"
 
 #include "views/UIModeController.h"
 #include "views/ViewController.h"
@@ -26,6 +27,7 @@
 #include "views/Binding.h"
 #include "guis/GuiImageViewer.h"
 #include "guis/GuiGameAchievements.h"
+#include "AudioManager.h"
 
 ISimpleGameListView::ISimpleGameListView(Window* window, FolderData* root, bool temporary) : IGameListView(window, root),
 	mHeaderText(window), mHeaderImage(window), mBackground(window), mFolderPath(window), mOnExitPopup(nullptr),
@@ -400,7 +402,14 @@ void ISimpleGameListView::launchSelectedGame()
 	}
 	else
 	{
-		if (cursor->getType() == GAME)
+		// music player!
+		bool isAudio = Utils::FileSystem::isAudio(cursor->getPath());
+		if( isAudio )
+		{
+			AudioManager::getInstance()->playMusic(_path);
+			AudioManager::getInstance()->playSong(_path);
+		}	
+		else if (cursor->getType() == GAME)
 		{
 			if (SaveStateRepository::isEnabled(cursor) &&
 				(cursor->getCurrentGameSetting("savestates") == "1" || (cursor->getCurrentGameSetting("savestates") == "2" && cursor->getSourceFileData()->getSystem()->getSaveStateRepository()->hasSaveStates(cursor))))
