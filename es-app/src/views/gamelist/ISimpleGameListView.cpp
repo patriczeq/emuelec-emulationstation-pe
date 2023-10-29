@@ -1,5 +1,4 @@
 #include "views/gamelist/ISimpleGameListView.h"
-#include "utils/FileSystemUtil.h"
 
 #include "views/UIModeController.h"
 #include "views/ViewController.h"
@@ -27,6 +26,8 @@
 #include "views/Binding.h"
 #include "guis/GuiImageViewer.h"
 #include "guis/GuiGameAchievements.h"
+
+#include "utils/FileSystemUtil.h"
 #include "AudioManager.h"
 
 ISimpleGameListView::ISimpleGameListView(Window* window, FolderData* root, bool temporary) : IGameListView(window, root),
@@ -406,8 +407,8 @@ void ISimpleGameListView::launchSelectedGame()
 		bool isAudio = Utils::FileSystem::isAudio(cursor->getPath());
 		if( isAudio )
 		{
-			AudioManager::getInstance()->playMusic(_path);
-			AudioManager::getInstance()->playSong(_path);
+			AudioManager::getInstance()->playMusic(cursor->getPath());
+			AudioManager::getInstance()->playSong(cursor->getPath());
 		}	
 		else if (cursor->getType() == GAME)
 		{
