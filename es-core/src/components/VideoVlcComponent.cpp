@@ -74,7 +74,6 @@ VideoVlcComponent::VideoVlcComponent(Window* window) :
 	mMediaPlayer(nullptr), 
 	mMedia(nullptr)
 {
-	window->cancelScreenSaver();
 	mSaturation = 1.0f;
 	mElapsed = 0;
 	mColorShift = 0xFFFFFFFF;

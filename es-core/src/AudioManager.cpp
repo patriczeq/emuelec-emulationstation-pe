@@ -709,9 +709,13 @@ void AudioManager::changePlaylist(const std::shared_ptr<ThemeData>& theme, bool 
 	if (force || !mPlayingSystemThemeSong.empty() || Settings::getInstance()->getBool("audio.persystem"))
 		playRandomMusic(false);
 }
-
+void AudioManager::getVideoPlaying()
+	{
+		return sInstance->VideoPlay;
+	}
 void AudioManager::setVideoPlaying(bool state)
 {
+	sInstance->VideoPlay = state;
 	if (sInstance == nullptr || !sInstance->mInitialized || !Settings::BackgroundMusic())
 		return;
 	
