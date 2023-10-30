@@ -8,6 +8,7 @@
 #include <stack>
 #include <set>
 #include "MultiStateInput.h"
+#include "utils/VectorEx.h"
 
 class ISimpleGameListView : public IGameListView
 {
