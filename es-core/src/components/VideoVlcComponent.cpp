@@ -503,7 +503,7 @@ void VideoVlcComponent::init()
 
 	std::vector<std::string> cmdline;
 	cmdline.push_back("--quiet");
-	cmdline.push_back("--no-video-title-show");
+	//cmdline.push_back("--no-video-title-show");
 
 	std::string commandLine = SystemConf::getInstance()->get("vlc.commandline");
 	if (!commandLine.empty())
@@ -738,11 +738,7 @@ libvlc_media_player_get_position( libvlc_media_player_t *p_mi ); // vraci procen
 		}
 		libvlc_media_player_set_time(mMediaPlayer, newTime);
 	}
-void VideoVlcComponent::toggleOSD()
-	{
-		libvlc_media_player_set_video_osd(mMediaPlayer, osd);
-		osd = !osd;
-	}
+
 void VideoVlcComponent::pauseResume()
 	{
 		libvlc_media_player_pause(mMediaPlayer);
