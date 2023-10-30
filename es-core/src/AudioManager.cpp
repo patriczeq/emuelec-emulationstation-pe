@@ -332,7 +332,11 @@ void AudioManager::playDir(std::string path)
 	{
 		myPlaylist.clear();
 		getMusicIn(path, myPlaylist);
-
+		if(myPlaylist.size() > 0)
+			{
+				std::string f = myPlaylist.at(0);
+				playMySong(f);
+			}
 	}
 void AudioManager::addToPlaylist(std::string path)
 	{
@@ -357,6 +361,10 @@ void AudioManager::pause()
 		else {
 			Mix_PauseMusic();
 		}
+	}
+bool AudioManager::isPlaying(std::string song)
+	{
+		return song == mCurrentMusicPath;
 	}
 void AudioManager::playMySong(std::string song)
 	{

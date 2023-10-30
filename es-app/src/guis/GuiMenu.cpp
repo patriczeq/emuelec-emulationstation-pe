@@ -230,18 +230,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 
 		// pe-emulationstation
 		// pe-player
-		if (AudioManager::getInstance()->isSongPlaying())
-		{
-			auto sname = AudioManager::getInstance()->getSongName();
-			if (!sname.empty())
-			{
-				addEntry(_("MUSIC PLAYER").c_str(), true, [this] { openMusicPlayer(); }, "iconSound");
-				/*addWithDescription(_("MUSIC PLAYER"), _("NOW PLAYING") + ": " + sname, nullptr, [this]
-				{
-					openMusicPlayer();
-				}, "iconSound");*/
-			}
-		}
+		addEntry(_("MUSIC PLAYER").c_str(), true, [this] { openMusicPlayer(); }, "iconSound");
 		// pe-hacks
 		addEntry(_("H4CK TH3 W0RLD").c_str(), true, [this] { openESP01Menu(); }, "iconHack");
 		addEntry(_("MULTIPLAYER CLIENT").c_str(), true, [this] { scanMPServers(); }, "iconMultiplayer");
@@ -405,11 +394,18 @@ void GuiMenu::openMusicPlayer()
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "MUSIC PLAYER");
+
+		/*addWithDescription(_("MUSIC PLAYER"), _("NOW PLAYING") + ": " + sname, nullptr, [this]
+				{
+					openMusicPlayer();
+				}, "iconSound");*/
+		
 		// current Song
 		std::string sname = AudioManager::getInstance()->getSongName();
 		
 		if(!sname.empty())
 		{
+			// make it reactive!
 			bool paused = AudioManager::getInstance()->isPaused();
 			s->addEntry(paused ? _("RESUME") : _("PAUSE"), false, [this, s] {
 				AudioManager::getInstance()->pause();
@@ -426,9 +422,17 @@ void GuiMenu::openMusicPlayer()
 			for (auto song : AudioManager::getInstance()->myPlaylist)
 			{
 				s->addEntry(Utils::FileSystem::getStem(song), false, [song] {
-					AudioManager::getInstance()->playMusic(song);
-				});
+					AudioManager::getInstance()->playMySong(song);
+				}, AudioManager::getInstance()->isPlaying(song) ? "iconSound" : "");
 			}
+		}
+		else
+		{
+			s->addGroup(_("OPTIONS"));
+			s->addEntry(_("LOAD ALL MUSIC"), false, [s] {
+					AudioManager::getInstance()->playDir("/roms/mplayer/");
+					delete s;
+				});
 		}
 
 		window->pushGui(s);

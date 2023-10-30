@@ -407,8 +407,7 @@ void ISimpleGameListView::launchSelectedGame()
 		bool isAudio = Utils::FileSystem::isAudio(cursor->getPath());
 		if( isAudio )
 		{
-			AudioManager::getInstance()->playMusic(cursor->getPath());
-			AudioManager::getInstance()->playSong(cursor->getPath());
+			AudioManager::getInstance()->playMySong(cursor->getPath());
 		}	
 		else if (cursor->getType() == GAME)
 		{

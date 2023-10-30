@@ -56,10 +56,10 @@ public:
 
 	void addToPlaylist(std::string path);
 	void removeFromPlaylist(std::string path);
-	bool isInPlaylist(std::string path);
 	void playDir(std::string path);
 	void playMySong(std::string song); 
 	void playNext();
+	bool isPlaying(std::string song);
 
 	std::vector<std::string> myPlaylist;
 
