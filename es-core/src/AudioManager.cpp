@@ -333,14 +333,16 @@ void AudioManager::playDir(std::string path)
 		playlistIndex = 0;
 		myPlaylist.clear();
 
-		/*for (const auto & entry : fs::directory_iterator(path))
-		{
-			std::string fpath = entry.path();
-			if(Utils::FileSystem::isAudio(fpath))
+		DIR * dirp = opendir(path);
+	    dirent * dp;
+	    while ( (dp = readdir(dirp)) !=NULL ) {
+         	if(Utils::FileSystem::isAudio(fpath))
 			{
-				myPlaylist.push_back(fpath);
+				myPlaylist.push_back(dp->d_name);
 			}
-		}*/
+	    }
+	    
+	    closedir(dirp);
 
 	}
 void AudioManager::addToPlaylist(std::string path)
