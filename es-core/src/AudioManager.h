@@ -55,7 +55,7 @@ public:
 	bool isPaused();
 
 	void addToPlaylist(std::string path);
-	void removeFromPlaylist(std::string path);
+	void clearPlaylist();
 	void playDir(std::string path);
 	void playMySong(std::string song); 
 	void playNext();

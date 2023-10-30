@@ -399,15 +399,15 @@ void GuiMenu::openMusicPlayer()
 				{
 					openMusicPlayer();
 				}, "iconSound");*/
-		
+
 		// current Song
 		std::string sname = AudioManager::getInstance()->getSongName();
 		
 		if(!sname.empty())
 		{
 			// make it reactive!
-			bool paused = AudioManager::getInstance()->isPaused();
-			s->addEntry(paused ? _("RESUME") : _("PAUSE"), false, [this, s] {
+			//bool paused = AudioManager::getInstance()->isPaused();
+			s->addEntry(_("RESUME / RESUME"), false, [this, s] {
 				AudioManager::getInstance()->pause();
 			}, paused ? "iconPlay" : "iconPause");
 
@@ -418,6 +418,9 @@ void GuiMenu::openMusicPlayer()
 
 		if (AudioManager::getInstance()->myPlaylist.size() > 0)
 		{
+			s->addEntry(_("CLEAR PLAYLIST"), false, [this] {
+				AudioManager::getInstance()->clearPlaylist();
+			}, "iconRestart");
 			s->addGroup(_("PLAYLIST"));
 			for (auto song : AudioManager::getInstance()->myPlaylist)
 			{

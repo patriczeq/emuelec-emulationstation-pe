@@ -328,9 +328,13 @@ void AudioManager::playRandomMusic(bool continueIfPlaying)
 			}
 		return output;
 	}*/
-void AudioManager::playDir(std::string path)
+void AudioManager::clearPlaylist()
 	{
 		myPlaylist.clear();
+	}
+void AudioManager::playDir(std::string path)
+	{
+		clearPlaylist();
 		getMusicIn(path, myPlaylist);
 		if(myPlaylist.size() > 0)
 			{

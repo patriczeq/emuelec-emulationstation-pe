@@ -212,38 +212,6 @@ void MenuComponent::addEntry(const std::string& name, bool add_arrow, const std:
 
 	addRow(row, setCursorHere, doUpdateSize, userData);
 }
-void MenuComponent::addEntry(const std::function<std::string()>& name, bool add_arrow, const std::function<void()>& func, const std::string& iconName, bool setCursorHere, bool onButtonRelease, const std::string& userData, bool doUpdateSize)
-{
-	auto theme = ThemeData::getMenuTheme();
-	std::shared_ptr<Font> font = theme->Text.font;
-	unsigned int color = theme->Text.color;
-
-	// populate the list
-	ComponentListRow row;
-
-	addMenuIcon(mWindow, row, iconName);
-
-	auto text = std::make_shared<TextComponent>(mWindow, name(), font, color);
-	row.addElement(text, true);
-
-	if (EsLocale::isRTL())
-		text->setHorizontalAlignment(Alignment::ALIGN_RIGHT);
-
-	if (add_arrow)
-	{
-		auto arrow = makeArrow(mWindow);
-
-		if (EsLocale::isRTL())
-			arrow->setFlipX(true);
-
-		row.addElement(arrow, false);
-	}
-
-	if (func != nullptr)
-		row.makeAcceptInputHandler(func, onButtonRelease);
-
-	addRow(row, setCursorHere, doUpdateSize, userData);
-}
 /*
 void MenuComponent::addEntryLabel(const std::string& name, const std::string& label, const std::function<void()>& func, const std::string& iconName, bool setCursorHere, bool onButtonRelease, const std::string& userData, bool doUpdateSize)
 {
