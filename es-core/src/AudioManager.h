@@ -57,7 +57,7 @@ public:
 	void removeFromPlaylist(std::string path);
 	bool isInPlaylist(std::string path);
 	void playDir(std::string path);
-	void playMySong(std::string song, bool notify = true);
+	void playMySong(std::string song);
 	void playNext();
 
 	std::vector<std::string> myPlaylist;

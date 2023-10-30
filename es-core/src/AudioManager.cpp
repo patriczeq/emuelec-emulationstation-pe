@@ -384,10 +384,7 @@ void AudioManager::playMySong(std::string song, bool notify)
 
 		mCurrentMusicPath = song;
 		Mix_HookMusicFinished(AudioManager::playNext);
-		if(notify)
-		{
-			playSong(song);	
-		}
+		playSong(song);	
 	}
 void AudioManager::playNext()
 	{
