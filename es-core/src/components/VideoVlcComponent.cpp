@@ -74,6 +74,7 @@ VideoVlcComponent::VideoVlcComponent(Window* window) :
 	mMediaPlayer(nullptr), 
 	mMedia(nullptr)
 {
+	window->cancelScreenSaver();
 	mSaturation = 1.0f;
 	mElapsed = 0;
 	mColorShift = 0xFFFFFFFF;
@@ -624,8 +625,8 @@ void VideoVlcComponent::startVideo()
 			}
 			
 			// If we have a playlist : most videos have a fader, skip it 1 second
-			if (mPlaylist != nullptr && mConfig.startDelay == 0 && !mConfig.showSnapshotDelay && !mConfig.showSnapshotNoVideo)
-				libvlc_media_add_option(mMedia, ":start-time=0.7");			
+			/*if (mPlaylist != nullptr && mConfig.startDelay == 0 && !mConfig.showSnapshotDelay && !mConfig.showSnapshotNoVideo)
+				libvlc_media_add_option(mMedia, ":start-time=0.7");	*/		
 
 			bool hasAudioTrack = false;
 
