@@ -235,7 +235,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 			auto sname = AudioManager::getInstance()->getSongName();
 			if (!sname.empty())
 			{
-				s->addWithDescription(_("MUSIC PLAYER"), _("NOW PLAYING") + ": " + sname, nullptr, [this]
+				addWithDescription(_("MUSIC PLAYER"), sname, nullptr, [this]
 				{
 					openMusicPlayer();
 				}, "iconSound");
@@ -405,12 +405,17 @@ void GuiMenu::openMusicPlayer()
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "MUSIC PLAYER");
 		// current Song
-		//std::string sname = AudioManager::getInstance()->getSongName();
+		std::string sname = AudioManager::getInstance()->getSongName();
 		//mMenu.setSubTitle(AudioManager::getInstance()->getSongName());
-		
-		s->addEntry(AudioManager::getInstance()->isPaused() ? _("RESUME") : _("PAUSE"), false, [this] {
-			AudioManager::getInstance()->pause();
-		}, "iconRestart");
+		if(!sname.empty())
+		{
+			s->addEntry(AudioManager::getInstance()->isPaused() ? _("RESUME") : _("PAUSE"), false, [this] {
+				AudioManager::getInstance()->pause();
+			}, AudioManager::getInstance()->isPaused() ? "iconPlay" : "iconPause");
+			s->addEntry(_("STOP"), false, [this] {
+				AudioManager::getInstance()->stop();
+			}, "iconStop");
+		}
 
 		//s->addGroup(_("PLAYLIST"));
 		window->pushGui(s);
