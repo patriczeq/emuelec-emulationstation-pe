@@ -262,14 +262,17 @@ std::vector<std::string> AudioManager::getID3(std::string song)
 				return output;
 			}
 
-		ID3v2_tag* tag = ID3v2_read_tag(song);
-		ID3v2_TextFrame* title_frame = ID3v2_Tag_get_title_frame(tag);
-		ID3v2_TextFrame* artist_frame = ID3v2_Tag_get_artist_frame(tag);
-		ID3v2_TextFrame* album_frame = ID3v2_Tag_get_album_frame(tag);
+		ID3v2_tag* tag = ID3v2_read_tag(song.c_str());
+		if (tag != NULL)
+		{
+			ID3v2_TextFrame* title_frame = ID3v2_Tag_get_title_frame(tag);
+			ID3v2_TextFrame* artist_frame = ID3v2_Tag_get_artist_frame(tag);
+			ID3v2_TextFrame* album_frame = ID3v2_Tag_get_album_frame(tag);
 
-		output.push_back(title_frame->text);
-		output.push_back(artist_frame->text);
-		output.push_back(album_frame->text);
+			output.push_back(std::string(title_frame->text));
+			output.push_back(std::string(artist_frame->text));
+			output.push_back(std::string(album_frame->text));
+		}
 
 		return output;
 	}
