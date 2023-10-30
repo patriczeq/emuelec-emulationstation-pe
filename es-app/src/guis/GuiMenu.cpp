@@ -405,7 +405,7 @@ void GuiMenu::openMusicPlayer()
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "MUSIC PLAYER");
 		// current Song
-		std::string sname = AudioManager::getInstance()->getSongName();
+		/*std::string sname = AudioManager::getInstance()->getSongName();
 		
 		if(!sname.empty())
 		{
@@ -417,7 +417,7 @@ void GuiMenu::openMusicPlayer()
 			s->addEntry(_("STOP"), false, [this] {
 				AudioManager::getInstance()->stop();
 			}, "iconStop");
-		}
+		}*/
 
 		//s->addGroup(_("PLAYLIST"));
 		window->pushGui(s);
