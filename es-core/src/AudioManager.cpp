@@ -257,13 +257,13 @@ std::vector<std::string> AudioManager::getID3(std::string song)
 		std::vector<std::string> output;
 		std::string ext = Utils::String::toLower(Utils::FileSystem::getExtension(song));
 		output.push_back(Utils::FileSystem::getStem(song));
-		
+
 		if(ext != ".mp3")
 			{
 				return output;
 			}
 
-		ID3v2_tag* tag = ID3v2_read_tag(song.c_str());
+		/*ID3v2_tag* tag = ID3v2_read_tag(song.c_str());
 		if (tag != NULL)
 		{
 			ID3v2_TextFrame* title_frame = ID3v2_Tag_get_title_frame(tag);
@@ -273,7 +273,7 @@ std::vector<std::string> AudioManager::getID3(std::string song)
 			output.push_back(std::string(title_frame->text));
 			output.push_back(std::string(artist_frame->text));
 			output.push_back(std::string(album_frame->text));
-		}
+		}*/
 
 		return output;
 	}
