@@ -405,10 +405,15 @@ void ISimpleGameListView::launchSelectedGame()
 	{
 		// music player!
 		bool isAudio = Utils::FileSystem::isAudio(cursor->getPath());
+		bool isVideo = Utils::FileSystem::isVideo(cursor->getPath());
 		if( isAudio )
 		{
 			AudioManager::getInstance()->playMySong(cursor->getPath());
-		}	
+		}
+		else if( isVideo )
+		{
+			GuiVideoViewer::playVideo(mWindow, cursor->getPath());
+		}
 		else if (cursor->getType() == GAME)
 		{
 			if (SaveStateRepository::isEnabled(cursor) &&
