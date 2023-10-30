@@ -360,7 +360,7 @@ void AudioManager::pause()
 			Mix_PauseMusic();
 		}
 	}
-void AudioManager::playMySong(std::string song, bool notify)
+void AudioManager::playMySong(std::string song)
 	{
 		if (!mInitialized)
 		return;
@@ -383,10 +383,10 @@ void AudioManager::playMySong(std::string song, bool notify)
 		}
 
 		mCurrentMusicPath = song;
-		Mix_HookMusicFinished(AudioManager::playNext);
+		//Mix_HookMusicFinished(AudioManager::playNext);
 		playSong(song);	
 	}
-void AudioManager::playNext()
+/*void AudioManager::playNext()
 	{
 		int index = -1;
 		if(myPlaylist.size() > 0)
@@ -405,7 +405,7 @@ void AudioManager::playNext()
 		{
 			playMySong(myPlaylist.at(index), true);
 		}
-	}
+	}*/
 
 void AudioManager::playMusic(std::string path)
 {
