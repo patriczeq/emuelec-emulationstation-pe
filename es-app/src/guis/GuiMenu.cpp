@@ -428,7 +428,7 @@ void GuiMenu::openMusicPlayer()
 			for (auto song : AudioManager::getInstance()->myPlaylist)
 			{
 				// basename, title, artist, album
-				std::vector<std::string> ID3tags = AudioManager::getID3(song);
+				std::vector<std::string> ID3tags = AudioManager::getInstance()->getID3(song);
 				std::string songTitle;
 				if(ID3tags.size() == 1)
 				{
