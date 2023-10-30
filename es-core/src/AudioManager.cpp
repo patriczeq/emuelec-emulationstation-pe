@@ -262,79 +262,16 @@ std::vector<std::string> AudioManager::getID3(std::string song)
 				return output;
 			}
 
-	#define MAX_STR_SIZE 255 // Empiric max size of a MP3 title
+		ID3v2_tag* tag = ID3v2_read_tag(song);
+		ID3v2_TextFrame* title_frame = ID3v2_Tag_get_title_frame(tag);
+		ID3v2_TextFrame* artist_frame = ID3v2_Tag_get_artist_frame(tag);
+		ID3v2_TextFrame* album_frame = ID3v2_Tag_get_album_frame(tag);
 
-		ID3v2_tag* tag = load_tag(song.c_str());
-		if (tag != NULL)
-		{
-			ID3v2_frame* title_frame = tag_get_title(tag);
-			if (title_frame != NULL)
-			{
-				ID3v2_frame_text_content* title_content = parse_text_frame_content(title_frame);
-				if (title_content != NULL && title_content->size > 0)
-				{
-					std::string song_name(title_content->data, title_content->size);
-					ID3v2_frame* artist_frame = tag_get_artist(tag);
-					if (artist_frame != NULL)
-					{
-						ID3v2_frame_text_content* artist_content = parse_text_frame_content(artist_frame);
-						if (artist_content != NULL && artist_content->size > 0)
-						{
-							std::string artist(artist_content->data, artist_content->size);
-							song_name += " - " + artist;
-							free(artist_content->data);
-							free(artist_content);
-						}
-					}
-					song_name.erase(std::remove_if(song_name.begin(), song_name.end(), [](unsigned char c) { return !Utils::String::isPrintableChar(c); }), song_name.end());
-					setSongName(song_name);
-					free(title_content->data);
-					free(title_content);
-					free_tag(tag);
-					return;
-				}
-			}
-			free_tag(tag);
-		}
+		output.push_back(title_frame->text);
+		output.push_back(artist_frame->text);
+		output.push_back(album_frame->text);
 
-		// Then, if no v2, let's try with an ID3 v1 tag	
-		struct {
-			char tag[3];	// i.e. "TAG"
-			char title[30];
-			char artist[30];
-			char album[30];
-			char year[4];
-			char comment[30];
-			unsigned char genre;
-		} info;
-
-		FILE* file = fopen(song.c_str(), "r");
-		if (file != NULL)
-		{
-			if (fseek(file, -128, SEEK_END) < 0)
-				LOG(LogError) << "Error AudioManager seeking " << song;
-			else if (fread(&info, sizeof(info), 1, file) != 1)
-				LOG(LogError) << "Error AudioManager reading " << song;
-			else if (strncmp(info.tag, "TAG", 3) == 0) 
-			{
-				std::string songTitle(info.title != NULL ? info.title : "", 30);
-				output.push_back(songTitle);
-
-				std::string songArtist(info.artist != NULL ? info.artist : "", 30);
-				output.push_back(songArtist);
-
-				std::string songAlbum(info.album != NULL ? info.album : "", 30);
-				output.push_back(songAlbum);
-		
-
-				fclose(file);
-			}
-
-			fclose(file);
-		}
-		else
-			LOG(LogError) << "Error AudioManager opening mp3 file " << song;
-
+		return output;
 	}
 void AudioManager::addToPlaylist(std::string path)
 	{
