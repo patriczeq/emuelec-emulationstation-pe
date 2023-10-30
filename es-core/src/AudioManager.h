@@ -10,6 +10,7 @@
 #include <iostream> 
 #include <deque>
 #include <math.h>
+#include "utils/VectorEx.h"
 
 class Sound;
 class ThemeData;
