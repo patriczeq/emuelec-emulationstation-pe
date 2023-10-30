@@ -778,11 +778,11 @@ bool GuiVideoViewer::input(InputConfig* config, Input input)
 	{
 		if(config->isMappedTo("left", input))
 		{
-			VideoVlcComponent::seek(-10000);
+			mVideo->seek(-10000);
 		}
 		if(config->isMappedTo("right", input))
 		{
-			VideoVlcComponent::seek(10000);
+			mVideo->seek(10000);
 		}
 	}
 	//VideoVlcComponent::seek(int s)
