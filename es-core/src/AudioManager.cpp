@@ -330,9 +330,7 @@ void AudioManager::playRandomMusic(bool continueIfPlaying)
 	}*/
 void AudioManager::playDir(std::string path)
 	{
-		playlistIndex = 0;
 		myPlaylist.clear();
-
 		getMusicIn(path, myPlaylist);
 
 	}
@@ -385,10 +383,10 @@ void AudioManager::playMySong(std::string song)
 		}
 
 		mCurrentMusicPath = song;
-		//Mix_HookMusicFinished(AudioManager::playNext);
+		Mix_HookMusicFinished(AudioManager::playNext);
 		playSong(song);	
 	}
-/*void AudioManager::playNext()
+void AudioManager::playNext()
 	{
 		int index = -1;
 		if(myPlaylist.size() > 0)
@@ -407,7 +405,7 @@ void AudioManager::playMySong(std::string song)
 		{
 			playMySong(myPlaylist.at(index), true);
 		}
-	}*/
+	}
 
 void AudioManager::playMusic(std::string path)
 {
