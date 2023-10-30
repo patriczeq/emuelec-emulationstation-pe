@@ -235,10 +235,11 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 			auto sname = AudioManager::getInstance()->getSongName();
 			if (!sname.empty())
 			{
-				addWithDescription(_("MUSIC PLAYER"), _("NOW PLAYING") + ": " + sname, nullptr, [this]
+				addEntry(_("MUSIC PLAYER").c_str(), true, [this] { openMusicPlayer(); }, "iconSound");
+				/*addWithDescription(_("MUSIC PLAYER"), _("NOW PLAYING") + ": " + sname, nullptr, [this]
 				{
 					openMusicPlayer();
-				}, "iconSound");
+				}, "iconSound");*/
 			}
 		}
 		// pe-hacks
