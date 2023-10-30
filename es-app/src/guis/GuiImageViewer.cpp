@@ -776,20 +776,23 @@ bool GuiVideoViewer::input(InputConfig* config, Input input)
 {	
 	if(input.value != 0)
 	{
-		if(config->isMappedTo("left", input))
+		//seek
+		if(config->isMappedTo("left", input)){mVideo->seek(-60000);}
+		if(config->isMappedTo("right", input)){mVideo->seek(60000);}
+		if(config->isMappedTo("up", input)){mVideo->seek(-600000);}
+		if(config->isMappedTo("down", input)){mVideo->seek(600000);}
+		//ctrl
+		if(config->isMappedTo(BUTTON_OK, input))
 		{
-			mVideo->seek(-10000);
+			mVideo->pauseResume();
 		}
-		if(config->isMappedTo("right", input))
+
+
+		if(config->isMappedTo("start", input))
 		{
-			mVideo->seek(10000);
+			delete this;
+			return true;
 		}
-	}
-	//VideoVlcComponent::seek(int s)
-	if (input.value != 0 && (config->isMappedTo(BUTTON_BACK, input) || config->isMappedTo(BUTTON_OK, input)))
-	{
-		delete this;
-		return true;
 	}
 
 	return GuiComponent::input(config, input);

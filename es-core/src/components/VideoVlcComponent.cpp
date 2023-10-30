@@ -701,6 +701,7 @@ void VideoVlcComponent::startVideo()
 						AudioManager::setVideoPlaying(true);
 				}
 
+				libvlc_set_fullscreen(mMediaPlayer, true);
 				libvlc_media_player_play(mMediaPlayer);
 
 				if (mVideoWidth > 1)
@@ -731,7 +732,17 @@ libvlc_media_player_get_position( libvlc_media_player_t *p_mi ); // vraci procen
 		{
 			newTime = total;
 		}
+		if(newTime < 0)
+		{
+			newTime = 0;
+		}
 		libvlc_media_player_set_time(mMediaPlayer, newTime);
+	}
+void VideoVlcComponent::pauseResume()
+	{
+		libvlc_media_player_pause(mMediaPlayer);
+		
+		PowerSaver::resume();
 	}
 
 void VideoVlcComponent::stopVideo()

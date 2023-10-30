@@ -52,6 +52,7 @@ public:
 	void setImage(std::string path, bool tile = false, MaxSizeInfo maxSize = MaxSizeInfo());
 	// seek
 	virtual void seek(int s) = 0;
+	virtual void pauseResume() = 0;
 
 	// Configures the component to show the default video
 	void setDefaultVideo();

@@ -93,6 +93,7 @@ public:
 	void setSaturation(float saturation);
 
 	void seek(int s);
+	void pauseResume();
 
 private:
 	// Calculates the correct mSize from our resizing information (set by setResize/setMaxSize).
