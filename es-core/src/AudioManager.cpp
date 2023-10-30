@@ -405,7 +405,7 @@ void AudioManager::playNext()
 		if(index > -1 && index < pSize)
 		{
 			std::string nSong = myPlaylist.at(index);
-			playMySong(nSong, true);
+			playMySong(nSong);
 		}
 	}
 
