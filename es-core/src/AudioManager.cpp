@@ -383,10 +383,10 @@ void AudioManager::playMySong(std::string song)
 		}
 
 		mCurrentMusicPath = song;
-		Mix_HookMusicFinished(AudioManager::playNext);
+		//Mix_HookMusicFinished(AudioManager::playNext);
 		playSong(song);	
 	}
-void AudioManager::playNext()
+/*void AudioManager::playNext()
 	{
 		int index = -1;
 		int pSize = myPlaylist.size();
@@ -407,7 +407,7 @@ void AudioManager::playNext()
 			std::string nSong = myPlaylist.at(index);
 			playMySong(nSong);
 		}
-	}
+	}*/
 
 void AudioManager::playMusic(std::string path)
 {
