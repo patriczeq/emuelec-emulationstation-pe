@@ -405,13 +405,15 @@ void GuiMenu::openMusicPlayer()
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "MUSIC PLAYER");
 		// current Song
-		std::string sname = AudioManager::getInstance()->getSongName();
-		mMenu.setSubTitle(sname);
-		s->addEntry(AudioManager::getInstance()->isPaused() ? _("RESUME") : _("PAUSE"), false, [window] {
+		//std::string sname = AudioManager::getInstance()->getSongName();
+		//mMenu.setSubTitle(AudioManager::getInstance()->getSongName());
+		
+		s->addEntry(AudioManager::getInstance()->isPaused() ? _("RESUME") : _("PAUSE"), false, [this] {
 			AudioManager::getInstance()->pause();
 		}, "iconRestart");
 
-		s->addGroup(_("PLAYLIST"));
+		//s->addGroup(_("PLAYLIST"));
+		window->pushGui(s);
 	}
 /**
  * 
