@@ -360,6 +360,55 @@ void AudioManager::pause()
 			Mix_PauseMusic();
 		}
 	}
+void AudioManager::playMySong(std::string song, bool notify)
+	{
+		if (!mInitialized)
+		return;
+
+		// free the previous music
+		stopMusic(false);
+
+		// load a new music
+		mCurrentMusic = Mix_LoadMUS(song.c_str());
+		if (mCurrentMusic == NULL)
+		{
+			LOG(LogError) << Mix_GetError() << " for " << path;
+			return;
+		}
+
+		if (Mix_FadeInMusic(mCurrentMusic, 1, 1000) == -1)
+		{
+			stopMusic();
+			return;
+		}
+
+		mCurrentMusicPath = song;
+		Mix_HookMusicFinished(AudioManager::playNext);
+		if(notify)
+		{
+			playSong(song);	
+		}
+	}
+void AudioManager::playNext()
+	{
+		int index = -1;
+		if(myPlaylist.size() > 0)
+		{
+			for (auto song : myPlaylist)
+			{
+				index++;
+				if(song == mCurrentMusicPath)
+					{
+						index++;
+						break;
+					}
+			}
+		}
+		if(index > -1 && index < myPlaylist.size())
+		{
+			playMySong(myPlaylist.at(index), true);
+		}
+	}
 
 void AudioManager::playMusic(std::string path)
 {

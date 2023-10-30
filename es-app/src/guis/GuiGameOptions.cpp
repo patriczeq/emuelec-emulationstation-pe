@@ -78,8 +78,7 @@ if(isAudio)
 {
 	mMenu.addEntry(_("PLAY"), false, [_path, this]
 		{
-			AudioManager::getInstance()->playMusic(_path);
-			AudioManager::getInstance()->playSong(_path);
+			AudioManager::getInstance()->playMySong(_path);
 			this->close();
 		}, "iconSound");
 	mMenu.addEntry(_("ADD TO PLAYLIST"), false, [_path, this]
@@ -89,8 +88,7 @@ if(isAudio)
 		}, "iconSound");
 
 }
-else
-{
+
 if (game->getType() == GAME)
 	{
 		mMenu.addGroup(_("GAME"));
@@ -326,7 +324,7 @@ if (game->getType() == GAME)
 		});
 #endif
 
-	}
+	
 
 	bool isCustomCollection = (mSystem->isCollection() && game->getType() == FOLDER && CollectionSystemManager::get()->isCustomCollection(mSystem->getName()));
 	bool isAppendableToCollection = (game->getType() == GAME) && (mSystem->isGameSystem() || mSystem->isGroupSystem());

@@ -413,8 +413,6 @@ void GuiMenu::openMusicPlayer()
 			bool paused = AudioManager::getInstance()->isPaused();
 			s->addEntry(paused ? _("RESUME") : _("PAUSE"), false, [this, s] {
 				AudioManager::getInstance()->pause();
-				delete s;
-				this->openMusicPlayer();
 			}, paused ? "iconPlay" : "iconPause");
 
 			s->addEntry(_("STOP"), false, [this] {
