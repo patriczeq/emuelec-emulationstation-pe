@@ -372,7 +372,7 @@ void AudioManager::playMySong(std::string song)
 		mCurrentMusic = Mix_LoadMUS(song.c_str());
 		if (mCurrentMusic == NULL)
 		{
-			LOG(LogError) << Mix_GetError() << " for " << path;
+			LOG(LogError) << Mix_GetError() << " for " << song;
 			return;
 		}
 
@@ -389,7 +389,8 @@ void AudioManager::playMySong(std::string song)
 void AudioManager::playNext()
 	{
 		int index = -1;
-		if(myPlaylist.size() > 0)
+		int pSize = myPlaylist.size();
+		if(pSize > 0)
 		{
 			for (auto song : myPlaylist)
 			{
@@ -401,7 +402,7 @@ void AudioManager::playNext()
 					}
 			}
 		}
-		if(index > -1 && index < myPlaylist.size())
+		if(index > -1 && index < pSize)
 		{
 			playMySong(myPlaylist.at(index), true);
 		}
