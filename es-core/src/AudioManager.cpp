@@ -383,10 +383,10 @@ void AudioManager::playMySong(std::string song)
 		}
 
 		mCurrentMusicPath = song;
-		//Mix_HookMusicFinished(AudioManager::playNext);
+		Mix_HookMusicFinished(AudioManager::musicPlaylistEnd_callback);
 		playSong(song);	
 	}
-/*void AudioManager::playNext()
+void AudioManager::playNext()
 	{
 		int index = -1;
 		int pSize = myPlaylist.size();
@@ -407,7 +407,7 @@ void AudioManager::playMySong(std::string song)
 			std::string nSong = myPlaylist.at(index);
 			playMySong(nSong);
 		}
-	}*/
+	}
 
 void AudioManager::playMusic(std::string path)
 {
@@ -438,6 +438,10 @@ void AudioManager::playMusic(std::string path)
 	Mix_HookMusicFinished(AudioManager::musicEnd_callback);
 }
 
+void AudioManager::musicPlaylistEnd_callback()
+{
+	AudioManager::getInstance()->playNext();
+}
 void AudioManager::musicEnd_callback()
 {
 	if (!AudioManager::getInstance()->mPlayingSystemThemeSong.empty())
