@@ -48,6 +48,9 @@ public:
 
 	void play();
 	void stop();
+	void pause();
+
+	std::vector<std::string> playlist;
 
 	void playRandomMusic(bool continueIfPlaying = true);
 	void stopMusic(bool fadeOut=true);
