@@ -51,7 +51,14 @@ public:
 	void stop();
 	void pause();
 
-	//std::vector<std::string> playlist;
+	bool isPaused();
+
+	void addToPlaylist(std::string path);
+	void removeFromPlaylist(std::string path);
+	bool isInPlaylist(std::string path);
+	void playDirectory(std::string path);
+
+	std::vector<std::string> playlist;
 
 	void playRandomMusic(bool continueIfPlaying = true);
 	void stopMusic(bool fadeOut=true);

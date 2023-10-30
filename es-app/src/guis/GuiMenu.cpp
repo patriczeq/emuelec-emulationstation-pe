@@ -228,6 +228,20 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 	}, "iconKodi");	
 #endif
 
+		// pe-emulationstation
+		// pe-player
+		if (AudioManager::getInstance()->isSongPlaying())
+		{
+			auto sname = AudioManager::getInstance()->getSongName();
+			if (!sname.empty())
+			{
+				s->addWithDescription(_("MUSIC PLAYER"), _("NOW PLAYING") + ": " + sname, nullptr, [this]
+				{
+					openMusicPlayer();
+				}, "iconSound");
+			}
+		}
+		// pe-hacks
 		addEntry(_("H4CK TH3 W0RLD").c_str(), true, [this] { openESP01Menu(); }, "iconHack");
 		addEntry(_("MULTIPLAYER CLIENT").c_str(), true, [this] { scanMPServers(); }, "iconMultiplayer");
 
@@ -381,7 +395,24 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 
 		window->pushGui(s);
 	}
+/**
+ * 
+ * Music player
+ */
 
+void GuiMenu::openMusicPlayer()
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, "MUSIC PLAYER");
+		// current Song
+		std::string sname = AudioManager::getInstance()->getSongName();
+		mMenu.setSubTitle(sname);
+		s->addEntry(AudioManager::getInstance()->isPaused() ? _("RESUME") : _("PAUSE"), false, [window] {
+			AudioManager::getInstance()->pause();
+		}, "iconRestart");
+
+		s->addGroup(_("PLAYLIST"));
+	}
 /**
  * 
  * ESP01 Deauther

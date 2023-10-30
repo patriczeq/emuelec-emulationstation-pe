@@ -250,6 +250,11 @@ void AudioManager::playRandomMusic(bool continueIfPlaying)
 	addLastPlayed(musics.at(randomIndex), musics.size());
 	mPlayingSystemThemeSong = "";
 }
+
+bool AudioManager::isPaused()
+	{
+		return Mix_PausedMusic();
+	}
 void AudioManager::pause()
 	{
 		if (Mix_PausedMusic()) {
