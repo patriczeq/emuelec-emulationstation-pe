@@ -99,6 +99,7 @@ private:
 	bool songWasPlayedRecently(const std::string& song);
 
 	bool mSongNameChanged;
+	bool VideoPlay;
 };
 
 #endif // ES_CORE_AUDIO_MANAGER_H
