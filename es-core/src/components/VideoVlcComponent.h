@@ -92,6 +92,8 @@ public:
 
 	void setSaturation(float saturation);
 
+	void seek(int s);
+
 private:
 	// Calculates the correct mSize from our resizing information (set by setResize/setMaxSize).
 	// Used internally whenever the resizing parameters or texture change.

@@ -13,6 +13,16 @@
 #include <SDL_timer.h>
 #include "AudioManager.h"
 
+/*
+
+libvlc_media_player_get_length( libvlc_media_player_t *p_mi ); // vraci ms
+libvlc_media_player_get_time( libvlc_media_player_t *p_mi ); // ms
+libvlc_media_player_set_time( libvlc_media_player_t *p_mi,
+                                             libvlc_time_t i_time, bool b_fast );
+libvlc_media_player_get_position( libvlc_media_player_t *p_mi ); // vraci procenta
+
+*/
+
 #ifdef WIN32
 #include <codecvt>
 #endif
@@ -702,6 +712,27 @@ void VideoVlcComponent::startVideo()
 		}
 	}
 }
+
+void VideoVlcComponent::seek(int s)
+	{
+		/*
+
+libvlc_media_player_get_length( libvlc_media_player_t *p_mi ); // vraci ms
+libvlc_media_player_get_time( libvlc_media_player_t *p_mi ); // ms
+libvlc_media_player_set_time( libvlc_media_player_t *p_mi,
+                                             libvlc_time_t i_time, bool b_fast );
+libvlc_media_player_get_position( libvlc_media_player_t *p_mi ); // vraci procenta
+
+*/
+		int total 	= libvlc_media_player_get_length(mMediaPlayer);
+		int current = libvlc_media_player_get_time(mMediaPlayer);
+		int newTime	= current + s;
+		if(newTime > total)
+		{
+			newTime = total;
+		}
+		libvlc_media_player_set_time(mMediaPlayer, newTime, true);
+	}
 
 void VideoVlcComponent::stopVideo()
 {

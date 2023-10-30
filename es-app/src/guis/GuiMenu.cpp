@@ -407,7 +407,7 @@ void GuiMenu::openMusicPlayer()
 		{
 			// make it reactive!
 			//bool paused = AudioManager::getInstance()->isPaused();
-			s->addEntry(_("RESUME / RESUME"), false, [this, s] {
+			s->addEntry(_("PAUSE / RESUME"), false, [this, s] {
 				AudioManager::getInstance()->pause();
 			});
 

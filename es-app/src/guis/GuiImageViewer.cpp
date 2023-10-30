@@ -773,7 +773,19 @@ GuiVideoViewer::~GuiVideoViewer()
 }
 
 bool GuiVideoViewer::input(InputConfig* config, Input input)
-{
+{	
+	if(input.value != 0)
+	{
+		if(config->isMappedTo("left", input))
+		{
+			mVideo->seek(-10000);
+		}
+		if(config->isMappedTo("right", input))
+		{
+			mVideo->seek(10000);
+		}
+	}
+	//VideoVlcComponent::seek(int s)
 	if (input.value != 0 && (config->isMappedTo(BUTTON_BACK, input) || config->isMappedTo(BUTTON_OK, input)))
 	{
 		delete this;
