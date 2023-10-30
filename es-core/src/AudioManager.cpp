@@ -262,19 +262,70 @@ std::vector<std::string> AudioManager::getID3(std::string song)
 			{
 				return output;
 			}
+			ID3v2_tag* tag = load_tag(song.c_str());
+			if (tag != NULL)
+			{
+				ID3v2_frame* title_frame = tag_get_title(tag);
+				ID3v2_frame* artist_frame = tag_get_artist(tag);
+				ID3v2_frame* album_frame = tag_get_album(tag);
+				
+				// title
+				if (title_frame != NULL)
+				{
+					ID3v2_frame_text_content* title_content = parse_text_frame_content(title_frame);
+					if (title_content != NULL && title_content->size > 0)
+					{
+						std::string song_name(title_content->data, title_content->size);
+						output.push_back(song_name);
+					}
+					else
+					{
+						output.push_back("");
+					}
+				}
+				else
+				{
+					output.push_back("");
+				}
 
-		/*ID3v2_tag* tag = ID3v2_read_tag(song.c_str());
-		if (tag != NULL)
-		{
-			ID3v2_TextFrame* title_frame = ID3v2_Tag_get_title_frame(tag);
-			ID3v2_TextFrame* artist_frame = ID3v2_Tag_get_artist_frame(tag);
-			ID3v2_TextFrame* album_frame = ID3v2_Tag_get_album_frame(tag);
+				// artist
+				if (artist_frame != NULL)
+				{
+					ID3v2_frame_text_content* artist_content = parse_text_frame_content(artist_frame);
+					if (artist_content != NULL && artist_content->size > 0)
+					{
+						std::string song_artist(title_content->data, title_content->size);
+						output.push_back(song_artist);
+					}
+					else
+					{
+						output.push_back("");
+					}
+				}
+				else
+				{
+					output.push_back("");
+				}
 
-			output.push_back(std::string(title_frame->text));
-			output.push_back(std::string(artist_frame->text));
-			output.push_back(std::string(album_frame->text));
-		}*/
-
+				// album
+				if (album_frame != NULL)
+				{
+					ID3v2_frame_text_content* album_content = parse_text_frame_content(album_frame);
+					if (album_content != NULL && album_content->size > 0)
+					{
+						std::string song_album(album_content->data, album_content->size);
+						output.push_back(song_album);
+					}
+					else
+					{
+						output.push_back("");
+					}
+				}
+				else
+				{
+					output.push_back("");
+				}
+			}
 		return output;
 	}
 void AudioManager::addToPlaylist(std::string path)
