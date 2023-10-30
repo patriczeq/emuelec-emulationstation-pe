@@ -253,8 +253,14 @@ void AudioManager::playRandomMusic(bool continueIfPlaying)
 
 bool AudioManager::isPaused()
 	{
-		return Mix_PausedMusic() ? true : false;
+		if (Mix_PausedMusic()) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
+
 void AudioManager::pause()
 	{
 		if (Mix_PausedMusic()) {
