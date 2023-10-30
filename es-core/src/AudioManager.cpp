@@ -251,6 +251,11 @@ void AudioManager::playRandomMusic(bool continueIfPlaying)
 	mPlayingSystemThemeSong = "";
 }
 
+void AudioManager::addToPlaylist(std::string path)
+	{
+		myPlaylist.push_back(path);
+	}
+
 bool AudioManager::isPaused()
 	{
 		if (Mix_PausedMusic()) {

@@ -411,16 +411,29 @@ void GuiMenu::openMusicPlayer()
 		if(!sname.empty())
 		{
 			bool paused = AudioManager::getInstance()->isPaused();
-			s->addEntry(paused ? _("RESUME") : _("PAUSE"), false, [this] {
+			s->addEntry(paused ? _("RESUME") : _("PAUSE"), false, [this,s] {
 				AudioManager::getInstance()->pause();
+				delete s;
+				openMusicPlayer();
 			}, paused ? "iconPlay" : "iconPause");
 
 			s->addEntry(_("STOP"), false, [this] {
-				AudioManager::getInstance()->stop();
+				AudioManager::getInstance()->stopMusic();
 			}, "iconStop");
 		}
 
-		//s->addGroup(_("PLAYLIST"));
+		if (AudioManager::getInstance()->myPlaylist.size() > 0)
+		{
+			s->addGroup(_("PLAYLIST"));
+			for (auto song : AudioManager::getInstance()->myPlaylist)
+			{
+
+				s->addEntry(song, false, [song] {
+					AudioManager::getInstance()->playMusic(song);
+				}, "iconStop");
+			}
+		}
+
 		window->pushGui(s);
 	}
 /**

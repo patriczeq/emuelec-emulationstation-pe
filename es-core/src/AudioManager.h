@@ -58,7 +58,7 @@ public:
 	bool isInPlaylist(std::string path);
 	void playDirectory(std::string path);
 
-	//std::vector<std::string> playlist;
+	std::vector<std::string> myPlaylist;
 
 	void playRandomMusic(bool continueIfPlaying = true);
 	void stopMusic(bool fadeOut=true);

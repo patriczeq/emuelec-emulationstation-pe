@@ -73,6 +73,11 @@ if(isAudio)
 			AudioManager::getInstance()->playSong(_path);
 			this->close();
 		}, "iconSound");
+	mMenu.addEntry(_("ADD TO PLAYLIST"), false, [_path, this]
+		{
+			AudioManager::getInstance()->addToPlaylist(_path);
+			this->close();
+		}, "iconSound");
 
 }
 else
