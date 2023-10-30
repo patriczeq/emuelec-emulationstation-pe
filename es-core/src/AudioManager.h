@@ -60,6 +60,8 @@ public:
 
 	std::vector<std::string> myPlaylist;
 
+	std::vector<std::string> getID3(std::string song);
+
 	void playRandomMusic(bool continueIfPlaying = true);
 	void stopMusic(bool fadeOut=true);
 

@@ -411,10 +411,10 @@ void GuiMenu::openMusicPlayer()
 		if(!sname.empty())
 		{
 			bool paused = AudioManager::getInstance()->isPaused();
-			s->addEntry(paused ? _("RESUME") : _("PAUSE"), false, [this,s] {
+			s->addEntry(paused ? _("RESUME") : _("PAUSE"), false, [this, s] {
 				AudioManager::getInstance()->pause();
 				delete s;
-				openMusicPlayer();
+				this->openMusicPlayer();
 			}, paused ? "iconPlay" : "iconPause");
 
 			s->addEntry(_("STOP"), false, [this] {
@@ -427,6 +427,17 @@ void GuiMenu::openMusicPlayer()
 			s->addGroup(_("PLAYLIST"));
 			for (auto song : AudioManager::getInstance()->myPlaylist)
 			{
+				// basename, title, artist, album
+				std::vector<std::string> ID3tags = AudioManager::getID3(song);
+				std::string songTitle;
+				if(ID3tags.size() == 1)
+				{
+					songTitle = ID3tags.at(0);
+				}
+				else
+				{
+					songTitle = ID3tags.at(2) + " - " + ID3tags.at(1);
+				}
 
 				s->addEntry(song, false, [song] {
 					AudioManager::getInstance()->playMusic(song);
