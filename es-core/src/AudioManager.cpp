@@ -252,7 +252,7 @@ void AudioManager::playRandomMusic(bool continueIfPlaying)
 }
 
 // basename, title, artist, album
-std::vector<std::string> AudioManager::getID3(std::string song)
+/*std::vector<std::string> AudioManager::getID3(std::string song)
 	{
 		std::vector<std::string> output;
 		std::string ext = Utils::String::toLower(Utils::FileSystem::getExtension(song));
@@ -327,6 +327,21 @@ std::vector<std::string> AudioManager::getID3(std::string song)
 				}
 			}
 		return output;
+	}*/
+void AudioManager::playDir(std::string path)
+	{
+		playlistIndex = 0;
+		myPlaylist.clear();
+
+		for (const auto & entry : fs::directory_iterator(path))
+		{
+			std::string fpath = entry.path();
+			if(Utils::FileSystem::isAudio(fpath))
+			{
+				myPlaylist.push_back(fpath);
+			}
+		}
+
 	}
 void AudioManager::addToPlaylist(std::string path)
 	{

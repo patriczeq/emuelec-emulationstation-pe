@@ -7,7 +7,8 @@
 #include <vector>
 #include "SDL_mixer.h"
 #include <string> 
-#include <iostream> 
+#include <iostream>
+#include <filesystem>
 #include <deque>
 #include <math.h>
 #include "utils/VectorEx.h"
@@ -56,11 +57,12 @@ public:
 	void addToPlaylist(std::string path);
 	void removeFromPlaylist(std::string path);
 	bool isInPlaylist(std::string path);
-	void playDirectory(std::string path);
+	void playDir(std::string path);
 
+	int playlistIndex;
 	std::vector<std::string> myPlaylist;
 
-	std::vector<std::string> getID3(std::string song);
+	//std::vector<std::string> getID3(std::string song);
 
 	void playRandomMusic(bool continueIfPlaying = true);
 	void stopMusic(bool fadeOut=true);

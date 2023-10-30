@@ -65,6 +65,15 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 	bool hasCheevos = game->hasCheevos();
 
 
+if(game->getType() != FOLDER)
+{
+	mMenu.addEntry(_("PLAY DIRECTORY"), false, [_path, this]
+		{
+			AudioManager::getInstance()->playDir(_path);
+			this->close();
+		}, "iconSound");
+}
+
 if(isAudio)
 {
 	mMenu.addEntry(_("PLAY"), false, [_path, this]

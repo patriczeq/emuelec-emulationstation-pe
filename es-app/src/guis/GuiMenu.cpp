@@ -439,7 +439,7 @@ void GuiMenu::openMusicPlayer()
 					songTitle = ID3tags.at(2) + " - " + ID3tags.at(1);
 				}*/
 
-				s->addEntry(song, false, [song] {
+				s->addEntry(Utils::FileSystem::getStem(song), false, [song] {
 					AudioManager::getInstance()->playMusic(song);
 				});
 			}
