@@ -363,7 +363,9 @@ void AudioManager::pause()
 void AudioManager::playMySong(std::string song)
 	{
 		if (!mInitialized)
-		return;
+		{
+			return;
+		}
 
 		// free the previous music
 		stopMusic(false);
