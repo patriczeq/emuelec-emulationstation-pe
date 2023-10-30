@@ -87,7 +87,7 @@ public:
 	int mVideoPlaying;
 
 	static void setVideoPlaying(bool state);
-	static void getVideoPlaying();
+	static bool getVideoPlaying();
 	static void update(int deltaTime);
 
 	static int getMaxMusicVolume();

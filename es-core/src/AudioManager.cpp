@@ -709,7 +709,7 @@ void AudioManager::changePlaylist(const std::shared_ptr<ThemeData>& theme, bool 
 	if (force || !mPlayingSystemThemeSong.empty() || Settings::getInstance()->getBool("audio.persystem"))
 		playRandomMusic(false);
 }
-void AudioManager::getVideoPlaying()
+bool AudioManager::getVideoPlaying()
 	{
 		return sInstance->VideoPlay;
 	}
