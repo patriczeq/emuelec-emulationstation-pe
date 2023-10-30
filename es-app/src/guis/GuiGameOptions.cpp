@@ -65,9 +65,9 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 	bool hasCheevos = game->hasCheevos();
 
 
-if(game->getType() != FOLDER)
+if(game->getType() == FOLDER)
 {
-	mMenu.addEntry(_("PLAY DIRECTORY"), false, [_path, this]
+	mMenu.addEntry(_("PLAY MUSIC FROM DIRECTORY"), false, [_path, this]
 		{
 			AudioManager::getInstance()->playDir(_path);
 			this->close();
