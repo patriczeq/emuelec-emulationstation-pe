@@ -51,7 +51,7 @@ public:
 	// Loads a static image that is displayed if the video cannot be played
 	void setImage(std::string path, bool tile = false, MaxSizeInfo maxSize = MaxSizeInfo());
 	// seek
-	void seek(int s) = 0;
+	virtual void seek(int s) = 0;
 
 	// Configures the component to show the default video
 	void setDefaultVideo();
