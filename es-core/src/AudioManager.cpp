@@ -252,14 +252,12 @@ void AudioManager::playRandomMusic(bool continueIfPlaying)
 }
 void AudioManager::pause()
 	{
-		/*if(Mix_PausedMusic() == 1)
-		{
-			Mix_Resume(-1);
+		if (Mix_PausedMusic()) {
+			Mix_ResumeMusic();
 		}
-		else
-		{
-			Mix_pause(-1);
-		}*/
+		else {
+			Mix_PauseMusic();
+		}
 	}
 
 void AudioManager::playMusic(std::string path)
