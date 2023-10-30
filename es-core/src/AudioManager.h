@@ -26,7 +26,8 @@ private:
 	Mix_Music* mCurrentMusic; 
 	void getMusicIn(const std::string &path, std::vector<std::string>& all_matching_files); 
 	
-	static void musicEnd_callback();	
+	static void musicEnd_callback();
+	static void musicPlaylistEnd_callback();	
 
 	std::string mSystemName;			// per system music folder
 	std::string mCurrentSong;			// pop-up for SongName.cpp
