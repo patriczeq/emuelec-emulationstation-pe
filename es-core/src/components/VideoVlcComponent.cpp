@@ -701,7 +701,7 @@ void VideoVlcComponent::startVideo()
 						AudioManager::setVideoPlaying(true);
 				}
 
-				libvlc_set_fullscreen(mMediaPlayer, true);
+				libvlc_set_fullscreen(mMediaPlayer, 1);
 				libvlc_media_player_play(mMediaPlayer);
 
 				if (mVideoWidth > 1)
