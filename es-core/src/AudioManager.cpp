@@ -336,7 +336,7 @@ void AudioManager::playDir(std::string path)
 		DIR * dirp = opendir(path);
 	    dirent * dp;
 	    while ( (dp = readdir(dirp)) !=NULL ) {
-         	if(Utils::FileSystem::isAudio(fpath))
+         	if(Utils::FileSystem::isAudio(dp->d_name))
 			{
 				myPlaylist.push_back(dp->d_name);
 			}
