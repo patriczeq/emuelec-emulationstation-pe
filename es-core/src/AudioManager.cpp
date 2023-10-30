@@ -256,7 +256,8 @@ std::vector<std::string> AudioManager::getID3(std::string song)
 	{
 		std::vector<std::string> output;
 		std::string ext = Utils::String::toLower(Utils::FileSystem::getExtension(song));
-		output.push_back(Utils::FileSystem::getStem(song))
+		output.push_back(Utils::FileSystem::getStem(song));
+		
 		if(ext != ".mp3")
 			{
 				return output;
