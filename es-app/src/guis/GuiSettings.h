@@ -55,10 +55,10 @@ public:
 	{ 
 		mMenu.addEntry(name, add_arrow, func, iconName, setCursorHere, onButtonRelease); 
 	}
-	inline void addEntry(std::function<std::string()>& name, bool add_arrow = false, const std::function<void()>& func = nullptr, const std::string iconName = "", bool onButtonRelease = false, bool setCursorHere = false) 
+	/*inline void addEntry(std::function<std::string()>& name, bool add_arrow = false, const std::function<void()>& func = nullptr, const std::string iconName = "", bool onButtonRelease = false, bool setCursorHere = false) 
 	{ 
 		mMenu.addEntry(name, add_arrow, func, iconName, setCursorHere, onButtonRelease); 
-	}
+	}*/
 
 	inline void addGroup(const std::string& label) 
 	{ 

@@ -425,18 +425,6 @@ void GuiMenu::openMusicPlayer()
 			s->addGroup(_("PLAYLIST"));
 			for (auto song : AudioManager::getInstance()->myPlaylist)
 			{
-				// basename, title, artist, album
-				/*std::vector<std::string> ID3tags = AudioManager::getInstance()->getID3(song);
-				std::string songTitle;
-				if(ID3tags.size() == 1)
-				{
-					songTitle = ID3tags.at(0);
-				}
-				else
-				{
-					songTitle = ID3tags.at(2) + " - " + ID3tags.at(1);
-				}*/
-
 				s->addEntry(Utils::FileSystem::getStem(song), false, [song] {
 					AudioManager::getInstance()->playMusic(song);
 				});
