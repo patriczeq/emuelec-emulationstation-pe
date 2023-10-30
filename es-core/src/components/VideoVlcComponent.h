@@ -94,6 +94,7 @@ public:
 
 	void seek(int s);
 	void pauseResume();
+	void toggleOSD();
 
 private:
 	// Calculates the correct mSize from our resizing information (set by setResize/setMaxSize).
@@ -115,7 +116,7 @@ private:
 
 	void setupContext();
 	void freeContext();
-
+	bool osd;
 private:
 	static libvlc_instance_t*		mVLC;
 	libvlc_media_t*					mMedia;

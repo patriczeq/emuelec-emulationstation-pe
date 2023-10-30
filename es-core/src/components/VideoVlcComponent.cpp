@@ -738,6 +738,11 @@ libvlc_media_player_get_position( libvlc_media_player_t *p_mi ); // vraci procen
 		}
 		libvlc_media_player_set_time(mMediaPlayer, newTime);
 	}
+void VideoVlcComponent::toggleOSD()
+	{
+		libvlc_media_player_set_video_osd(mMediaPlayer, osd);
+		osd = !osd;
+	}
 void VideoVlcComponent::pauseResume()
 	{
 		libvlc_media_player_pause(mMediaPlayer);
