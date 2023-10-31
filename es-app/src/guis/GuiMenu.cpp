@@ -237,7 +237,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 			addWithDescription(_("MUSIC PLAYER"), _("NOW PLAYING") + ": " + sname, nullptr, [this]
 			{
 				openMusicPlayer();
-			}, "iconSound")
+			}, "iconSound");
 		}
 		else{
 			addEntry(_("MUSIC PLAYER").c_str(), true, [this] { openMusicPlayer(); }, "iconSound");
