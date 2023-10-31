@@ -780,7 +780,7 @@ void AudioManager::update(int deltaTime)
 		else
 			sInstance->mMusicVolume = maxVol;
 
-		if(sInstance->mMusicVolume == maxVol && sInstance->isPaused())
+		if(sInstance->isPaused())
 		{
 			sInstance->pause();
 		}

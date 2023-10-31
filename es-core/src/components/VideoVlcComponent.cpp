@@ -283,7 +283,7 @@ void VideoVlcComponent::render(const Transform4x4f& parentTrans)
 	if (mTexture == nullptr)
 		return;
 		
-	float opacity = 1.0;//(mOpacity / 255.0f) * t;
+	float opacity = (mOpacity / 255.0f) * t;
 
 	if (hasStoryBoard())
 		opacity = (mOpacity / 255.0f);
@@ -571,8 +571,8 @@ void VideoVlcComponent::handleLooping()
 				}
 			}
 
-			if (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode))
-				libvlc_audio_set_mute(mMediaPlayer, 1);
+			/*if (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode))
+				libvlc_audio_set_mute(mMediaPlayer, 1);*/
 
 			//libvlc_media_player_set_position(mMediaPlayer, 0.0f);
 			if (mMedia)
