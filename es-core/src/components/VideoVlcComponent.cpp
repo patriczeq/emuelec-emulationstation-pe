@@ -703,7 +703,8 @@ void VideoVlcComponent::startVideo()
 
 						AudioManager::setVideoPlaying(true);
 				}
-				//libvlc_audio_set_mute(mMediaPlayer, 0);
+				libvlc_audio_set_mute(mMediaPlayer, 0);
+				libvlc_audio_set_volume(mMediaPlayer, 100);
 				libvlc_media_player_play(mMediaPlayer);
 
 				if (mVideoWidth > 1)
@@ -900,7 +901,7 @@ void VideoVlcComponent::pauseVideo()
 	{
 		libvlc_media_player_pause(mMediaPlayer);
 		
-		//PowerSaver::resume();
+		PowerSaver::resume();
 		AudioManager::setVideoPlaying(false);
 	}
 }
@@ -918,7 +919,7 @@ void VideoVlcComponent::resumeVideo()
 
 	mIsPlaying = true;
 	libvlc_media_player_play(mMediaPlayer);
-	//PowerSaver::pause();
+	PowerSaver::pause();
 	AudioManager::setVideoPlaying(true);
 }
 
