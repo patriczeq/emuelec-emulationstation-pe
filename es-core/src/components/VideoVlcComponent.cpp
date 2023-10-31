@@ -503,7 +503,7 @@ void VideoVlcComponent::init()
 		return;
 
 	std::vector<std::string> cmdline;
-	cmdline.push_back("--quiet");
+	//cmdline.push_back("--quiet");
 	cmdline.push_back("--no-video-title-show");
 
 	std::string commandLine = SystemConf::getInstance()->get("vlc.commandline");
