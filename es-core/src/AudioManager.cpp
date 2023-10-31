@@ -764,6 +764,10 @@ void AudioManager::update(int deltaTime)
 		}
 
 		Mix_VolumeMusic((int)sInstance->mMusicVolume);
+		if(sInstance->mMusicVolume == minVol && !sInstance->isPaused())
+		{
+			sInstance->pause();
+		}
 	}
 	else if (!sInstance->mVideoPlaying && sInstance->mMusicVolume != maxVol)
 	{
@@ -776,6 +780,10 @@ void AudioManager::update(int deltaTime)
 		else
 			sInstance->mMusicVolume = maxVol;
 
+		if(sInstance->mMusicVolume == maxVol && sInstance->isPaused())
+		{
+			sInstance->pause();
+		}
 		Mix_VolumeMusic((int)sInstance->mMusicVolume);
 	}
 }

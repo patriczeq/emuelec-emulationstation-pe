@@ -283,7 +283,7 @@ void VideoVlcComponent::render(const Transform4x4f& parentTrans)
 	if (mTexture == nullptr)
 		return;
 		
-	float opacity = (mOpacity / 255.0f) * t;
+	float opacity = 1.0;//(mOpacity / 255.0f) * t;
 
 	if (hasStoryBoard())
 		opacity = (mOpacity / 255.0f);
@@ -695,9 +695,9 @@ void VideoVlcComponent::startVideo()
 			
 				if (hasAudioTrack)
 				{
-					if (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode))
+					/*if (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode))
 						libvlc_audio_set_mute(mMediaPlayer, 1);
-					else
+					else*/
 						AudioManager::setVideoPlaying(true);
 				}
 

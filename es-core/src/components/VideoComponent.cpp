@@ -84,6 +84,7 @@ VideoComponent::VideoComponent(Window* window) :
 	mConfig.showSnapshotNoVideo		= false;
 	mConfig.snapshotSource = IMAGE;
 	mConfig.startDelay				= 0;
+	
 	window->setAllowSleep(false);
 
 	if (mWindow->getGuiStackSize() > 1)
