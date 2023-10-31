@@ -738,7 +738,6 @@ GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path) : GuiCom
 	setPosition(0, 0);
 	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
 	setColor(0);
-
 #ifdef _RPI_
 	if (Settings::getInstance()->getBool("VideoOmxPlayer"))
 		mVideo = new VideoPlayerComponent(mWindow, "");
@@ -766,7 +765,7 @@ GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path) : GuiCom
 	mVideo->setStartDelay(25);
 	mVideo->setVideo(path);
 
-	topWindow(true);
+	//topWindow(true);
 }
 
 GuiVideoViewer::~GuiVideoViewer()
