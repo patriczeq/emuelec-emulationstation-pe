@@ -695,15 +695,16 @@ void VideoVlcComponent::startVideo()
 				// Setup the media player
 				mMediaPlayer = libvlc_media_player_new_from_media(mMedia);
 			
-				if (hasAudioTrack)
+				/*if (hasAudioTrack)
 				{
-					/*if (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode))
+					if (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode))
 						libvlc_audio_set_mute(mMediaPlayer, 1);
-					else*/
+					else
 
 						AudioManager::setVideoPlaying(true);
-				}
-				libvlc_audio_set_mute(mMediaPlayer, 0);
+				}*/
+				AudioManager::setVideoPlaying(true);
+				//libvlc_audio_set_mute(mMediaPlayer, 0);
 				libvlc_audio_set_volume(mMediaPlayer, 100);
 				libvlc_media_player_play(mMediaPlayer);
 
