@@ -25,6 +25,7 @@
 #include "utils/Randomizer.h"
 #include "Paths.h"
 #include "ApiSystem.h"
+#include "AudioManager.h"
 
 #define FADE_TIME 			500
 
@@ -70,6 +71,10 @@ bool SystemScreenSaver::isScreenSaverActive()
 
 void SystemScreenSaver::startScreenSaver()
 {
+		if(AudioManager::getVideoPlaying())
+		{
+			return;
+		}
 	bool loadingNext = mLoadingNext;
 
 	stopScreenSaver();
