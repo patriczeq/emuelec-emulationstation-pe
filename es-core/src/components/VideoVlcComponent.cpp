@@ -12,6 +12,7 @@
 #include "ThemeData.h"
 #include <SDL_timer.h>
 #include "AudioManager.h"
+#include "Log.h"
 
 /*
 
@@ -649,6 +650,16 @@ void VideoVlcComponent::startVideo()
 						break;
 				}
 			}
+
+			if(hasAudioTrack)
+			{
+				LOG(LogInfo) << "Video has audio track";
+			}
+			else
+			{
+				LOG(LogInfo) << "NO audio track";
+			}
+
 			libvlc_media_tracks_release(tracks, track_count);
 
 			if (mVideoWidth == 0 && mVideoHeight == 0 && Utils::FileSystem::isAudio(path))
@@ -705,7 +716,7 @@ void VideoVlcComponent::startVideo()
 				}*/
 				AudioManager::setVideoPlaying(true);
 				//libvlc_audio_set_mute(mMediaPlayer, 0);
-				libvlc_audio_set_volume(mMediaPlayer, 100);
+				//libvlc_audio_set_volume(mMediaPlayer, 100);
 				libvlc_media_player_play(mMediaPlayer);
 
 				if (mVideoWidth > 1)
