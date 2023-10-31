@@ -64,7 +64,7 @@ public:
 
 	bool input(InputConfig* config, Input input) override;
 	void onSizeChanged() override;
-	std::vector<HelpPrompt> getHelpPrompts() override;	
+	std::vector<HelpPrompt> getHelpPrompts() override;
 	static void openQuitMenu_static(Window *window, bool quickAccessMenu = false, bool animate = true);
 
 	static void popSystemConfigurationGui(Window* mWindow, SystemData *systemData);
@@ -81,13 +81,13 @@ private:
 
 	void addVersionInfo();
 	void openCollectionSystemSettings();
-	void openConfigInput();	
+	void openConfigInput();
 	void openScraperSettings();
-	void openScreensaverOptions();	
+	void openScreensaverOptions();
 	void openSoundSettings();
 	void openUISettings();
 	void openUpdatesSettings();
-	
+
 	// Deauther
 	void openESP01Menu();
 
@@ -119,11 +119,11 @@ private:
 	void openControllersSettings(int autoSel = 0);
   	void openControllersSpecificSettings_sindengun();
     	void openControllersSpecificSettings_wiigun();
-	void openNetworkSettings(bool selectWifiEnable = false);	
+	void openNetworkSettings(bool selectWifiEnable = false);
 	void openQuitMenu();
 	void openSystemInformations();
 	void openDeveloperSettings();
-	void openNetplaySettings(); 
+	void openNetplaySettings();
 	void openRetroachievementsSettings();
 	void openMissingBiosSettings();
 	void openFormatDriveSettings();
@@ -148,7 +148,7 @@ private:
 
   static void createBtnJoyCfgName(Window *window, GuiSettings *systemConfiguration, std::string prefixName);
   static void createBtnJoyCfgRemap(Window *window, GuiSettings *systemConfiguration, std::string prefixName, std::string remapName, int btnIndex = -1, int editIndex = 0);
-  
+
   static void deleteBtnJoyCfg(Window *window, GuiSettings *systemConfiguration, std::string prefixName);
   static void editJoyBtnRemapOptionList(Window *window, GuiSettings *systemConfiguration, std::string prefixName);
   static void removeJoyBtnEntry(int index);
@@ -172,6 +172,16 @@ private:
 
 	static void saveSubsetSettings();
 	static void loadSubsetSettings(const std::string themeName);
+
+	inline void addWithDescription(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, bool setCursorHere = false)
+	{
+		mMenu.addWithDescription(label, description, comp, nullptr, "", setCursorHere, true);
+	}
+
+	inline void addWithDescription(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func, const std::string iconName = "", bool setCursorHere = false, /*bool invert_when_selected = true,*/ bool multiLine = false)
+	{
+		mMenu.addWithDescription(label, description, comp, func, iconName, setCursorHere, multiLine);
+	}
 
 public:
 	static std::vector<DecorationSetInfo> getDecorationsSets(SystemData* system = nullptr);

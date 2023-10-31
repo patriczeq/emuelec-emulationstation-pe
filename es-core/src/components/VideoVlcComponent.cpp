@@ -35,12 +35,12 @@ libvlc_media_player_get_position( libvlc_media_player_t *p_mi ); // vraci procen
 libvlc_instance_t* VideoVlcComponent::mVLC = NULL;
 
 // VLC prepares to render a video frame.
-static void *lock(void *data, void **p_pixels) 
+static void *lock(void *data, void **p_pixels)
 {
 	struct VideoContext *c = (struct VideoContext *)data;
-	
+
 	int frame = (c->surfaceId ^ 1);
-	
+
 	c->mutexes[frame].lock();
 	c->hasFrame[frame] = false;
 	*p_pixels = c->surfaces[frame];
@@ -48,11 +48,11 @@ static void *lock(void *data, void **p_pixels)
 }
 
 // VLC just rendered a video frame.
-static void unlock(void *data, void* /*id*/, void *const* /*p_pixels*/) 
+static void unlock(void *data, void* /*id*/, void *const* /*p_pixels*/)
 {
 	struct VideoContext *c = (struct VideoContext *)data;
 
-	int frame = (c->surfaceId ^ 1);	
+	int frame = (c->surfaceId ^ 1);
 
 	c->surfaceId = frame;
 	c->hasFrame[frame] = true;
@@ -72,7 +72,7 @@ static void display(void* data, void* id)
 
 VideoVlcComponent::VideoVlcComponent(Window* window) :
 	VideoComponent(window),
-	mMediaPlayer(nullptr), 
+	mMediaPlayer(nullptr),
 	mMedia(nullptr)
 {
 	mSaturation = 1.0f;
@@ -238,9 +238,9 @@ void VideoVlcComponent::render(const Transform4x4f& parentTrans)
 
 	if (t == 0.0)
 		return;
-		
+
 	Transform4x4f trans = parentTrans * getTransform();
-	
+
 	if (mRotation == 0 && !mTargetIsMin)
 	{
 		auto rect = Renderer::getScreenRect(trans, mSize);
@@ -252,7 +252,7 @@ void VideoVlcComponent::render(const Transform4x4f& parentTrans)
 
 	// Build a texture for the video frame
 	if (initFromPixels)
-	{		
+	{
 		int frame = mContext.surfaceId;
 		if (mContext.hasFrame[frame])
 		{
@@ -283,7 +283,7 @@ void VideoVlcComponent::render(const Transform4x4f& parentTrans)
 
 	if (mTexture == nullptr)
 		return;
-		
+
 	float opacity = (mOpacity / 255.0f) * t;
 
 	if (hasStoryBoard())
@@ -292,7 +292,7 @@ void VideoVlcComponent::render(const Transform4x4f& parentTrans)
 	unsigned int color = Renderer::convertColor(mColorShift & 0xFFFFFF00 | (unsigned char)((mColorShift & 0xFF) * opacity));
 
 	Renderer::Vertex   vertices[4];
-	
+
 	if (mEffect == VideoVlcFlags::VideoVlcEffect::SLIDERIGHT && mFadeIn > 0.0 && mFadeIn < 1.0 && mConfig.startDelay > 0 && !hasStoryBoard())
 	{
 		float t = 1.0 - mFadeIn;
@@ -307,12 +307,12 @@ void VideoVlcComponent::render(const Transform4x4f& parentTrans)
 	}
 	else
 	if (mEffect == VideoVlcFlags::VideoVlcEffect::SIZE && mFadeIn > 0.0 && mFadeIn < 1.0 && mConfig.startDelay > 0 && !hasStoryBoard())
-	{		
+	{
 		float t = 1.0 - mFadeIn;
 		t -= 1; // cubic ease in
 		t = Math::lerp(0, 1, t*t*t + 1);
 		t = 1.0 - t;
-	
+
 		float w = mSize.x() * t;
 		float h = mSize.y() * t;
 		float centerX = mSize.x() / 2.0f;
@@ -355,7 +355,7 @@ void VideoVlcComponent::render(const Transform4x4f& parentTrans)
 	// round vertices
 	for(int i = 0; i < 4; ++i)
 		vertices[i].pos.round();
-	
+
 	if (mTexture->bind())
 	{
 		beginCustomClipRect();
@@ -363,7 +363,7 @@ void VideoVlcComponent::render(const Transform4x4f& parentTrans)
 		Vector2f targetSizePos = (mTargetSize - mSize) * mOrigin * -1;
 
 		if (mTargetIsMin)
-		{			
+		{
 			Vector2i pos(trans.translation().x() + (int)targetSizePos.x(), trans.translation().y() + (int)targetSizePos.y());
 			Vector2i size((int)(mTargetSize.x() * trans.r0().x()), (int)(mTargetSize.y() * trans.r1().y()));
 			Renderer::pushClipRect(pos, size);
@@ -375,7 +375,7 @@ void VideoVlcComponent::render(const Transform4x4f& parentTrans)
 			float y = 0;
 			float size_x = mSize.x();
 			float size_y = mSize.y();
-			
+
 			if (mTargetIsMin)
 			{
 				x = targetSizePos.x();
@@ -383,7 +383,7 @@ void VideoVlcComponent::render(const Transform4x4f& parentTrans)
 				size_x = mTargetSize.x();
 				size_y = mTargetSize.y();
 			}
-			
+
 			float radius = Math::max(size_x, size_y) * mRoundCorners;
 			Renderer::enableRoundCornerStencil(x, y, size_x, size_y, radius);
 
@@ -412,15 +412,15 @@ void VideoVlcComponent::setupContext()
 {
 	if (mContext.valid)
 		return;
-	
+
 	// Create an RGBA surface to render the video into
 	mContext.surfaces[0] = new unsigned char[mVideoWidth * mVideoHeight * 4];
 	mContext.surfaces[1] = new unsigned char[mVideoWidth * mVideoHeight * 4];
-	mContext.hasFrame[0] = false;	
+	mContext.hasFrame[0] = false;
 	mContext.hasFrame[1] = false;
 	mContext.component = this;
-	mContext.valid = true;	
-	resize();	
+	mContext.valid = true;
+	resize();
 }
 
 void VideoVlcComponent::freeContext()
@@ -437,11 +437,11 @@ void VideoVlcComponent::freeContext()
 	delete[] mContext.surfaces[0];
 	delete[] mContext.surfaces[1];
 	mContext.surfaces[0] = nullptr;
-	mContext.surfaces[1] = nullptr;	
+	mContext.surfaces[1] = nullptr;
 	mContext.hasFrame[0] = false;
 	mContext.hasFrame[1] = false;
 	mContext.component = NULL;
-	mContext.valid = false;			
+	mContext.valid = false;
 }
 
 #if WIN32
@@ -503,7 +503,7 @@ void VideoVlcComponent::init()
 		return;
 
 	std::vector<std::string> cmdline;
-	//cmdline.push_back("--quiet");
+	cmdline.push_back("--quiet");
 	cmdline.push_back("--no-video-title-show");
 
 	std::string commandLine = SystemConf::getInstance()->get("vlc.commandline");
@@ -561,7 +561,7 @@ void VideoVlcComponent::handleLooping()
 				else
 					mPlaylist = nullptr;
 			}
-			
+
 			if (mVideoEnded != nullptr)
 			{
 				bool cont = mVideoEnded();
@@ -613,8 +613,8 @@ void VideoVlcComponent::startVideo()
 		// Open the media
 		mMedia = libvlc_media_new_path(mVLC, path.c_str());
 		if (mMedia)
-		{			
-			// use : vlc –long-help
+		{
+			// use : vlc ï¿½long-help
 			// WIN32 ? libvlc_media_add_option(mMedia, ":avcodec-hw=dxva2");
 			// RPI/OMX ? libvlc_media_add_option(mMedia, ":codec=mediacodec,iomx,all"); .
 
@@ -625,10 +625,10 @@ void VideoVlcComponent::startVideo()
 				for (auto token : tokens)
 					libvlc_media_add_option(mMedia, token.c_str());
 			}
-			
+
 			// If we have a playlist : most videos have a fader, skip it 1 second
 			/*if (mPlaylist != nullptr && mConfig.startDelay == 0 && !mConfig.showSnapshotDelay && !mConfig.showSnapshotNoVideo)
-				libvlc_media_add_option(mMedia, ":start-time=0.7");	*/		
+				libvlc_media_add_option(mMedia, ":start-time=0.7");	*/
 
 			bool hasAudioTrack = false;
 
@@ -644,7 +644,7 @@ void VideoVlcComponent::startVideo()
 				else if (tracks[track]->i_type == libvlc_track_video)
 				{
 					mVideoWidth = tracks[track]->video->i_width;
-					mVideoHeight = tracks[track]->video->i_height;		
+					mVideoHeight = tracks[track]->video->i_height;
 
 					if (hasAudioTrack)
 						break;
@@ -674,12 +674,12 @@ void VideoVlcComponent::startVideo()
 
 			// Make sure we found a valid video track
 			if ((mVideoWidth > 0) && (mVideoHeight > 0))
-			{			
+			{
 				if (mVideoWidth > 1 && Settings::getInstance()->getBool("OptimizeVideo"))
 				{
 					// Avoid videos bigger than resolution
 					Vector2f maxSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
-										
+
 #ifdef _RPI_
 					// Temporary -> RPI -> Try to limit videos to 400x300 for performance benchmark
 					if (!Renderer::isSmallScreen())
@@ -689,7 +689,7 @@ void VideoVlcComponent::startVideo()
 					if (!mTargetSize.empty() && (mTargetSize.x() < maxSize.x() || mTargetSize.y() < maxSize.y()))
 						maxSize = mTargetSize;
 
-					
+
 
 					// If video is bigger than display, ask VLC for a smaller image
 					auto sz = ImageIO::adjustPictureSize(Vector2i(mVideoWidth, mVideoHeight), Vector2i(maxSize.x(), maxSize.y()), mTargetIsMin);
@@ -705,7 +705,7 @@ void VideoVlcComponent::startVideo()
 
 				// Setup the media player
 				mMediaPlayer = libvlc_media_player_new_from_media(mMedia);
-			
+
 				/*if (hasAudioTrack)
 				{
 					if (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode))
@@ -757,7 +757,7 @@ libvlc_media_player_get_position( libvlc_media_player_t *p_mi ); // vraci procen
 void VideoVlcComponent::pauseResume()
 	{
 		libvlc_media_player_pause(mMediaPlayer);
-		
+
 		PowerSaver::resume();
 	}
 
@@ -778,12 +778,12 @@ void VideoVlcComponent::stopVideo()
 	// Release the media
 	if (mMedia)
 	{
-		libvlc_media_release(mMedia); 
+		libvlc_media_release(mMedia);
 		mMedia = NULL;
-	}		
-		
+	}
+
 	freeContext();
-	PowerSaver::resume();	
+	PowerSaver::resume();
 	AudioManager::setVideoPlaying(false);
 }
 
@@ -809,12 +809,12 @@ void VideoVlcComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, cons
 
 	if (elem && elem->has("roundCorners"))
 		setRoundCorners(elem->get<float>("roundCorners"));
-	
+
 	if (properties & COLOR)
 	{
 		if (elem && elem->has("color"))
 			setColorShift(elem->get<unsigned int>("color"));
-		
+
 		if (elem->has("opacity"))
 			setOpacity((unsigned char)(elem->get<float>("opacity") * 255.0));
 
@@ -847,7 +847,7 @@ void VideoVlcComponent::update(int deltaTime)
 	if (mConfig.showSnapshotNoVideo || mConfig.showSnapshotDelay)
 		mStaticImage.update(deltaTime);
 
-	VideoComponent::update(deltaTime);	
+	VideoComponent::update(deltaTime);
 }
 
 void VideoVlcComponent::onShow()
@@ -912,7 +912,7 @@ void VideoVlcComponent::pauseVideo()
 	else
 	{
 		libvlc_media_player_pause(mMediaPlayer);
-		
+
 		PowerSaver::resume();
 		AudioManager::setVideoPlaying(false);
 	}
