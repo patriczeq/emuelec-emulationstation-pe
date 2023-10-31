@@ -32,7 +32,7 @@ public:
 
 		setPosition(Renderer::getScreenWidth() * 0.5, Renderer::getScreenHeight() * 0.5);
 		setOrigin(0.5, 0.5);
-		setMaxSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());	
+		setMaxSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
 	}
 
 	void runAnimation()
@@ -126,11 +126,11 @@ public:
 #else
 			if (config->isMappedLike("pageup", input))
 #endif
-			{				
+			{
 				mZooming = -1;
 				return true;
 			}
-			
+
 #ifdef _ENABLEEMUELEC
             if (config->isMappedLike("lefttrigger", input))
 #else
@@ -140,31 +140,31 @@ public:
 				mZooming = 1;
 				return true;
 			}
-						
+
 			if (config->isMappedLike("down", input))
 			{
 				mMoving.y() = 1;
 				return true;
 			}
-			
+
 			if (config->isMappedLike("up", input))
 			{
 				mMoving.y() = -1;
 				return true;
 			}
-			
+
 			if (config->isMappedLike("left", input))
 			{
 				mMoving.x() = -1;
 				return true;
 			}
-			
+
 			if (config->isMappedLike("right", input))
 			{
 				mMoving.x() = 1;
 				return true;
 			}
-		}	
+		}
 		else
 		{
 			if (input.type == InputType::TYPE_HAT)
@@ -178,7 +178,7 @@ public:
 				mMoving.x() = 0;
 				return true;
 			}
-			
+
 			if (config->isMappedLike("down", input) || config->isMappedLike("up", input))
 			{
 				mMoving.y() = 0;
@@ -194,7 +194,7 @@ public:
 				return true;
 			}
 		}
-		
+
 		return ImageComponent::input(config, input);
 	}
 
@@ -287,7 +287,7 @@ GuiImageViewer::GuiImageViewer(Window* window, bool linearSmooth) :
 
 	setPosition(0, 0);
 	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
-		
+
 	mGrid.setPosition(0, 0);
 	mGrid.setSize(mSize);
 	mGrid.setDefaultZIndex(20);
@@ -302,7 +302,7 @@ GuiImageViewer::GuiImageViewer(Window* window, bool linearSmooth) :
 		"  <padding>0 0</padding>"
 		"  <pos>0 0</pos>"
 		"  <size>1 1</size>"
-		"  <scrollDirection>horizontal</scrollDirection>"		
+		"  <scrollDirection>horizontal</scrollDirection>"
 		"  <autoLayout>1 1</autoLayout>"
 		"  <autoLayoutSelectedZoom>1</autoLayoutSelectedZoom>"
 		"  <animateSelection>false</animateSelection>"
@@ -311,7 +311,7 @@ GuiImageViewer::GuiImageViewer(Window* window, bool linearSmooth) :
 		"  <showVideoAtDelay>10</showVideoAtDelay>"
 		"</imagegrid>"
 		"<gridtile name=\"default\">"
-		"  <backgroundColor>FFFFFF00</backgroundColor>"		
+		"  <backgroundColor>FFFFFF00</backgroundColor>"
 		"  <selectionMode>image</selectionMode>"
 		"  <padding>4 4</padding>"
 		"  <imageColor>FFFFFFFF</imageColor>"
@@ -352,10 +352,10 @@ void GuiImageViewer::loadPdf(const std::string& imagePath)
 #define PAGESPERTHREAD  1
 
 	mPdf = imagePath;
-	
+
 	for (int i = 0; i < pages; i++)
 		mGrid.add("", ":/blank.png", "", "", false, false, false, false, std::to_string(i + 1));
-	
+
 	if (pages > INITIALPAGES)
 	{
 		mPdfThreads = new Utils::ThreadPool(1);
@@ -385,17 +385,17 @@ void GuiImageViewer::loadPdf(const std::string& imagePath)
 
 		mPdfThreads->start();
 	}
-	
+
 	window->pushGui(new GuiLoading<std::vector<std::string>>(window, _("Loading..."),
 		[window, imagePath](auto gui)
-		{		
+		{
 			return ApiSystem::getInstance()->extractPdfImages(imagePath, 1, INITIALPAGES);
 		},
 			[this, window, imagePath, pages](std::vector<std::string> fileList)
 		{
 			if (fileList.size() == 0)
 				return;
-		
+
 			for (int i = 0; i < fileList.size(); i++)
 			{
 				ImageIO::removeImageCache(fileList[i]);
@@ -455,7 +455,7 @@ void GuiImageViewer::loadCbz(const std::string& imagePath)
 
 	std::vector<std::string> files;
 	std::vector<std::wstring> filesW;
-	
+
 
 	try
 	{
@@ -575,10 +575,10 @@ GuiImageViewer::~GuiImageViewer()
 bool GuiImageViewer::input(InputConfig* config, Input input)
 {
 	if (input.value != 0 && config->isMappedTo(BUTTON_OK, input))
-	{		
+	{
 		std::string path = mGrid.getSelected();
 		if (!path.empty())
-		{			
+		{
 			if (!mPdf.empty())
 			{
 				if (Utils::String::toLower(Utils::FileSystem::getExtension(mPdf)) != ".pdf")
@@ -616,7 +616,7 @@ bool GuiImageViewer::input(InputConfig* config, Input input)
 	}
 
 	if (input.value != 0 && config->isMappedTo(BUTTON_BACK, input))
-	{		
+	{
 		delete this;
 		return true;
 	}
@@ -628,7 +628,7 @@ std::vector<HelpPrompt> GuiImageViewer::getHelpPrompts()
 {
 	std::vector<HelpPrompt> prompts;
 	prompts.push_back(HelpPrompt(BUTTON_BACK, _("CLOSE"), [&] { delete this; }));
-	
+
 	if (!mPdf.empty())
 		prompts.push_back(HelpPrompt(BUTTON_OK, _("ZOOM")));
 
@@ -655,7 +655,7 @@ void GuiImageViewer::add(const std::string imagePath)
 		vid = imagePath;
 	else
 		img = imagePath;
-	
+
 	mGrid.add("", img, vid, "", false, false, false, false, imagePath);
 }
 
@@ -677,7 +677,7 @@ void GuiImageViewer::showImage(Window* window, const std::string imagePath, bool
 		return;
 	}
 
-	if (Utils::String::toLower(Utils::FileSystem::getExtension(imagePath)) == ".pdf") 
+	if (Utils::String::toLower(Utils::FileSystem::getExtension(imagePath)) == ".pdf")
 	{
 		showPdf(window, imagePath);
 		return;
@@ -697,13 +697,13 @@ void GuiImageViewer::showImage(Window* window, const std::string imagePath, bool
 
 void GuiImageViewer::showPdf(Window* window, const std::string imagePath)
 {
-	auto imgViewer = new GuiImageViewer(window, true);	
+	auto imgViewer = new GuiImageViewer(window, true);
 
 	std::string ext = Utils::FileSystem::getExtension(imagePath);
 	if (ext == ".cbz")
 		imgViewer->loadCbz(imagePath);
 	else
-		imgViewer->loadPdf(imagePath);	
+		imgViewer->loadPdf(imagePath);
 }
 
 void GuiImageViewer::showImages(Window* window, std::vector<std::string>& images)
@@ -734,6 +734,7 @@ void GuiVideoViewer::playVideo(Window* window, const std::string videoPath)
 
 GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path) : GuiComponent(window)
 {
+	vWindow = window;
 	setPosition(0, 0);
 	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
 	setColor(0);
@@ -749,19 +750,19 @@ GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path) : GuiCom
 		((VideoVlcComponent*)mVideo)->setLinearSmooth();
 		((VideoVlcComponent*)mVideo)->setEffect(VideoVlcFlags::NONE);
 	}
-	
+
 	mVideo->setOrigin(0.5f, 0.5f);
 	mVideo->setPosition(Renderer::getScreenWidth() / 2.0f, Renderer::getScreenHeight() / 2.0f);
 	mVideo->setMaxSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
 
 	mVideo->setOnVideoEnded([&]()
-	{		
+	{
 		mWindow->postToUiThread([&]() { delete this; });
 		return false;
 	});
 
 	addChild(mVideo);
-		
+
 	mVideo->setStartDelay(25);
 	mVideo->setVideo(path);
 
@@ -774,15 +775,27 @@ GuiVideoViewer::~GuiVideoViewer()
 }
 
 bool GuiVideoViewer::input(InputConfig* config, Input input)
-{	
+{
 	if(input.value != 0)
 	{
 		//seek
-		if(config->isMappedTo("left", input)){mVideo->seek(-60000);}  // -1 min
-		if(config->isMappedTo("right", input)){mVideo->seek(60000);}  // +1 min
-		if(config->isMappedTo("down", input)){mVideo->seek(-300000);} // -5 min
-		if(config->isMappedTo("up", input)){mVideo->seek(300000);}    // +5 min
-		
+		if(config->isMappedTo("left", input)){
+			mVideo->seek(-60000);
+			vWindow->displayNotificationMessage("-1min", 3);
+		}  // -1 min
+		if(config->isMappedTo("right", input)){
+			mVideo->seek(60000);
+			vWindow->displayNotificationMessage("+1min", 3);
+		}  // +1 min
+		if(config->isMappedTo("down", input)){
+			mVideo->seek(-300000);
+			vWindow->displayNotificationMessage("-5min", 3);
+		} // -5 min
+		if(config->isMappedTo("up", input)){
+			mVideo->seek(300000);
+			vWindow->displayNotificationMessage("+5min", 3);
+		}    // +5 min
+		//displayNotificationMessage(std::string message, int duration)
 		//ctrl
 		if(config->isMappedTo(BUTTON_OK, input))
 		{
@@ -790,7 +803,7 @@ bool GuiVideoViewer::input(InputConfig* config, Input input)
 		}
 		if(config->isMappedTo(BUTTON_BACK, input))
 		{
-			
+
 		}
 
 

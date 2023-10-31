@@ -49,4 +49,5 @@ public:
 
 protected:
 	VideoComponent*		mVideo;
+	Window* vWindow;
 };
