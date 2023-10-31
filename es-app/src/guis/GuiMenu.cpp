@@ -348,6 +348,41 @@ if (!isKidUI)
 	}
 }
 
+// gameapconn
+void GuiMenu::searchGameAP()
+{
+	Window* window = mWindow;
+
+	mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING GAME AP..."),
+		[this, window](auto gui)
+		{
+			mWaitingLoad = true;
+			const std::string cmd = "ap.sh scanssids";
+			return ApiSystem::getInstance()->getScriptResults(cmd);
+		},
+		[this, window](std::vector<std::string> ssids)
+		{
+			mWaitingLoad = false;
+			bool found = false;
+			for(auto ssid : ssids)
+				{
+					if(ssid == "ODROID_GAME_AP")
+						{
+							found = true;
+							break;
+						}
+				}
+			if(!found)
+				{
+					window->pushGui(new GuiMsgBox(window, _("GAME AP IS NOT FOUND"),_("OK"),nullptr));
+				}
+			else
+				{
+					runSystemCommand("ap.sh connect ODROID_GAME_AP ODROIDGOA", "", nullptr);
+				}
+		}
+	));
+}
 
 /**
  *  MultiPlayer
@@ -4863,21 +4898,23 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 
 	if(!wlModeAP)
 	{
-		s->addEntry(_("START AP MODE"), false, [s, this, window]() {
-				std::string msg = _("REALLY START AP MODE?\n");
-							msg = msg + apInlineInfo("ssid");
+		s->addEntry(_("CREATE GAME AP"), false, [s, this, window]() {
+				std::string msg = _("REALLY START AP MODE?");
 				window->pushGui(new GuiMsgBox(window, msg,
 					 _("YES"),[s, this]{
-					 	runSystemCommand("ap.sh start 12345678", "", nullptr);
+					 	runSystemCommand("ap.sh start ODROID_GAME_AP ODROIDGOA", "", nullptr);
 					 	delete s;
 						openNetworkSettings();
 					 },
 					 _("NO"), nullptr));
-			});
+			}, "iconNetwork");
+			s->addEntry(_("CONNECT TO GAME AP"), false, [this]() {
+					searchGameAP();
+			}, "iconControllers");
 	}
 	else
 	{
-		s->addEntry(_("START STA MODE"), false, [s, this, window]() {
+		s->addEntry(_("DISABLE GAME AP"), false, [s, this, window]() {
 				std::string msg = _("REALLY START STA MODE?");
 				window->pushGui(new GuiMsgBox(window, msg,
 					 _("YES"),[s, this]{
