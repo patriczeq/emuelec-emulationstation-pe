@@ -503,7 +503,7 @@ void VideoVlcComponent::init()
 
 	std::vector<std::string> cmdline;
 	cmdline.push_back("--quiet");
-	//cmdline.push_back("--no-video-title-show");
+	cmdline.push_back("--no-video-title-show");
 
 	std::string commandLine = SystemConf::getInstance()->get("vlc.commandline");
 	if (!commandLine.empty())
@@ -571,12 +571,14 @@ void VideoVlcComponent::handleLooping()
 				}
 			}
 
+
 			/*if (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode))
 				libvlc_audio_set_mute(mMediaPlayer, 1);*/
 
 			//libvlc_media_player_set_position(mMediaPlayer, 0.0f);
 			if (mMedia)
 				libvlc_media_player_set_media(mMediaPlayer, mMedia);
+			//	libvlc_audio_set_mute(mMediaPlayer, 0);
 
 			libvlc_media_player_play(mMediaPlayer);
 		}
@@ -698,10 +700,10 @@ void VideoVlcComponent::startVideo()
 					/*if (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode))
 						libvlc_audio_set_mute(mMediaPlayer, 1);
 					else*/
+
 						AudioManager::setVideoPlaying(true);
 				}
-
-				libvlc_set_fullscreen(mMediaPlayer, 1);
+				//libvlc_audio_set_mute(mMediaPlayer, 0);
 				libvlc_media_player_play(mMediaPlayer);
 
 				if (mVideoWidth > 1)
@@ -898,7 +900,7 @@ void VideoVlcComponent::pauseVideo()
 	{
 		libvlc_media_player_pause(mMediaPlayer);
 		
-		PowerSaver::resume();
+		//PowerSaver::resume();
 		AudioManager::setVideoPlaying(false);
 	}
 }
@@ -916,7 +918,7 @@ void VideoVlcComponent::resumeVideo()
 
 	mIsPlaying = true;
 	libvlc_media_player_play(mMediaPlayer);
-	PowerSaver::pause();
+	//PowerSaver::pause();
 	AudioManager::setVideoPlaying(true);
 }
 
