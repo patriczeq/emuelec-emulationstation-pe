@@ -364,9 +364,11 @@ void GuiMenu::searchGameAP()
 		{
 			mWaitingLoad = false;
 			bool found = false;
+			const std::string wlGameApSSID = apInlineInfo("gameapssid");
+
 			for(auto ssid : ssids)
 				{
-					if(ssid == "ODROID_GAME_AP")
+					if(ssid == wlGameApSSID)
 						{
 							found = true;
 							break;
@@ -378,7 +380,7 @@ void GuiMenu::searchGameAP()
 				}
 			else
 				{
-					runSystemCommand("ap.sh connect ODROID_GAME_AP ODROIDGOA", "", nullptr);
+					runSystemCommand("ap.sh connectgameap", "", nullptr);
 				}
 		}
 	));
@@ -4902,7 +4904,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 				std::string msg = _("REALLY START AP MODE?");
 				window->pushGui(new GuiMsgBox(window, msg,
 					 _("YES"),[s, this]{
-					 	runSystemCommand("ap.sh start ODROID_GAME_AP ODROIDGOA", "", nullptr);
+					 	runSystemCommand("ap.sh startgameap", "", nullptr);
 					 	delete s;
 						openNetworkSettings();
 					 },
@@ -4925,6 +4927,17 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 					 _("NO"), nullptr));
 			});
 	}
+
+	s->addEntry(_("RECONNECT TO NETWORK"), false, [s, this, window]() {
+			std::string msg = _("RECONNECT TO SYSTEM DEFINED NETWORK?");
+			window->pushGui(new GuiMsgBox(window, msg,
+				 _("YES"),[s, this]{
+					runSystemCommand("ap.sh stop", "", nullptr);
+					delete s;
+					openNetworkSettings();
+				 },
+				 _("NO"), nullptr));
+		}, "iconRestart");
 
 	s->addGroup(_("SETTINGS"));
 
