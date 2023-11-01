@@ -58,7 +58,7 @@ class VideoVlcComponent : public VideoComponent
 public:
 	static void init();
 
-	VideoVlcComponent(Window* window, bool isMovie = false);
+	VideoVlcComponent(Window* window);
 	virtual ~VideoVlcComponent();
 
 	void render(const Transform4x4f& parentTrans) override;
