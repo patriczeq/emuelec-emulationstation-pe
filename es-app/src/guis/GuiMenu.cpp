@@ -438,7 +438,7 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 											msg = msg + _name + "\n";
 											msg = msg + _ip;
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("YES"),[_ip] {
+						_("YES"),[window, _ip] {
 							std::string cmd = "playertoo " + _ip;
 							ApiSystem::getInstance()->launchApp(window, cmd);
 						},_("NO"), nullptr));
@@ -450,7 +450,7 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 				s->addWithLabel(_("NETWORK ERROR"), std::make_shared<TextComponent>(mWindow, "NO IP ADDRESS", font, color));
 			}
 			s->addEntry(_("HELP"), false, [window, this] {
-				std::string msg = _("START MULTIPLAYER HOST ON 2ND DEVICE.\nCHECK NETWORK CONNECTION.\nDEVICES MUST BE IN SAME LOCAL NETWORK.")
+				std::string msg = _("START MULTIPLAYER HOST ON 2ND DEVICE.\nCHECK NETWORK CONNECTION.\nDEVICES MUST BE IN SAME LOCAL NETWORK.");
 				window->pushGui(new GuiMsgBox(window, msg,
 					_("OK"),nullptr,_("CONFIGURE NETWORK"), [this] {
 						openNetworkSettings();
