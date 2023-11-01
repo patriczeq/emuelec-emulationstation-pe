@@ -4882,7 +4882,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	s->addInputTextRow(_("HOSTNAME"), "system.hostname", false);
 #endif
 
-	auto ip = std::make_shared<TextComponent>(mWindow, apInlineInfo("ip")/*ApiSystem::getInstance()->getIpAdress()*/, font, color);
+	auto ip = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->getIpAdress(), font, color);
 	s->addWithLabel(_("IP ADDRESS"), ip);
 
 
@@ -4929,14 +4929,17 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 						openNetworkSettings();
 					 },
 					 _("NO"), nullptr));
-			});
+			}, "iconQuit");
 	}
 
 	s->addEntry(_("RECONNECT TO NETWORK"), false, [s, this, window]() {
 			std::string msg = _("RECONNECT TO SYSTEM DEFINED NETWORK?");
 			window->pushGui(new GuiMsgBox(window, msg,
 				 _("YES"),[s, this]{
-					runSystemCommand("ap.sh stop", "", nullptr);
+					 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
+ 						const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
+
+					runSystemCommand("ap.sh stop \"" + baseSSID + "\" \"" + baseKEY + "\"", "", nullptr);
 					delete s;
 					openNetworkSettings();
 				 },
