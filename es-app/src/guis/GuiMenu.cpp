@@ -859,15 +859,15 @@ s->addGroup(_("PE MOD SETTINGS"));
 	auto hack_enabled = std::make_shared<SwitchComponent>(mWindow);
 	bool basehack_enabled = SystemConf::getInstance()->get("hack.enabled") == "1";
 	hack_enabled->setState(basehack_enabled);
-	s->addWithLabel(_("ENABLE HACK MENU"), hack_enabled);
+	s->addWithLabel(_("ENABLE HACK MENU (ESP01)"), hack_enabled);
 	s->addSaveFunc([hack_enabled] {
 		if (hack_enabled->changed()) {
-			bool enabled = sshd_enabled->getState();
+			bool enabled = hack_enabled->getState();
 			SystemConf::getInstance()->set("hack.enabled", enabled ? "1" : "0");
 			SystemConf::getInstance()->saveSystemConf();
 		}
 	});
-	
+
 
 s->addGroup(_("EMUELEC SETTINGS"));
     auto bluetoothd_enabled = std::make_shared<SwitchComponent>(mWindow);
