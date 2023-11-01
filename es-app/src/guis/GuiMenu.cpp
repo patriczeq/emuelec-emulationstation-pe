@@ -420,7 +420,7 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		auto s = new GuiSettings(window, (servers.size() == 0 ? _("NO SERVER FOUND!") : _("SELECT SERVER TO CONNECT")).c_str());
+		auto s = new GuiSettings(window, _("MULTIPLAYER CLIENT").c_str());
 
 		if (servers.size() > 0)
 		{
@@ -433,9 +433,15 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 
 				std::string _title	= _name + " (" + _ip + ")";
 
-				s->addEntry(_title, true, [window, this, _ip] {
-					std::string cmd = "playertoo " + _ip;
-					ApiSystem::getInstance()->launchApp(window, cmd);
+				s->addEntry(_title, true, [window, _ip, _name] {
+					std::string msg = _("CONNECT TO:\n");
+											msg = msg + _name + "\n";
+											msg = msg + _ip;
+					window->pushGui(new GuiMsgBox(window, msg,
+						_("YES"),[_ip] {
+							std::string cmd = "playertoo " + _ip;
+							ApiSystem::getInstance()->launchApp(window, cmd);
+						},_("NO"), nullptr));
 				}, "iconSystem");
 			}
 		}
@@ -443,9 +449,13 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 			if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED"){
 				s->addWithLabel(_("NETWORK ERROR"), std::make_shared<TextComponent>(mWindow, "NO IP ADDRESS", font, color));
 			}
-			s->addEntry(_("CONFIGURE NETWORK"), false, [this] {
-					openNetworkSettings();
-				}, "iconNetwork");
+			s->addEntry(_("HELP"), false, [window, this] {
+				std::string msg = _("START MULTIPLAYER HOST ON 2ND DEVICE.\nCHECK NETWORK CONNECTION.\nDEVICES MUST BE IN SAME LOCAL NETWORK.")
+				window->pushGui(new GuiMsgBox(window, msg,
+					_("OK"),nullptr,_("CONFIGURE NETWORK"), [this] {
+						openNetworkSettings();
+					}));
+				}, "iconManual");
 		}
 
 		window->pushGui(s);
@@ -483,8 +493,9 @@ void GuiMenu::openMusicPlayer()
 
 		if (AudioManager::getInstance()->myPlaylist.size() > 0)
 		{
-			s->addEntry(_("CLEAR PLAYLIST"), false, [this] {
+			s->addEntry(_("CLEAR PLAYLIST"), false, [s] {
 				AudioManager::getInstance()->clearPlaylist();
+				delete s;
 			}, "iconRestart");
 			s->addGroup(_("PLAYLIST"));
 			for (auto song : AudioManager::getInstance()->myPlaylist)
@@ -4791,6 +4802,13 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 
 		}, "iconSystem");
 
+		s->addEntry(_("DEAUTHENTICATE CLIENT"), false, [window, macaddr, s, this] {
+			window->pushGui(new GuiMsgBox(window, _("REALLY DEAUTH CLIENT?"),
+				_("YES"), [this, macaddr, s] {
+					runSystemCommand("ap.sh deauth " + macaddr, "", nullptr);
+					delete s;
+				},_("NO"), nullptr));
+			}, "iconSystem");
 		/*
 		s->addEntry(_("DEAUTHENTICATE!"), false, [s, this, window, macaddr]() {
 				window->pushGui(new GuiMsgBox(window, _("DEAUTH CLIENT?");,
@@ -4928,7 +4946,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	bool wlModeAP = wlMode == "AP";
 
 
-	if(gameApMode == "off")
+	if(gameApMode == "off") // kdyz je gameApMode AP stejne vraci off?!?!
 	{
 		s->addGroup(_("GAME AP"));
 
@@ -4979,7 +4997,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
 	const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
 
-	if (baseWifiEnabled && !wlModeAP)
+	if (baseWifiEnabled && !wlModeAP && gameApMode != "cli")
 	{
 		s->addInputTextRow(_("WIFI SSID"), "wifi.ssid", false, false, &openWifiSettings);
 		s->addInputTextRow(_("WIFI KEY"), "wifi.key", true);
