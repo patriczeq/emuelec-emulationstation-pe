@@ -14,6 +14,7 @@
 
 #include "utils/ZipFile.h"
 #include "components/HelpComponent.h"
+#include "SystemConf.h"
 
 class ZoomableImageComponent : public ImageComponent
 {
@@ -729,7 +730,7 @@ void GuiVideoViewer::playVideo(Window* window, const std::string videoPath, bool
 	if (!Utils::FileSystem::exists(videoPath))
 		return;
 
-	window->pushGui(new GuiVideoViewer(window, videoPath));
+	window->pushGui(new GuiVideoViewer(window, videoPath, movie));
 }
 
 GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path, bool movie) : GuiComponent(window)
@@ -778,40 +779,44 @@ bool GuiVideoViewer::input(InputConfig* config, Input input)
 {
 	if(input.value != 0)
 	{
-		//seek
-		if(config->isMappedTo("left", input)){
-			mVideo->seek(-60000);
-			vWindow->displayNotificationMessage("-1min", 3);
-		}  // -1 min
-		if(config->isMappedTo("right", input)){
-			mVideo->seek(60000);
-			vWindow->displayNotificationMessage("+1min", 3);
-		}  // +1 min
-		if(config->isMappedTo("down", input)){
-			mVideo->seek(-300000);
-			vWindow->displayNotificationMessage("-5min", 3);
-		} // -5 min
-		if(config->isMappedTo("up", input)){
-			mVideo->seek(300000);
-			vWindow->displayNotificationMessage("+5min", 3);
-		}    // +5 min
-		//displayNotificationMessage(std::string message, int duration)
-		//ctrl
-		if(config->isMappedTo(BUTTON_OK, input))
+		if(isMovie)
 		{
-			mVideo->pauseResume();
+			//seek
+			if(config->isMappedTo("left", input)){
+				mVideo->seek(-60000);
+				vWindow->displayNotificationMessage("-1min", 3);
+			}  // -1 min
+			if(config->isMappedTo("right", input)){
+				mVideo->seek(60000);
+				vWindow->displayNotificationMessage("+1min", 3);
+			}  // +1 min
+			if(config->isMappedTo("down", input)){
+				mVideo->seek(-300000);
+				vWindow->displayNotificationMessage("-5min", 3);
+			} // -5 min
+			if(config->isMappedTo("up", input)){
+				mVideo->seek(300000);
+				vWindow->displayNotificationMessage("+5min", 3);
+			}    // +5 min
+			//ctrl
+			if(config->isMappedTo(BUTTON_OK, input))
+			{
+				mVideo->pauseResume();
+			}
+			if(config->isMappedTo("start", input))
+			{
+				delete this;
+				return true;
+			}
 		}
-		if(config->isMappedTo(BUTTON_BACK, input))
-		{
-
+		else{
+			if(config->isMappedTo(BUTTON_OK, input) || config->isMappedTo(BUTTON_BACK, input))
+			{
+				delete this;
+				return true;
+			}
 		}
 
-
-		if(config->isMappedTo("start", input))
-		{
-			delete this;
-			return true;
-		}
 	}
 
 	return GuiComponent::input(config, input);
