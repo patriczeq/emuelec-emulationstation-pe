@@ -244,7 +244,10 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		}
 
 		// pe-hacks
-		addEntry(_("H4CK TH3 W0RLD").c_str(), true, [this] { openESP01Menu(); }, "iconHack");
+		if(SystemConf::getInstance()->get("hack.enabled") == "1")
+			{
+				addEntry(_("H4CK TH3 W0RLD").c_str(), true, [this] { openESP01Menu(); }, "iconHack");
+			}
 		addEntry(_("MULTIPLAYER CLIENT").c_str(), true, [this] { scanMPServers(); }, "iconMultiplayer");
 
 #ifdef _ENABLEEMUELEC
@@ -323,7 +326,7 @@ if (!isKidUI)
 #endif
 	if (isFullUI)
 	{
-		addEntry(_("EMUELEC SETTINGS").c_str(), true, [this] { openEmuELECSettings(); }, "iconEmuelec"); /* < emuelec */
+		addEntry(_("CUSTOM SYSTEM SETTINGS").c_str(), true, [this] { openEmuELECSettings(); }, "iconSystem"); /* < emuelec */
 	}
 	addEntry(_("QUIT").c_str(), true, [this] { openQuitMenu(); }, "iconQuit");
 #endif
@@ -697,7 +700,7 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 /* < emuelec */
 void GuiMenu::openEmuELECSettings()
 {
-	auto s = new GuiSettings(mWindow, "EmuELEC Settings");
+	auto s = new GuiSettings(mWindow, "CUSTOM SYSTEM SETTINGS");
 
 	Window* window = mWindow;
 	std::string a;
@@ -851,7 +854,23 @@ void GuiMenu::openEmuELECSettings()
                 runSystemCommand("/usr/bin/emuelec-utils setauddev " +selectedaudio, "", nullptr);
             });
 #endif
-        auto bluetoothd_enabled = std::make_shared<SwitchComponent>(mWindow);
+s->addGroup(_("PE MOD SETTINGS"));
+	// hack the world
+	auto hack_enabled = std::make_shared<SwitchComponent>(mWindow);
+	bool basehack_enabled = SystemConf::getInstance()->get("hack.enabled") == "1";
+	hack_enabled->setState(basehack_enabled);
+	s->addWithLabel(_("ENABLE HACK MENU"), hack_enabled);
+	s->addSaveFunc([hack_enabled] {
+		if (hack_enabled->changed()) {
+			bool enabled = sshd_enabled->getState();
+			SystemConf::getInstance()->set("hack.enabled", enabled ? "1" : "0");
+			SystemConf::getInstance()->saveSystemConf();
+		}
+	});
+	
+
+s->addGroup(_("EMUELEC SETTINGS"));
+    auto bluetoothd_enabled = std::make_shared<SwitchComponent>(mWindow);
 		bool btbaseEnabled = SystemConf::getInstance()->get("ee_bluetooth.enabled") == "1";
 		bluetoothd_enabled->setState(btbaseEnabled);
 		s->addWithLabel(_("ENABLE BLUETOOTH"), bluetoothd_enabled);
@@ -871,7 +890,7 @@ void GuiMenu::openEmuELECSettings()
 			}
 		});
 
-       auto sshd_enabled = std::make_shared<SwitchComponent>(mWindow);
+    auto sshd_enabled = std::make_shared<SwitchComponent>(mWindow);
 		bool baseEnabled = SystemConf::getInstance()->get("ee_ssh.enabled") == "1";
 		sshd_enabled->setState(baseEnabled);
 		s->addWithLabel(_("ENABLE SSH"), sshd_enabled);
