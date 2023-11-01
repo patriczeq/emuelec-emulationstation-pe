@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 #include "SDL_mixer.h"
-#include <string> 
+#include <string>
 #include <iostream>
 #include <deque>
 #include <math.h>
@@ -16,18 +16,18 @@ class Sound;
 class ThemeData;
 
 class AudioManager
-{	
+{
 private:
 	AudioManager();
 
 	static std::vector<std::shared_ptr<Sound>> sSoundVector;
 	static AudioManager* sInstance;
-	
-	Mix_Music* mCurrentMusic; 
-	void getMusicIn(const std::string &path, std::vector<std::string>& all_matching_files); 
-	
+
+	Mix_Music* mCurrentMusic;
+	void getMusicIn(const std::string &path, std::vector<std::string>& all_matching_files);
+
 	static void musicEnd_callback();
-	static void musicPlaylistEnd_callback();	
+	static void musicPlaylistEnd_callback();
 
 	std::string mSystemName;			// per system music folder
 	std::string mCurrentSong;			// pop-up for SongName.cpp
@@ -41,7 +41,7 @@ private:
 public:
 	static AudioManager* getInstance();
 	static bool isInitialized();
-	
+
 	void init();
 	void deinit();
 
@@ -57,7 +57,7 @@ public:
 	void addToPlaylist(std::string path);
 	void clearPlaylist();
 	void playDir(std::string path);
-	void playMySong(std::string song); 
+	void playMySong(std::string song);
 	void playNext();
 	bool isPlaying(std::string song);
 
@@ -71,12 +71,12 @@ public:
 	void playSong(const std::string& song);
 	void playMusic(std::string path);
 
-	
+
 	inline const std::string getSongName() const { return mCurrentSong; }
 
 	bool songNameChanged() { return mSongNameChanged; }
 	void resetSongNameChangedFlag() { mSongNameChanged = false; }
-	
+
 	inline bool isSongPlaying() { return (mCurrentMusic != NULL); }
 
 	void changePlaylist(const std::shared_ptr<ThemeData>& theme, bool force = false);
@@ -87,7 +87,9 @@ public:
 	int mVideoPlaying;
 
 	static void setVideoPlaying(bool state);
+	static void setVideoMoviePlaying(bool state);
 	static bool getVideoPlaying();
+	static bool getVideoMoviePlaying();
 	static void update(int deltaTime);
 
 	static int getMaxMusicVolume();
@@ -100,6 +102,7 @@ private:
 
 	bool mSongNameChanged;
 	bool VideoPlay;
+	bool VideoMoviePlay;
 };
 
 #endif // ES_CORE_AUDIO_MANAGER_H

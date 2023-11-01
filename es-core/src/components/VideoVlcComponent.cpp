@@ -70,8 +70,8 @@ static void display(void* data, void* id)
 		c->component->onVideoStarted();
 }
 
-VideoVlcComponent::VideoVlcComponent(Window* window) :
-	VideoComponent(window),
+VideoVlcComponent::VideoVlcComponent(Window* window, bool isMovie) :
+	VideoComponent(window, isMovie),
 	mMediaPlayer(nullptr),
 	mMedia(nullptr)
 {
@@ -89,6 +89,8 @@ VideoVlcComponent::VideoVlcComponent(Window* window) :
 
 	// Make sure VLC has been initialised
 	init();
+
+	mIsMovie = isMovie;
 }
 
 VideoVlcComponent::~VideoVlcComponent()
@@ -706,15 +708,17 @@ void VideoVlcComponent::startVideo()
 				// Setup the media player
 				mMediaPlayer = libvlc_media_player_new_from_media(mMedia);
 
-				/*if (hasAudioTrack)
+				if (hasAudioTrack && !mIsMovie)
 				{
 					if (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode))
 						libvlc_audio_set_mute(mMediaPlayer, 1);
 					else
 
 						AudioManager::setVideoPlaying(true);
-				}*/
-				AudioManager::setVideoPlaying(true);
+				}
+				else{
+					AudioManager::setVideoMoviePlaying(true);
+				}
 				//libvlc_audio_set_mute(mMediaPlayer, 0);
 				//libvlc_audio_set_volume(mMediaPlayer, 100);
 				libvlc_media_player_play(mMediaPlayer);

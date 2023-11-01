@@ -60,7 +60,7 @@ void AudioManager::init()
 {
 	if (mInitialized)
 		return;
-	
+
 	mSongNameChanged = false;
 	mMusicVolume = 0;
 	mPlayingSystemThemeSong = "none";
@@ -106,9 +106,9 @@ void AudioManager::deinit()
 	Mix_HookMusicFinished(nullptr);
 	Mix_HaltMusic();
 
-#ifdef _ENABLEEMUELEC	
+#ifdef _ENABLEEMUELEC
 	LOG(LogInfo) << "Attempting to close SDL AUDIO";
-	runSystemCommand("/usr/bin/emuelec-utils audio alsa", "", nullptr); 
+	runSystemCommand("/usr/bin/emuelec-utils audio alsa", "", nullptr);
 #endif
 
 	//completely tear down SDL audio. else SDL hogs audio resources and emulators might fail to start...
@@ -185,12 +185,12 @@ void AudioManager::addLastPlayed(const std::string& newSong, int totalMusic)
 		// Number of songs is too small to bother with
 		return;
 	}
-	
+
 	while (mLastPlayed.size() > historySize) {
 		mLastPlayed.pop_back();
 	}
 	mLastPlayed.push_front(newSong);
-	
+
 	LOG(LogDebug) << "Adding " << newSong << " to last played, " << mLastPlayed.size() << " in history";
 }
 
@@ -208,11 +208,11 @@ bool AudioManager::songWasPlayedRecently(const std::string& song)
 	return false;
 }
 
-void AudioManager::playRandomMusic(bool continueIfPlaying) 
+void AudioManager::playRandomMusic(bool continueIfPlaying)
 {
 	if (!Settings::BackgroundMusic())
 		return;
-		
+
 	std::vector<std::string> musics;
 
 	// check in Theme music directory
@@ -268,7 +268,7 @@ void AudioManager::playRandomMusic(bool continueIfPlaying)
 				ID3v2_frame* title_frame = tag_get_title(tag);
 				ID3v2_frame* artist_frame = tag_get_artist(tag);
 				ID3v2_frame* album_frame = tag_get_album(tag);
-				
+
 				// title
 				if (title_frame != NULL)
 				{
@@ -396,7 +396,7 @@ void AudioManager::playMySong(std::string song)
 
 		mCurrentMusicPath = song;
 		Mix_HookMusicFinished(AudioManager::musicPlaylistEnd_callback);
-		playSong(song);	
+		playSong(song);
 	}
 void AudioManager::playNext()
 	{
@@ -551,7 +551,7 @@ void AudioManager::playSong(const std::string& song)
 				break;
 			default:
 				LOG(LogError) << "Error AudioManager unexpected case while loading mofile " << song;
-				setSongName(Utils::FileSystem::getStem(song.c_str()));				
+				setSongName(Utils::FileSystem::getStem(song.c_str()));
 				return;
 		}
 
@@ -562,7 +562,7 @@ void AudioManager::playSong(const std::string& song)
 				LOG(LogError) << "Error AudioManager seeking " << song;
 			else if (fread(&info, sizeof(info), 1, file) != 1)
 				LOG(LogError) << "Error AudioManager reading " << song;
-			else  
+			else
 			{
 				info.title[title_break] = '\0';
 
@@ -626,7 +626,7 @@ void AudioManager::playSong(const std::string& song)
 		free_tag(tag);
 	}
 
-	// Then, if no v2, let's try with an ID3 v1 tag	
+	// Then, if no v2, let's try with an ID3 v1 tag
 	struct {
 		char tag[3];	// i.e. "TAG"
 		char title[30];
@@ -644,11 +644,11 @@ void AudioManager::playSong(const std::string& song)
 			LOG(LogError) << "Error AudioManager seeking " << song;
 		else if (fread(&info, sizeof(info), 1, file) != 1)
 			LOG(LogError) << "Error AudioManager reading " << song;
-		else if (strncmp(info.tag, "TAG", 3) == 0) 
+		else if (strncmp(info.tag, "TAG", 3) == 0)
 		{
 			std::string songTitle(info.title, 30);
 			songTitle = " - " + songTitle.substr(0, 30);
-			if (info.artist != NULL) 
+			if (info.artist != NULL)
 			{
 				std::string songArtist(info.artist, 30);
 				songTitle += " - " + songArtist.substr(0, 30);
@@ -701,11 +701,11 @@ void AudioManager::changePlaylist(const std::shared_ptr<ThemeData>& theme, bool 
 		if (!bgSound.empty())
 		{
 			mPlayingSystemThemeSong = bgSound;
-			playMusic(bgSound);			
+			playMusic(bgSound);
 			return;
 		}
 	}
-	
+
 	if (force || !mPlayingSystemThemeSong.empty() || Settings::getInstance()->getBool("audio.persystem"))
 		playRandomMusic(false);
 }
@@ -713,12 +713,29 @@ bool AudioManager::getVideoPlaying()
 	{
 		return sInstance->VideoPlay;
 	}
+	bool AudioManager::getVideoMoviPlaying()
+		{
+			return sInstance->VideoMoviePlay;
+		}
 void AudioManager::setVideoPlaying(bool state)
 {
 	sInstance->VideoPlay = state;
 	if (sInstance == nullptr || !sInstance->mInitialized || !Settings::BackgroundMusic())
 		return;
-	
+
+	if (state && (!Settings::getInstance()->getBool("VideoLowersMusic") || !Settings::getInstance()->getBool("VideoAudio")))
+	{
+		sInstance->mVideoPlaying = false;
+		return;
+	}
+
+	sInstance->mVideoPlaying = state;
+}
+void AudioManager::setVideoMoviePlaying(bool state){
+	sInstance->VideoMoviePlay = state;
+	if (sInstance == nullptr || !sInstance->mInitialized || !Settings::BackgroundMusic())
+		return;
+
 	if (state && (!Settings::getInstance()->getBool("VideoLowersMusic") || !Settings::getInstance()->getBool("VideoAudio")))
 	{
 		sInstance->mVideoPlaying = false;
@@ -755,7 +772,7 @@ void AudioManager::update(int deltaTime)
 		minVol = 1;
 
 	if (sInstance->mVideoPlaying && sInstance->mMusicVolume != minVol)
-	{		
+	{
 		if (sInstance->mMusicVolume > minVol)
 		{
 			sInstance->mMusicVolume -= deltaVol;

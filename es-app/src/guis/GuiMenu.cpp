@@ -246,7 +246,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		}
 
 		// pe-hacks
-		if(SystemConf::getInstance()->get("hack.enabled") == "1")
+		if(SystemConf::getInstance()->get("pe_hack.enabled") == "1")
 			{
 				addEntry(_("H4CK TH3 W0RLD").c_str(), true, [this] { openESP01Menu(); }, "iconHack");
 			}
@@ -861,7 +861,7 @@ s->addGroup(_("PE MOD SETTINGS"));
 	auto hack_enabled = std::make_shared<SwitchComponent>(mWindow);
 	//bool basehack_enabled = SystemConf::getInstance()->get("pe_hack.enabled") == "1";
 	hack_enabled->setState(SystemConf::getInstance()->get("pe_hack.enabled") == "1");
-	s->addWithLabel(_("ENABLE HACK MENU (ESP01 DEAUTHER)"), hack_enabled);
+	s->addWithLabel(_("ESP01 DEAUTHER"), hack_enabled);
 	s->addSaveFunc([hack_enabled] {
 		if (hack_enabled->changed()) {
 			bool enabled = hack_enabled->getState();
@@ -873,7 +873,7 @@ s->addGroup(_("PE MOD SETTINGS"));
 	auto intMusicPlayer = std::make_shared<SwitchComponent>(mWindow);
 	//bool baseintMusicPlayer = SystemConf::getInstance()->get("pe_femusic.enabled") == "1";
 	intMusicPlayer->setState(SystemConf::getInstance()->get("pe_femusic.enabled") == "1");
-	s->addWithLabel(_("ENABLE ES MUSIC PLAYER"), intMusicPlayer);
+	s->addWithLabel(_("ES MUSIC PLAYER"), intMusicPlayer);
 	s->addSaveFunc([intMusicPlayer] {
 		if (intMusicPlayer->changed()) {
 			bool enabled = intMusicPlayer->getState();
@@ -885,7 +885,7 @@ s->addGroup(_("PE MOD SETTINGS"));
 	auto intVideoPlayer = std::make_shared<SwitchComponent>(mWindow);
 	//bool baseintVideoPlayer = SystemConf::getInstance()->get("pe_fevideo.enabled") == "1";
 	intVideoPlayer->setState(SystemConf::getInstance()->get("pe_fevideo.enabled") == "1");
-	s->addWithLabel(_("ENABLE ES VIDEO PLAYER"), intVideoPlayer);
+	s->addWithLabel(_("ES VIDEO PLAYER"), intVideoPlayer);
 	s->addSaveFunc([intVideoPlayer] {
 		if (intVideoPlayer->changed()) {
 			bool enabled = intVideoPlayer->getState();

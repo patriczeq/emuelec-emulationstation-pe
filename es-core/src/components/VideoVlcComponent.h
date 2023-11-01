@@ -58,7 +58,7 @@ class VideoVlcComponent : public VideoComponent
 public:
 	static void init();
 
-	VideoVlcComponent(Window* window);
+	VideoVlcComponent(Window* window, bool isMovie = false);
 	virtual ~VideoVlcComponent();
 
 	void render(const Transform4x4f& parentTrans) override;
@@ -137,6 +137,7 @@ private:
 
 	bool							mLinearSmooth;
 	float							mSaturation;
+	bool							mIsMovie;
 };
 
 #endif // ES_CORE_COMPONENTS_VIDEO_VLC_COMPONENT_H
