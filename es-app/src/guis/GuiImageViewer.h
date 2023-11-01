@@ -40,14 +40,15 @@ protected:
 class GuiVideoViewer : public GuiComponent
 {
 public:
-	static void playVideo(Window* window, const std::string videoPath);
+	static void playVideo(Window* window, const std::string videoPath, bool movie = false);
 
-	GuiVideoViewer(Window* window, const std::string& path);
+	GuiVideoViewer(Window* window, const std::string& path, bool movie = false);
 	~GuiVideoViewer();
 
 	bool input(InputConfig* config, Input input) override;
 
 protected:
+	bool isMovie;
 	VideoComponent*		mVideo;
 	Window* vWindow;
 };

@@ -39,7 +39,7 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 	mHasAdvancedGameOptions = false;
 
 	mGame = game;
-	mSystem = game->getSystem();	
+	mSystem = game->getSystem();
 
 	auto logo = game->getMarqueePath();
 	if (Utils::FileSystem::exists(logo))
@@ -48,7 +48,7 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 		image->setIsLinear(true);
 		image->setImage(logo);
 		mMenu.setSubTitle("fake");
-		mMenu.setTitleImage(image, true);		
+		mMenu.setTitleImage(image, true);
 	}
 
 	addChild(&mMenu);
@@ -65,7 +65,7 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 	bool hasCheevos = game->hasCheevos();
 
 
-if(game->getType() == FOLDER)
+if(game->getType() == FOLDER && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 {
 	mMenu.addEntry(_("PLAY MUSIC FROM DIRECTORY"), false, [_path, this]
 		{
@@ -74,7 +74,7 @@ if(game->getType() == FOLDER)
 		}, "iconSound");
 }
 
-if(isAudio)
+if(isAudio && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 {
 	mMenu.addEntry(_("PLAY"), false, [_path, this]
 		{
@@ -106,7 +106,7 @@ if (game->getType() == GAME)
 				ViewController::get()->launch(game, options);
 				this->close();
 			}, "iconMultiplayer");
- 
+
 		if (SaveStateRepository::isEnabled(game))
 		{
 			mMenu.addEntry(_("SAVE STATES"), false, [window, game, this]
@@ -123,7 +123,7 @@ if (game->getType() == GAME)
 					this->close();
 			});
 		}
-				
+
 		if (game->isNetplaySupported())
 		{
 			mMenu.addEntry(_("START A NETPLAY GAME"), false, [window, game, this]
@@ -153,7 +153,7 @@ if (game->getType() == GAME)
 				public_announce->setState(SystemConf::getInstance()->getBool("global.netplay_public_announce"));
 				msgBox->addWithLabel(_("PUBLICLY ANNOUNCE GAME"), public_announce);
 				msgBox->addSaveFunc([public_announce] { SystemConf::getInstance()->setBool("global.netplay_public_announce", public_announce->getState()); });
-						
+
 				// passwords
 				msgBox->addInputTextRow(_("PLAYER PASSWORD"), "global.netplay.password", false);
 				msgBox->addInputTextRow(_("VIEWER PASSWORD"), "global.netplay.spectatepassword", false);
@@ -185,7 +185,7 @@ if (game->getType() == GAME)
 				GuiImageViewer::showPdf(window, game->getMetadata(MetaDataId::Magazine));
 				close();
 			});
-		}		
+		}
 
 		if (hasMap)
 		{
@@ -206,7 +206,7 @@ if (game->getType() == GAME)
 				close();
 			});
 		}
-		
+
 		if (hasAlternateMedias)
 		{
 			mMenu.addEntry(_("VIEW GAME MEDIA"), false, [window, game, this]
@@ -246,7 +246,7 @@ if (game->getType() == GAME)
 			}
 		}
 	}
-	
+
 		SystemData* all = SystemData::getSystem("all");
 		if (all != nullptr && game != nullptr && game->getType() != FOLDER && !isImageViewer)
 		{
@@ -286,7 +286,7 @@ if (game->getType() == GAME)
 
 
 			});
-#ifdef _ENABLEEMUELEC			
+#ifdef _ENABLEEMUELEC
 			if (!isImageViewer) {
 				if (game->getMetadata(MetaDataId::Hidden) == "false")
 				{
@@ -324,7 +324,7 @@ if (game->getType() == GAME)
 		});
 #endif
 
-	
+
 
 	bool isCustomCollection = (mSystem->isCollection() && game->getType() == FOLDER && CollectionSystemManager::get()->isCustomCollection(mSystem->getName()));
 	bool isAppendableToCollection = (game->getType() == GAME) && (mSystem->isGameSystem() || mSystem->isGroupSystem());
@@ -359,7 +359,7 @@ if (game->getType() == GAME)
 
 					GuiSettings* msgBox = new GuiSettings(mWindow, _("ADD TO CUSTOM COLLECTION..."));
 					msgBox->setTag("popup");
-					
+
 					for (auto customCollection : CollectionSystemManager::get()->getCustomCollectionSystems())
 					{
 						if (customCollection.second.filteredIndex != nullptr || !customCollection.second.isEnabled)
@@ -368,7 +368,7 @@ if (game->getType() == GAME)
 						std::string collectionName = customCollection.first;
 						if (CollectionSystemManager::get()->inInCustomCollection(game, collectionName))
 							continue;
-						
+
 						msgBox->addEntry(Utils::String::toUpper(collectionName), false, [pThis, window, msgBox, collectionName, game]
 						{
 							auto parent = pThis;
@@ -410,7 +410,7 @@ if (game->getType() == GAME)
 
 	bool fromPlaceholder = game->isPlaceHolder();
 	if (isImageViewer)
-		fromPlaceholder = true; 
+		fromPlaceholder = true;
 	else if (game->getType() == FOLDER && ((FolderData*)game)->isVirtualStorage())
 		fromPlaceholder = true;
 	else if (game->getType() == FOLDER && mSystem->isCollection()) // >getName() == CollectionSystemManager::get()->getCustomCollectionsBundle()->getName())
@@ -419,7 +419,7 @@ if (game->getType() == GAME)
 	if (!fromPlaceholder && !isCustomCollection && UIModeController::getInstance()->isUIModeFull())
 	{
 		mMenu.addGroup(_("OPTIONS"));
-		
+
 		mMenu.addEntry(_("SCRAPE"), false, [this, game]
 		{
 			ScraperSearchParams scraperParams;
@@ -429,7 +429,7 @@ if (game->getType() == GAME)
 			GuiGameScraper* scr = new GuiGameScraper(mWindow, scraperParams, [game, scraperParams](const ScraperSearchResult& result)
 			{
 				game->importP2k(result.p2k);
-				game->getMetadata().importScrappedMetadata(result.mdl);	
+				game->getMetadata().importScrappedMetadata(result.mdl);
 				game->detectLanguageAndRegion(true);
 				game->getMetadata().setScrapeDate(result.scraper);
 
@@ -446,15 +446,15 @@ if (game->getType() == GAME)
 			if (game->hasKeyboardMapping())
 			{
 				mMenu.addEntry(_("EDIT PADTOKEY PROFILE"), false, [this, game]
-				{ 
-					GuiMenu::editKeyboardMappings(mWindow, game, true); 
+				{
+					GuiMenu::editKeyboardMappings(mWindow, game, true);
 					close();
 				});
 			}
 			else if (game->isFeatureSupported(EmulatorFeatures::Features::padTokeyboard))
 			{
 				mMenu.addEntry(_("CREATE PADTOKEY PROFILE"), false, [this, game]
-				{ 
+				{
 					GuiMenu::editKeyboardMappings(mWindow, game, true);
 					close();
 				});
@@ -488,7 +488,7 @@ if (game->getType() == GAME)
 	else if (game->hasKeyboardMapping())
 	{
 		mMenu.addEntry(_("VIEW PAD TO KEYBOARD INFORMATION"), false, [this, game]
-		{ 
+		{
 			GuiMenu::editKeyboardMappings(mWindow, game, false);
 			close();
 		});
@@ -497,7 +497,7 @@ if (game->getType() == GAME)
 }
 
 	if (Renderer::isSmallScreen())
-	{	
+	{
 		mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });
 
 		mMenu.setMaxHeight(Renderer::getScreenHeight() * 0.85f);
@@ -587,7 +587,7 @@ void GuiGameOptions::hideGame(FileData* file, bool hide)
 		sys = sys->getParentGroupSystem();
 
 	sys->getRootFolder()->getMetadata().setDirty();
-	
+
 	CollectionSystemManager::get()->deleteCollectionFiles(sourceFile);
 
 	auto view = ViewController::get()->getGameListView(sys, false);
@@ -698,7 +698,7 @@ std::vector<HelpPrompt> GuiGameOptions::getHelpPrompts()
 
 	if (mHasAdvancedGameOptions)
 	{
-		prompts.push_back(HelpPrompt("x", _("ADVANCED GAME OPTIONS"), [&] 
+		prompts.push_back(HelpPrompt("x", _("ADVANCED GAME OPTIONS"), [&]
 		{
 			GuiMenu::popGameConfigurationGui(mWindow, mGame);
 			close();
@@ -735,16 +735,16 @@ void GuiGameOptions::deleteCollection()
 				ViewController::get()->goToStart();
 				ViewController::get()->reloadAll(mWindow);
 
-				mWindow->closeSplashScreen();			
+				mWindow->closeSplashScreen();
 			}
 			delete this;
-		}, 
-		_("NO"), [this] 
+		},
+		_("NO"), [this]
 		{
 			delete this;
 		}));
 
-	
+
 }
 
 void GuiGameOptions::close()

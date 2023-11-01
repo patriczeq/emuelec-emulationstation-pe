@@ -231,16 +231,18 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		// pe-emulationstation
 		// pe-player
 		std::string sname = AudioManager::getInstance()->getSongName();
-
-		if(!sname.empty())
+		if(SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 		{
-			addWithDescription(_("MUSIC PLAYER"), _("NOW PLAYING") + ": " + sname, nullptr, [this]
+			if(!sname.empty())
 			{
-				openMusicPlayer();
-			}, "iconSound");
-		}
-		else{
-			addEntry(_("MUSIC PLAYER").c_str(), true, [this] { openMusicPlayer(); }, "iconSound");
+				addWithDescription(_("MUSIC PLAYER"), _("NOW PLAYING") + ": " + sname, nullptr, [this]
+				{
+					openMusicPlayer();
+				}, "iconSound");
+			}
+			else{
+				addEntry(_("MUSIC PLAYER").c_str(), true, [this] { openMusicPlayer(); }, "iconSound");
+			}
 		}
 
 		// pe-hacks
@@ -855,15 +857,39 @@ void GuiMenu::openEmuELECSettings()
             });
 #endif
 s->addGroup(_("PE MOD SETTINGS"));
-	// hack the world
+	// hack the world MENU
 	auto hack_enabled = std::make_shared<SwitchComponent>(mWindow);
-	bool basehack_enabled = SystemConf::getInstance()->get("hack.enabled") == "1";
-	hack_enabled->setState(basehack_enabled);
-	s->addWithLabel(_("ENABLE HACK MENU (ESP01)"), hack_enabled);
+	//bool basehack_enabled = SystemConf::getInstance()->get("pe_hack.enabled") == "1";
+	hack_enabled->setState(SystemConf::getInstance()->get("pe_hack.enabled") == "1");
+	s->addWithLabel(_("ENABLE HACK MENU (ESP01 DEAUTHER)"), hack_enabled);
 	s->addSaveFunc([hack_enabled] {
 		if (hack_enabled->changed()) {
 			bool enabled = hack_enabled->getState();
-			SystemConf::getInstance()->set("hack.enabled", enabled ? "1" : "0");
+			SystemConf::getInstance()->set("pe_hack.enabled", enabled ? "1" : "0");
+			SystemConf::getInstance()->saveSystemConf();
+		}
+	});
+	// internal music player - opens audiofiles in FRONTEND
+	auto intMusicPlayer = std::make_shared<SwitchComponent>(mWindow);
+	//bool baseintMusicPlayer = SystemConf::getInstance()->get("pe_femusic.enabled") == "1";
+	intMusicPlayer->setState(SystemConf::getInstance()->get("pe_femusic.enabled") == "1");
+	s->addWithLabel(_("ENABLE ES MUSIC PLAYER"), intMusicPlayer);
+	s->addSaveFunc([intMusicPlayer] {
+		if (intMusicPlayer->changed()) {
+			bool enabled = intMusicPlayer->getState();
+			SystemConf::getInstance()->set("pe_femusic.enabled", enabled ? "1" : "0");
+			SystemConf::getInstance()->saveSystemConf();
+		}
+	});
+	// internal video player - opens videofiles in FRONTEND
+	auto intVideoPlayer = std::make_shared<SwitchComponent>(mWindow);
+	//bool baseintVideoPlayer = SystemConf::getInstance()->get("pe_fevideo.enabled") == "1";
+	intVideoPlayer->setState(SystemConf::getInstance()->get("pe_fevideo.enabled") == "1");
+	s->addWithLabel(_("ENABLE ES VIDEO PLAYER"), intVideoPlayer);
+	s->addSaveFunc([intVideoPlayer] {
+		if (intVideoPlayer->changed()) {
+			bool enabled = intVideoPlayer->getState();
+			SystemConf::getInstance()->set("pe_fevideo.enabled", enabled ? "1" : "0");
 			SystemConf::getInstance()->saveSystemConf();
 		}
 	});

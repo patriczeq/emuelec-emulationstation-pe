@@ -11,13 +11,13 @@
 
 #define FADE_TIME_MS	800
 
-std::string getTitlePath() 
+std::string getTitlePath()
 {
 	std::string titleFolder = getTitleFolder();
 	return titleFolder + "subtitle.srt";
 }
 
-std::string getTitleFolder() 
+std::string getTitleFolder()
 {
 #if WIN32
 	return Utils::FileSystem::getGenericPath(Paths::getUserEmulationStationPath() + "/tmp/");
@@ -54,13 +54,13 @@ void VideoComponent::setScreensaverMode(bool isScreensaver)
 	mScreensaverMode = isScreensaver;
 }
 
-VideoComponent::VideoComponent(Window* window) :
+VideoComponent::VideoComponent(Window* window, bool isMovie) :
 	GuiComponent(window),
 	mStaticImage(window, !Settings::AllImagesAsync()),
 	mVideoHeight(0),
 	mVideoWidth(0),
 	mStartDelayed(false),
-	mIsPlaying(false),	
+	mIsPlaying(false),
 	mScreensaverActive(false),
 	mDisable(false),
 	mScreensaverMode(false),
@@ -84,8 +84,8 @@ VideoComponent::VideoComponent(Window* window) :
 	mConfig.showSnapshotNoVideo		= false;
 	mConfig.snapshotSource = IMAGE;
 	mConfig.startDelay				= 0;
-	
-	window->setAllowSleep(false);
+
+	window->setAllowSleep(!isMovie);
 
 	if (mWindow->getGuiStackSize() > 1)
 		topWindow(false);
@@ -164,7 +164,7 @@ void VideoComponent::setOpacity(unsigned char opacity)
 	if (mOpacity == opacity)
 		return;
 
-	mOpacity = opacity;	
+	mOpacity = opacity;
 
 	//if (!hasStoryBoard() && !mStaticImage.hasStoryBoard("snapshot"))
 	//	mStaticImage.setOpacity(opacity);
@@ -328,7 +328,7 @@ void VideoComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const s
 			mConfig.snapshotSource = THUMBNAIL;
 	}
 
-	if(properties & ThemeFlags::ROTATION) 
+	if(properties & ThemeFlags::ROTATION)
 	{
 		if(elem->has("rotation"))
 			setRotationDegrees(elem->get<float>("rotation"));
@@ -528,7 +528,7 @@ void VideoComponent::manageState()
 	{
 		// If we are not on display then stop the video from playing
 		if (!show)
-		{			
+		{
 			mIsWaitingForVideoToStart = false;
 			mStartDelayed = false;
 
@@ -578,7 +578,7 @@ void VideoComponent::onShow()
 
 void VideoComponent::onHide()
 {
-	GuiComponent::onHide();	
+	GuiComponent::onHide();
 	manageState();
 }
 
@@ -611,9 +611,9 @@ void VideoComponent::setPlaylist(std::shared_ptr<IPlaylist> playList)
 		setVideo(video);
 }
 
-void VideoComponent::setRoundCorners(float value) 
-{ 
-	mRoundCorners = value; 
+void VideoComponent::setRoundCorners(float value)
+{
+	mRoundCorners = value;
 	mStaticImage.setRoundCorners(value);
 }
 

@@ -724,7 +724,7 @@ void GuiImageViewer::showCbz(Window* window, const std::string imagePath)
 #endif
 #include "components/VideoVlcComponent.h"
 
-void GuiVideoViewer::playVideo(Window* window, const std::string videoPath)
+void GuiVideoViewer::playVideo(Window* window, const std::string videoPath, bool movie)
 {
 	if (!Utils::FileSystem::exists(videoPath))
 		return;
@@ -732,9 +732,10 @@ void GuiVideoViewer::playVideo(Window* window, const std::string videoPath)
 	window->pushGui(new GuiVideoViewer(window, videoPath));
 }
 
-GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path) : GuiComponent(window)
+GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path, bool movie) : GuiComponent(window)
 {
 	vWindow = window;
+	isMovie = movie;
 	setPosition(0, 0);
 	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
 

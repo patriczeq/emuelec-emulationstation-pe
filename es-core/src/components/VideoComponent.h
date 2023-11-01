@@ -35,15 +35,15 @@ class VideoComponent : public GuiComponent
 	};
 
 public:
-	VideoComponent(Window* window);
+	VideoComponent(Window* window, bool isMovie = false);
 	virtual ~VideoComponent();
 
-	std::string getValue() const override 
-	{ 
+	std::string getValue() const override
+	{
 		if (mPlayingVideoPath.empty())
 			return mPlayingVideoPath;
 
-		return mVideoPath;		
+		return mVideoPath;
 	}
 
 	// Loads the video at the given filepath
@@ -126,12 +126,12 @@ public:
 
 	float getRoundCorners() { return mRoundCorners; }
 	void setRoundCorners(float value);
-	
+
 	bool isFading() {
 		return mIsPlaying && mFadeIn < 1.0;
 	}
 
-	float getFade() 
+	float getFade()
 	{
 		if (!mIsPlaying)
 			return 0;
@@ -139,12 +139,12 @@ public:
 		return mFadeIn;
 	}
 
-	std::string getVideoPath() 
-	{ 
+	std::string getVideoPath()
+	{
 		if (mPlayingVideoPath.empty())
 			return mPlayingVideoPath;
 
-		return mVideoPath; 
+		return mVideoPath;
 	}
 
 	void setPlaylist(std::shared_ptr<IPlaylist> playList);
@@ -185,7 +185,7 @@ protected:
 private:
 	// Handle looping the video. Must be called periodically
 	virtual void handleLooping();
-	
+
 	// Handle any delay to the start of playing the video clip. Must be called periodically
 	void handleStartDelay();
 
@@ -206,7 +206,7 @@ protected:
 	std::string						mPlayingVideoPath;
 	bool							mStartDelayed;
 	unsigned						mStartTime;
-	bool							mIsPlaying;	
+	bool							mIsPlaying;
 	bool							mDisable;
 	bool							mScreensaverActive;
 	bool							mScreensaverMode;

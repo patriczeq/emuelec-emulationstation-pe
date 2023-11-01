@@ -10,7 +10,7 @@ struct libvlc_instance_t;
 struct libvlc_media_t;
 struct libvlc_media_player_t;
 
-struct VideoContext 
+struct VideoContext
 {
 	VideoContext()
 	{
@@ -24,12 +24,12 @@ struct VideoContext
 	}
 
 	int					surfaceId;
-	unsigned char*		surfaces[2];	
+	unsigned char*		surfaces[2];
 	std::mutex			mutexes[2];
 	bool				hasFrame[2];
 
 	VideoComponent*		component;
-	bool				valid;	
+	bool				valid;
 };
 
 
@@ -58,7 +58,7 @@ class VideoVlcComponent : public VideoComponent
 public:
 	static void init();
 
-	VideoVlcComponent(Window* window);
+	VideoVlcComponent(Window* window, bool isMovie = false);
 	virtual ~VideoVlcComponent();
 
 	void render(const Transform4x4f& parentTrans) override;

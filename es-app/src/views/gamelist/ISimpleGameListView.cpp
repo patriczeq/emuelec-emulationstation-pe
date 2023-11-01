@@ -41,7 +41,7 @@ ISimpleGameListView::ISimpleGameListView(Window* window, FolderData* root, bool 
 	mHeaderText.setPosition(0, 0);
 	mHeaderText.setHorizontalAlignment(ALIGN_CENTER);
 	mHeaderText.setDefaultZIndex(50);
-	
+
 	mHeaderImage.setResize(0, mSize.y() * 0.185f);
 	mHeaderImage.setOrigin(0.5f, 0.0f);
 	mHeaderImage.setPosition(mSize.x() / 2, 0);
@@ -106,7 +106,7 @@ void ISimpleGameListView::onFileChanged(FileData* /*file*/, FileChangeType /*cha
 	// we could be tricky here to be efficient;
 	// but this shouldn't happen very often so we'll just always repopulate
 	FileData* cursor = getCursor();
-	if (!cursor->isPlaceHolder()) 
+	if (!cursor->isPlaceHolder())
 	{
 		populateList(cursor->getParent()->getChildrenListToDisplay());
 		setCursor(cursor);
@@ -125,13 +125,13 @@ void ISimpleGameListView::moveToFolder(FolderData* folder)
 {
 	if (folder == nullptr || folder->getChildren().size() == 0)
 		return;
-	
+
 	mCursorStack.push(folder);
 	populateList(folder->getChildrenListToDisplay());
-	
+
 	FileData* cursor = getCursor();
 	if (cursor != nullptr)
-		setCursor(cursor);	
+		setCursor(cursor);
 }
 
 void ISimpleGameListView::toggleFavoritesFilter()
@@ -196,7 +196,7 @@ void ISimpleGameListView::update(const int deltaTime)
 		moveToRandomGame();
 		return;
 	}
-	
+
 	if (mXButton.isLongPressed(deltaTime))
 	{
 		if (UIModeController::getInstance()->isUIModeKid() && cursorHasSaveStatesEnabled())
@@ -233,7 +233,7 @@ void ISimpleGameListView::goBack()
 	{
 		ViewController::get()->setActiveView(mPopupParentView);
 		mPopupParentView->updateHelpPrompts();
-		closePopupContext();	
+		closePopupContext();
 	}
 	else
 	{
@@ -246,7 +246,7 @@ void ISimpleGameListView::goBack()
 			systemToView = CollectionSystemManager::get()->getSystemToView(systemToView);
 
 		ViewController::get()->goToSystemView(systemToView);
-	}	
+	}
 }
 
 bool ISimpleGameListView::input(InputConfig* config, Input input)
@@ -271,7 +271,7 @@ bool ISimpleGameListView::input(InputConfig* config, Input input)
 			showSelectedGameSaveSnapshots();
 
 		return true;
-	}	
+	}
 
 	if (!UIModeController::getInstance()->isUIModeKid() && mSelectButton.isShortPressed(config, input))
 	{
@@ -290,7 +290,7 @@ bool ISimpleGameListView::input(InputConfig* config, Input input)
 		showSelectedGameSaveSnapshots();
 		return true;
 	}
-		
+
 	if (config->isMappedTo(BUTTON_BACK, input))
 	{
 		goBack();
@@ -331,7 +331,7 @@ void ISimpleGameListView::showGamelistOptions()
 		return;
 
 	Sound::getFromTheme(mTheme, getName(), "menuOpen")->play();
-	mWindow->pushGui(new GuiGamelistOptions(mWindow, this, this->mRoot->getSystem()));	
+	mWindow->pushGui(new GuiGamelistOptions(mWindow, this, this->mRoot->getSystem()));
 }
 
 
@@ -406,13 +406,13 @@ void ISimpleGameListView::launchSelectedGame()
 		// music player!
 		bool isAudio = Utils::FileSystem::isAudio(cursor->getPath());
 		bool isVideo = Utils::FileSystem::isVideo(cursor->getPath());
-		if( isAudio )
+		if( isAudio && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 		{
 			AudioManager::getInstance()->playMySong(cursor->getPath());
 		}
-		else if( isVideo )
+		else if( isVideo && SystemConf::getInstance()->get("pe_fevideo.enabled") == "1")
 		{
-			GuiVideoViewer::playVideo(mWindow, cursor->getPath());
+			GuiVideoViewer::playVideo(mWindow, cursor->getPath(), true);
 		}
 		else if (cursor->getType() == GAME)
 		{
@@ -422,7 +422,7 @@ void ISimpleGameListView::launchSelectedGame()
 				mWindow->pushGui(new GuiSaveState(mWindow, cursor, [this, cursor](SaveState state)
 				{
 					Sound::getFromTheme(getTheme(), getName(), "launch")->play();
-					
+
 					LaunchGameOptions options;
 					options.saveStateInfo = state;
 					ViewController::get()->launch(cursor, options);
@@ -488,10 +488,10 @@ void ISimpleGameListView::moveToRandomGame()
 }
 
 std::vector<std::string> ISimpleGameListView::getEntriesLetters()
-{	
+{
 	std::set<std::string> setOfLetters;
 
-	for (auto file : getFileDataEntries()) 
+	for (auto file : getFileDataEntries())
 		if (file->getType() == GAME)
 			setOfLetters.insert(std::string(1, toupper(file->getName()[0])));
 
@@ -526,7 +526,7 @@ void ISimpleGameListView::updateFolderPath()
 		auto top = mCursorStack.top();
 		mFolderPath.setText(top->getBreadCrumbPath());
 	}
-	else 
+	else
 		mFolderPath.setText("");
 }
 
@@ -545,14 +545,14 @@ void ISimpleGameListView::repopulate()
 }
 
 void ISimpleGameListView::setPopupContext(std::shared_ptr<IGameListView> pThis, std::shared_ptr<GuiComponent> parentView, const std::string label, const std::function<void()>& onExitTemporary)
-{ 
+{
 	mPopupSelfReference = pThis;
 	mPopupParentView = parentView;
 	mOnExitPopup = onExitTemporary;
 
 	if (mHeaderImage.hasImage())
 	{
-		mHeaderText.setText(_("Games similar to") + " " + label); // 
+		mHeaderText.setText(_("Games similar to") + " " + label); //
 
 		mHeaderImage.setImage("");
 		addChild(&mHeaderText);
@@ -567,7 +567,7 @@ void ISimpleGameListView::closePopupContext()
 
 	auto exitPopup = mOnExitPopup;
 
-	mPopupParentView.reset();	
+	mPopupParentView.reset();
 	mPopupSelfReference.reset();
 
 	if (exitPopup != nullptr)
@@ -592,7 +592,7 @@ std::vector<HelpPrompt> ISimpleGameListView::getHelpPrompts()
 
 	if (invertNorthButton)
 		prompts.push_back(HelpPrompt(BUTTON_OK, _("SAVE STATES (HOLD)"), [&] { showSelectedGameSaveSnapshots(); }));
-	else 
+	else
 		prompts.push_back(HelpPrompt(BUTTON_OK, _("GAME OPTIONS (HOLD)"), [&] { showSelectedGameOptions(); }));
 
 	if (!UIModeController::getInstance()->isUIModeKid())
@@ -684,13 +684,13 @@ bool ISimpleGameListView::onAction(const std::string& action)
 		toggleFavoritesFilter();
 		return true;
 	}
-	
+
 	if (action == "random")
 	{
 		moveToRandomGame();
 		return true;
 	}
-	
+
 	if (action == "video")
 	{
 		FileData* game = getCursor();
@@ -753,6 +753,6 @@ bool ISimpleGameListView::onAction(const std::string& action)
 		return true;
 	}
 
-	
+
 	return false;
 }

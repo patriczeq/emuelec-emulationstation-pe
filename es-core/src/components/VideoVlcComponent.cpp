@@ -70,7 +70,7 @@ static void display(void* data, void* id)
 		c->component->onVideoStarted();
 }
 
-VideoVlcComponent::VideoVlcComponent(Window* window) :
+VideoVlcComponent::VideoVlcComponent(Window* window, bool isMovie) :
 	VideoComponent(window),
 	mMediaPlayer(nullptr),
 	mMedia(nullptr)
@@ -86,6 +86,8 @@ VideoVlcComponent::VideoVlcComponent(Window* window) :
 	// Get an empty texture for rendering the video
 	mTexture = nullptr;// TextureResource::get("");
 	mEffect = VideoVlcFlags::VideoVlcEffect::BUMP;
+
+	window->setAllowSleep(!isMovie);
 
 	// Make sure VLC has been initialised
 	init();
