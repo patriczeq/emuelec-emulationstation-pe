@@ -713,7 +713,7 @@ bool AudioManager::getVideoPlaying()
 	{
 		return sInstance->VideoPlay;
 	}
-	bool AudioManager::getVideoMoviPlaying()
+	bool AudioManager::getVideoMoviePlaying()
 		{
 			return sInstance->VideoMoviePlay;
 		}
