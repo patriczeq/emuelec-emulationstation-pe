@@ -416,6 +416,10 @@ void GuiMenu::scanMPServers()
 void GuiMenu::openMPServers(std::vector<std::string> servers)
 	{
 		Window* window = mWindow;
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
 		auto s = new GuiSettings(window, (servers.size() == 0 ? _("NO SERVER FOUND!") : _("SELECT SERVER TO CONNECT")).c_str());
 
 		if (servers.size() > 0)
@@ -434,6 +438,14 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 					ApiSystem::getInstance()->launchApp(window, cmd);
 				}, "iconSystem");
 			}
+		}
+		else{
+			if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED"){
+				s->addWithLabel(_("NETWORK ERROR"), std::make_shared<TextComponent>(mWindow, "NO IP ADDRESS", font, color));
+			}
+			s->addEntry(_("CONFIGURE NETWORK"), false, [this] {
+					openNetworkSettings();
+				}, "iconNetwork");
 		}
 
 		window->pushGui(s);
@@ -4847,6 +4859,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	unsigned int color = theme->Text.color;
 
 	Window *window = mWindow;
+	std::string gameApMode = apInlineInfo("gameapmode");
 
 	auto s = new GuiSettings(mWindow, _("NETWORK SETTINGS").c_str());
 	s->addEntry(_("RELOAD"), false, [s, this]() {
@@ -4868,6 +4881,20 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 		delete s;
 		openNetworkSettings();
 	}, "iconAdvanced");
+
+	s->addEntry(_("RECONNECT TO SAVED NETWORK"), false, [s, this, window]() {
+			std::string msg = _("RECONNECT TO SYSTEM DEFINED NETWORK?");
+			window->pushGui(new GuiMsgBox(window, msg,
+				 _("YES"),[s, this]{
+					 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
+ 						const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
+
+					runSystemCommand("ap.sh stop \"" + baseSSID + "\" \"" + baseKEY + "\"", "", nullptr);
+					delete s;
+					openNetworkSettings();
+				 },
+				 _("NO"), nullptr));
+		}, "iconRestart");
 
 	s->addGroup(_("INFORMATION"));
 
@@ -4900,10 +4927,11 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 
 	bool wlModeAP = wlMode == "AP";
 
-	s->addGroup(_("MODE SELECTION"));
 
-	if(!wlModeAP)
+	if(gameApMode == "off")
 	{
+		s->addGroup(_("GAME AP"));
+
 		s->addEntry(_("CREATE GAME AP"), false, [s, this, window]() {
 				std::string msg = _("REALLY START AP MODE?");
 				window->pushGui(new GuiMsgBox(window, msg,
@@ -4914,12 +4942,16 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 					 },
 					 _("NO"), nullptr));
 			}, "iconNetwork");
+
 			s->addEntry(_("CONNECT TO GAME AP"), false, [this]() {
 					searchGameAP();
 			}, "iconControllers");
 	}
-	else
+
+	if(gameApMode == "host")
 	{
+		s->addGroup(_("GAME AP"));
+
 		s->addEntry(_("DISABLE GAME AP"), false, [s, this, window]() {
 				std::string msg = _("REALLY START STA MODE?");
 				window->pushGui(new GuiMsgBox(window, msg,
@@ -4932,19 +4964,14 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 			}, "iconQuit");
 	}
 
-	s->addEntry(_("RECONNECT TO NETWORK"), false, [s, this, window]() {
-			std::string msg = _("RECONNECT TO SYSTEM DEFINED NETWORK?");
-			window->pushGui(new GuiMsgBox(window, msg,
-				 _("YES"),[s, this]{
-					 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
- 						const std::string baseKEY = SystemConf::getInstance()->get("wifi.key");
+	if(gameApMode == "cli")
+	{
+		s->addGroup(_("GAME AP"));
 
-					runSystemCommand("ap.sh stop \"" + baseSSID + "\" \"" + baseKEY + "\"", "", nullptr);
-					delete s;
-					openNetworkSettings();
-				 },
-				 _("NO"), nullptr));
-		}, "iconRestart");
+		s->addWithLabel(_("CONNECTED AS CLIENT"), std::make_shared<TextComponent>(mWindow, apInlineInfo("ssid"), font, color));
+	}
+
+
 
 	s->addGroup(_("SETTINGS"));
 
