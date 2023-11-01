@@ -4882,7 +4882,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	s->addInputTextRow(_("HOSTNAME"), "system.hostname", false);
 #endif
 
-	auto ip = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->getIpAdress(), font, color);
+	auto ip = std::make_shared<TextComponent>(mWindow, apInlineInfo("ip")/*ApiSystem::getInstance()->getIpAdress()*/, font, color);
 	s->addWithLabel(_("IP ADDRESS"), ip);
 
 
