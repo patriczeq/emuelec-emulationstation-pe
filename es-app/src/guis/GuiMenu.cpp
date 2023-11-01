@@ -380,7 +380,11 @@ void GuiMenu::searchGameAP()
 				}
 			else
 				{
-					runSystemCommand("ap.sh connectgameap", "", nullptr);
+					window->pushGui(new GuiMsgBox(window, _("FOUND GAME AP!"),
+						_("CONNECT"), [window] {
+							runSystemCommand("ap.sh connectgameap", "", nullptr);
+						}, _("CANCEL"),nullptr));
+
 				}
 		}
 	));
@@ -4953,7 +4957,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	else if(wlModeAP)
 	{
 		auto apSSID = std::make_shared<TextComponent>(mWindow, apInlineInfo("ssid"), font, color);
-		auto apPWD = std::make_shared<TextComponent>(mWindow, "12345678", font, color);
+		auto apPWD = std::make_shared<TextComponent>(mWindow, apInlineInfo("passwd"), font, color);
 		s->addWithLabel(_("AP SSID"), apSSID);
 		s->addWithLabel(_("AP KEY"), apPWD);
 
