@@ -801,9 +801,6 @@ GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path, bool mov
 		"</view>"
 		"</theme>";
 
-	if (!linearSmooth)
-		xml = Utils::String::replace(xml, "<linearSmooth>true</linearSmooth>", "<linearSmooth>false</linearSmooth>");
-
 	mTheme = std::shared_ptr<ThemeData>(new ThemeData());
 	std::map<std::string, std::string> emptyMap;
 	mTheme->loadFile("imageviewer", emptyMap, xml, false);
