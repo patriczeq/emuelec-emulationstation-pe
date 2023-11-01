@@ -4961,7 +4961,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 		s->addWithLabel(_("AP SSID"), apSSID);
 		s->addWithLabel(_("AP KEY"), apPWD);
 
-		s->addEntry(_("DHCP LEASES"), true, [this]() {
+		s->addEntry(_("DHCP LEASES (") + apInlineInfo("clients") + _(")"), true, [this]() {
 			openAPleases();
 		});
 	}
