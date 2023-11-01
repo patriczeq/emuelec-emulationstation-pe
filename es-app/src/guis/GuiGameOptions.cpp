@@ -56,6 +56,7 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 	bool isImageViewer = game->getSourceFileData()->getSystem()->hasPlatformId(PlatformIds::IMAGEVIEWER);
 	const std::string _path = game->getPath();
 	bool isAudio = Utils::FileSystem::isAudio(_path);
+	bool isVideo = Utils::FileSystem::isVideo(_path);
 
 	bool hasManual = ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::PDFEXTRACTION) && Utils::FileSystem::exists(game->getMetadata(MetaDataId::Manual));
 	bool hasMagazine = ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::PDFEXTRACTION) && Utils::FileSystem::exists(game->getMetadata(MetaDataId::Magazine));
@@ -76,7 +77,7 @@ if(game->getType() == FOLDER && SystemConf::getInstance()->get("pe_femusic.enabl
 
 if(isAudio && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 {
-	mMenu.addEntry(_("PLAY"), false, [_path, this]
+	mMenu.addEntry(_("PLAY AUDIO FILE"), false, [_path, this]
 		{
 			AudioManager::getInstance()->playMySong(_path);
 			this->close();
@@ -87,6 +88,15 @@ if(isAudio && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 			this->close();
 		}, "iconSound");
 
+}
+
+if( isVideo && SystemConf::getInstance()->get("pe_fevideo.enabled") == "1")
+{
+	mMenu.addEntry(_("PLAY VIDEO FILE"), false, [_path, this, window]
+		{
+			GuiVideoViewer::playVideo(window, _path, true);
+			this->close();
+		}, "iconScraper");
 }
 
 if (game->getType() == GAME)
