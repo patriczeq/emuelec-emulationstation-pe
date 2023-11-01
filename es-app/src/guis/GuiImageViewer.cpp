@@ -740,6 +740,7 @@ GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path, bool mov
 	setPosition(0, 0);
 	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
 
+
 #ifdef _RPI_
 	if (Settings::getInstance()->getBool("VideoOmxPlayer"))
 		mVideo = new VideoPlayerComponent(mWindow, "");
@@ -761,11 +762,53 @@ GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path, bool mov
 		mWindow->postToUiThread([&]() { delete this; });
 		return false;
 	});
+	// tady udelat cernou vypln! ale jak?
 
 	addChild(mVideo);
 
 	mVideo->setStartDelay(25);
 	mVideo->setVideo(path);
+
+	std::string xml =
+		"<theme defaultView=\"Tiles\">"
+		"<formatVersion>7</formatVersion>"
+		"<view name = \"grid\">"
+		"<imagegrid name=\"gamegrid\">"
+		"  <margin>0 0</margin>"
+		"  <padding>0 0</padding>"
+		"  <pos>0 0</pos>"
+		"  <size>1 1</size>"
+		"  <scrollDirection>horizontal</scrollDirection>"
+		"  <autoLayout>1 1</autoLayout>"
+		"  <autoLayoutSelectedZoom>1</autoLayoutSelectedZoom>"
+		"  <animateSelection>false</animateSelection>"
+		"  <centerSelection>true</centerSelection>"
+		"  <scrollLoop>true</scrollLoop>"
+		"  <showVideoAtDelay>10</showVideoAtDelay>"
+		"</imagegrid>"
+		"<gridtile name=\"default\">"
+		"  <backgroundColor>000</backgroundColor>"
+		"  <selectionMode>image</selectionMode>"
+		"  <padding>4 4</padding>"
+		"  <imageColor>FFFFFFFF</imageColor>"
+		"</gridtile>"
+		"<gridtile name=\"selected\">"
+		"  <backgroundColor>000</backgroundColor>"
+		"</gridtile>"
+		"<image name=\"gridtile.image\">"
+		"  <linearSmooth>true</linearSmooth>"
+		"</image>"
+		"</view>"
+		"</theme>";
+
+	if (!linearSmooth)
+		xml = Utils::String::replace(xml, "<linearSmooth>true</linearSmooth>", "<linearSmooth>false</linearSmooth>");
+
+	mTheme = std::shared_ptr<ThemeData>(new ThemeData());
+	std::map<std::string, std::string> emptyMap;
+	mTheme->loadFile("imageviewer", emptyMap, xml, false);
+
+	mVideo.applyTheme(mTheme, "grid", "gamegrid", 0);
 
 	//topWindow(true);
 }
