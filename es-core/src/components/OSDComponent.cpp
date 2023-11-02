@@ -83,7 +83,6 @@ void OSDComponent::update(int deltaTime)
 			if (isVisible())
 			{
 				setVisible(false);
-				showIt = false;
 				PowerSaver::resume();
 			}
 		}
