@@ -760,16 +760,10 @@ int AudioManager::getMaxMusicVolume()
 }
 
 int AudioManager::VideoGetCurrTime(){
-	if (sInstance == nullptr){
-		return -1;
-	}
-	return sInstance->VideoCurrTime;
+	return VideoCurrTime;
 }
 void AudioManager::VideoSetCurrTime(int t){
-	if (sInstance == nullptr){
-		return;
-	}
-	sInstance->VideoCurrTime = t;
+	VideoCurrTime = t;
 }
 
 void AudioManager::update(int deltaTime)

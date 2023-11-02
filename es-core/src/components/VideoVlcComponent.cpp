@@ -756,8 +756,8 @@ libvlc_media_player_get_position( libvlc_media_player_t *p_mi ); // vraci procen
 			newTime = 0;
 		}
 		libvlc_media_player_set_time(mMediaPlayer, newTime);
-		
-		AudioManager::VideoSetCurrTime(newTime);
+
+		AudioManager::getInstance()->VideoSetCurrTime(newTime);
 
 	}
 

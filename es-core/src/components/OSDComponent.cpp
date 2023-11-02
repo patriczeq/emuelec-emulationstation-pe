@@ -20,7 +20,8 @@ OSDComponent::OSDComponent(Window* window)
 	: GuiComponent(window)
 {
 	mDisplayTime = -1;
-	mVolume = -1;
+	totalTime = -1;
+	currTime = -1;
 	mCheckTime = 0;
 
 	auto theme = ThemeData::getMenuTheme();	
@@ -93,17 +94,14 @@ void OSDComponent::update(int deltaTime)
 
 	mCheckTime = 0;
 
-	int _currTime = AudioManager::VideoGetCurrTime();
+	int _currTime = AudioManager::getInstance()->VideoGetCurrTime();
 	if (_currTime > -1 && _currTime != currTime)
 	{
 		bool firstTime = (currTime < 0);
 
 		currTime = _currTime;
 
-		if (currTime == 0)
-			mLabel->setText("X");
-		else
-			mLabel->setText(std::to_string(currTime) + "ms");
+		mLabel->setText(std::to_string(currTime) + "ms");
 
 		if (!firstTime)
 		{
