@@ -52,15 +52,15 @@ OSDComponent::OSDComponent(Window* window)
 	mLabelCurr = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_LEFT);
 	mLabelTotal = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_RIGHT);
 	
-	int h = font->sizeText("100%").y() + PADDING_PX;
+	int h = font->sizeText("100%").y();
 
 	mLabelCurr->setPosition(0, 0);
-	mLabelCurr->setSize(fullSize.x() / 4, h);
+	mLabelCurr->setSize((Renderer::getScreenWidth() / 2), h);
 	mLabelCurr->setText("0ms");
 	addChild(mLabelCurr);
 
 	mLabelTotal->setPosition((Renderer::getScreenWidth() / 2), 0);
-	mLabelTotal->setSize(fullSize.x() / 4, h);
+	mLabelTotal->setSize((Renderer::getScreenWidth() / 2), h);
 	mLabelTotal->setText("0ms");
 	addChild(mLabelTotal);
 
@@ -159,15 +159,17 @@ void OSDComponent::render(const Transform4x4f& parentTrans)
 	Renderer::setMatrix(trans);
 
 	float x = 16;
-	float y = Renderer::getScreenHeight() - 20;
+	float y = 16;
 	float w = Renderer::getScreenWidth() - 32;
-	float h = 16;
+	float h = 20;
 	
 	auto theme = ThemeData::getMenuTheme();
 
+	float perc = (currTime / totalTime);
+	float px = w * perc;
+
 	Renderer::drawRect(x, y, w, h, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
 
-	float perc = (currTime / totalTime) * 100;
-	float px = w * perc;
+	//float px = (h*mVolume) / 100000;
 	Renderer::drawRect(x, y, px, h, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
 }
