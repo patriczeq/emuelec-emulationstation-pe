@@ -94,7 +94,7 @@ void OSDComponent::update(int deltaTime)
 			if (isVisible())
 			{
 				setVisible(false);
-				AudioManager::getInstance()->VideoShowOSD(false);
+				AudioManager::getInstance()->VideoSetShowOSD(false);
 				PowerSaver::resume();
 			}
 		}

@@ -759,7 +759,7 @@ libvlc_media_player_get_position( libvlc_media_player_t *p_mi ); // vraci procen
 		libvlc_media_player_set_time(mMediaPlayer, newTime);
 
 		//AudioManager::getInstance()->VideoSetCurrTime(newTime);
-		AudioManager::getInstance()->VideoShowOSD(true);
+		AudioManager::getInstance()->VideoSetShowOSD(true);
 
 	}
 
@@ -768,7 +768,7 @@ void VideoVlcComponent::pauseResume()
 		libvlc_media_player_pause(mMediaPlayer);
 		AudioManager::getInstance()->VideoSetPaused(libvlc_media_player_is_playing(mMediaPlayer));
 		PowerSaver::resume();
-		AudioManager::getInstance()->VideoShowOSD(true);
+		AudioManager::getInstance()->VideoSetShowOSD(true);
 		//AudioManager::getInstance()->VideoSetPaused(libvlc_media_player_is_playing(mMediaPlayer));
 	}
 
@@ -796,7 +796,7 @@ void VideoVlcComponent::stopVideo()
 	freeContext();
 	PowerSaver::resume();
 	AudioManager::setVideoPlaying(false);
-	AudioManager::getInstance()->VideoShowOSD(false);
+	AudioManager::getInstance()->VideoSetShowOSD(false);
 }
 
 void VideoVlcComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const std::string& view, const std::string& element, unsigned int properties)

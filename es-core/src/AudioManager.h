@@ -70,9 +70,9 @@ public:
 	void VideoSetTotalTime(int t);
 	bool VideoGetPaused();
 	void VideoSetPaused(bool p);
-	void VideoShowOSD(bool show);
+	void VideoSetShowOSD(bool show);
 	bool VideoShowOSD();
-	
+
 
 
 	//std::vector<std::string> getID3(std::string song);

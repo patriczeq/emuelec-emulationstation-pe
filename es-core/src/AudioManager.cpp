@@ -782,7 +782,7 @@ void AudioManager::VideoSetPaused(bool p){
 	LOG(LogDebug) << "AudioManager::VideoSetPaused " << (VideoIsPaused ? "PAUSE" : "PLAY");
 }
 
-void AudioManager::VideoShowOSD(bool show){
+void AudioManager::VideoSetShowOSD(bool show){
 	VideoShowOSD = show;
 }
 bool AudioManager::VideoShowOSD(){
