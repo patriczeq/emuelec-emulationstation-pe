@@ -38,7 +38,7 @@ OSDComponent::OSDComponent(Window* window)
 	
 	fullSize.y() = fullSize.x() * 2.5f;
 
-	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight() / 4);
+	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight() / 8);
 
 	mFrame = new NinePatchComponent(window);
 	mFrame->setImagePath(theme->Background.path);
@@ -49,31 +49,28 @@ OSDComponent::OSDComponent(Window* window)
 	addChild(mFrame);
 
 
-	mLabelCurr = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_CENTER);
-	mLabelTotal = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_CENTER);
+	mLabelCurr = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_LEFT);
+	mLabelTotal = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_RIGHT);
 	
 	int h = font->sizeText("100%").y() + PADDING_PX;
 
 	mLabelCurr->setPosition(0, 0);
 	mLabelCurr->setSize(fullSize.x() / 4, h);
+	mLabelCurr->setText("0ms");
+	addChild(mLabelCurr);
+
 	mLabelTotal->setPosition((Renderer::getScreenWidth() / 2), 0);
 	mLabelTotal->setSize(fullSize.x() / 4, h);
-
-	mLabelCurr->setText("0ms");
 	mLabelTotal->setText("0ms");
-
-	addChild(mLabelCurr);
 	addChild(mLabelTotal);
 
 
 	// FCA TopLeft
 	//float posX = Renderer::getScreenWidth() * 0.02f;
-	float posY = Renderer::getScreenHeight() * 0.75f;
+	float posY = Renderer::getScreenHeight() * 0.875f;
 
 	setPosition(0, posY, 0);
 	setOpacity(BASEOPACITY);
-	topWindow(true); // top
-	setZIndex(999);
 }
 
 OSDComponent::~OSDComponent()
@@ -161,15 +158,16 @@ void OSDComponent::render(const Transform4x4f& parentTrans)
 	Transform4x4f trans = parentTrans * getTransform();
 	Renderer::setMatrix(trans);
 
-	float x = PADDING_PX + PADDING_BAR;
-	float y = PADDING_PX * 2;
-	float w = getSize().x() - 2 * PADDING_PX - 2 * PADDING_BAR;
-	float h = getSize().y() - PADDING_PX - PADDING_PX;
+	float x = 16;
+	float y = Renderer::getScreenHeight() - 20;
+	float w = Renderer::getScreenWidth() - 32;
+	float h = 16;
 	
 	auto theme = ThemeData::getMenuTheme();
 
-	Renderer::drawRect(16, y, Renderer::getScreenWidth() - 32, 24, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
+	Renderer::drawRect(x, y, w, h, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
 
-	//float px = (h*mVolume) / 100000;
-	//Renderer::drawRect(x, y + h - px, w, px, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
+	float perc = (currTime / totalTime) * 100;
+	float px = w * perc;
+	Renderer::drawRect(x, y, px, h, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
 }
