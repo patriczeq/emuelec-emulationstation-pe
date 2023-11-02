@@ -73,6 +73,7 @@ OSDComponent::OSDComponent(Window* window)
 	setPosition(0, posY, 0);
 	setOpacity(BASEOPACITY);
 	topWindow(true); // top
+	setZIndex(999);
 }
 
 OSDComponent::~OSDComponent()
