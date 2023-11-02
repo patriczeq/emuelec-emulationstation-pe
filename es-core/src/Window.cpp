@@ -22,7 +22,7 @@
 #include "components/BatteryIndicatorComponent.h"
 #include "guis/GuiMsgBox.h"
 #include "components/VolumeInfoComponent.h"
-#include "components/OSDComponent.h"
+//#include "components/OSDComponent.h"
 #include "Splash.h"
 #include "PowerSaver.h"
 #ifdef _ENABLEEMUELEC
@@ -58,7 +58,7 @@ Window::~Window()
 
 void Window::showOSD(int total, int curr)
 	{
-		mOSD->show();
+		mVolumeInfo->showOSD(total, curr);
 	}
 
 void Window::pushGui(GuiComponent* gui)
@@ -160,10 +160,10 @@ bool Window::init(bool initRenderer, bool initInputManager)
 	else
 		mVolumeInfo->reset();
 
-	if (mOSD == nullptr)
+	/*if (mOSD == nullptr)
 		mOSD = std::make_shared<OSDComponent>(this);
 	else
-		mOSD->reset();
+		mOSD->reset();*/
 
 
 	// update our help because font sizes probably changed
@@ -463,9 +463,9 @@ void Window::update(int deltaTime)
 	if (mVolumeInfo)
 		mVolumeInfo->update(deltaTime);
 	
-	if (mOSD)
+	/*if (mOSD)
 		mOSD->update(deltaTime);
-
+*/
 
 	mFrameTimeElapsed += deltaTime;
 	mFrameCountElapsed++;
@@ -1162,7 +1162,7 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 		mBatteryIndicator->applyTheme(theme, "screen", "batteryIndicator", ThemeFlags::ALL);
 
 	mVolumeInfo = std::make_shared<VolumeInfoComponent>(this);
-	mOSD = std::make_shared<OSDComponent>(this);
+	//mOSD = std::make_shared<OSDComponent>(this);
 }
 
 void Window::setGunCalibrationState(bool isCalibrating)

@@ -26,7 +26,6 @@ class ThemeData;
 class TextComponent;
 class ControllerActivityComponent;
 class VolumeInfoComponent;
-class OSDComponent;
 class BatteryIndicatorComponent;
 class Splash;
 
@@ -110,7 +109,7 @@ public:
 	void setMouseCapture(GuiComponent* mouseCapture) { mMouseCapture = mouseCapture; }
 	bool hasMouseCapture(GuiComponent* mouseCapture) { return mMouseCapture == mouseCapture; }
 
-	std::shared_ptr<OSDComponent> mOSD;
+	//std::shared_ptr<OSDComponent> mOSD;
 
 private:
 	std::vector<GuiComponent*> hitTest(int x, int y);

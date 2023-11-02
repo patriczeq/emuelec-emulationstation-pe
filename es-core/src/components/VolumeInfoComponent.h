@@ -19,6 +19,8 @@ public:
 
 	void reset() { mVolume = -1; }
 
+	void showOSD(int total = 0, int curr = 0);
+
 private:
 	NinePatchComponent* mFrame;
 	TextComponent*		mLabel;

@@ -118,6 +118,11 @@ void VolumeInfoComponent::update(int deltaTime)
 	}
 }
 
+void VolumeInfoComponent::showOSD(int total, int curr)
+{
+	setVisible(true);
+}
+
 void VolumeInfoComponent::render(const Transform4x4f& parentTrans)
 {
 	if (!mVisible || mDisplayTime < 0)
