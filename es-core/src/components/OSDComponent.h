@@ -17,8 +17,11 @@ public:
 	void render(const Transform4x4f& parentTrans) override;
 	void update(int deltaTime) override;
 
-	void reset() { mVolume = -1; }
-	void show(){ showIt = true; }
+	void setTotalTime(int t){totalTime = t;}
+	void setCurrTime(int t){ currTime = t;}
+
+
+	void reset() { totalTime = -1; currTime = -1; }
 
 private:
 	NinePatchComponent* mFrame;
@@ -26,8 +29,6 @@ private:
 
 	int totalTime;
 	int currTime;
-
-	bool showIt;
 
 	int mVolume;
 

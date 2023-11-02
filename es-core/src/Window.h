@@ -49,7 +49,6 @@ public:
 	Window();
 	~Window();
 
-	void showOSD(int total = 0, int curr = 0);
 	void pushGui(GuiComponent* gui);
 	void displayNotificationMessage(std::string message, int duration = -1); 
 	void removeGui(GuiComponent* gui);
@@ -109,7 +108,6 @@ public:
 	void setMouseCapture(GuiComponent* mouseCapture) { mMouseCapture = mouseCapture; }
 	bool hasMouseCapture(GuiComponent* mouseCapture) { return mMouseCapture == mouseCapture; }
 
-	//std::shared_ptr<OSDComponent> mOSD;
 
 private:
 	std::vector<GuiComponent*> hitTest(int x, int y);
@@ -163,6 +161,7 @@ private:
 	std::shared_ptr<TextComponent>	mClock;
 	std::shared_ptr<ControllerActivityComponent>	mControllerActivity;
 	std::shared_ptr<VolumeInfoComponent> mVolumeInfo;
+	std::shared_ptr<OSDComponent> mOSD;
 
 	std::shared_ptr<BatteryIndicatorComponent>	mBatteryIndicator;	
 

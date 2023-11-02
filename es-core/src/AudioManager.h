@@ -63,6 +63,11 @@ public:
 
 	std::vector<std::string> myPlaylist;
 
+	// video
+	int VideoGetCurrTime();
+	void VideoSetCurrTime(int t);
+	
+
 	//std::vector<std::string> getID3(std::string song);
 
 	void playRandomMusic(bool continueIfPlaying = true);
@@ -103,6 +108,8 @@ private:
 	bool mSongNameChanged;
 	bool VideoPlay;
 	bool VideoMoviePlay;
+
+	int VideoCurrTime;
 };
 
 #endif // ES_CORE_AUDIO_MANAGER_H

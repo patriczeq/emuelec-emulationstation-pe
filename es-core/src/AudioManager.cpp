@@ -757,6 +757,13 @@ int AudioManager::getMaxMusicVolume()
 	return ret;
 }
 
+int AudioManager::VideoGetCurrTime(){
+	return VideoCurrTime;
+}
+void AudioManager::VideoSetCurrTime(int t){
+	VideoCurrTime = t;
+}
+
 void AudioManager::update(int deltaTime)
 {
 	if (sInstance == nullptr || !sInstance->mInitialized || !Settings::BackgroundMusic())

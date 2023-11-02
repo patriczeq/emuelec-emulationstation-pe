@@ -94,17 +94,17 @@ void OSDComponent::update(int deltaTime)
 
 	mCheckTime = 0;
 
-	int volume = VolumeControl::getInstance()->getVolume();
-	if (volume != mVolume || showIt)
+	int _currTime = AudioManager::getInstance()->VideoGetCurrTime();
+	if (_currTime != currTime)
 	{
-		bool firstTime = (mVolume < 0);
+		bool firstTime = (currTime < 0);
 
-		mVolume = volume;
+		currTime = _currTime;
 
-		if (mVolume == 0)
+		if (currTime == 0)
 			mLabel->setText("X");
 		else
-			mLabel->setText(std::to_string(mVolume) + "%");
+			mLabel->setText(std::to_string(currTime) + "ms");
 
 		if (!firstTime)
 		{
