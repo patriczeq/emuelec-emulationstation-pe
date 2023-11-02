@@ -87,7 +87,7 @@ void OSDComponent::update(int deltaTime)
 
 	bool _isPaused	= AudioManager::getInstance()->VideoGetPaused();
 
-	if (mDisplayTime >= 0 /*&& !_isPaused*/ )
+	if (mDisplayTime >= 0 && !_isPaused )
 	{
 		mDisplayTime += deltaTime;
 		if (mDisplayTime > VISIBLE_TIME + FADE_TIME)
@@ -110,7 +110,7 @@ void OSDComponent::update(int deltaTime)
 
 	mCheckTime = 0;
 
-	if(_show != showme)
+	if(_show && _show != showme)
 	{
 		showme = _show;
 
