@@ -7,6 +7,7 @@
 #include "LocaleES.h"
 #include "Window.h"
 #include "AudioManager.h"
+#include "Log.h"
 
 #define PADDING_PX			(Renderer::getScreenWidth()*0.006)
 #define PADDING_BAR			(Renderer::isSmallScreen() ? Renderer::getScreenWidth()*0.02 : Renderer::getScreenWidth()*0.006)
@@ -97,6 +98,7 @@ void OSDComponent::update(int deltaTime)
 	int _currTime = AudioManager::getInstance()->VideoGetCurrTime();
 	if(_currTime != currTime)
 	{
+		LOG(LogDebug) << "OSD::show ";
 		currTime = _currTime;
 		mLabel->setText(std::to_string(currTime) + "ms");
 		mDisplayTime = 0;
