@@ -758,6 +758,7 @@ int AudioManager::getMaxMusicVolume()
 
 	return ret;
 }
+// VideoOSDHelper
 
 int AudioManager::VideoGetCurrTime(){
 	return VideoCurrTime;
@@ -766,6 +767,30 @@ void AudioManager::VideoSetCurrTime(int t){
 	VideoCurrTime = t;
 	LOG(LogDebug) << "AudioManager::VideoSetCurrTime " << VideoCurrTime;
 }
+int AudioManager::VideoGetTotalTime(){
+	return VideoTotalTime;
+}
+void AudioManager::VideoSetTotalTime(int t){
+	VideoTotalTime = t;
+	LOG(LogDebug) << "AudioManager::VideoSetTotalTime " << VideoTotalTime;
+}
+bool AudioManager::VideoGetPaused(){
+	return VideoIsPaused;
+}
+void AudioManager::VideoSetPaused(bool p){
+	VideoIsPaused = p;
+	LOG(LogDebug) << "AudioManager::VideoSetPaused " << (VideoIsPaused ? "PAUSE" : "PLAY");
+}
+
+void AudioManager::VideoShowOSD(bool show){
+	VideoShowOSD = show;
+}
+bool AudioManager::VideoShowOSD(){
+	return VideoShowOSD;
+}
+
+
+// EOF VideoOSDHelper
 
 void AudioManager::update(int deltaTime)
 {

@@ -37,7 +37,7 @@ OSDComponent::OSDComponent(Window* window)
 	
 	fullSize.y() = fullSize.x() * 2.5f;
 
-	setSize(fullSize);
+	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight() / 4);
 
 	mFrame = new NinePatchComponent(window);
 	mFrame->setImagePath(theme->Background.path);
@@ -48,26 +48,33 @@ OSDComponent::OSDComponent(Window* window)
 	addChild(mFrame);
 
 
-	mLabel = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_CENTER);
+	mLabelCurr = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_CENTER);
+	mLabelTotal = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_CENTER);
 	
 	int h = font->sizeText("100%").y() + PADDING_PX;
-	mLabel->setPosition(0, fullSize.y() - h);
-	mLabel->setSize(fullSize.x(), h);
-	addChild(mLabel);
+
+	mLabelCurr->setPosition(0, fullSize.y() - h);
+	mLabelCurr->setSize(fullSize.x() / 4, h);
+	mLabelTotal->setPosition(Renderer::getScreenWidth() + (Renderer::getScreenWidth() / 4), fullSize.y() - h);
+	mLabelTotal->setSize(fullSize.x() / 4, h);
+
+	addChild(mLabelCurr);
+	addChild(mLabelTotal);
 
 
 	// FCA TopLeft
-	float posX = Renderer::getScreenWidth() * 0.02f;
-	float posY = Renderer::getScreenHeight() * 0.04f;
+	//float posX = Renderer::getScreenWidth() * 0.02f;
+	float posY = Renderer::getScreenHeight() * 0.75f;
 
-	setPosition(posX, posY, 0);
+	setPosition(0, posY, 0);
 	setOpacity(BASEOPACITY);
 	topWindow(true); // top
 }
 
 OSDComponent::~OSDComponent()
 {
-	delete mLabel;
+	delete mLabelCurr;
+	delete mLabelTotal;
 	delete mFrame;
 }
 
@@ -75,7 +82,9 @@ void OSDComponent::update(int deltaTime)
 {
 	GuiComponent::update(deltaTime);
 
-	if (mDisplayTime >= 0)
+	bool _isPaused	= AudioManager::getInstance()->VideoGetPaused();
+
+	if (mDisplayTime >= 0 && !_isPaused)
 	{
 		mDisplayTime += deltaTime;
 		if (mDisplayTime > VISIBLE_TIME + FADE_TIME)
@@ -85,6 +94,7 @@ void OSDComponent::update(int deltaTime)
 			if (isVisible())
 			{
 				setVisible(false);
+				AudioManager::getInstance()->VideoShowOSD(false);
 				PowerSaver::resume();
 			}
 		}
@@ -96,12 +106,18 @@ void OSDComponent::update(int deltaTime)
 
 	mCheckTime = 0;
 
-	int _currTime = AudioManager::getInstance()->VideoGetCurrTime();
-	if(_currTime != currTime)
+	if(AudioManager::getInstance()->VideoShowOSD())
 	{
+		currTime 	= AudioManager::getInstance()->VideoGetCurrTime();
+		totalTime 	= AudioManager::getInstance()->VideoGetTotalTime();
+		paused  	= _isPaused;
+
 		LOG(LogDebug) << "OSD::show ";
-		currTime = _currTime;
-		mLabel->setText(std::to_string(currTime) + "ms");
+
+		mLabelCurr->setText(std::to_string(currTime) + "ms");
+		mLabelTotal->setText(std::to_string(totalTime) + "ms");
+		
+
 		mDisplayTime = 0;
 
 		if (!isVisible())
@@ -110,25 +126,8 @@ void OSDComponent::update(int deltaTime)
 			PowerSaver::pause();
 		}
 	}
-	/*if (_currTime > -1 && _currTime != currTime)
-	{
-		bool firstTime = (currTime < 0);
 
-		currTime = _currTime;
 
-		mLabel->setText(std::to_string(currTime) + "ms");
-
-		if (!firstTime)
-		{
-			mDisplayTime = 0;
-
-			if (!isVisible())
-			{
-				setVisible(true);
-				PowerSaver::pause();
-			}
-		}
-	}*/
 }
 
 void OSDComponent::render(const Transform4x4f& parentTrans)
@@ -147,7 +146,7 @@ void OSDComponent::render(const Transform4x4f& parentTrans)
 	float x = PADDING_PX + PADDING_BAR;
 	float y = PADDING_PX * 2;
 	float w = getSize().x() - 2 * PADDING_PX - 2 * PADDING_BAR;
-	float h = getSize().y() - mLabel->getSize().y() - PADDING_PX - PADDING_PX;
+	float h = getSize().y() - PADDING_PX - PADDING_PX;
 	
 	auto theme = ThemeData::getMenuTheme();
 

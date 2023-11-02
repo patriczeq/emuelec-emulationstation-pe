@@ -66,6 +66,13 @@ public:
 	// video
 	int VideoGetCurrTime();
 	void VideoSetCurrTime(int t);
+	int VideoGetTotalTime();
+	void VideoSetTotalTime(int t);
+	bool VideoGetPaused();
+	void VideoSetPaused(bool p);
+	void VideoShowOSD(bool show);
+	bool VideoShowOSD();
+	
 
 
 	//std::vector<std::string> getID3(std::string song);
@@ -110,6 +117,9 @@ private:
 	bool VideoMoviePlay;
 
 	int VideoCurrTime;
+	int VideoTotalTime;
+	bool VideoIsPaused;
+	bool VideoShowOSD;
 };
 
 #endif // ES_CORE_AUDIO_MANAGER_H

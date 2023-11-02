@@ -25,12 +25,13 @@ public:
 
 private:
 	NinePatchComponent* mFrame;
-	TextComponent*		mLabel;
+	TextComponent*		mLabelCurr;
+	TextComponent*		mLabelTotal;
 
 	int totalTime;
 	int currTime;
+	bool paused;
 
-	int mVolume;
 
 	int mCheckTime;
 	int mDisplayTime;
