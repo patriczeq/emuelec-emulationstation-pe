@@ -804,8 +804,6 @@ bool GuiVideoViewer::input(InputConfig* config, Input input)
 			{
 				mVideo->pauseResume();
 			}
-			// OSD
-			mWindow->showOSD();
 			if(config->isMappedTo("start", input))
 			{
 				delete this;
