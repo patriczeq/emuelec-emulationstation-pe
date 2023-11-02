@@ -760,7 +760,7 @@ void VideoVlcComponent::pauseResume()
 
 		AudioManager::getInstance()->VideoSetPaused(!libvlc_media_player_is_playing(mMediaPlayer));
 		AudioManager::getInstance()->VideoSetShowOSD(true);
-		
+
 		PowerSaver::resume();
 		//AudioManager::getInstance()->VideoSetPaused(libvlc_media_player_is_playing(mMediaPlayer));
 	}
@@ -789,7 +789,7 @@ void VideoVlcComponent::stopVideo()
 	freeContext();
 	PowerSaver::resume();
 	AudioManager::setVideoPlaying(false);
-	AudioManager::getInstance()->VideoSetShowOSD(false);
+	//AudioManager::getInstance()->VideoSetShowOSD(false);
 }
 
 void VideoVlcComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const std::string& view, const std::string& element, unsigned int properties)
