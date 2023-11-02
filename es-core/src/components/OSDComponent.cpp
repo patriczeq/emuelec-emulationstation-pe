@@ -144,7 +144,8 @@ void OSDComponent::update(int deltaTime)
 
 
 }
-std::string OSDComponent::dbNum(int num){
+std::string OSDComponent::dbNum(int num)
+{
 	if(num < 10){
 		return "0" + std::to_string(num);
 	}
