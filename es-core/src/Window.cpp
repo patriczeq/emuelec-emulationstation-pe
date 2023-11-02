@@ -706,6 +706,9 @@ void Window::render()
 	if (mVolumeInfo && Settings::VolumePopup())
 		mVolumeInfo->render(transform);
 
+	if (mOSD)
+		mOSD->render(transform);
+
 	if (mTimeSinceLastInput >= screensaverTime && screensaverTime != 0)
 	{
 		if (mAllowSleep && (!mScreenSaver || mScreenSaver->allowSleep()))
