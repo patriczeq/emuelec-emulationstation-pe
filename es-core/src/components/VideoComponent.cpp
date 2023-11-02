@@ -92,10 +92,10 @@ VideoComponent::VideoComponent(Window* window, bool isMovie) :
 		mOSD = std::make_shared<OSDComponent>(window);
 	else
 		mOSD->reset();
+	setZIndex(2);
 
-	//if (mWindow->getGuiStackSize() > 1)
+	if (mWindow->getGuiStackSize() > 1)
 		topWindow(false);
-		setZIndex(2);
 }
 
 VideoComponent::~VideoComponent()
