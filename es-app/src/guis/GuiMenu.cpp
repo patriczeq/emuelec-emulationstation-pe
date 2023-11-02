@@ -230,9 +230,9 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 
 		// pe-emulationstation
 		// pe-player
-		std::string sname = AudioManager::getInstance()->getSongName();
 		if(SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 		{
+			std::string sname = AudioManager::getInstance()->getSongName();
 			if(!sname.empty())
 			{
 				addWithDescription(_("MUSIC PLAYER"), _("NOW PLAYING") + ": " + sname, nullptr, [this]

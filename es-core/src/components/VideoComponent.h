@@ -192,6 +192,7 @@ private:
 	// Manage the playing state of the component
 	void manageState();
 
+
 protected:
 	unsigned						mVideoWidth;
 	unsigned						mVideoHeight;

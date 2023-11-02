@@ -87,6 +87,10 @@ VideoVlcComponent::VideoVlcComponent(Window* window, bool isMovie) :
 	mTexture = nullptr;// TextureResource::get("");
 	mEffect = VideoVlcFlags::VideoVlcEffect::BUMP;
 
+	if (mOSD == nullptr)
+		mOSD = std::make_shared<OSDComponent>(this);
+	else
+		mOSD->reset();
 	// Make sure VLC has been initialised
 	init();
 
@@ -756,6 +760,8 @@ libvlc_media_player_get_position( libvlc_media_player_t *p_mi ); // vraci procen
 			newTime = 0;
 		}
 		libvlc_media_player_set_time(mMediaPlayer, newTime);
+
+		mOSD->show();
 	}
 
 void VideoVlcComponent::pauseResume()
