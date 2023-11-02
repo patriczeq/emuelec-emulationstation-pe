@@ -62,6 +62,7 @@ OSDComponent::OSDComponent(Window* window)
 
 	setPosition(posX, posY, 0);
 	setOpacity(BASEOPACITY);
+	topWindow(true); // top
 }
 
 OSDComponent::~OSDComponent()
@@ -152,6 +153,6 @@ void OSDComponent::render(const Transform4x4f& parentTrans)
 
 	Renderer::drawRect(x, y, w, h, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
 
-	float px = (h*mVolume) / 100000;
-	Renderer::drawRect(x, y + h - px, w, px, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
+	//float px = (h*mVolume) / 100000;
+	//Renderer::drawRect(x, y + h - px, w, px, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
 }
