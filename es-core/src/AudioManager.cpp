@@ -765,7 +765,6 @@ int AudioManager::VideoGetCurrTime(){
 }
 void AudioManager::VideoSetCurrTime(int t){
 	VideoCurrTime = t;
-	LOG(LogDebug) << "AudioManager::VideoSetCurrTime " << VideoCurrTime;
 }
 int AudioManager::VideoGetTotalTime(){
 	return VideoTotalTime;

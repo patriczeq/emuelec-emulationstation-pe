@@ -53,9 +53,9 @@ OSDComponent::OSDComponent(Window* window)
 	
 	int h = font->sizeText("100%").y() + PADDING_PX;
 
-	mLabelCurr->setPosition(0, fullSize.y() - h);
+	mLabelCurr->setPosition(0, Renderer::getScreenHeight() - h);
 	mLabelCurr->setSize(fullSize.x() / 4, h);
-	mLabelTotal->setPosition(Renderer::getScreenWidth() + (Renderer::getScreenWidth() / 4), fullSize.y() - h);
+	mLabelTotal->setPosition(Renderer::getScreenWidth() + (Renderer::getScreenWidth() / 4), Renderer::getScreenHeight() - h);
 	mLabelTotal->setSize(fullSize.x() / 4, h);
 
 	addChild(mLabelCurr);
@@ -150,7 +150,7 @@ void OSDComponent::render(const Transform4x4f& parentTrans)
 	
 	auto theme = ThemeData::getMenuTheme();
 
-	Renderer::drawRect(x, y, w, h, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
+	Renderer::drawRect(16, y, Renderer::getScreenWidth() - 32, 24, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
 
 	//float px = (h*mVolume) / 100000;
 	//Renderer::drawRect(x, y + h - px, w, px, (theme->TextSmall.color & 0xFFFFFF00) | opacity);

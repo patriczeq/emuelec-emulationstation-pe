@@ -583,8 +583,8 @@ void VideoVlcComponent::handleLooping()
 				libvlc_media_player_set_media(mMediaPlayer, mMedia);
 			//	libvlc_audio_set_mute(mMediaPlayer, 0);
 
-			AudioManager::getInstance()->VideoSetTotalTime((mMediaPlayer == NULL) ? 0 : libvlc_media_player_get_length(mMediaPlayer));
 			libvlc_media_player_play(mMediaPlayer);
+			AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
 		}
 	}
 }
@@ -723,7 +723,7 @@ void VideoVlcComponent::startVideo()
 				//libvlc_audio_set_mute(mMediaPlayer, 0);
 				//libvlc_audio_set_volume(mMediaPlayer, 100);
 				libvlc_media_player_play(mMediaPlayer);
-
+				AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
 				if (mVideoWidth > 1)
 				{
 					libvlc_video_set_callbacks(mMediaPlayer, lock, unlock, display, (void*)&mContext);
@@ -736,15 +736,6 @@ void VideoVlcComponent::startVideo()
 
 void VideoVlcComponent::seek(int s)
 	{
-		/*
-
-libvlc_media_player_get_length( libvlc_media_player_t *p_mi ); // vraci ms
-libvlc_media_player_get_time( libvlc_media_player_t *p_mi ); // ms
-libvlc_media_player_set_time( libvlc_media_player_t *p_mi,
-                                             libvlc_time_t i_time, bool b_fast );
-libvlc_media_player_get_position( libvlc_media_player_t *p_mi ); // vraci procenta
-
-*/
 		int total 	= libvlc_media_player_get_length(mMediaPlayer);
 		int current = libvlc_media_player_get_time(mMediaPlayer);
 		int newTime	= current + s;
@@ -766,9 +757,10 @@ libvlc_media_player_get_position( libvlc_media_player_t *p_mi ); // vraci procen
 void VideoVlcComponent::pauseResume()
 	{
 		libvlc_media_player_pause(mMediaPlayer);
-		AudioManager::getInstance()->VideoSetPaused(libvlc_media_player_is_playing(mMediaPlayer));
+
+		AudioManager::getInstance()->VideoSetPaused(!libvlc_media_player_is_playing(mMediaPlayer));
+
 		PowerSaver::resume();
-		AudioManager::getInstance()->VideoSetShowOSD(true);
 		//AudioManager::getInstance()->VideoSetPaused(libvlc_media_player_is_playing(mMediaPlayer));
 	}
 
