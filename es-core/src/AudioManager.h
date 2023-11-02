@@ -64,9 +64,9 @@ public:
 	std::vector<std::string> myPlaylist;
 
 	// video
-	int VideoGetCurrTime();
-	void VideoSetCurrTime(int t);
-	
+	static int VideoGetCurrTime();
+	static void VideoSetCurrTime(int t);
+
 
 	//std::vector<std::string> getID3(std::string song);
 
