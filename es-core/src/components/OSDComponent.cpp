@@ -54,14 +54,14 @@ OSDComponent::OSDComponent(Window* window)
 	
 	int h = font->sizeText("100%").y();
 
-	mLabelCurr->setPosition(0, 0);
-	mLabelCurr->setSize((Renderer::getScreenWidth() / 2), h);
-	mLabelCurr->setText("0ms");
+	mLabelCurr->setPosition(16, 0);
+	mLabelCurr->setSize((Renderer::getScreenWidth() / 2), h/2);
+	mLabelCurr->setText("--:--");
 	addChild(mLabelCurr);
 
-	mLabelTotal->setPosition((Renderer::getScreenWidth() / 2), 0);
-	mLabelTotal->setSize((Renderer::getScreenWidth() / 2), h);
-	mLabelTotal->setText("0ms");
+	mLabelTotal->setPosition((Renderer::getScreenWidth() / 2) - 16, 0);
+	mLabelTotal->setSize((Renderer::getScreenWidth() / 2), h/2);
+	mLabelTotal->setText("--:--");
 	addChild(mLabelTotal);
 
 
@@ -129,8 +129,8 @@ void OSDComponent::update(int deltaTime)
 
 		LOG(LogDebug) << "OSD::show ";
 
-		mLabelCurr->setText(std::to_string(currTime) + "ms");
-		mLabelTotal->setText(std::to_string(totalTime) + "ms");
+		mLabelCurr->setText(formatMStoTime(currTime));
+		mLabelTotal->setText(formatMStoTime(totalTime - currTime) + "(" + formatMStoTime(totalTime) + ")");
 		
 
 		mDisplayTime = 0;
@@ -144,7 +144,25 @@ void OSDComponent::update(int deltaTime)
 
 
 }
+std::string OSDComponent::dbNum(int num){
+	if(num < 10){
+		return "0" + std::to_string(num);
+	}
+	return std::to_string(num);
+}
+std::string OSDComponent::formatMStoTime(int ms)
+{
+	int seconds = ms / 1000;
+	ms %= 1000;
 
+	int minutes = seconds / 60;
+	seconds %= 60;
+
+	int hours = minutes / 60;
+	minutes %= 60;
+
+	return dbNum(hours) + ":" + dbNum(minutes) + ":" + dbNum(seconds);
+}
 void OSDComponent::render(const Transform4x4f& parentTrans)
 {
 	if (!mVisible || mDisplayTime < 0)

@@ -573,8 +573,6 @@ void VideoVlcComponent::handleLooping()
 					return;
 				}
 			}
-			AudioManager::setVideoPlaying(false);
-			AudioManager::setVideoMoviePlaying(false);
 
 			if (!mIsMovie && (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode)))
 				libvlc_audio_set_mute(mMediaPlayer, 1);
@@ -586,6 +584,7 @@ void VideoVlcComponent::handleLooping()
 
 			libvlc_media_player_play(mMediaPlayer);
 
+			AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
 			if(mIsMovie)
 				{
 					AudioManager::setVideoMoviePlaying(true);
@@ -663,14 +662,6 @@ void VideoVlcComponent::startVideo()
 				}
 			}
 
-			if(hasAudioTrack)
-			{
-				LOG(LogInfo) << "Video has audio track";
-			}
-			else
-			{
-				LOG(LogInfo) << "NO audio track";
-			}
 
 			libvlc_media_tracks_release(tracks, track_count);
 
@@ -733,6 +724,7 @@ void VideoVlcComponent::startVideo()
 				//libvlc_audio_set_volume(mMediaPlayer, 100);
 				libvlc_media_player_play(mMediaPlayer);
 				AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
+
 				if (mVideoWidth > 1)
 				{
 					libvlc_video_set_callbacks(mMediaPlayer, lock, unlock, display, (void*)&mContext);
