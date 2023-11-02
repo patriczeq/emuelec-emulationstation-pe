@@ -93,7 +93,7 @@ void OSDComponent::update(int deltaTime)
 
 	mCheckTime = 0;
 
-	int _currTime = AudioManager::getInstance()->VideoGetCurrTime();
+	int _currTime = AudioManager::VideoGetCurrTime();
 	if (_currTime > -1 && _currTime != currTime)
 	{
 		bool firstTime = (currTime < 0);
