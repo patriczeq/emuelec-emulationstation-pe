@@ -87,10 +87,6 @@ VideoVlcComponent::VideoVlcComponent(Window* window, bool isMovie) :
 	mTexture = nullptr;// TextureResource::get("");
 	mEffect = VideoVlcFlags::VideoVlcEffect::BUMP;
 
-	if (mOSD == nullptr)
-		mOSD = new OSDComponent::OSDComponent(window);
-	else
-		mOSD->reset();
 	// Make sure VLC has been initialised
 	init();
 

@@ -786,6 +786,7 @@ bool GuiVideoViewer::input(InputConfig* config, Input input)
 			if(config->isMappedTo("left", input)){
 				mVideo->seek(-60000);
 				vWindow->displayNotificationMessage("-1min", 3);
+				mWindow->mOSD->show();
 			}  // -1 min
 			if(config->isMappedTo("right", input)){
 				mVideo->seek(60000);

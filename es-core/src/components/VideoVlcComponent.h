@@ -3,7 +3,6 @@
 #define ES_CORE_COMPONENTS_VIDEO_VLC_COMPONENT_H
 
 #include "VideoComponent.h"
-#include "OSDComponent.h"
 #include "ThemeData.h"
 #include <mutex>
 
@@ -118,7 +117,6 @@ private:
 	void freeContext();
 
 private:
-	GuiComponent* mOSD;
 	static libvlc_instance_t*		mVLC;
 	libvlc_media_t*					mMedia;
 	libvlc_media_player_t*			mMediaPlayer;
