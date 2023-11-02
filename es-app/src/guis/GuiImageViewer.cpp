@@ -813,6 +813,7 @@ bool GuiVideoViewer::input(InputConfig* config, Input input)
 		else{
 			if(config->isMappedTo(BUTTON_OK, input) || config->isMappedTo(BUTTON_BACK, input))
 			{
+				AudioManager::getInstance()->VideoReset();
 				delete this;
 				return true;
 			}

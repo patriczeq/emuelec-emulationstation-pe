@@ -116,7 +116,7 @@ void OSDComponent::update(int deltaTime)
 
 		currTime 	= AudioManager::getInstance()->VideoGetCurrTime();
 		totalTime 	= AudioManager::getInstance()->VideoGetTotalTime();
-		paused  	= _isPaused;
+		//paused  	= _isPaused;
 
 		LOG(LogDebug) << "OSD::show ";
 

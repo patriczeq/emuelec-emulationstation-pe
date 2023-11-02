@@ -788,6 +788,12 @@ bool AudioManager::VideoShowOSD(){
 	return VideoShow_OSD;
 }
 
+void AudioManager::VideoReset(){
+	VideoCurrTime = 0;
+	VideoTotalTime = 0;
+	VideoIsPaused = false;
+	VideoShow_OSD = false;
+}
 
 // EOF VideoOSDHelper
 

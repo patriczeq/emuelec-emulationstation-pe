@@ -72,6 +72,7 @@ public:
 	void VideoSetPaused(bool p);
 	void VideoSetShowOSD(bool show);
 	bool VideoShowOSD();
+	void VideoReset();
 
 
 
