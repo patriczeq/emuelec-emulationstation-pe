@@ -9,7 +9,6 @@
 #include "math/Vector2i.h"
 #include <memory>
 #include <functional>
-#include "components/OSDComponent.h"
 
 class FileData;
 class Font;
@@ -27,6 +26,7 @@ class ThemeData;
 class TextComponent;
 class ControllerActivityComponent;
 class VolumeInfoComponent;
+class OSDComponent;
 class BatteryIndicatorComponent;
 class Splash;
 

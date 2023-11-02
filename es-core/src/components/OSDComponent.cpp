@@ -17,7 +17,7 @@
 #define BASEOPACITY			200
 #define CHECKVOLUMEDELAY	40
 
-OSDComponent::OSDComponent(Window* window, bool actionLine)
+OSDComponent::OSDComponent(Window* window)
 	: GuiComponent(window)
 {
 	mDisplayTime = -1;

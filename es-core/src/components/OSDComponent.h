@@ -11,7 +11,7 @@ class Window;
 class OSDComponent : public GuiComponent
 {
 public:
-	OSDComponent(Window* window, bool actionLine = true);
+	OSDComponent(Window* window);
 	~OSDComponent();
 
 	void render(const Transform4x4f& parentTrans) override;

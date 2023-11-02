@@ -22,6 +22,7 @@
 #include "components/BatteryIndicatorComponent.h"
 #include "guis/GuiMsgBox.h"
 #include "components/VolumeInfoComponent.h"
+#include "components/OSDComponent.h"
 #include "Splash.h"
 #include "PowerSaver.h"
 #ifdef _ENABLEEMUELEC
