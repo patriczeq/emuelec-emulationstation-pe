@@ -15,6 +15,7 @@
 #include "utils/ZipFile.h"
 #include "components/HelpComponent.h"
 #include "SystemConf.h"
+#include "AudioManager.h"
 
 class ZoomableImageComponent : public ImageComponent
 {

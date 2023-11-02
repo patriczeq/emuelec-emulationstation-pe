@@ -8,7 +8,6 @@
 #include <SDL_timer.h>
 #include "LocaleES.h"
 #include "Paths.h"
-#include "AudioManager.h"
 
 
 #define FADE_TIME_MS	800

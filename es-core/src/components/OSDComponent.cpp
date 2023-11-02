@@ -59,6 +59,9 @@ OSDComponent::OSDComponent(Window* window)
 	mLabelTotal->setPosition(Renderer::getScreenWidth() + (Renderer::getScreenWidth() / 4), Renderer::getScreenHeight() - h);
 	mLabelTotal->setSize(fullSize.x() / 4, h);
 
+	mLabelCurr->setText("0ms");
+	mLabelTotal->setText("0ms");
+
 	addChild(mLabelCurr);
 	addChild(mLabelTotal);
 
