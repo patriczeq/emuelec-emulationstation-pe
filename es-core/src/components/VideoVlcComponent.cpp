@@ -576,7 +576,7 @@ void VideoVlcComponent::handleLooping()
 			AudioManager::setVideoPlaying(false);
 			AudioManager::setVideoMoviePlaying(false);
 
-			if (!isMovie && (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode)))
+			if (!mIsMovie && (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode)))
 				libvlc_audio_set_mute(mMediaPlayer, 1);
 
 			//libvlc_media_player_set_position(mMediaPlayer, 0.0f);
@@ -586,7 +586,7 @@ void VideoVlcComponent::handleLooping()
 
 			libvlc_media_player_play(mMediaPlayer);
 
-			if(isMovie)
+			if(mIsMovie)
 				{
 					AudioManager::setVideoMoviePlaying(true);
 					AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
@@ -859,7 +859,7 @@ void VideoVlcComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, cons
 void VideoVlcComponent::update(int deltaTime)
 {
 	mElapsed += deltaTime;
-	if(isMovie)
+	if(mIsMovie)
 	{
 		AudioManager::getInstance()->VideoSetCurrTime((mMediaPlayer == NULL) ? 0 : libvlc_media_player_get_time(mMediaPlayer));
 	}
