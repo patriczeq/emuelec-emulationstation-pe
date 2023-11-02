@@ -118,7 +118,7 @@ private:
 	void freeContext();
 
 private:
-	auto mOSD;
+	GuiComponent* mOSD;
 	static libvlc_instance_t*		mVLC;
 	libvlc_media_t*					mMedia;
 	libvlc_media_player_t*			mMediaPlayer;
