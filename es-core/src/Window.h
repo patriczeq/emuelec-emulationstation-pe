@@ -50,6 +50,7 @@ public:
 	Window();
 	~Window();
 
+	void showOSD(int total = 0, int curr = 0);
 	void pushGui(GuiComponent* gui);
 	void displayNotificationMessage(std::string message, int duration = -1); 
 	void removeGui(GuiComponent* gui);

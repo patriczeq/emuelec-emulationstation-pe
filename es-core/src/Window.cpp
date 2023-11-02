@@ -56,6 +56,11 @@ Window::~Window()
 	delete mHelp;
 }
 
+void Window::showOSD(int total, int curr)
+	{
+		mOSD->show();
+	}
+
 void Window::pushGui(GuiComponent* gui)
 {
 	if (mGuiStack.size() > 0)
