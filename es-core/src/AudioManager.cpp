@@ -65,6 +65,8 @@ void AudioManager::init()
 	mMusicVolume = 0;
 	mPlayingSystemThemeSong = "none";
 	std::deque<std::string> mLastPlayed;
+	VideoCurrTime = -1;
+
 
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0)
 	{

@@ -5,7 +5,6 @@
 #include "components/NinePatchComponent.h"
 #include "components/TextComponent.h"
 #include "LocaleES.h"
-#include "VolumeControl.h"
 #include "Window.h"
 #include "AudioManager.h"
 
@@ -95,7 +94,7 @@ void OSDComponent::update(int deltaTime)
 	mCheckTime = 0;
 
 	int _currTime = AudioManager::getInstance()->VideoGetCurrTime();
-	if (_currTime != currTime)
+	if (_currTime > -1 && _currTime != currTime)
 	{
 		bool firstTime = (currTime < 0);
 
