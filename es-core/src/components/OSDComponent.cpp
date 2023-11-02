@@ -119,8 +119,8 @@ void OSDComponent::update(int deltaTime)
 
 	currTime 	= AudioManager::getInstance()->VideoGetCurrTime();
 	totalTime 	= AudioManager::getInstance()->VideoGetTotalTime();
-	mLabelCurr->setText(formatMStoTime(currTime));
-	mLabelTotal->setText(formatMStoTime(totalTime - currTime) + "(" + formatMStoTime(totalTime) + ")");
+	mLabelCurr->setText(formatMStoTime(currTime) + " / " + formatMStoTime(totalTime));
+	mLabelTotal->setText(formatMStoTime(totalTime - currTime));
 
 	if(showme != _show && _show > 0)
 	{
@@ -177,8 +177,7 @@ void OSDComponent::render(const Transform4x4f& parentTrans)
 	
 	auto theme = ThemeData::getMenuTheme();
 
-	float perc = (currTime / totalTime);
-	float px = w * perc;
+	float px = w * (currTime / totalTime);
 
 	Renderer::drawRect(x, y, w, h, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
 
