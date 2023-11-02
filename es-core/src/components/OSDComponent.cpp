@@ -96,8 +96,6 @@ void OSDComponent::update(int deltaTime)
 
 	int _show = AudioManager::getInstance()->VideoShowOSD();
 
-	//bool _isPaused	= AudioManager::getInstance()->VideoGetPaused();
-
 	if (mDisplayTime >= 0)
 	{
 		mDisplayTime += deltaTime;
@@ -119,20 +117,15 @@ void OSDComponent::update(int deltaTime)
 
 	mCheckTime = 0;
 
+	currTime 	= AudioManager::getInstance()->VideoGetCurrTime();
+	totalTime 	= AudioManager::getInstance()->VideoGetTotalTime();
+	mLabelCurr->setText(formatMStoTime(currTime));
+	mLabelTotal->setText(formatMStoTime(totalTime - currTime) + "(" + formatMStoTime(totalTime) + ")");
+
 	if(showme != _show && _show > 0)
 	{
 		showme = _show;
-
-		currTime 	= AudioManager::getInstance()->VideoGetCurrTime();
-		totalTime 	= AudioManager::getInstance()->VideoGetTotalTime();
-		//paused  	= _isPaused;
-
 		LOG(LogDebug) << "OSD::show ";
-
-		mLabelCurr->setText(formatMStoTime(currTime));
-		mLabelTotal->setText(formatMStoTime(totalTime - currTime) + "(" + formatMStoTime(totalTime) + ")");
-		
-
 		mDisplayTime = 0;
 
 		if (!isVisible())
@@ -180,7 +173,7 @@ void OSDComponent::render(const Transform4x4f& parentTrans)
 	float x = 16;
 	float y = 16;
 	float w = Renderer::getScreenWidth() - 32;
-	float h = 20;
+	float h = 16;
 	
 	auto theme = ThemeData::getMenuTheme();
 

@@ -854,6 +854,7 @@ void VideoVlcComponent::update(int deltaTime)
 	if(mIsMovie)
 	{
 		AudioManager::getInstance()->VideoSetCurrTime((mMediaPlayer == NULL) ? 0 : libvlc_media_player_get_time(mMediaPlayer));
+		AudioManager::getInstance()->VideoSetTotalTime((mMediaPlayer == NULL) ? 0 : libvlc_media_player_get_length(mMediaPlayer));
 	}
 
 	if (mConfig.showSnapshotNoVideo || mConfig.showSnapshotDelay)

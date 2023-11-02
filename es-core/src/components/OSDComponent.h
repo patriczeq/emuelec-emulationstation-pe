@@ -30,8 +30,6 @@ private:
 
 	int totalTime;
 	int currTime;
-	bool paused;
-
 	int showme;
 
 	int mCheckTime;

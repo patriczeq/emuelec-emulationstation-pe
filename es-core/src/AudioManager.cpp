@@ -771,7 +771,6 @@ int AudioManager::VideoGetTotalTime(){
 }
 void AudioManager::VideoSetTotalTime(int t){
 	VideoTotalTime = t;
-	LOG(LogDebug) << "AudioManager::VideoSetTotalTime " << VideoTotalTime;
 }
 bool AudioManager::VideoGetPaused(){
 	return VideoIsPaused;
