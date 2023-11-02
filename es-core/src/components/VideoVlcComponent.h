@@ -118,7 +118,7 @@ private:
 	void freeContext();
 
 private:
-	std::shared_ptr<OSDComponent> mOSD;
+	auto mOSD;
 	static libvlc_instance_t*		mVLC;
 	libvlc_media_t*					mMedia;
 	libvlc_media_player_t*			mMediaPlayer;

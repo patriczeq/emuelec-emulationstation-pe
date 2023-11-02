@@ -88,7 +88,7 @@ VideoVlcComponent::VideoVlcComponent(Window* window, bool isMovie) :
 	mEffect = VideoVlcFlags::VideoVlcEffect::BUMP;
 
 	if (mOSD == nullptr)
-		mOSD = new OSDComponent(window);
+		mOSD = new OSDComponent::OSDComponent(window);
 	else
 		mOSD->reset();
 	// Make sure VLC has been initialised
