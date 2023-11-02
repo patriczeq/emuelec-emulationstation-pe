@@ -8,7 +8,7 @@
 #include <SDL_timer.h>
 #include "LocaleES.h"
 #include "Paths.h"
-
+#include "components/OSDComponent.h"
 
 #define FADE_TIME_MS	800
 
@@ -87,6 +87,11 @@ VideoComponent::VideoComponent(Window* window, bool isMovie) :
 	mConfig.startDelay				= 0;
 
 	window->setAllowSleep(!isMovie);
+
+	if (mOSD == nullptr)
+		mOSD = std::make_shared<OSDComponent>(window);
+	else
+		mOSD->reset();
 
 	if (mWindow->getGuiStackSize() > 1)
 		topWindow(false);
@@ -198,6 +203,9 @@ void VideoComponent::render(const Transform4x4f& parentTrans)
 	endCustomClipRect();
 
 	Renderer::setMatrix(trans);
+
+	if (mOSD)
+		mOSD->render(transform);
 
 	if (Settings::DebugImage())
 	{
@@ -481,7 +489,8 @@ void VideoComponent::startVideoWithDelay()
 void VideoComponent::update(int deltaTime)
 {
 	manageState();
-
+	if (mOSD)
+		mOSD->update(deltaTime);
 	if (mIsPlaying)
 	{
 		// If the video start is delayed and there is less than the fade time then set the image fade

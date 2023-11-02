@@ -21,6 +21,7 @@ enum ImageSource
 	MARQUEE
 };
 */
+class OSDComponent;
 
 class VideoComponent : public GuiComponent
 {
@@ -217,6 +218,8 @@ protected:
 	bool							mIsWaitingForVideoToStart;
 
 	float							mRoundCorners;
+
+	std::shared_ptr<OSDComponent> mOSD;
 
 	Configuration					mConfig;
 };
