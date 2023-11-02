@@ -205,7 +205,7 @@ void VideoComponent::render(const Transform4x4f& parentTrans)
 	Renderer::setMatrix(trans);
 
 	if (mOSD)
-		mOSD->render(transform);
+		mOSD->render(trans);
 
 	if (Settings::DebugImage())
 	{
