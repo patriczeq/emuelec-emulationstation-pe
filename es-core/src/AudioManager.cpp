@@ -783,6 +783,7 @@ void AudioManager::VideoSetPaused(bool p){
 
 void AudioManager::VideoSetOSD(int show){
 	VideoShow_OSD = show;
+	LOG(LogDebug) << "AudioManager::OSDtime " << VideoShow_OSD;
 }
 int AudioManager::VideoShowOSD(){
 	return VideoShow_OSD;

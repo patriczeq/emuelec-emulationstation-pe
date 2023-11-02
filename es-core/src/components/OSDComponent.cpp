@@ -54,9 +54,9 @@ OSDComponent::OSDComponent(Window* window)
 	
 	int h = font->sizeText("100%").y() + PADDING_PX;
 
-	mLabelCurr->setPosition(0, Renderer::getScreenHeight() - h);
+	mLabelCurr->setPosition(0, 0);
 	mLabelCurr->setSize(fullSize.x() / 4, h);
-	mLabelTotal->setPosition(Renderer::getScreenWidth() + (Renderer::getScreenWidth() / 4), Renderer::getScreenHeight() - h);
+	mLabelTotal->setPosition((Renderer::getScreenWidth() / 2), 0);
 	mLabelTotal->setSize(fullSize.x() / 4, h);
 
 	mLabelCurr->setText("0ms");
@@ -87,6 +87,16 @@ void OSDComponent::update(int deltaTime)
 {
 	GuiComponent::update(deltaTime);
 
+	if(!AudioManager::getInstance()->getVideoMoviePlaying())
+	{
+		if (isVisible())
+			{
+				setVisible(false);
+				PowerSaver::resume();
+			}
+		return;
+	}
+
 	int _show = AudioManager::getInstance()->VideoShowOSD();
 
 	//bool _isPaused	= AudioManager::getInstance()->VideoGetPaused();
@@ -101,7 +111,6 @@ void OSDComponent::update(int deltaTime)
 			if (isVisible())
 			{
 				setVisible(false);
-				showme = false;
 				PowerSaver::resume();
 			}
 		}
