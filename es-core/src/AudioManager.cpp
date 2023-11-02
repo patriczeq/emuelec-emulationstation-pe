@@ -763,8 +763,8 @@ int AudioManager::VideoGetCurrTime(){
 	return VideoCurrTime;
 }
 void AudioManager::VideoSetCurrTime(int t){
-	LOG(LogDebug) << "AudioManager::VideoSetCurrTime " << t;
 	VideoCurrTime = t;
+	LOG(LogDebug) << "AudioManager::VideoSetCurrTime " << VideoCurrTime;
 }
 
 void AudioManager::update(int deltaTime)

@@ -95,7 +95,19 @@ void OSDComponent::update(int deltaTime)
 	mCheckTime = 0;
 
 	int _currTime = AudioManager::getInstance()->VideoGetCurrTime();
-	if (_currTime > -1 && _currTime != currTime)
+	if(_currTime != currTime)
+	{
+		currTime = _currTime;
+		mLabel->setText(std::to_string(currTime) + "ms");
+		mDisplayTime = 0;
+
+		if (!isVisible())
+		{
+			setVisible(true);
+			PowerSaver::pause();
+		}
+	}
+	/*if (_currTime > -1 && _currTime != currTime)
 	{
 		bool firstTime = (currTime < 0);
 
@@ -113,7 +125,7 @@ void OSDComponent::update(int deltaTime)
 				PowerSaver::pause();
 			}
 		}
-	}
+	}*/
 }
 
 void OSDComponent::render(const Transform4x4f& parentTrans)
