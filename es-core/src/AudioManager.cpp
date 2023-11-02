@@ -783,10 +783,10 @@ void AudioManager::VideoSetPaused(bool p){
 }
 
 void AudioManager::VideoSetShowOSD(bool show){
-	VideoShowOSD = show;
+	VideoShow_OSD = show;
 }
 bool AudioManager::VideoShowOSD(){
-	return VideoShowOSD;
+	return VideoShow_OSD;
 }
 
 

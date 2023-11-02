@@ -119,7 +119,7 @@ private:
 	int VideoCurrTime;
 	int VideoTotalTime;
 	bool VideoIsPaused;
-	bool VideoShowOSD;
+	bool VideoShow_OSD;
 };
 
 #endif // ES_CORE_AUDIO_MANAGER_H
