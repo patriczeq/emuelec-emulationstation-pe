@@ -26,6 +26,7 @@ class ThemeData;
 class TextComponent;
 class ControllerActivityComponent;
 class VolumeInfoComponent;
+class OSDComponent;
 class BatteryIndicatorComponent;
 class Splash;
 
