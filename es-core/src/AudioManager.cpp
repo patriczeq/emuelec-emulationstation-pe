@@ -781,10 +781,10 @@ void AudioManager::VideoSetPaused(bool p){
 	LOG(LogDebug) << "AudioManager::VideoSetPaused " << (VideoIsPaused ? "PAUSE" : "PLAY");
 }
 
-void AudioManager::VideoSetShowOSD(bool show){
+void AudioManager::VideoSetShowOSD(int show){
 	VideoShow_OSD = show;
 }
-bool AudioManager::VideoShowOSD(){
+int AudioManager::VideoShowOSD(){
 	return VideoShow_OSD;
 }
 
@@ -792,7 +792,8 @@ void AudioManager::VideoReset(){
 	VideoCurrTime = 0;
 	VideoTotalTime = 0;
 	VideoIsPaused = false;
-	VideoShow_OSD = false;
+	VideoShow_OSD = 0;
+
 }
 
 // EOF VideoOSDHelper

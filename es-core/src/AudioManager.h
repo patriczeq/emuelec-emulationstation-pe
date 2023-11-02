@@ -70,8 +70,8 @@ public:
 	void VideoSetTotalTime(int t);
 	bool VideoGetPaused();
 	void VideoSetPaused(bool p);
-	void VideoSetShowOSD(bool show);
-	bool VideoShowOSD();
+	void VideoSetOSD(int show);
+	int VideoShowOSD();
 	void VideoReset();
 
 
@@ -120,7 +120,7 @@ private:
 	int VideoCurrTime;
 	int VideoTotalTime;
 	bool VideoIsPaused;
-	bool VideoShow_OSD;
+	int VideoShow_OSD;
 };
 
 #endif // ES_CORE_AUDIO_MANAGER_H

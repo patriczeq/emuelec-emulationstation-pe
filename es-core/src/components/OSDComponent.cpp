@@ -24,7 +24,7 @@ OSDComponent::OSDComponent(Window* window)
 	totalTime = -1;
 	currTime = -1;
 	mCheckTime = 0;
-	showme = false;
+	showme = -1;
 
 	auto theme = ThemeData::getMenuTheme();	
 
@@ -87,7 +87,7 @@ void OSDComponent::update(int deltaTime)
 {
 	GuiComponent::update(deltaTime);
 
-	bool _show = AudioManager::getInstance()->VideoShowOSD();
+	int _show = AudioManager::getInstance()->VideoShowOSD();
 
 	//bool _isPaused	= AudioManager::getInstance()->VideoGetPaused();
 
@@ -101,7 +101,6 @@ void OSDComponent::update(int deltaTime)
 			if (isVisible())
 			{
 				setVisible(false);
-				AudioManager::getInstance()->VideoSetShowOSD(false);
 				showme = false;
 				PowerSaver::resume();
 			}
@@ -114,7 +113,7 @@ void OSDComponent::update(int deltaTime)
 
 	mCheckTime = 0;
 
-	if(!showme && _show)
+	if(showme != _show && _show > 0)
 	{
 		showme = _show;
 

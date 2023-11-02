@@ -32,7 +32,7 @@ private:
 	int currTime;
 	bool paused;
 
-	bool showme;
+	int showme;
 
 	int mCheckTime;
 	int mDisplayTime;

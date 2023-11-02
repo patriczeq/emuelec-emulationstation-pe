@@ -763,7 +763,7 @@ GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path, bool mov
 		return false;
 	});
 	// tady udelat cernou vypln! ale jak?
-	
+
 
 	addChild(mVideo);
 

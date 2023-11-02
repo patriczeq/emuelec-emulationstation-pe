@@ -573,10 +573,11 @@ void VideoVlcComponent::handleLooping()
 					return;
 				}
 			}
+			AudioManager::setVideoPlaying(false);
+			AudioManager::setVideoMoviePlaying(false);
 
-
-			/*if (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode))
-				libvlc_audio_set_mute(mMediaPlayer, 1);*/
+			if (!isMovie && (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode)))
+				libvlc_audio_set_mute(mMediaPlayer, 1);
 
 			//libvlc_media_player_set_position(mMediaPlayer, 0.0f);
 			if (mMedia)
@@ -584,7 +585,15 @@ void VideoVlcComponent::handleLooping()
 			//	libvlc_audio_set_mute(mMediaPlayer, 0);
 
 			libvlc_media_player_play(mMediaPlayer);
-			AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
+
+			if(isMovie)
+				{
+					AudioManager::setVideoMoviePlaying(true);
+					AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
+				}
+			else{
+				AudioManager::setVideoPlaying(true);
+			}
 		}
 	}
 }
@@ -750,7 +759,7 @@ void VideoVlcComponent::seek(int s)
 		libvlc_media_player_set_time(mMediaPlayer, newTime);
 
 		//AudioManager::getInstance()->VideoSetCurrTime(newTime);
-		AudioManager::getInstance()->VideoSetShowOSD(true);
+		AudioManager::getInstance()->VideoSetOSD(newTime);
 
 	}
 
@@ -759,7 +768,7 @@ void VideoVlcComponent::pauseResume()
 		libvlc_media_player_pause(mMediaPlayer);
 
 		AudioManager::getInstance()->VideoSetPaused(!libvlc_media_player_is_playing(mMediaPlayer));
-		AudioManager::getInstance()->VideoSetShowOSD(true);
+		AudioManager::getInstance()->VideoSetOSD(libvlc_media_player_get_time(mMediaPlayer));
 
 		PowerSaver::resume();
 		//AudioManager::getInstance()->VideoSetPaused(libvlc_media_player_is_playing(mMediaPlayer));
@@ -789,7 +798,9 @@ void VideoVlcComponent::stopVideo()
 	freeContext();
 	PowerSaver::resume();
 	AudioManager::setVideoPlaying(false);
-	//AudioManager::getInstance()->VideoSetShowOSD(false);
+	AudioManager::setVideoMoviePlaying(false);
+	AudioManager::getInstance()->VideoReset();
+	AudioManager::getInstance()->VideoSetOSD(0);
 }
 
 void VideoVlcComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const std::string& view, const std::string& element, unsigned int properties)
@@ -848,8 +859,10 @@ void VideoVlcComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, cons
 void VideoVlcComponent::update(int deltaTime)
 {
 	mElapsed += deltaTime;
-
-	AudioManager::getInstance()->VideoSetCurrTime((mMediaPlayer == NULL) ? 0 : libvlc_media_player_get_time(mMediaPlayer));
+	if(isMovie)
+	{
+		AudioManager::getInstance()->VideoSetCurrTime((mMediaPlayer == NULL) ? 0 : libvlc_media_player_get_time(mMediaPlayer));
+	}
 
 	if (mConfig.showSnapshotNoVideo || mConfig.showSnapshotDelay)
 		mStaticImage.update(deltaTime);
