@@ -91,7 +91,11 @@ void SystemScreenSaver::startScreenSaver()
 	}
 
 	if (!loadingNext && Settings::getInstance()->getBool("StopMusicOnScreenSaver")) //(Settings::getInstance()->getBool("VideoAudio") && !Settings::getInstance()->getBool("ScreenSaverVideoMute")))
-		AudioManager::getInstance()->deinit();
+		//AudioManager::getInstance()->deinit();
+		if(!AudioManager::getInstance()->isPaused())
+		{
+			AudioManager::getInstance()->pause();
+		}
 
 
 	if (screensaver_behavior == "random video")
@@ -220,7 +224,7 @@ void SystemScreenSaver::stopScreenSaver()
 	// Exiting screen saver -> Restore sound
 	if (isExitingScreenSaver && Settings::getInstance()->getBool("StopMusicOnScreenSaver")) //isVideoScreenSaver && Settings::getInstance()->getBool("VideoAudio") && !Settings::getInstance()->getBool("ScreenSaverVideoMute"))
 	{
-		AudioManager::getInstance()->init();
+		/*AudioManager::getInstance()->init();
 
 		if (Settings::getInstance()->getBool("audio.bgmusic"))
 		{
@@ -228,6 +232,10 @@ void SystemScreenSaver::stopScreenSaver()
 				AudioManager::getInstance()->changePlaylist(ViewController::get()->getState().getSystem()->getTheme(), true);
 			else
 				AudioManager::getInstance()->playRandomMusic();
+		}*/
+		if(AudioManager::getInstance()->isPaused())
+		{
+			AudioManager::getInstance()->pause(); // unpause
 		}
 	}
 }
