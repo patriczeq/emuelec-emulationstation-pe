@@ -27,6 +27,7 @@
 #include "guis/GuiSaveState.h"
 #include "SystemConf.h"
 #include "AudioManager.h"
+#include "GuiLoading.h"
 
 #ifdef _ENABLEEMUELEC
 #include <regex>
@@ -118,14 +119,29 @@ if (game->getType() == GAME)
 				this->close();
 			}, isImageViewer ? "iconScraper" : "iconController");
 		
-		// PLAYERTOO
 		if(!isAudio && !isVideo && !isImageViewer){
+
+			// PLAYERTOO
 			mMenu.addEntry(_("LAUNCH MULTIPLAYER HOST"), false, [window, game, this]
 				{
-					LaunchGameOptions options;
+					/*LaunchGameOptions options;
 					options.hostMP = true;
 					ViewController::get()->launch(game, options);
-					this->close();
+					this->close();*/
+					mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("STARTING GAME SERVER..."),
+						[this, window](auto gui)
+						{
+							return apInlineInfo("startgameserver");
+						},
+						[this, window, game](std::string res)
+						{
+							LaunchGameOptions options;
+							options.hostMP = true;
+							ViewController::get()->launch(game, options);
+							this->close();
+						}
+					));
+
 				}, "iconMultiplayer");
 
 			if (SaveStateRepository::isEnabled(game))
