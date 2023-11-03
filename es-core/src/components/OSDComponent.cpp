@@ -123,7 +123,6 @@ void OSDComponent::update(int deltaTime)
 	if((showme != _show && _show > 0) || paused)
 	{
 		showme = _show;
-		LOG(LogDebug) << "OSD::show ";
 		mDisplayTime = 0;
 
 		if (!isVisible())
@@ -178,9 +177,9 @@ void OSDComponent::render(const Transform4x4f& parentTrans)
 	// progressbar
 	//void drawRoundRect(float x, float y, float width, float height, float radius, unsigned int color, const Blend::Factor _srcBlendFactor, const Blend::Factor _dstBlendFactor)
 	//void drawRect(const float _x, const float _y, const float _w, const float _h, const unsigned int _color, const Blend::Factor _srcBlendFactor, const Blend::Factor _dstBlendFactor)
-	Renderer::drawRect(x, y, w, h, r, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
+	Renderer::drawRoundRect(x, y, w, h, r, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
 	float px = w * (float(currTime) / float(totalTime));
-	Renderer::drawRect(x, y, px, h, r, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
+	Renderer::drawRoundRect(x, y, px, h, r, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
 	// pause sign
 	if(paused)
 	{

@@ -759,10 +759,14 @@ void VideoVlcComponent::pauseResume()
 	{
 		libvlc_media_player_pause(mMediaPlayer);
 
-		AudioManager::getInstance()->VideoSetPaused(!libvlc_media_player_is_playing(mMediaPlayer));
-		AudioManager::getInstance()->VideoSetOSD(libvlc_media_player_get_time(mMediaPlayer) - 1);
+		if(!libvlc_media_player_is_playing(mMediaPlayer))
+		{
+			PowerSaver::resume();
+		}
+		else{
+			PowerSaver::pause();
+		}
 
-		PowerSaver::resume();
 		//AudioManager::getInstance()->VideoSetPaused(libvlc_media_player_is_playing(mMediaPlayer));
 	}
 
@@ -855,6 +859,7 @@ void VideoVlcComponent::update(int deltaTime)
 	{
 		AudioManager::getInstance()->VideoSetCurrTime((mMediaPlayer == NULL) ? 0 : libvlc_media_player_get_time(mMediaPlayer));
 		AudioManager::getInstance()->VideoSetTotalTime((mMediaPlayer == NULL) ? 0 : libvlc_media_player_get_length(mMediaPlayer));
+		AudioManager::getInstance()->VideoSetPaused((mMediaPlayer == NULL) ? false : libvlc_media_player_is_playing(mMediaPlayer));
 	}
 
 	if (mConfig.showSnapshotNoVideo || mConfig.showSnapshotDelay)
