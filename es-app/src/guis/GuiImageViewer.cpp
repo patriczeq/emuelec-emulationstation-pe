@@ -736,6 +736,7 @@ void GuiVideoViewer::playVideo(Window* window, const std::string videoPath, bool
 
 GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path, bool movie) : GuiComponent(window)
 {
+	
 	vWindow = window;
 	isMovie = movie;
 	setPosition(0, 0);

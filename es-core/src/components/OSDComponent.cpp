@@ -86,11 +86,7 @@ void OSDComponent::update(int deltaTime)
 
 	if(!AudioManager::getInstance()->getVideoMoviePlaying())
 	{
-		if (isVisible())
-			{
-				setVisible(false);
-				PowerSaver::resume();
-			}
+		setVisible(false);
 		return;
 	}
 
@@ -177,10 +173,9 @@ void OSDComponent::render(const Transform4x4f& parentTrans)
 	
 	auto theme = ThemeData::getMenuTheme();
 
-	float px = w * (currTime / totalTime);
-
 	Renderer::drawRect(x, y, w, h, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
 
-	//float px = (h*mVolume) / 100000;
-	Renderer::drawRect(x, y, px, h, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
+	float px = w * (currTime / totalTime);
+	//test
+	Renderer::drawRect(x, y, w - 64, h, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
 }
