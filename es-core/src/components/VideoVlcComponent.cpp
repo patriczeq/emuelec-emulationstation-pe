@@ -86,7 +86,7 @@ VideoVlcComponent::VideoVlcComponent(Window* window, bool isMovie) :
 	// Get an empty texture for rendering the video
 	mTexture = nullptr;// TextureResource::get("");
 	mEffect = VideoVlcFlags::VideoVlcEffect::BUMP;
-
+	subIndex = -1;
 	// Make sure VLC has been initialised
 	init();
 	mIsMovie = isMovie;
@@ -772,6 +772,13 @@ void VideoVlcComponent::pauseResume()
 		}
 	}
 
+void VideoVlcComponent::toggleSubs(){
+	subIndex++;
+	if(libvlc_video_set_spu(mMediaPlayer, subIndex) != 0){
+		subIndex = -1;
+	}
+}
+
 void VideoVlcComponent::loadSubtitles()
 	{
 		// internal subs
@@ -795,7 +802,7 @@ void VideoVlcComponent::loadSubtitles()
 			LOG(LogInfo) << "libVLC external subtitles found: " << mSubtitlePath;
 			if(
 				//libvlc_video_set_subtitle_file(mMediaPlayer, mSubtitlePath.c_str())
-				libvlc_media_player_add_slave(mMediaPlayer, libvlc_media_slave_type_subtitle, ("file://" + mSubtitlePath).c_str(), true) == 0
+				libvlc_media_player_add_slave(mMediaPlayer, libvlc_media_slave_type_subtitle, ("file://" + mSubtitlePath).c_str(), false) == 0
 			){
 				//libvlc_video_set_spu(mMediaPlayer, 0);
 				LOG(LogInfo) << "libVLC external subtitles loaded";

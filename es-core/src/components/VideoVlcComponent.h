@@ -95,7 +95,7 @@ public:
 	void seek(int s);
 	void pauseResume();
 	void loadSubtitles();
-
+	void toggleSubs();
 private:
 	// Calculates the correct mSize from our resizing information (set by setResize/setMaxSize).
 	// Used internally whenever the resizing parameters or texture change.
@@ -126,7 +126,7 @@ private:
 
 	std::string					    mSubtitlePath;
 	std::string					    mSubtitleTmpFile;
-	std::string						mCustomShader;
+	std::string							mCustomShader;
 
 	VideoVlcFlags::VideoVlcEffect	mEffect;
 
@@ -139,6 +139,7 @@ private:
 	bool							mLinearSmooth;
 	float							mSaturation;
 	bool							mIsMovie;
+	int subIndex;
 };
 
 #endif // ES_CORE_COMPONENTS_VIDEO_VLC_COMPONENT_H

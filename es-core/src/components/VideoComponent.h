@@ -55,6 +55,7 @@ public:
 	virtual void seek(int s) = 0;
 	virtual void pauseResume() = 0;
 	virtual void loadSubtitles() = 0;
+	virtual void toggleSubs() = 0;
 
 	// Configures the component to show the default video
 	void setDefaultVideo();
