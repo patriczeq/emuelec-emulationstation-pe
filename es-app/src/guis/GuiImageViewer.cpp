@@ -809,7 +809,7 @@ bool GuiVideoViewer::input(InputConfig* config, Input input)
 			}
 			if(config->isMappedTo(BUTTON_BACK, input))
 			{
-				//mVideo->toggleSubs();
+				mVideo->toggleSubs();
 			}
 
 			if(config->isMappedTo("start", input))
