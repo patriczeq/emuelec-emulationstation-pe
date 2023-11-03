@@ -581,7 +581,7 @@ void VideoVlcComponent::handleLooping()
 			if (mMedia)
 				libvlc_media_player_set_media(mMediaPlayer, mMedia);
 			//	libvlc_audio_set_mute(mMediaPlayer, 0);
-
+			loadSubtitles();
 			libvlc_media_player_play(mMediaPlayer);
 
 			AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
@@ -794,8 +794,9 @@ void VideoVlcComponent::loadSubtitles()
 			LOG(LogInfo) << "libVLC external subtitles found: " << mSubtitlePath;
 			if(
 				//libvlc_video_set_subtitle_file(mMediaPlayer, mSubtitlePath.c_str())
-				libvlc_media_player_add_slave(mMediaPlayer, libvlc_media_slave_type_subtitle, mSubtitlePath.c_str(), true)
+				libvlc_media_player_add_slave(mMediaPlayer, libvlc_media_slave_type_subtitle, mSubtitlePath.c_str(), true) == 0
 			){
+				libvlc_video_set_spu(mMediaPlayer, 0);
 				LOG(LogInfo) << "libVLC external subtitles loaded";
 			}else{
 				LOG(LogError) << "libVLC ERROR loading external subtitles";
