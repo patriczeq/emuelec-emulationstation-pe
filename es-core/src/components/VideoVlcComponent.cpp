@@ -507,7 +507,7 @@ void VideoVlcComponent::init()
 	std::vector<std::string> cmdline;
 	//cmdline.push_back("--quiet");
 	//cmdline.push_back("--no-video-title-show");
-	cmdline.push_back("--spu");
+	//cmdline.push_back("--spu");
 
 	std::string commandLine = SystemConf::getInstance()->get("vlc.commandline");
 	if (!commandLine.empty())
