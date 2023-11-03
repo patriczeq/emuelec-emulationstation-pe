@@ -116,6 +116,7 @@ void OSDComponent::update(int deltaTime)
 
 	currTime 	= AudioManager::getInstance()->VideoGetCurrTime();
 	totalTime 	= AudioManager::getInstance()->VideoGetTotalTime();
+	paused		= AudioManager::getInstance()->VideoGetPaused();
 	mLabelCurr->setText(formatMStoTime(currTime) + " / " + formatMStoTime(totalTime));
 	mLabelTotal->setText("-" + formatMStoTime(totalTime - currTime));
 
@@ -173,10 +174,21 @@ void OSDComponent::render(const Transform4x4f& parentTrans)
 	float h = 12;
 	
 	auto theme = ThemeData::getMenuTheme();
-
+	// progressbar
 	Renderer::drawRect(x, y, w, h, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
-
 	float px = w * (float(currTime) / float(totalTime));
-	//test
 	Renderer::drawRect(x, y, px, h, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
+	// pause sign
+	if(!paused)
+	{
+		float pauseSpace = 4;
+		float pauseW = 8;
+		float pauseH = 20;
+		float pauseCenter = Renderer::getScreenWidth()/2;
+		float pauseY = 8;
+		Renderer::drawRect(pauseCenter - pauseSpace - pauseW, pauseY, pauseW, pauseH, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
+		Renderer::drawRect(pauseCenter + pauseSpace, pauseY, pauseW, pauseH, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
+	}
+	
+
 }

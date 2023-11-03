@@ -31,6 +31,7 @@ private:
 	int totalTime;
 	int currTime;
 	int showme;
+	bool paused;
 
 	int mCheckTime;
 	int mDisplayTime;
