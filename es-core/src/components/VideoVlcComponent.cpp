@@ -580,7 +580,6 @@ void VideoVlcComponent::handleLooping()
 
 			//libvlc_media_player_set_position(mMediaPlayer, 0.0f);
 			if (mMedia)
-				loadSubtitles();
 				libvlc_media_player_set_media(mMediaPlayer, mMedia);
 			//	libvlc_audio_set_mute(mMediaPlayer, 0);
 			//loadSubtitles();
@@ -710,7 +709,11 @@ void VideoVlcComponent::startVideo()
 				setupContext();
 
 				// Setup the media player
-				mMediaPlayer = libvlc_media_player_new_from_media(mMedia);
+				//loadSubtitles();
+				mMediaPlayer = libvlc_media_player_new(mVLC);
+				libvlc_media_player_set_media(mMediaPlayer, mMedia);
+				loadSubtitles();
+				//mMediaPlayer = libvlc_media_player_new_from_media(mMedia);
 
 				if (hasAudioTrack && !mIsMovie)
 				{
