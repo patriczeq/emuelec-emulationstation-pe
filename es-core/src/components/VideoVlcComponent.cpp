@@ -619,8 +619,8 @@ void VideoVlcComponent::startVideo()
 	if (mVLC && (path.size() > 0))
 	{
 		// find subtitles file...
-		size_t lastindexExt = mVideoPath.find_last_of(".");
-		str::string videoRemExt = mVideoPath.substr(0, lastindexExt);
+		int lastindexExt = mVideoPath.find_last_of(".");
+		std::string videoRemExt = mVideoPath.substr(0, lastindexExt);
 
 		if (FILE *file = fopen((videoRemExt + ".srt").c_str(), "r")) {
         mSubtitlePath = videoRemExt + ".srt";
