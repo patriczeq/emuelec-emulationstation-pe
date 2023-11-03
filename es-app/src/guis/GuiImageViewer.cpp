@@ -764,12 +764,13 @@ GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path, bool mov
 		return false;
 	});
 
+	//mVideo->setStartDelay(25);
+	mVideo->setVideo(path);
+	mVideo->startVideo();
+
 	addChild(mVideo);
 
-	mVideo->setStartDelay(25);
-	mVideo->setVideo(path);
-
-	//topWindow(true);
+	topWindow(true);
 }
 
 GuiVideoViewer::~GuiVideoViewer()

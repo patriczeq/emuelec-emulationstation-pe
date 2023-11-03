@@ -565,7 +565,6 @@ void VideoComponent::manageState()
 		// If we are on display then see if we should start the video
 		if (show && !mVideoPath.empty())
 		{
-			LOG(LogDebug) << "VideoComponent try Play... " << mVideoPath;
 			if (isPaused())
 				resumeVideo();
 			else
