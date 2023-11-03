@@ -124,26 +124,10 @@ if (game->getType() == GAME)
 			// PLAYERTOO
 			mMenu.addEntry(_("LAUNCH MULTIPLAYER HOST"), false, [window, game, this]
 				{
-					/*LaunchGameOptions options;
+					LaunchGameOptions options;
 					options.hostMP = true;
 					ViewController::get()->launch(game, options);
-					this->close();*/
-					mWindow->pushGui(new GuiLoading<int>(window, _("STARTING GAME SERVER..."),
-						[this, window, game](auto gui)
-						{
-							std::string res = getShOutput("ap.sh startgameserver");
-							return 0;
-						},
-						[this, window, game](int i)
-						{
-							
-							LaunchGameOptions options;
-							options.hostMP = true;
-							ViewController::get()->launch(game, options);
-							this->close();
-							
-						}
-					));
+					this->close();
 
 				}, "iconMultiplayer");
 
