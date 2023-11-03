@@ -233,7 +233,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		if(SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 		{
 			std::string sname = AudioManager::getInstance()->getSongName();
-			if(!sname.empty())
+			if(!sname.empty() && AudioManager::getInstance()->isSongPlaying())
 			{
 				addWithDescription(_("MUSIC PLAYER"), _("NOW PLAYING") + ": " + sname, nullptr, [this]
 				{

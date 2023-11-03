@@ -711,7 +711,10 @@ void Window::render()
 
 	if (mTimeSinceLastInput >= screensaverTime && screensaverTime != 0)
 	{
-		if (mAllowSleep && (!mScreenSaver || mScreenSaver->allowSleep()))
+		// music is playing
+		bool musicPlaying = AudioManager::getInstance()->isSongPlaying();
+
+		if (mAllowSleep && !musicPlaying && (!mScreenSaver || mScreenSaver->allowSleep()))
 		{
 			// go to sleep
 			if (mSleeping == false) {
