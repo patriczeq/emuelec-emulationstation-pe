@@ -736,7 +736,7 @@ void GuiVideoViewer::playVideo(Window* window, const std::string videoPath, bool
 
 GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path, bool movie) : GuiComponent(window)
 {
-	
+
 	vWindow = window;
 	isMovie = movie;
 	setPosition(0, 0);
@@ -807,6 +807,11 @@ bool GuiVideoViewer::input(InputConfig* config, Input input)
 			{
 				mVideo->pauseResume();
 			}
+			if(config->isMappedTo(BUTTON_BACK, input))
+			{
+				mVideo->loadSubtitles();
+			}
+
 			if(config->isMappedTo("start", input))
 			{
 				delete this;

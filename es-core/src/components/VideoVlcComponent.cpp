@@ -618,6 +618,15 @@ void VideoVlcComponent::startVideo()
 	// Make sure we have a video path
 	if (mVLC && (path.size() > 0))
 	{
+		// find subtitles file...
+		size_t lastindexExt = mVideoPath.find_last_of(".");
+		str::string videoRemExt = mVideoPath.substr(0, lastindexExt);
+
+		if (FILE *file = fopen((videoRemExt + ".srt").c_str(), "r")) {
+        mSubtitlePath = videoRemExt + ".srt";
+    }else if (FILE *file = fopen((videoRemExt + ".sub").c_str(), "r")) {
+        mSubtitlePath = videoRemExt + ".sub";
+    }
 		// Set the video that we are going to be playing so we don't attempt to restart it
 		mPlayingVideoPath = mVideoPath;
 
@@ -766,8 +775,12 @@ void VideoVlcComponent::pauseResume()
 		else{
 			PowerSaver::pause();
 		}
+	}
 
-		//AudioManager::getInstance()->VideoSetPaused(libvlc_media_player_is_playing(mMediaPlayer));
+void VideoVlcComponent::loadSubtitles()
+	{
+		//mSubtitlePath
+		libvlc_video_set_subtitle_file(mMediaPlayer, str_to_bytes(mSubtitlePath));
 	}
 
 void VideoVlcComponent::stopVideo()
@@ -793,10 +806,7 @@ void VideoVlcComponent::stopVideo()
 
 	freeContext();
 	PowerSaver::resume();
-	AudioManager::setVideoPlaying(false);
-	AudioManager::setVideoMoviePlaying(false);
 	AudioManager::getInstance()->VideoReset();
-	AudioManager::getInstance()->VideoSetOSD(0);
 }
 
 void VideoVlcComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const std::string& view, const std::string& element, unsigned int properties)
@@ -859,7 +869,7 @@ void VideoVlcComponent::update(int deltaTime)
 	{
 		AudioManager::getInstance()->VideoSetCurrTime((mMediaPlayer == NULL) ? 0 : libvlc_media_player_get_time(mMediaPlayer));
 		AudioManager::getInstance()->VideoSetTotalTime((mMediaPlayer == NULL) ? 0 : libvlc_media_player_get_length(mMediaPlayer));
-		AudioManager::getInstance()->VideoSetPaused((mMediaPlayer == NULL) ? false : libvlc_media_player_is_playing(mMediaPlayer));
+		AudioManager::getInstance()->VideoSetPaused((mMediaPlayer == NULL) ? false : !libvlc_media_player_is_playing(mMediaPlayer));
 	}
 
 	if (mConfig.showSnapshotNoVideo || mConfig.showSnapshotDelay)

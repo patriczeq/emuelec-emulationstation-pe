@@ -94,6 +94,7 @@ public:
 
 	void seek(int s);
 	void pauseResume();
+	void loadSubtitles();
 
 private:
 	// Calculates the correct mSize from our resizing information (set by setResize/setMaxSize).

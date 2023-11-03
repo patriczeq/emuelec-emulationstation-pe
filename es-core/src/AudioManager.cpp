@@ -777,7 +777,7 @@ bool AudioManager::VideoGetPaused(){
 }
 void AudioManager::VideoSetPaused(bool p){
 	VideoIsPaused = p;
-	LOG(LogDebug) << "AudioManager::VideoSetPaused " << (VideoIsPaused ? "PAUSE" : "PLAY");
+	//LOG(LogDebug) << "AudioManager::VideoSetPaused " << (VideoIsPaused ? "PAUSE" : "PLAY");
 }
 
 void AudioManager::VideoSetOSD(int show){
@@ -793,7 +793,8 @@ void AudioManager::VideoReset(){
 	VideoTotalTime 	= -1;
 	VideoIsPaused 	= false;
 	VideoShow_OSD 	= -1;
-
+	setVideoPlaying(false);
+	setVideoMoviePlaying(false);
 }
 
 // EOF VideoOSDHelper
