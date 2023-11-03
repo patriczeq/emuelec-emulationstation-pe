@@ -219,6 +219,7 @@ protected:
 	bool							mIsWaitingForVideoToStart;
 
 	float							mRoundCorners;
+	bool mIsMovie;
 
 	//std::shared_ptr<OSDComponent> mOSD;
 
