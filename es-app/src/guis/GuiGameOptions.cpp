@@ -92,9 +92,9 @@ if(isAudio && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 
 if( isVideo && SystemConf::getInstance()->get("pe_fevideo.enabled") == "1")
 {
-	mMenu.addEntry(_("PLAY VIDEO FILE"), false, [_path, this, window]
+	mMenu.addEntry(_("PLAY VIDEO FILE"), false, [_path, this]
 		{
-			GuiVideoViewer::playVideo(window, _path, true);
+			GuiVideoViewer::playVideo(mWindow, _path, true);
 			this->close();
 		}, "iconScraper");
 }
@@ -103,77 +103,88 @@ if (game->getType() == GAME)
 	{
 		mMenu.addGroup(_("GAME"));
 
-		mMenu.addEntry(isImageViewer ? _("OPEN") : _("LAUNCH"), false, [window, game, this]
+		std::string oplaunch = _("LAUNCH");
+		if(isAudio){
+			oplaunch = _("OPEN AUDIO IN PROGRAM...");
+		}else if(isVideo){
+			oplaunch = _("OPEN VIDEO IN PROGRAM...");
+		}else if(isImageViewer){
+			oplaunch = _("OPEN");
+		}
+
+		mMenu.addEntry(oplaunch, false, [window, game, this]
 			{
 				ViewController::get()->launch(game);
 				this->close();
 			}, isImageViewer ? "iconScraper" : "iconController");
+		
 		// PLAYERTOO
-		mMenu.addEntry(_("LAUNCH MULTIPLAYER HOST"), false, [window, game, this]
-			{
-				LaunchGameOptions options;
-				options.hostMP = true;
-				ViewController::get()->launch(game, options);
-				this->close();
-			}, "iconMultiplayer");
-
-		if (SaveStateRepository::isEnabled(game))
-		{
-			mMenu.addEntry(_("SAVE STATES"), false, [window, game, this]
-			{
-					mWindow->pushGui(new GuiSaveState(mWindow, game, [this, game](SaveState state)
-					{
-						LaunchGameOptions options;
-						options.saveStateInfo = state;
-						ViewController::get()->launch(game, options);
-					}));
-#ifdef _ENABLEEMUELEC
-					guiSaveStateLoad(mWindow, game);
-#endif
-					this->close();
-			});
-		}
-
-		if (game->isNetplaySupported())
-		{
-			mMenu.addEntry(_("START A NETPLAY GAME"), false, [window, game, this]
-			{
-				GuiSettings* msgBox = new GuiSettings(mWindow, _("NETPLAY"));
-				msgBox->setSubTitle(game->getName());
-				msgBox->addGroup(_("START GAME"));
-
-				msgBox->addEntry(_U("\uF144 ") + _("HOST A NETPLAY GAME"), false, [window, msgBox, game]
+		if(!isAudio && !isVideo && !isImageViewer){
+			mMenu.addEntry(_("LAUNCH MULTIPLAYER HOST"), false, [window, game, this]
 				{
-					if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
-					{
-						window->pushGui(new GuiMsgBox(window, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));
-						return;
-					}
-
 					LaunchGameOptions options;
-					options.netPlayMode = SERVER;
+					options.hostMP = true;
 					ViewController::get()->launch(game, options);
-					msgBox->close();
+					this->close();
+				}, "iconMultiplayer");
+
+			if (SaveStateRepository::isEnabled(game))
+			{
+				mMenu.addEntry(_("SAVE STATES"), false, [window, game, this]
+				{
+						mWindow->pushGui(new GuiSaveState(mWindow, game, [this, game](SaveState state)
+						{
+							LaunchGameOptions options;
+							options.saveStateInfo = state;
+							ViewController::get()->launch(game, options);
+						}));
+	#ifdef _ENABLEEMUELEC
+						guiSaveStateLoad(mWindow, game);
+	#endif
+						this->close();
 				});
+			}
 
-				msgBox->addGroup(_("OPTIONS"));
+			if (game->isNetplaySupported())
+			{
+				mMenu.addEntry(_("START A NETPLAY GAME"), false, [window, game, this]
+				{
+					GuiSettings* msgBox = new GuiSettings(mWindow, _("NETPLAY"));
+					msgBox->setSubTitle(game->getName());
+					msgBox->addGroup(_("START GAME"));
 
-				// pubic announce
-				auto public_announce = std::make_shared<SwitchComponent>(mWindow);
-				public_announce->setState(SystemConf::getInstance()->getBool("global.netplay_public_announce"));
-				msgBox->addWithLabel(_("PUBLICLY ANNOUNCE GAME"), public_announce);
-				msgBox->addSaveFunc([public_announce] { SystemConf::getInstance()->setBool("global.netplay_public_announce", public_announce->getState()); });
+					msgBox->addEntry(_U("\uF144 ") + _("HOST A NETPLAY GAME"), false, [window, msgBox, game]
+					{
+						if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
+						{
+							window->pushGui(new GuiMsgBox(window, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));
+							return;
+						}
 
-				// passwords
-				msgBox->addInputTextRow(_("PLAYER PASSWORD"), "global.netplay.password", false);
-				msgBox->addInputTextRow(_("VIEWER PASSWORD"), "global.netplay.spectatepassword", false);
+						LaunchGameOptions options;
+						options.netPlayMode = SERVER;
+						ViewController::get()->launch(game, options);
+						msgBox->close();
+					});
 
-				mWindow->pushGui(msgBox);
-				close();
-			});
+					msgBox->addGroup(_("OPTIONS"));
+
+					// pubic announce
+					auto public_announce = std::make_shared<SwitchComponent>(mWindow);
+					public_announce->setState(SystemConf::getInstance()->getBool("global.netplay_public_announce"));
+					msgBox->addWithLabel(_("PUBLICLY ANNOUNCE GAME"), public_announce);
+					msgBox->addSaveFunc([public_announce] { SystemConf::getInstance()->setBool("global.netplay_public_announce", public_announce->getState()); });
+
+					// passwords
+					msgBox->addInputTextRow(_("PLAYER PASSWORD"), "global.netplay.password", false);
+					msgBox->addInputTextRow(_("VIEWER PASSWORD"), "global.netplay.spectatepassword", false);
+
+					mWindow->pushGui(msgBox);
+					close();
+				});
+			}
+
 		}
-
-
 
 			if (hasManual || hasMap || hasCheevos || hasMagazine || hasVideo || hasAlternateMedias)
 	{
