@@ -779,8 +779,10 @@ void VideoVlcComponent::pauseResume()
 
 void VideoVlcComponent::loadSubtitles()
 	{
+		// internal subs
+			//libvlc_video_set_spu(mMediaPlayer,int index) // vrátí 0 když ok -1 fail;
 		//mSubtitlePath
-		libvlc_video_set_subtitle_file(mMediaPlayer, str_to_bytes(mSubtitlePath));
+		libvlc_video_set_subtitle_file(mMediaPlayer, mSubtitlePath.c_str());
 	}
 
 void VideoVlcComponent::stopVideo()
