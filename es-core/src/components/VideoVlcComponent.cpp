@@ -981,7 +981,7 @@ void VideoVlcComponent::pauseVideo()
 		PowerSaver::resume();
 		AudioManager::setVideoPlaying(false);
 		if(mIsMovie){
-			AudiManager::setVideoMoviePlaying(true);
+			AudioManager::setVideoMoviePlaying(true);
 		}
 	}
 }
@@ -1002,7 +1002,7 @@ void VideoVlcComponent::resumeVideo()
 	PowerSaver::pause();
 	AudioManager::setVideoPlaying(true);
 	if(mIsMovie){
-		AudiManager::setVideoMoviePlaying(true);
+		AudioManager::setVideoMoviePlaying(true);
 	}
 }
 
