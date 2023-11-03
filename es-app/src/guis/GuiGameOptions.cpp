@@ -128,17 +128,20 @@ if (game->getType() == GAME)
 					options.hostMP = true;
 					ViewController::get()->launch(game, options);
 					this->close();*/
-					mWindow->pushGui(new GuiLoading<std::string>(window, _("STARTING GAME SERVER..."),
-						[this, window](auto gui)
+					mWindow->pushGui(new GuiLoading<int>(window, _("STARTING GAME SERVER..."),
+						[this, window, game](auto gui)
 						{
-							return getShOutput("ap.sh startgameserver");
+							std::string res = getShOutput("ap.sh startgameserver");
+							return 0;
 						},
-						[this, window, game](std::string res)
+						[this, window, game](int i)
 						{
+							
 							LaunchGameOptions options;
 							options.hostMP = true;
 							ViewController::get()->launch(game, options);
 							this->close();
+							
 						}
 					));
 
