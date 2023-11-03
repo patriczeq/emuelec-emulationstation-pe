@@ -924,7 +924,7 @@ void Window::onWake()
 
 void Window::startScreenSaver()
 {
-	if(AudioManager::getVideoMoviePlaying())
+	if(!AudioManager::getInstance()->VideoGetPaused())
 		{
 			return;
 		}
