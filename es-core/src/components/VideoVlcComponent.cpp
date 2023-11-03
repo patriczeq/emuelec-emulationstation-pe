@@ -604,6 +604,7 @@ void VideoVlcComponent::handleLooping()
 
 void VideoVlcComponent::startVideo()
 {
+	LOG(LogDebug) << "VLCVideoComponent start: " << mVideoPath;
 	if (mIsPlaying)
 		return;
 
@@ -743,6 +744,9 @@ void VideoVlcComponent::startVideo()
 
 void VideoVlcComponent::seek(int s)
 	{
+		if(mMediaPlayer == NULL){
+			return;
+		}
 		int total 	= libvlc_media_player_get_length(mMediaPlayer);
 		int current = libvlc_media_player_get_time(mMediaPlayer);
 		int newTime	= current + s;

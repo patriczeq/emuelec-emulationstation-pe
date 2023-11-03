@@ -16,6 +16,7 @@
 #include "components/HelpComponent.h"
 #include "SystemConf.h"
 #include "AudioManager.h"
+#include "Log.h"
 
 class ZoomableImageComponent : public ImageComponent
 {
@@ -736,7 +737,6 @@ void GuiVideoViewer::playVideo(Window* window, const std::string videoPath, bool
 
 GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path, bool movie) : GuiComponent(window)
 {
-	topWindow(true);
 	vWindow = window;
 	isMovie = movie;
 	setPosition(0, 0);
@@ -749,7 +749,7 @@ GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path, bool mov
 #endif
 	{
 		mVideo = new VideoVlcComponent(mWindow, isMovie);
-
+		LOG(LogDebug) << "VideoComponent created";
 		((VideoVlcComponent*)mVideo)->setLinearSmooth();
 		((VideoVlcComponent*)mVideo)->setEffect(VideoVlcFlags::NONE);
 	}
@@ -768,6 +768,7 @@ GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path, bool mov
 
 	mVideo->setStartDelay(25);
 	mVideo->setVideo(path);
+	LOG(LogDebug) << "VideoComponent set: " << path;
 
 	//topWindow(true);
 }
@@ -808,6 +809,7 @@ bool GuiVideoViewer::input(InputConfig* config, Input input)
 
 			if(config->isMappedTo("start", input))
 			{
+				AudioManager::getInstance()->VideoReset();
 				delete this;
 				return true;
 			}
@@ -815,7 +817,6 @@ bool GuiVideoViewer::input(InputConfig* config, Input input)
 		else{
 			if(config->isMappedTo(BUTTON_OK, input) || config->isMappedTo(BUTTON_BACK, input))
 			{
-				AudioManager::getInstance()->VideoReset();
 				delete this;
 				return true;
 			}

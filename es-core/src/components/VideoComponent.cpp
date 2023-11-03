@@ -191,7 +191,7 @@ void VideoComponent::render(const Transform4x4f& parentTrans)
 	if (!Renderer::isVisibleOnScreen(trans.translation().x(), trans.translation().y(), mSize.x(), mSize.y()))
 		return;
 		*/
-	
+
 	beginCustomClipRect();
 
 	GuiComponent::renderChildren(trans);
