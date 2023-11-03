@@ -760,7 +760,7 @@ void VideoVlcComponent::pauseResume()
 		libvlc_media_player_pause(mMediaPlayer);
 
 		AudioManager::getInstance()->VideoSetPaused(!libvlc_media_player_is_playing(mMediaPlayer));
-		AudioManager::getInstance()->VideoSetOSD(libvlc_media_player_get_time(mMediaPlayer));
+		AudioManager::getInstance()->VideoSetOSD(libvlc_media_player_get_time(mMediaPlayer) - 1);
 
 		PowerSaver::resume();
 		//AudioManager::getInstance()->VideoSetPaused(libvlc_media_player_is_playing(mMediaPlayer));

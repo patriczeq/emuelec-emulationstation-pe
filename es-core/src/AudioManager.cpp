@@ -65,7 +65,7 @@ void AudioManager::init()
 	mMusicVolume = 0;
 	mPlayingSystemThemeSong = "none";
 	std::deque<std::string> mLastPlayed;
-	VideoCurrTime = -1;
+	VideoReset();
 
 
 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0)
@@ -789,10 +789,10 @@ int AudioManager::VideoShowOSD(){
 }
 
 void AudioManager::VideoReset(){
-	VideoCurrTime = 0;
-	VideoTotalTime = 0;
-	VideoIsPaused = false;
-	VideoShow_OSD = 0;
+	VideoCurrTime 	= -1;
+	VideoTotalTime 	= -1;
+	VideoIsPaused 	= false;
+	VideoShow_OSD 	= -1;
 
 }
 
