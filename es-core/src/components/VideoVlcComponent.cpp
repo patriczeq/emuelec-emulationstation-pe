@@ -792,7 +792,10 @@ void VideoVlcComponent::loadSubtitles()
 
 		if(!mSubtitlePath.empty()){
 			LOG(LogInfo) << "libVLC external subtitles found: " << mSubtitlePath;
-			if(libvlc_video_set_subtitle_file(mMediaPlayer, mSubtitlePath.c_str())){
+			if(
+				//libvlc_video_set_subtitle_file(mMediaPlayer, mSubtitlePath.c_str())
+				libvlc_media_player_add_slave(mMediaPlayer, libvlc_media_slave_type_subtitle, mSubtitlePath, true);
+			){
 				LOG(LogInfo) << "libVLC external subtitles loaded";
 			}else{
 				LOG(LogError) << "libVLC ERROR loading external subtitles";
