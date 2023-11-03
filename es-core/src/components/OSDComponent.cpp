@@ -12,8 +12,9 @@
 #define PADDING_PX			(Renderer::getScreenWidth()*0.006)
 #define PADDING_BAR			(Renderer::isSmallScreen() ? Renderer::getScreenWidth()*0.02 : Renderer::getScreenWidth()*0.006)
 
-#define VISIBLE_TIME		2650
+#define VISIBLE_TIME		4650
 #define FADE_TIME			350
+
 #define BASEOPACITY			200
 #define CHECKVOLUMEDELAY	40
 
@@ -116,7 +117,7 @@ void OSDComponent::update(int deltaTime)
 	currTime 	= AudioManager::getInstance()->VideoGetCurrTime();
 	totalTime 	= AudioManager::getInstance()->VideoGetTotalTime();
 	mLabelCurr->setText(formatMStoTime(currTime) + " / " + formatMStoTime(totalTime));
-	mLabelTotal->setText(formatMStoTime(totalTime - currTime));
+	mLabelTotal->setText("-" + formatMStoTime(totalTime - currTime));
 
 	if(showme != _show && _show > 0)
 	{
@@ -151,7 +152,7 @@ std::string OSDComponent::formatMStoTime(int ms)
 	int hours = minutes / 60;
 	minutes %= 60;
 
-	return dbNum(hours) + ":" + dbNum(minutes) + ":" + dbNum(seconds);
+	return (hours > 0 ? (dbNum(hours) + ":") : "") + dbNum(minutes) + ":" + dbNum(seconds);
 }
 void OSDComponent::render(const Transform4x4f& parentTrans)
 {
@@ -167,15 +168,15 @@ void OSDComponent::render(const Transform4x4f& parentTrans)
 	Renderer::setMatrix(trans);
 
 	float x = 16;
-	float y = 16;
+	float y = 20;
 	float w = Renderer::getScreenWidth() - 32;
-	float h = 16;
+	float h = 12;
 	
 	auto theme = ThemeData::getMenuTheme();
 
 	Renderer::drawRect(x, y, w, h, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
 
-	float px = w * (currTime / totalTime);
+	float px = w * (float(currTime) / float(totalTime));
 	//test
-	Renderer::drawRect(x, y, w - 64, h, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
+	Renderer::drawRect(x, y, px, h, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
 }
