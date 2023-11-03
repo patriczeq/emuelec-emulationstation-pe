@@ -87,13 +87,8 @@ VideoComponent::VideoComponent(Window* window, bool isMovie) :
 	mConfig.snapshotSource = IMAGE;
 	mConfig.startDelay				= 0;
 	mIsMovie = isMovie;
-	window->setAllowSleep(!isMovie);
 
-	/*if (mOSD == nullptr)
-		mOSD = std::make_shared<OSDComponent>(window);
-	else
-		mOSD->reset();
-	setZIndex(2);*/
+	window->setAllowSleep(!isMovie);
 
 	if (mWindow->getGuiStackSize() > 1)
 		topWindow(false);
@@ -196,10 +191,7 @@ void VideoComponent::render(const Transform4x4f& parentTrans)
 	if (!Renderer::isVisibleOnScreen(trans.translation().x(), trans.translation().y(), mSize.x(), mSize.y()))
 		return;
 		*/
-	if(mIsMovie)
-		{
-			Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), 0x000000FF);
-		}
+	
 	beginCustomClipRect();
 
 	GuiComponent::renderChildren(trans);

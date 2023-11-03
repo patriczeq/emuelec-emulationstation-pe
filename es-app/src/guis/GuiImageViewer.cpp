@@ -763,8 +763,6 @@ GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path, bool mov
 		mWindow->postToUiThread([&]() { delete this; });
 		return false;
 	});
-	// tady udelat cernou vypln! ale jak?
-
 
 	addChild(mVideo);
 

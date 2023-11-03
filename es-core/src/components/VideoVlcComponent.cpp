@@ -214,7 +214,10 @@ void VideoVlcComponent::render(const Transform4x4f& parentTrans)
 {
 	if (!isShowing() || !isVisible())
 		return;
-
+	if(mIsMovie)
+		{
+			Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), 0x000000FF);
+		}
 	VideoComponent::render(parentTrans);
 
 	bool initFromPixels = true;
@@ -585,9 +588,10 @@ void VideoVlcComponent::handleLooping()
 			loadSubtitles();
 			libvlc_media_player_play(mMediaPlayer);
 
-			AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
+
 			if(mIsMovie)
 				{
+					AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
 					AudioManager::setVideoMoviePlaying(true);
 					AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
 				}
@@ -716,18 +720,16 @@ void VideoVlcComponent::startVideo()
 					if (!getPlayAudio() || (!mScreensaverMode && !Settings::getInstance()->getBool("VideoAudio")) || (Settings::getInstance()->getBool("ScreenSaverVideoMute") && mScreensaverMode))
 						libvlc_audio_set_mute(mMediaPlayer, 1);
 					else
-
 						AudioManager::setVideoPlaying(true);
 				}
-				else{
+
+				if(mIsMovie){
+					AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
 					AudioManager::setVideoMoviePlaying(true);
 				}
-				//libvlc_audio_set_mute(mMediaPlayer, 0);
-				//libvlc_audio_set_volume(mMediaPlayer, 100);
-				//loadSubtitles();
+
 				libvlc_media_player_play(mMediaPlayer);
-				//loadSubtitles();
-				AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
+
 
 				if (mVideoWidth > 1)
 				{
@@ -839,7 +841,9 @@ void VideoVlcComponent::stopVideo()
 
 	freeContext();
 	PowerSaver::resume();
-	AudioManager::getInstance()->VideoReset();
+	if(mIsMovie){
+		AudioManager::getInstance()->VideoReset();
+	}
 }
 
 void VideoVlcComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const std::string& view, const std::string& element, unsigned int properties)
@@ -976,6 +980,9 @@ void VideoVlcComponent::pauseVideo()
 
 		PowerSaver::resume();
 		AudioManager::setVideoPlaying(false);
+		if(mIsMovie){
+			AudiManager::setVideoMoviePlaying(true);
+		}
 	}
 }
 
@@ -994,6 +1001,9 @@ void VideoVlcComponent::resumeVideo()
 	libvlc_media_player_play(mMediaPlayer);
 	PowerSaver::pause();
 	AudioManager::setVideoPlaying(true);
+	if(mIsMovie){
+		AudiManager::setVideoMoviePlaying(true);
+	}
 }
 
 bool VideoVlcComponent::isPaused()
