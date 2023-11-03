@@ -723,8 +723,9 @@ void VideoVlcComponent::startVideo()
 				}
 				//libvlc_audio_set_mute(mMediaPlayer, 0);
 				//libvlc_audio_set_volume(mMediaPlayer, 100);
-				libvlc_media_player_play(mMediaPlayer);
 				loadSubtitles();
+				libvlc_media_player_play(mMediaPlayer);
+				//loadSubtitles();
 				AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
 
 				if (mVideoWidth > 1)
@@ -782,17 +783,20 @@ void VideoVlcComponent::loadSubtitles()
 
 		if (FILE *file = fopen((videoRemExt + ".srt").c_str(), "r")) {
         mSubtitlePath = videoRemExt + ".srt";
-				LOG(LogInfo) << "libVLC subtitles found: " << mSubtitlePath;
     }else if (FILE *file = fopen((videoRemExt + ".sub").c_str(), "r")) {
         mSubtitlePath = videoRemExt + ".sub";
-				LOG(LogInfo) << "libVLC subtitles found: " << mSubtitlePath;
     }
 		else{
 			LOG(LogInfo) << "libVLC subtitles not found: " << videoRemExt + ".(srt/sub)";
 		}
 
 		if(!mSubtitlePath.empty()){
-			libvlc_video_set_subtitle_file(mMediaPlayer, mSubtitlePath.c_str());
+			LOG(LogInfo) << "libVLC external subtitles found: " << mSubtitlePath;
+			if(libvlc_video_set_subtitle_file(mMediaPlayer, mSubtitlePath.c_str())){
+				LOG(LogInfo) << "libVLC external subtitles loaded";
+			}else{
+				LOG(LogError) << "libVLC ERROR loading external subtitles";
+			}
 		}
 
 	}
