@@ -186,7 +186,7 @@ void OSDComponent::render(const Transform4x4f& parentTrans)
 		float pauseW = 6;
 		float pauseH = 20;
 		float pauseCenter = Renderer::getScreenWidth()/2;
-		float pauseY = 2;
+		float pauseY = -8;
 		Renderer::drawRect(pauseCenter - pauseSpace - pauseW, pauseY, pauseW, pauseH, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
 		Renderer::drawRect(pauseCenter + pauseSpace, pauseY, pauseW, pauseH, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
 	}

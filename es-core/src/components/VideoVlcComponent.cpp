@@ -618,15 +618,6 @@ void VideoVlcComponent::startVideo()
 	// Make sure we have a video path
 	if (mVLC && (path.size() > 0))
 	{
-		// find subtitles file...
-		int lastindexExt = mVideoPath.find_last_of(".");
-		std::string videoRemExt = mVideoPath.substr(0, lastindexExt);
-
-		if (FILE *file = fopen((videoRemExt + ".srt").c_str(), "r")) {
-        mSubtitlePath = videoRemExt + ".srt";
-    }else if (FILE *file = fopen((videoRemExt + ".sub").c_str(), "r")) {
-        mSubtitlePath = videoRemExt + ".sub";
-    }
 		// Set the video that we are going to be playing so we don't attempt to restart it
 		mPlayingVideoPath = mVideoPath;
 
@@ -634,6 +625,7 @@ void VideoVlcComponent::startVideo()
 		mMedia = libvlc_media_new_path(mVLC, path.c_str());
 		if (mMedia)
 		{
+
 			// use : vlc �long-help
 			// WIN32 ? libvlc_media_add_option(mMedia, ":avcodec-hw=dxva2");
 			// RPI/OMX ? libvlc_media_add_option(mMedia, ":codec=mediacodec,iomx,all"); .
@@ -732,6 +724,7 @@ void VideoVlcComponent::startVideo()
 				//libvlc_audio_set_mute(mMediaPlayer, 0);
 				//libvlc_audio_set_volume(mMediaPlayer, 100);
 				libvlc_media_player_play(mMediaPlayer);
+				loadSubtitles();
 				AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
 
 				if (mVideoWidth > 1)
@@ -782,7 +775,26 @@ void VideoVlcComponent::loadSubtitles()
 		// internal subs
 			//libvlc_video_set_spu(mMediaPlayer,int index) // vrátí 0 když ok -1 fail;
 		//mSubtitlePath
-		libvlc_video_set_subtitle_file(mMediaPlayer, mSubtitlePath.c_str());
+
+		// find subtitles file...
+		int lastindexExt = mVideoPath.find_last_of(".");
+		std::string videoRemExt = mVideoPath.substr(0, lastindexExt);
+
+		if (FILE *file = fopen((videoRemExt + ".srt").c_str(), "r")) {
+        mSubtitlePath = videoRemExt + ".srt";
+				LOG(LogInfo) << "libVLC subtitles found: " << mSubtitlePath;
+    }else if (FILE *file = fopen((videoRemExt + ".sub").c_str(), "r")) {
+        mSubtitlePath = videoRemExt + ".sub";
+				LOG(LogInfo) << "libVLC subtitles found: " << mSubtitlePath;
+    }
+		else{
+			LOG(LogInfo) << "libVLC subtitles not found: " << videoRemExt + ".(srt/sub)";
+		}
+
+		if(mSubtitlePath.size() > 0){
+			libvlc_video_set_subtitle_file(mMediaPlayer, mSubtitlePath.c_str());
+		}
+
 	}
 
 void VideoVlcComponent::stopVideo()
