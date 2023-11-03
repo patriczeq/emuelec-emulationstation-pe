@@ -791,7 +791,7 @@ void VideoVlcComponent::loadSubtitles()
 			LOG(LogInfo) << "libVLC subtitles not found: " << videoRemExt + ".(srt/sub)";
 		}
 
-		if(mSubtitlePath.size() > 0){
+		if(!mSubtitlePath.empty()){
 			libvlc_video_set_subtitle_file(mMediaPlayer, mSubtitlePath.c_str());
 		}
 
