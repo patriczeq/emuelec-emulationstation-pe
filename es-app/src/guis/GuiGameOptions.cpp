@@ -131,7 +131,7 @@ if (game->getType() == GAME)
 					mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("STARTING GAME SERVER..."),
 						[this, window](auto gui)
 						{
-							return apInlineInfo("startgameserver");
+							return getShOutput("ap.sh startgameserver");
 						},
 						[this, window, game](std::string res)
 						{
