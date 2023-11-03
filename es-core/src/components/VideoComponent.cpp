@@ -136,6 +136,8 @@ bool VideoComponent::setVideo(std::string path, bool checkFileExists)
 	mVideoPath = fullPath;
 	mStartDelayed = false;
 
+	LOG(LogDebug) << "VideoComponent set: " << mVideoPath;
+
 	// If the file exists then set the new video
 	if (!fullPath.empty() && (!checkFileExists || ResourceManager::getInstance()->fileExists(fullPath)))
 	{
@@ -563,6 +565,7 @@ void VideoComponent::manageState()
 		// If we are on display then see if we should start the video
 		if (show && !mVideoPath.empty())
 		{
+			LOG(LogDebug) << "VideoComponent try Play... " << mVideoPath;
 			if (isPaused())
 				resumeVideo();
 			else

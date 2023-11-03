@@ -88,8 +88,8 @@ VideoVlcComponent::VideoVlcComponent(Window* window, bool isMovie) :
 	mEffect = VideoVlcFlags::VideoVlcEffect::BUMP;
 	subIndex = -1;
 	// Make sure VLC has been initialised
-	init();
 	mIsMovie = isMovie;
+	init();
 
 }
 

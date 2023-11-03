@@ -768,7 +768,6 @@ GuiVideoViewer::GuiVideoViewer(Window* window, const std::string& path, bool mov
 
 	mVideo->setStartDelay(25);
 	mVideo->setVideo(path);
-	LOG(LogDebug) << "VideoComponent set: " << path;
 
 	//topWindow(true);
 }

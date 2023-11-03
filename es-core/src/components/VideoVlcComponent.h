@@ -138,7 +138,6 @@ private:
 
 	bool							mLinearSmooth;
 	float							mSaturation;
-	bool							mIsMovie;
 	int subIndex;
 };
 
