@@ -89,8 +89,8 @@ VideoVlcComponent::VideoVlcComponent(Window* window, bool isMovie) :
 
 	// Make sure VLC has been initialised
 	init();
-
 	mIsMovie = isMovie;
+
 }
 
 VideoVlcComponent::~VideoVlcComponent()
@@ -582,7 +582,6 @@ void VideoVlcComponent::handleLooping()
 				libvlc_media_player_set_media(mMediaPlayer, mMedia);
 			//	libvlc_audio_set_mute(mMediaPlayer, 0);
 			loadSubtitles();
-			libvlc_set_fullscreen(mMediaPlayer, true);
 			libvlc_media_player_play(mMediaPlayer);
 
 			AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));
@@ -725,7 +724,6 @@ void VideoVlcComponent::startVideo()
 				//libvlc_audio_set_mute(mMediaPlayer, 0);
 				//libvlc_audio_set_volume(mMediaPlayer, 100);
 				loadSubtitles();
-				libvlc_set_fullscreen(mMediaPlayer, true);
 				libvlc_media_player_play(mMediaPlayer);
 				//loadSubtitles();
 				AudioManager::getInstance()->VideoSetTotalTime(libvlc_media_player_get_length(mMediaPlayer));

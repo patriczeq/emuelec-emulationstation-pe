@@ -8,6 +8,7 @@
 #include <SDL_timer.h>
 #include "LocaleES.h"
 #include "Paths.h"
+#include "renderers/Renderer.h"
 //#include "components/OSDComponent.h"
 
 #define FADE_TIME_MS	800
@@ -195,7 +196,7 @@ void VideoComponent::render(const Transform4x4f& parentTrans)
 	if (!Renderer::isVisibleOnScreen(trans.translation().x(), trans.translation().y(), mSize.x(), mSize.y()))
 		return;
 		*/
-
+	Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), 0x000000FF);
 	beginCustomClipRect();
 
 	GuiComponent::renderChildren(trans);
@@ -218,6 +219,7 @@ void VideoComponent::render(const Transform4x4f& parentTrans)
 	// Handle the case where the video is delayed
 	if (!GuiComponent::isLaunchTransitionRunning)
 		handleStartDelay();
+
 
 	// Handle looping of the video
 	handleLooping();
