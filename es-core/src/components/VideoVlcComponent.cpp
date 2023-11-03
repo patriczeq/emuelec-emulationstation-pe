@@ -811,6 +811,9 @@ void VideoVlcComponent::loadSubtitles()
 			}
 		}
 
+		LOG(LogInfo) << "libVLC subtitles count: " << libvlc_video_get_spu_count(mMediaPlayer);
+		LOG(LogInfo) << "libVLC subtitles scale: " << libvlc_video_get_spu_text_scale(mMediaPlayer);
+
 	}
 
 void VideoVlcComponent::stopVideo()
