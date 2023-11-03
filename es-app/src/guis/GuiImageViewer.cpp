@@ -788,19 +788,15 @@ bool GuiVideoViewer::input(InputConfig* config, Input input)
 			//seek
 			if(config->isMappedTo("left", input)){
 				mVideo->seek(-60000);
-				vWindow->displayNotificationMessage("-1min", 3);
 			}  // -1 min
 			if(config->isMappedTo("right", input)){
 				mVideo->seek(60000);
-				vWindow->displayNotificationMessage("+1min", 3);
 			}  // +1 min
 			if(config->isMappedTo("down", input)){
 				mVideo->seek(-300000);
-				vWindow->displayNotificationMessage("-5min", 3);
 			} // -5 min
 			if(config->isMappedTo("up", input)){
 				mVideo->seek(300000);
-				vWindow->displayNotificationMessage("+5min", 3);
 			}    // +5 min
 			//ctrl
 			if(config->isMappedTo(BUTTON_OK, input))
@@ -809,7 +805,7 @@ bool GuiVideoViewer::input(InputConfig* config, Input input)
 			}
 			if(config->isMappedTo(BUTTON_BACK, input))
 			{
-				mVideo->toggleSubs();
+				//mVideo->toggleSubs();
 			}
 
 			if(config->isMappedTo("start", input))

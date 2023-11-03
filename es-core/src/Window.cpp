@@ -924,10 +924,11 @@ void Window::onWake()
 
 void Window::startScreenSaver()
 {
-	if(!AudioManager::getInstance()->VideoGetPaused())
+	if(AudioManager::getVideoMoviePlaying())
 		{
 			return;
 		}
+		
 	if (mScreenSaver && !mRenderScreenSaver)
 	{
 		for (auto extra : mScreenExtras)
