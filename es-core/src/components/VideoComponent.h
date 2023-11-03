@@ -165,7 +165,8 @@ public:
 	bool showSnapshots();
 
 	std::string getOriginalThemePath() { return mSourceThemePath; }
-
+	// Start the video Immediately
+	virtual void startVideo() = 0;
 protected:
 	std::string mSourceThemePath;
 
@@ -173,7 +174,7 @@ protected:
 	std::function<bool()> mVideoEnded;
 
 	// Start the video Immediately
-	virtual void startVideo() = 0;
+	//virtual void startVideo() = 0;
 	// Stop the video
 	virtual void stopVideo() { };
 

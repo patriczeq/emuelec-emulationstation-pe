@@ -96,12 +96,14 @@ public:
 	void pauseResume();
 	void loadSubtitles();
 	void toggleSubs();
+	// Start the video Immediately
+	virtual void startVideo();
 private:
 	// Calculates the correct mSize from our resizing information (set by setResize/setMaxSize).
 	// Used internally whenever the resizing parameters or texture change.
 	void resize();
 	// Start the video Immediately
-	virtual void startVideo();
+	//virtual void startVideo();
 	// Stop the video
 	virtual void stopVideo();
 
