@@ -793,10 +793,9 @@ void AudioManager::VideoReset(){
 	VideoTotalTime 	= -1;
 	VideoIsPaused 	= false;
 	VideoShow_OSD 	= -1;
-	VideoPlay 		= false;
+	VideoPlay 			= false;
 	VideoMoviePlay 	= false;
-	//setVideoPlaying(false);
-	//setVideoMoviePlaying(false);
+	mVideoPlaying		= false;
 }
 
 // EOF VideoOSDHelper

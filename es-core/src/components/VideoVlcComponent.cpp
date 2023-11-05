@@ -845,9 +845,9 @@ void VideoVlcComponent::stopVideo()
 
 	freeContext();
 	PowerSaver::resume();
-	if(mIsMovie){
+	//if(mIsMovie){
 		AudioManager::getInstance()->VideoReset();
-	}
+	//}
 }
 
 void VideoVlcComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const std::string& view, const std::string& element, unsigned int properties)
