@@ -570,11 +570,25 @@ void GuiMenu::openESP01Menu()
 
 
 		s->addGroup(_("IR"));
+		// Music Volume
+			auto irSpace = std::make_shared<SliderComponent>(mWindow, 50.f, 1000.f, 50.f, "ms");
+			irSpace->setValue(Settings::getInstance()->getInt("pe_hack.irspace"));
+			irSpace->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.irspace", (int)round(newVal)); });
+			s->addWithLabel(_("SPACE BETWEEN SENDS"), irSpace);
+
 			s->addEntry(_("POWER-OFF"), false, [window] {
+				//set space
+				std::string space = Settings::getInstance()->getString("pe_hack.irspace");
+				runSystemCommand("hacks.sh espconn irspace " + space, "", nullptr);
+				// run
 				runSystemCommand("hacks.sh espconn irkillonce", "", nullptr);
 				window->pushGui(new GuiMsgBox(window, _("SENDING POWER CODES"), _("OK"), nullptr));
 			});
 			s->addEntry(_("POWER-OFF (LOOP)"), false, [window] {
+				//set space
+				std::string space = Settings::getInstance()->getString("pe_hack.irspace");
+				runSystemCommand("hacks.sh espconn irspace " + space, "", nullptr);
+				// run
 				runSystemCommand("hacks.sh espconn irkill", "", nullptr);
 				window->pushGui(new GuiMsgBox(window, _("SENDING POWER CODES IN LOOP"), _("OK"), nullptr));
 			});
