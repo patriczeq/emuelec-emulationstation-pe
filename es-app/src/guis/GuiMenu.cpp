@@ -569,17 +569,17 @@ void GuiMenu::openESP01Menu()
 				});
 
 
-		s->addGroup(_("IR"));
-		// Music Volume
-			auto irSpace = std::make_shared<SliderComponent>(mWindow, 50.f, 1000.f, 50.f, "ms");
-			irSpace->setValue(Settings::getInstance()->getInt("pe_hack.irspace"));
-			irSpace->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.irspace", (int)round(newVal)); });
-			s->addWithLabel(_("SPACE BETWEEN SENDS"), irSpace);
-
+		s->addGroup(_("IR ATTACKS"));
 			s->addEntry(_("POWER-OFF"), false, [window] {
 				//set space
 				std::string space = Settings::getInstance()->getString("pe_hack.irspace");
-				runSystemCommand("hacks.sh espconn irspace " + space, "", nullptr);
+				if(space != ""){
+					runSystemCommand("hacks.sh espconn irspace " + space, "", nullptr);
+				}
+				//set invert
+				if(SystemConf::getInstance()->get("pe_hack.irinvert") == "1"){
+					runSystemCommand("hacks.sh espconn irinvert", "", nullptr);
+				}
 				// run
 				runSystemCommand("hacks.sh espconn irkillonce", "", nullptr);
 				window->pushGui(new GuiMsgBox(window, _("SENDING POWER CODES"), _("OK"), nullptr));
@@ -587,11 +587,38 @@ void GuiMenu::openESP01Menu()
 			s->addEntry(_("POWER-OFF (LOOP)"), false, [window] {
 				//set space
 				std::string space = Settings::getInstance()->getString("pe_hack.irspace");
-				runSystemCommand("hacks.sh espconn irspace " + space, "", nullptr);
+				if(space != ""){
+					runSystemCommand("hacks.sh espconn irspace " + space, "", nullptr);
+				}
+				//set invert
+				if(SystemConf::getInstance()->get("pe_hack.irinvert") == "1"){
+					runSystemCommand("hacks.sh espconn irinvert", "", nullptr);
+				}
 				// run
 				runSystemCommand("hacks.sh espconn irkill", "", nullptr);
 				window->pushGui(new GuiMsgBox(window, _("SENDING POWER CODES IN LOOP"), _("OK"), nullptr));
 			});
+		s->addGroup(_("IR SETTINGS"));
+		// SPACE
+			auto irSpace = std::make_shared<SliderComponent>(mWindow, 50.f, 2000.f, 50.f, "ms");
+			irSpace->setValue(Settings::getInstance()->getInt("pe_hack.irspace"));
+			irSpace->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.irspace", (int)round(newVal)); });
+			s->addWithLabel(_("SPACE BETWEEN SENDS"), irSpace);
+
+			auto irInvert = std::make_shared<SwitchComponent>(mWindow);
+			//bool basehack_enabled = SystemConf::getInstance()->get("pe_hack.enabled") == "1";
+			irInvert->setState(SystemConf::getInstance()->get("pe_hack.irinvert") == "1");
+			s->addWithLabel(_("INVERT GPIO2 OUTPUT"), irInvert);
+			s->addSaveFunc([irInvert] {
+				if (irInvert->changed()) {
+					bool enabled = irInvert->getState();
+					SystemConf::getInstance()->set("pe_hack.irinvert", enabled ? "1" : "0");
+					SystemConf::getInstance()->saveSystemConf();
+					runSystemCommand("hacks.sh espconn reboot", "", nullptr);
+				}
+			});
+
+
 
 		window->pushGui(s);
 	}
