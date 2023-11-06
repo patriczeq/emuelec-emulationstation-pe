@@ -605,11 +605,8 @@ void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, (bssids.size() == 0 ? _("NO APs FOUND!") : _("SELECT AP TO DEAUTH")).c_str());
 
-		//const std::string cmd = "hacks.sh scan";
-		//std::vector<std::string> bssids = ApiSystem::getInstance()->getScriptResults(cmd);
-
 		if (bssids.size() == 0)
-			s->addEntry(_("Help"), false, [window]() {
+			s->addEntry(_("HELP"), false, [window]() {
 					std::string msg = _("BSSID;RSSI;SSID");
 					window->pushGui(new GuiMsgBox(window, msg,
 						 _("OK"),nullptr));
@@ -654,8 +651,8 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 			s->addEntry(_("JUST DEAUTH"), true, [bssid, ssid, window]() {
 					std::string msg = _("DEAUTH all STS on AP: ") +"\n" + ssid + "\n"+ bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("DEAUTH!"), [window, bssid, ssid] {
-							runSystemCommand("hacks.sh espconn deauthap " + bssid + " " + ssid, "", nullptr);
+						_("DEAUTH!"), [window, bssid] {
+							runSystemCommand("hacks.sh espconn deauthap " + bssid, "", nullptr);
 							window->displayNotificationMessage(_("DEAUTH AP SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
 				},"iconSystem");
@@ -663,16 +660,16 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 			s->addEntry(_("CLONE BSSID, DEAUTH"), true, [bssid, ssid, window]() {
 					std::string msg = _("DEAUTH and clone BSSID AP: ") +"\n" + ssid + "\n"+ bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("DEAUTH!"), [window, bssid, ssid] {
-							runSystemCommand("hacks.sh espconn deauthapclone " + bssid + " " + ssid, "", nullptr);
+						_("DEAUTH!"), [window, bssid] {
+							runSystemCommand("hacks.sh espconn deauthapclone " + bssid, "", nullptr);
 							window->displayNotificationMessage(_("DEAUTH+CLONE BSSID SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
 				},"iconSystem");
 			s->addEntry(_("FAKE AP, DEAUTH"), true, [bssid, ssid, window]() {
 					std::string msg = _("DEAUTH and fake AP: ") +"\n" + ssid + "\n"+ bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("DEAUTH!"), [window, bssid, ssid] {
-							runSystemCommand("hacks.sh espconn deauthapcaptive " + bssid + " " + ssid, "", nullptr);
+						_("DEAUTH!"), [window, bssid] {
+							runSystemCommand("hacks.sh espconn deauthapcaptive " + bssid, "", nullptr);
 							window->displayNotificationMessage(_("DEAUTH+FAKE AP SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
 				},"iconSystem");
@@ -688,7 +685,7 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 		// -------------------------------------------------------------------------------------
 			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, vendor, 	font, color));
 			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, bssid, 	font, color));
-			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, rssi + _("dBm"), 	font, color));
+			s->addWithLabel(_("RSSI"), 		std::make_shared<TextComponent>(window, rssi + _("dBm"), 	font, color));
 
 		window->pushGui(s);
 	}

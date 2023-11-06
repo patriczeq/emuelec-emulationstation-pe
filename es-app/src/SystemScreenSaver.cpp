@@ -47,7 +47,7 @@ SystemScreenSaver::SystemScreenSaver(Window* window) :
 	std::string path = getTitleFolder();
 	if(!Utils::FileSystem::exists(path))
 		Utils::FileSystem::createDirectory(path);
-	
+
 	mVideoChangeTime = 30000;
 }
 
@@ -106,7 +106,7 @@ void SystemScreenSaver::startScreenSaver()
 		mState =  PowerSaver::getMode() == PowerSaver::INSTANT
 					? STATE_SCREENSAVER_ACTIVE
 					: STATE_FADE_OUT_WINDOW;
-	
+
 		if (mState == STATE_FADE_OUT_WINDOW)
 		{
 			mState = STATE_FADE_IN_VIDEO;
@@ -114,7 +114,7 @@ void SystemScreenSaver::startScreenSaver()
 		}
 		else
 			mOpacity = 0.0f;
-			
+
 		std::string path;
 		if (Settings::getInstance()->getBool("SlideshowScreenSaverCustomVideoSource"))
 		{
@@ -193,12 +193,15 @@ void SystemScreenSaver::startScreenSaver()
 			PowerSaver::runningScreenSaver(true);
 			mTimer = 0;
 			return;
-		}	
+		}
 	}
 
 	// No videos. Just use a standard screensaver
 	mState = STATE_SCREENSAVER_ACTIVE;
 	mCurrentGame = NULL;
+
+	/*ApiSystem::getInstance()->setBrightness(10);
+	if (ApiSystem::getInstance()->getBrightness(brighness))*/
 }
 
 void SystemScreenSaver::stopScreenSaver()
@@ -243,7 +246,7 @@ void SystemScreenSaver::stopScreenSaver()
 void SystemScreenSaver::renderScreenSaver()
 {
 	Transform4x4f transform = Transform4x4f::Identity();
-	
+
 	if (mVideoScreensaver)
 	{
 		// Render black background
@@ -265,16 +268,16 @@ void SystemScreenSaver::renderScreenSaver()
 		Renderer::setMatrix(transform);
 		Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), 0x000000FF);
 
-		if (mFadingImageScreensaver != nullptr)		
+		if (mFadingImageScreensaver != nullptr)
 			mFadingImageScreensaver->render(transform);
 
 		// Only render the video if the state requires it
 		if ((int)mState >= STATE_FADE_IN_VIDEO)
-		{			
+		{
 			if (mImageScreensaver->hasImage())
 			{
 				unsigned int opacity = 255 - (unsigned char)(mOpacity * 255);
-													
+
 				Renderer::setMatrix(transform);
 				Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), 0x00000000 | opacity);
 				mImageScreensaver->setOpacity(opacity);
@@ -375,7 +378,7 @@ std::string SystemScreenSaver::pickRandomGameMedia(bool video)
 
 	std::vector<FileData*>* games = &mGamesWithImages;
 	if (video)
-		games = &mGamesWithVideos;	
+		games = &mGamesWithVideos;
 
 	int randomValue = Randomizer::random(count) % count;
 	int index = randomValue;
@@ -385,9 +388,9 @@ std::string SystemScreenSaver::pickRandomGameMedia(bool video)
 		auto path = selectGameMedia(games->at(index), video);
 		if (!path.empty())
 			return path;
-		
+
 		games->erase(std::next(games->begin(), index));
-		
+
 		count = games->size();
 		if (count == 0)
 			break;
@@ -463,7 +466,7 @@ void SystemScreenSaver::update(int deltaTime)
 			mOpacity = 1.0f;
 
 			// Update to the next state
-			mState = STATE_FADE_IN_VIDEO;			
+			mState = STATE_FADE_IN_VIDEO;
 		}
 	}
 	else if (mState == STATE_FADE_IN_VIDEO)
@@ -493,7 +496,7 @@ void SystemScreenSaver::update(int deltaTime)
 		mImageScreensaver->update(deltaTime);
 }
 
-void SystemScreenSaver::nextVideo() 
+void SystemScreenSaver::nextVideo()
 {
 	mLoadingNext = true;
 	startScreenSaver();
@@ -567,7 +570,7 @@ GameScreenSaverBase::~GameScreenSaverBase()
 #include <rapidjson/filereadstream.h>
 
 void GameScreenSaverBase::setGame(FileData* game)
-{	
+{
 	if (mLabelGame != nullptr)
 	{
 		delete mLabelGame;
@@ -715,7 +718,7 @@ void GameScreenSaverBase::setGame(FileData* game)
 		mMarquee->setPosition(mViewport.x + mViewport.w * 0.50f, mViewport.y + mViewport.h * 0.16f);
 		mMarquee->setMaxSize((float)mViewport.w * 0.40f, (float)mViewport.h * 0.22f);
 	}
-	
+
 	auto ph = ThemeData::getMenuTheme()->Text.font->getPath();
 	auto sz = mViewport.h / 16.f;
 	auto font = Font::get(sz, ph);
@@ -863,7 +866,7 @@ void VideoScreenSaver::setVideo(const std::string path)
 		mVideo->setRoundCorners(0);
 		mVideo->topWindow(true);
 		mVideo->setOrigin(0.5f, 0.5f);
-		
+
 		mVideo->setPosition(mViewport.x + mViewport.w / 2.0f, mViewport.y + mViewport.h / 2.0f);
 
 		if (Settings::getInstance()->getBool("StretchVideoOnScreenSaver"))
@@ -877,11 +880,11 @@ void VideoScreenSaver::setVideo(const std::string path)
 
 		if (mSystemScreenSaver != nullptr)
 		{
-			mVideo->setOnVideoEnded([&]() 
-			{ 				
+			mVideo->setOnVideoEnded([&]()
+			{
 				auto ss = mSystemScreenSaver;
 				mWindow->postToUiThread([ss]() { ss->nextVideo(); });
-				return false; 
+				return false;
 			});
 		}
 	}
@@ -895,9 +898,9 @@ void VideoScreenSaver::setVideo(const std::string path)
 #define SUBTITLE_FADE 150
 
 void VideoScreenSaver::render(const Transform4x4f& transform)
-{	
+{
 	if (mVideo)
-	{		
+	{
 		mVideo->setOpacity(mOpacity);
 
 		Renderer::pushClipRect(Vector2i(mViewport.x, mViewport.y), Vector2i(mViewport.w, mViewport.h));
@@ -930,11 +933,11 @@ void VideoScreenSaver::render(const Transform4x4f& transform)
 			mLabelSystem->render(transform);
 		}
 	}
-	
+
 	if (mDecoration)
 	{
 		mDecoration->setOpacity(mOpacity);
-		mDecoration->render(transform);		
+		mDecoration->render(transform);
 	}
 
 	if (Settings::DebugImage())
@@ -967,8 +970,8 @@ void VideoScreenSaver::update(int deltaTime)
 			else if (mTime > duration && mTime < end - SUBTITLE_FADE)
 				mFade = 0;
 		}
-	
-		mTime += deltaTime;	
+
+		mTime += deltaTime;
 		mVideo->update(deltaTime);
 	}
 }
