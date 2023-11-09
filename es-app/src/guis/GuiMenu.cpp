@@ -684,6 +684,7 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, (stations.size() == 0 ? _("NO STA FOUND!") : _("STATIONS IN THE AIR")).c_str());
+
 		if (stations.size() > 0)
 			{
 				for (auto sta : stations)
@@ -701,6 +702,7 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 						}, "iconNetwork");
 					}
 			}
+		window->pushGui(s);
 	}
 void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 	{
