@@ -746,9 +746,11 @@ std::vector<std::string> GuiMenu::hacksGet(std::string cmd)
 	const std::string cmds = "hacks.sh " + port + " " + cmd;
 	return ApiSystem::getInstance()->getScriptResults(cmds);
 };
+
 std::string GuiMenu::hacksGetString(std::string cmd)
 {
-	const std::string cmds = "hacks.sh " + cmd;
+	std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+	const std::string cmds = "hacks.sh " + port + " " + cmd;
 	return getShOutput(cmds);
 };
 
@@ -789,7 +791,7 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 						std::string _ssid 	= getSSID(_bssid);
 						std::string _apvendor= macVendor(_bssid);
 
-						std::string _title 	=  _mac + " (" + _pkts + "pkts)-> " + _ssid;
+						std::string _title 	=  _mac + " -> " + _ssid;
 						std::string _subtitle 	=  _vendor + " -> " + _bssid;
 
 						s->addWithDescription(_title, _subtitle, nullptr, [this, _mac, _bssid, _pkts, _vendor, _ssid, _apvendor]
@@ -817,14 +819,12 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ssid, 	font, color));
 			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, bssid, 	font, color));
 			s->addWithLabel(_("AP VENDOR"), 	std::make_shared<TextComponent>(window, apvendor, 	font, color));
-			s->addWithLabel(_("PACKETS"), 	std::make_shared<TextComponent>(window, pkts, 	font, color));
+			s->addWithLabel(_("PACKETS SNIFFED"), 	std::make_shared<TextComponent>(window, pkts, 	font, color));
 		// -------------------------------------------------------------------------------------
 		s->addGroup(_("HELPER"));
 		// -------------------------------------------------------------------------------------
 			s->addEntry(_("STOP"), false, [this, window]() {
 					hacksSend("stop");
-					//runSystemCommand("hacks.sh espconn stop", "", nullptr);
-					window->displayNotificationMessage(_("STOP MESSAGE SENT"));
 				}, "iconQuit");
 		s->addGroup(_("STATION HACKS"));
 			s->addEntry(_("DEAUTH STATION"), true, [this, window, mac, vendor]() {
@@ -832,8 +832,6 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 				window->pushGui(new GuiMsgBox(window, msg,
 					_("DEAUTH!"), [this, window, mac] {
 						hacksSend("deauthsta " + mac);
-						//runSystemCommand("hacks.sh espconn deauthsta " + mac, "", nullptr);
-						window->displayNotificationMessage(_("DEAUTH STA SCRIPT STARTED!"));
 					}, _("CANCEL"),nullptr));
 				});
 
