@@ -731,6 +731,26 @@ std::string GuiMenu::getSSID(std::string bssid)
 			}
 		return ssid;
 	}
+std::string GuiMenu::macVendor(std::string mac)
+{
+	return hacksGetString("vendor " + mac);
+}
+void GuiMenu::hacksSend(std::string cmd)
+{
+	std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+	runSystemCommand("hacks.sh " + port + " espconn " + cmd, "", nullptr);
+};
+std::vector<std::string> GuiMenu::hacksGet(std::string cmd)
+{
+	std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+	const std::string cmds = "hacks.sh " + port + " " + cmd;
+	return ApiSystem::getInstance()->getScriptResults(cmds);
+};
+std::string GuiMenu::hacksGetString(std::string cmd)
+{
+	const std::string cmds = "hacks.sh " + cmd;
+	return getShOutput(cmd);
+};
 
 void GuiMenu::scanSTA()
 	{
