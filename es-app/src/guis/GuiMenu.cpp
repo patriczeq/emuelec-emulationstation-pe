@@ -644,6 +644,19 @@ void GuiMenu::openESP01Menu()
 		window->pushGui(s);
 	}
 
+std::string GuiMenu::macVendor(std::string mac)
+{
+	const std::string cmd = "hacks.sh vendor " + mac;
+	return getShOutput(cmd);
+}
+
+std::vector<std::string> GuiMenu::scanBSSIDSlist()
+	{
+		const std::string cmd = "hacks.sh scan";
+		scanlist =  ApiSystem::getInstance()->getScriptResults(cmd);
+		return scanlist;
+	}
+
 void GuiMenu::scanBSSIDS()
 	{
 		Window* window = mWindow;
@@ -652,8 +665,7 @@ void GuiMenu::scanBSSIDS()
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
-				const std::string cmd = "hacks.sh scan";
-				return ApiSystem::getInstance()->getScriptResults(cmd);
+				return scanBSSIDSlist();
 			},
 			[this, window](std::vector<std::string> bssids)
 			{
@@ -662,24 +674,37 @@ void GuiMenu::scanBSSIDS()
 			}
 		));
 	}
+
 void GuiMenu::scanSTA()
 	{
 		Window* window = mWindow;
 
-		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING STATIONS..."),
+		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING APs..."),
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
-				const std::string cmd = "hacks.sh espscansta " + std::to_string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
-				return ApiSystem::getInstance()->getScriptResults(cmd);
+				return scanBSSIDSlist();
 			},
-			[this, window](std::vector<std::string> stations)
+			[this, window](std::vector<std::string> bssids)
 			{
 				mWaitingLoad = false;
-				openSTAmenu(stations);
+				window->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING STATIONS..."),
+					[this, window](auto gui)
+					{
+						mWaitingLoad = true;
+						const std::string cmd = "hacks.sh espscansta " + std::to_string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
+						return ApiSystem::getInstance()->getScriptResults(cmd);
+					},
+					[this, window](std::vector<std::string> stations)
+					{
+						mWaitingLoad = false;
+						openSTAmenu(stations);
+					}
+				));
 			}
 		));
 	}
+
 void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 	{
 		Window* window = mWindow;
@@ -694,8 +719,13 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 						std::string _mac 		= Utils::String::toUpper(tokens.at(0));
 						std::string _bssid 	= Utils::String::toUpper(tokens.at(1));
 						std::string _pkts		= tokens.at(2);
+						std::string _vendor = macVendor(_mac);
+						std::string _title =  _mac " (" + _vendor + ")";
 
-						std::string _title =  _mac + " -> " + _bssid;
+						/*s->addWithDescription(_title, _bssid, nullptr, [this]
+						{
+
+						}, "iconNetwork");*/
 
 						s->addEntry(_title, true, [this, _mac, _bssid, _pkts] {
 							//openDEAUTHMenu(_bssid, _rssi, _ssid);
@@ -742,13 +772,15 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		std::string vendor = "?";
+		std::string vendor = macVendor(bssid);/*"?";
 		const std::string cmd = "hacks.sh vendor " + bssid;
 		std::vector<std::string> vendorRes = ApiSystem::getInstance()->getScriptResults(cmd);
 		if(vendorRes.size() > 0)
 			{
 				vendor = vendorRes.at(0);
 			}
+*/
+
 		// -------------------------------------------------------------------------------------
 		s->addGroup(_("DEAUTH MODE"));
 		// -------------------------------------------------------------------------------------
@@ -4912,14 +4944,14 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		std::string vendor = "?";
+		std::string vendor = macVendor(macaddr);/*"?";
 		const std::string cmd = "hacks.sh vendor " + macaddr;
 		std::vector<std::string> vendorRes = ApiSystem::getInstance()->getScriptResults(cmd);
 		if(vendorRes.size() > 0)
 			{
 				vendor = vendorRes.at(0);
 			}
-
+			*/
 		auto leaseLabel 	= std::make_shared<TextComponent>(mWindow, leasetime, font, color);
 		auto macaddrLabel 	= std::make_shared<TextComponent>(mWindow, macaddr, font, color);
 		auto ipaddrLabel 	= std::make_shared<TextComponent>(mWindow, ipaddr, font, color);

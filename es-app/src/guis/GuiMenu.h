@@ -88,6 +88,9 @@ private:
 	void openUISettings();
 	void openUpdatesSettings();
 
+	std::vector<std::string> scanlist;
+	std::vector<std::string> scanBSSIDSlist();
+	std::string macVendor(std::string mac);
 	// Deauther
 	void openESP01Menu();
 	void openESP01Settings();
