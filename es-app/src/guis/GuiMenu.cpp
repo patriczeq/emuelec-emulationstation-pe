@@ -921,7 +921,7 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 		// -------------------------------------------------------------------------------------
 		s->addGroup(_("HELPER"));
 		// -------------------------------------------------------------------------------------
-			s->addEntry(_("STOP"), false, [bssid, ssid, window]() {
+			s->addEntry(_("STOP"), false, [this, window, bssid, ssid]() {
 					hacksSend("stop");
 					//runSystemCommand("hacks.sh espconn stop", "", nullptr);
 					window->displayNotificationMessage(_("STOP MESSAGE SENT"));
