@@ -525,6 +525,39 @@ void GuiMenu::openMusicPlayer()
  *
  * ESP01 Deauther
  */
+void GuiMenu::openESP01Settings()
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, "DEAUTHER SETTINGS");
+		// ----------------------------------------------------------- IR
+		s->addGroup(_("WiFi SETTINGS"));
+		// STA SCAN DURATION
+			auto staScanDur = std::make_shared<SliderComponent>(mWindow, 1.f, 20.f, 1.f, "s");
+			staScanDur->setValue(Settings::getInstance()->getInt("pe_hack.stasniffduration"));
+			staScanDur->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.stasniffduration", (int)round(newVal)); });
+			s->addWithLabel(_("STA SNIFF DURATION"), staScanDur);
+		// ----------------------------------------------------------- IR
+		s->addGroup(_("IR SETTINGS"));
+		// SPACE
+			auto irSpace = std::make_shared<SliderComponent>(mWindow, 50.f, 2000.f, 50.f, "ms");
+			irSpace->setValue(Settings::getInstance()->getInt("pe_hack.irspace"));
+			irSpace->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.irspace", (int)round(newVal)); });
+			s->addWithLabel(_("SPACE BETWEEN SENDS"), irSpace);
+		// invert LGIC
+			auto irInvert = std::make_shared<SwitchComponent>(mWindow);
+			irInvert->setState(SystemConf::getInstance()->get("pe_hack.irinvert") == "1");
+			s->addWithLabel(_("INVERT GPIO2 OUTPUT"), irInvert);
+			s->addSaveFunc([irInvert] {
+				if (irInvert->changed()) {
+					bool enabled = irInvert->getState();
+					SystemConf::getInstance()->set("pe_hack.irinvert", enabled ? "1" : "0");
+					SystemConf::getInstance()->saveSystemConf();
+					runSystemCommand("hacks.sh espconn reboot", "", nullptr);
+				}
+			});
+
+		window->pushGui(s);
+	}
 
 void GuiMenu::openESP01Menu()
 	{
@@ -536,6 +569,9 @@ void GuiMenu::openESP01Menu()
 				runSystemCommand("hacks.sh espconn reboot", "", nullptr);
 				window->displayNotificationMessage(_("REBOOT MESSAGE SENT"));
 			}, "iconRestart");
+			s->addEntry(_("SETTINGS"), true, [this] {
+				openESP01Settings();
+			}, "iconSystem");
 
 		s->addGroup(_("WIFI AP DEAUTH"));
 			s->addEntry(_("SELECT AP TO DEAUTH"), true, [this] {
@@ -563,10 +599,15 @@ void GuiMenu::openESP01Menu()
 						window->displayNotificationMessage(_("CLONE APs SCRIPT STARTED!"));
 					}));
 				});
+			/*
 			s->addEntry(_("DEAUTH DETECTOR"), false, [window] {
 					runSystemCommand("hacks.sh espconn deauthdetect", "", nullptr);
 					window->displayNotificationMessage(_("DEAUTH DETECTOR RUNNING!"));
 				});
+			*/
+			s->addEntry(_("STA SCANNER"), true, [this] {
+				scanSTA();
+			});
 
 
 		s->addGroup(_("IR ATTACKS"));
@@ -598,26 +639,6 @@ void GuiMenu::openESP01Menu()
 				runSystemCommand("hacks.sh espconn irkill", "", nullptr);
 				window->pushGui(new GuiMsgBox(window, _("SENDING POWER CODES IN LOOP"), _("OK"), nullptr));
 			});
-		s->addGroup(_("IR SETTINGS"));
-		// SPACE
-			auto irSpace = std::make_shared<SliderComponent>(mWindow, 50.f, 2000.f, 50.f, "ms");
-			irSpace->setValue(Settings::getInstance()->getInt("pe_hack.irspace"));
-			irSpace->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.irspace", (int)round(newVal)); });
-			s->addWithLabel(_("SPACE BETWEEN SENDS"), irSpace);
-
-			auto irInvert = std::make_shared<SwitchComponent>(mWindow);
-			//bool basehack_enabled = SystemConf::getInstance()->get("pe_hack.enabled") == "1";
-			irInvert->setState(SystemConf::getInstance()->get("pe_hack.irinvert") == "1");
-			s->addWithLabel(_("INVERT GPIO2 OUTPUT"), irInvert);
-			s->addSaveFunc([irInvert] {
-				if (irInvert->changed()) {
-					bool enabled = irInvert->getState();
-					SystemConf::getInstance()->set("pe_hack.irinvert", enabled ? "1" : "0");
-					SystemConf::getInstance()->saveSystemConf();
-					runSystemCommand("hacks.sh espconn reboot", "", nullptr);
-				}
-			});
-
 
 
 		window->pushGui(s);
@@ -640,6 +661,47 @@ void GuiMenu::scanBSSIDS()
 				openBSSIDSMenu(bssids);
 			}
 		));
+	}
+void GuiMenu::scanSTA()
+	{
+		Window* window = mWindow;
+
+		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING STATIONS..."),
+			[this, window](auto gui)
+			{
+				mWaitingLoad = true;
+				const std::string dur = std::string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
+				const std::string cmd = "hacks.sh espscansta " + dur;
+				return ApiSystem::getInstance()->getScriptResults(cmd);
+			},
+			[this, window](std::vector<std::string> stations)
+			{
+				mWaitingLoad = false;
+				openSTAmenu(stations);
+			}
+		));
+	}
+void GuiMenu::openSTAmenu(std::vector<std::string> stations)
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, (stations.size() == 0 ? _("NO STA FOUND!") : _("STATIONS IN THE AIR")).c_str());
+		if (stations.size() > 0)
+			{
+				for (auto sta : stations)
+					{
+						std::vector<std::string> tokens = Utils::String::split(sta, ';');
+
+						std::string _mac 		= Utils::String::toUpper(tokens.at(0));
+						std::string _bssid 	= Utils::String::toUpper(tokens.at(1));
+						int packets 				= int(tokens.at(2));
+
+						std::string _title =  _mac + " -> " + _bssid;
+
+						s->addEntry(_title, true, [this, _mac, _bssid, packets] {
+							//openDEAUTHMenu(_bssid, _rssi, _ssid);
+						}, "iconNetwork");
+					}
+			}
 	}
 void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 	{

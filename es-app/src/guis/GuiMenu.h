@@ -90,10 +90,14 @@ private:
 
 	// Deauther
 	void openESP01Menu();
-
+	void openESP01Settings();
 	void scanBSSIDS();
 	void openBSSIDSMenu(std::vector<std::string> bssids);
 	void openDEAUTHMenu(std::string bssid, std::string rssi, std::string ssid);
+
+	void scanSTA();
+	void openSTAmenu(std::vector<std::string> stations);
+
 	// playertoo client
 	void scanMPServers();
 	void openMPServers(std::vector<std::string> servers);
