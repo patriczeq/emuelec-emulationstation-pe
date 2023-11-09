@@ -93,6 +93,7 @@ private:
 	std::string macVendor(std::string mac);
 	std::string getSSID(std::string bssid);
 	// Deauther
+	void espSend(std::string cmd);
 	void openESP01Menu();
 	void openESP01Settings();
 	void scanBSSIDS();
