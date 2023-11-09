@@ -800,7 +800,7 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 					window->displayNotificationMessage(_("STOP MESSAGE SENT"));
 				}, "iconQuit");
 		s->addGroup(_("STATION HACKS"));
-			s->addEntry(_("DEAUTH STATION"), true, [mac, window]() {
+			s->addEntry(_("DEAUTH STATION"), true, [mac, vendor, window]() {
 				std::string msg = _("DEAUTH STA: ") +"\n" + mac + "\n"+ vendor + "\n";
 				window->pushGui(new GuiMsgBox(window, msg,
 					_("DEAUTH!"), [window, mac] {
