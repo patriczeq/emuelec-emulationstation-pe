@@ -693,11 +693,11 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 
 						std::string _mac 		= Utils::String::toUpper(tokens.at(0));
 						std::string _bssid 	= Utils::String::toUpper(tokens.at(1));
-						int packets 				= int(tokens.at(2));
+						std::string _pkts		= tokens.at(2);
 
 						std::string _title =  _mac + " -> " + _bssid;
 
-						s->addEntry(_title, true, [this, _mac, _bssid, packets] {
+						s->addEntry(_title, true, [this, _mac, _bssid, _pkts] {
 							//openDEAUTHMenu(_bssid, _rssi, _ssid);
 						}, "iconNetwork");
 					}
