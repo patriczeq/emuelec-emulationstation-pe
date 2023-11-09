@@ -91,6 +91,7 @@ private:
 	std::vector<std::string> scanlist;
 	std::vector<std::string> scanBSSIDSlist();
 	std::string macVendor(std::string mac);
+	std::string getSSID(std::string bssid);
 	// Deauther
 	void openESP01Menu();
 	void openESP01Settings();
@@ -100,6 +101,8 @@ private:
 
 	void scanSTA();
 	void openSTAmenu(std::vector<std::string> stations);
+	//_mac, _bssid, _pkts, _vendor, _ssid, _apvendor
+	void openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string vendor, std::string ssid, std::string apvendor);
 
 	// playertoo client
 	void scanMPServers();

@@ -675,32 +675,40 @@ void GuiMenu::scanBSSIDS()
 		));
 	}
 
+std::string GuiMenu::getSSID(std::string bssid)
+	{
+		std::vector<std::string> bslist = scanlist.size() == 0 ? scanBSSIDSlist() : scanlist;
+		std::string ssid = "Unknown SSID";
+		if(bslist.size() > 0)
+			{
+				for (auto bs : bslist )
+					{
+						std::vector<std::string> tokens = Utils::String::split(bs, ';');
+						if( Utils::String::toUpper(tokens.at(0)) == Utils::String::toUpper(bssid))
+							{
+								ssid = Utils::String::trim(tokens.at(2));
+								break;
+							}
+					}
+			}
+		return ssid;
+	}
+
 void GuiMenu::scanSTA()
 	{
 		Window* window = mWindow;
 
-		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING APs..."),
+		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING STATIONS..."),
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
-				return scanBSSIDSlist();
+				const std::string cmd = "hacks.sh espscansta " + std::to_string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
+				return ApiSystem::getInstance()->getScriptResults(cmd);
 			},
-			[this, window](std::vector<std::string> bssids)
+			[this, window](std::vector<std::string> stations)
 			{
 				mWaitingLoad = false;
-				window->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING STATIONS..."),
-					[this, window](auto gui)
-					{
-						mWaitingLoad = true;
-						const std::string cmd = "hacks.sh espscansta " + std::to_string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
-						return ApiSystem::getInstance()->getScriptResults(cmd);
-					},
-					[this, window](std::vector<std::string> stations)
-					{
-						mWaitingLoad = false;
-						openSTAmenu(stations);
-					}
-				));
+				openSTAmenu(stations);
 			}
 		));
 	}
@@ -720,18 +728,39 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 						std::string _bssid 	= Utils::String::toUpper(tokens.at(1));
 						std::string _pkts		= tokens.at(2);
 						std::string _vendor = macVendor(_mac);
-						std::string _title =  _mac " (" + _vendor + ")";
+						std::string _ssid 	= getSSID(_bssid);
+						std::string _apvendor= macVendor(_bssid);
 
-						/*s->addWithDescription(_title, _bssid, nullptr, [this]
+						std::string _title 	=  _mac + " (" + _pkts + "pkts)-> " + _ssid;
+						std::string _subtitle 	=  _vendor + " -> " + _bssid;
+
+						s->addWithDescription(_title, _subtitle, nullptr, [this, _mac, _bssid, _pkts, _vendor, _ssid, _apvendor]
 						{
-
-						}, "iconNetwork");*/
-
-						s->addEntry(_title, true, [this, _mac, _bssid, _pkts] {
-							//openDEAUTHMenu(_bssid, _rssi, _ssid);
+							openSTADetail(_mac, _bssid, _pkts, _vendor, _ssid, _apvendor);
 						}, "iconNetwork");
+
+						/*s->addEntry(_title, true, [this, _mac, _bssid, _pkts] {
+							//openDEAUTHMenu(_bssid, _rssi, _ssid);
+						}, "iconNetwork");*/
 					}
 			}
+		window->pushGui(s);
+	}
+void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string vendor, std::string ssid, std::string apvendor)
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, mac);
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		s->addGroup(_("STATION INFO"));
+		s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, vendor, 	font, color));
+		s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ssid, 	font, color));
+		s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, bssid, 	font, color));
+		s->addWithLabel(_("AP VENDOR"), 	std::make_shared<TextComponent>(window, apvendor, 	font, color));
+		s->addWithLabel(_("PACKETS"), 	std::make_shared<TextComponent>(window, pkts, 	font, color));
+
 		window->pushGui(s);
 	}
 void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
