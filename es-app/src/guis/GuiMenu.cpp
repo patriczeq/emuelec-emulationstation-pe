@@ -670,8 +670,7 @@ void GuiMenu::scanSTA()
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
-				const std::string dur = Settings::getInstance()->getString("pe_hack.stasniffduration");
-				const std::string cmd = "hacks.sh espscansta " + dur + "000";
+				const std::string cmd = "hacks.sh espscansta " + std::to_string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
 				return ApiSystem::getInstance()->getScriptResults(cmd);
 			},
 			[this, window](std::vector<std::string> stations)
