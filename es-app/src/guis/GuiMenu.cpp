@@ -749,7 +749,7 @@ std::vector<std::string> GuiMenu::hacksGet(std::string cmd)
 std::string GuiMenu::hacksGetString(std::string cmd)
 {
 	const std::string cmds = "hacks.sh " + cmd;
-	return getShOutput(cmd);
+	return getShOutput(cmds);
 };
 
 void GuiMenu::scanSTA()
