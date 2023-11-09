@@ -583,12 +583,13 @@ void GuiMenu::openESP01Settings()
 			auto irInvert = std::make_shared<SwitchComponent>(mWindow);
 			irInvert->setState(SystemConf::getInstance()->get("pe_hack.irinvert") == "1");
 			s->addWithLabel(_("INVERT GPIO2 OUTPUT"), irInvert);
-			s->addSaveFunc([irInvert] {
+			s->addSaveFunc([this, irInvert] {
 				if (irInvert->changed()) {
 					bool enabled = irInvert->getState();
 					SystemConf::getInstance()->set("pe_hack.irinvert", enabled ? "1" : "0");
 					SystemConf::getInstance()->saveSystemConf();
-					runSystemCommand("hacks.sh espconn reboot", "", nullptr);
+					hacksSend("reboot");
+					//runSystemCommand("hacks.sh espconn reboot", "", nullptr);
 				}
 			});
 
@@ -601,8 +602,9 @@ void GuiMenu::openESP01Menu()
 		auto s = new GuiSettings(window, "H4CK TH3 FK1N W0RLD!");
 
 		s->addGroup(_("SYSTEM"));
-			s->addEntry(_("REBOOT ESP01"), false, [window] {
-				runSystemCommand("hacks.sh espconn reboot", "", nullptr);
+			s->addEntry(_("REBOOT ESP01"), false, [this, window] {
+				hacksSend("reboot");
+				//runSystemCommand("hacks.sh espconn reboot", "", nullptr);
 				window->displayNotificationMessage(_("REBOOT MESSAGE SENT"));
 			}, "iconRestart");
 			s->addEntry(_("SETTINGS"), true, [this] {
@@ -620,55 +622,65 @@ void GuiMenu::openESP01Menu()
 
 
 		s->addGroup(_("WIFI DEAUTH/BACON"));
-			s->addEntry(_("SEND RANDOM BACONS"), false, [window] {
-					runSystemCommand("hacks.sh espconn beacon", "", nullptr);
+			s->addEntry(_("SEND RANDOM BACONS"), false, [this, window] {
+					hacksSend("beacon");
+					//runSystemCommand("hacks.sh espconn beacon", "", nullptr);
 					window->displayNotificationMessage(_("RANDOM BACON SCRIPT STARTED!"));
 				});
-			s->addEntry(_("CLONE APs"), false, [window] {
+			s->addEntry(_("CLONE APs"), false, [this, window] {
 					window->pushGui(new GuiMsgBox(window, _("SEND DEAUTH PACKETS?"),
-					_("YES"), [window] {
-						runSystemCommand("hacks.sh espconn clonedeauth", "", nullptr);
+					_("YES"), [this, window] {
+						hacksSend("clonedeauth");
+						//runSystemCommand("hacks.sh espconn clonedeauth", "", nullptr);
 						window->displayNotificationMessage(_("CLONE & DEAUTH SCRIPT STARTED!"));
-					}, _("NO"), [window] {
-						runSystemCommand("hacks.sh espconn clonebeacon", "", nullptr);
+					}, _("NO"), [this, window] {
+						hacksSend("clonebeacon");
+						//runSystemCommand("hacks.sh espconn clonebeacon", "", nullptr);
 						window->displayNotificationMessage(_("CLONE APs SCRIPT STARTED!"));
 					}));
 				});
-				s->addEntry(_("DEAUTH ALL APs"), false, [window] {
+				s->addEntry(_("DEAUTH ALL APs"), false, [this, window] {
 					window->pushGui(new GuiMsgBox(window, _("DEAUTHORIZE ALL APs?"),
-						_("YES"), [window] {
-							runSystemCommand("hacks.sh espconn killall", "", nullptr);
+						_("YES"), [this, window] {
+							hacksSend("killall");
+							//runSystemCommand("hacks.sh espconn killall", "", nullptr);
 							window->displayNotificationMessage(_("DEAUTH ALL RUNNING!"));
 						}, _("NO"),nullptr));
 				});
 
 		s->addGroup(_("IR ATTACKS"));
-			s->addEntry(_("POWER-OFF"), false, [window] {
+			s->addEntry(_("POWER-OFF"), false, [this, window] {
 				//set space
 				std::string space = Settings::getInstance()->getString("pe_hack.irspace");
 				if(space != ""){
-					runSystemCommand("hacks.sh espconn irspace " + space, "", nullptr);
+					hacksSend("irspace " + space);
+					//runSystemCommand("hacks.sh espconn irspace " + space, "", nullptr);
 				}
 				//set invert
 				if(SystemConf::getInstance()->get("pe_hack.irinvert") == "1"){
-					runSystemCommand("hacks.sh espconn irinvert", "", nullptr);
+					hacksSend("irinvert");
+					//runSystemCommand("hacks.sh espconn irinvert", "", nullptr);
 				}
 				// run
-				runSystemCommand("hacks.sh espconn irkillonce", "", nullptr);
+				hacksSend("irkillonce");
+				//runSystemCommand("hacks.sh espconn irkillonce", "", nullptr);
 				window->pushGui(new GuiMsgBox(window, _("SENDING POWER CODES"), _("OK"), nullptr));
 			});
-			s->addEntry(_("POWER-OFF (LOOP)"), false, [window] {
+			s->addEntry(_("POWER-OFF (LOOP)"), false, [this, window] {
 				//set space
 				std::string space = Settings::getInstance()->getString("pe_hack.irspace");
 				if(space != ""){
-					runSystemCommand("hacks.sh espconn irspace " + space, "", nullptr);
+					hacksSend("irspace " + space);
+					//runSystemCommand("hacks.sh espconn irspace " + space, "", nullptr);
 				}
 				//set invert
 				if(SystemConf::getInstance()->get("pe_hack.irinvert") == "1"){
-					runSystemCommand("hacks.sh espconn irinvert", "", nullptr);
+					hacksSend("irinvert");
+					//runSystemCommand("hacks.sh espconn irinvert", "", nullptr);
 				}
 				// run
-				runSystemCommand("hacks.sh espconn irkill", "", nullptr);
+				hacksSend("irkill");
+				//runSystemCommand("hacks.sh espconn irkill", "", nullptr);
 				window->pushGui(new GuiMsgBox(window, _("SENDING POWER CODES IN LOOP"), _("OK"), nullptr));
 			});
 
@@ -676,16 +688,10 @@ void GuiMenu::openESP01Menu()
 		window->pushGui(s);
 	}
 
-std::string GuiMenu::macVendor(std::string mac)
-{
-	const std::string cmd = "hacks.sh vendor " + mac;
-	return getShOutput(cmd);
-}
-
 std::vector<std::string> GuiMenu::scanBSSIDSlist()
 	{
-		const std::string cmd = "hacks.sh scan";
-		scanlist =  ApiSystem::getInstance()->getScriptResults(cmd);
+		const std::string cmd = "scan";
+		scanlist =  hacksGet(cmd);//ApiSystem::getInstance()->getScriptResults(cmd);
 		return scanlist;
 	}
 
@@ -734,8 +740,8 @@ void GuiMenu::scanSTA()
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
-				const std::string cmd = "hacks.sh espscansta " + std::to_string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
-				return ApiSystem::getInstance()->getScriptResults(cmd);
+				const std::string cmd = "espscansta " + std::to_string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
+				return hacksGet(cmd); //ApiSystem::getInstance()->getScriptResults(cmd);
 			},
 			[this, window](std::vector<std::string> stations)
 			{
@@ -795,16 +801,18 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 		// -------------------------------------------------------------------------------------
 		s->addGroup(_("HELPER"));
 		// -------------------------------------------------------------------------------------
-			s->addEntry(_("STOP"), false, [window]() {
-					runSystemCommand("hacks.sh espconn stop", "", nullptr);
+			s->addEntry(_("STOP"), false, [this, window]() {
+					hacksSend("stop");
+					//runSystemCommand("hacks.sh espconn stop", "", nullptr);
 					window->displayNotificationMessage(_("STOP MESSAGE SENT"));
 				}, "iconQuit");
 		s->addGroup(_("STATION HACKS"));
-			s->addEntry(_("DEAUTH STATION"), true, [mac, vendor, window]() {
+			s->addEntry(_("DEAUTH STATION"), true, [this, window, mac, vendor]() {
 				std::string msg = _("DEAUTH STA: ") +"\n" + mac + "\n"+ vendor + "\n";
 				window->pushGui(new GuiMsgBox(window, msg,
-					_("DEAUTH!"), [window, mac] {
-						runSystemCommand("hacks.sh espconn deauthsta " + mac, "", nullptr);
+					_("DEAUTH!"), [this, window, mac] {
+						hacksSend("deauthsta " + mac);
+						//runSystemCommand("hacks.sh espconn deauthsta " + mac, "", nullptr);
 						window->displayNotificationMessage(_("DEAUTH STA SCRIPT STARTED!"));
 					}, _("CANCEL"),nullptr));
 				});
@@ -862,28 +870,31 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 		// -------------------------------------------------------------------------------------
 		s->addGroup(_("AP HACKS"));
 		// -------------------------------------------------------------------------------------
-			s->addEntry(_("JUST DEAUTH"), true, [bssid, ssid, window]() {
+			s->addEntry(_("JUST DEAUTH"), true, [this, window, bssid, ssid]() {
 					std::string msg = _("DEAUTH all STS on AP: ") +"\n" + ssid + "\n"+ bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("DEAUTH!"), [window, bssid] {
-							runSystemCommand("hacks.sh espconn deauthap " + bssid, "", nullptr);
+						_("DEAUTH!"), [this, window, bssid] {
+							hacksSend("deauthap " + bssid);
+							//runSystemCommand("hacks.sh espconn deauthap " + bssid, "", nullptr);
 							window->displayNotificationMessage(_("DEAUTH AP SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
 				},"iconSystem");
 
-			s->addEntry(_("CLONE BSSID, DEAUTH"), true, [bssid, ssid, window]() {
+			s->addEntry(_("CLONE BSSID, DEAUTH"), true, [this, window, bssid, ssid]() {
 					std::string msg = _("DEAUTH and clone BSSID AP: ") +"\n" + ssid + "\n"+ bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("DEAUTH!"), [window, bssid] {
-							runSystemCommand("hacks.sh espconn deauthapclone " + bssid, "", nullptr);
+						_("DEAUTH!"), [this, window, bssid] {
+							hacksSend("deauthapclone " + bssid);
+							//runSystemCommand("hacks.sh espconn deauthapclone " + bssid, "", nullptr);
 							window->displayNotificationMessage(_("DEAUTH+CLONE BSSID SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
 				},"iconSystem");
-			s->addEntry(_("FAKE AP, DEAUTH"), true, [bssid, ssid, window]() {
+			s->addEntry(_("FAKE AP, DEAUTH"), true, [this, window, bssid, ssid]() {
 					std::string msg = _("DEAUTH and fake AP: ") +"\n" + ssid + "\n"+ bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("DEAUTH!"), [window, bssid] {
-							runSystemCommand("hacks.sh espconn deauthapcaptive " + bssid, "", nullptr);
+						_("DEAUTH!"), [this, window, bssid] {
+							hacksSend("deauthapcaptive " + bssid);
+							//runSystemCommand("hacks.sh espconn deauthapcaptive " + bssid, "", nullptr);
 							window->displayNotificationMessage(_("DEAUTH+FAKE AP SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
 				},"iconSystem");
@@ -891,7 +902,8 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 		s->addGroup(_("HELPER"));
 		// -------------------------------------------------------------------------------------
 			s->addEntry(_("STOP"), false, [bssid, ssid, window]() {
-					runSystemCommand("hacks.sh espconn stop", "", nullptr);
+					hacksSend("stop");
+					//runSystemCommand("hacks.sh espconn stop", "", nullptr);
 					window->displayNotificationMessage(_("STOP MESSAGE SENT"));
 				}, "iconQuit");
 		// -------------------------------------------------------------------------------------

@@ -90,10 +90,25 @@ private:
 
 	std::vector<std::string> scanlist;
 	std::vector<std::string> scanBSSIDSlist();
-	std::string macVendor(std::string mac);
+
 	std::string getSSID(std::string bssid);
+	std::string macVendor(std::string mac){
+		return hacksGetString("vendor " + mac);
+	}
 	// Deauther
-	void espSend(std::string cmd);
+	void hacksSend(std::string cmd){
+		std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+		runSystemCommand("hacks.sh " + port + " espconn " + cmd, "", nullptr);
+	};
+	std::vector<std::string> hacksGet(std::string cmd){
+		std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+		const std::string cmds = "hacks.sh " + port + " " + cmd;
+		return ApiSystem::getInstance()->getScriptResults(cmds);
+	};
+	std::string hacksGetString(std::string cmd){
+		const std::string cmds = "hacks.sh " + cmd;
+		return getShOutput(cmd);
+	};
 	void openESP01Menu();
 	void openESP01Settings();
 	void scanBSSIDS();
