@@ -791,7 +791,7 @@ void GuiMenu::scanSTA()
 void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, (stations.size() == 0 ? _("NO STA FOUND!") : _("STATIONS IN THE AIR")).c_str());
+		auto s = new GuiSettings(window, (stations.size() == 0 ? _("NO STA FOUND!") : _("STATIONS LIST")).c_str());
 
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
@@ -872,15 +872,13 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, (bssids.size() == 0 ? _("NO APs FOUND!") : _("SELECT AP TO DEAUTH")).c_str());
+		auto s = new GuiSettings(window, (bssids.size() == 0 ? _("NO APs FOUND!") : _("ACCESSPOINTs LIST")).c_str());
 
-		if (bssids.size() == 0)
-			s->addEntry(_("HELP"), false, [window]() {
-					std::string msg = _("BSSID;RSSI;SSID");
-					window->pushGui(new GuiMsgBox(window, msg,
-						 _("OK"),nullptr));
-				});
-		else
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		if (bssids.size() > 0)
 		{
 			for (auto bssid : bssids)
 			{
@@ -892,9 +890,19 @@ void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 						std::string _ssid 	= Utils::String::trim(tokens.at(2));
 						std::string _title =  _rssi + "dBm " + _ssid;
 
-						s->addEntry(_title, true, [this, _bssid, _rssi, _ssid] {
+						std::string _vendor = macVendor(_bssid);
+
+						std::string _title 	=  _ssid;
+						std::string _subtitle 	=  _bssid + " -> " + _vendor;
+						//inline void addWithDescription(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func, const std::string iconName = "", bool setCursorHere = false, /*bool invert_when_selected = true,*/ bool multiLine = false)
+
+						s->addWithDescription(_title, _subtitle,
+							std::make_shared<TextComponent>(window, _rssi + "dBm", 	font, color),
+							[this, _bssid, _rssi, _ssid]
+						{
 							openDEAUTHMenu(_bssid, _rssi, _ssid);
 						}, "iconNetwork");
+
 					}
 			}
 		}
@@ -917,7 +925,11 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 				vendor = vendorRes.at(0);
 			}
 */
-
+		s->addGroup(_("AP INFO"));
+		// -------------------------------------------------------------------------------------
+			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, vendor, 	font, color));
+			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, bssid, 	font, color));
+			s->addWithLabel(_("RSSI"), 		std::make_shared<TextComponent>(window, rssi + _("dBm"), 	font, color));
 		// -------------------------------------------------------------------------------------
 		s->addGroup(_("AP HACKS"));
 		// -------------------------------------------------------------------------------------
@@ -950,19 +962,13 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 						}, _("CANCEL"),nullptr));
 				},"iconSystem");
 		// -------------------------------------------------------------------------------------
-		s->addGroup(_("HELPER"));
-		// -------------------------------------------------------------------------------------
-			s->addEntry(_("STOP"), false, [this, window, bssid, ssid]() {
+			s->addEntry(_("STOP ALL"), false, [this, window, bssid, ssid]() {
 					hacksSend("stop");
 					//runSystemCommand("hacks.sh espconn stop", "", nullptr);
 					window->displayNotificationMessage(_("STOP MESSAGE SENT"));
 				}, "iconQuit");
 		// -------------------------------------------------------------------------------------
-		s->addGroup(_("AP INFO"));
-		// -------------------------------------------------------------------------------------
-			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, vendor, 	font, color));
-			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, bssid, 	font, color));
-			s->addWithLabel(_("RSSI"), 		std::make_shared<TextComponent>(window, rssi + _("dBm"), 	font, color));
+
 
 		window->pushGui(s);
 	}
