@@ -108,7 +108,7 @@ private:
 	void scanSTA();
 	void openSTAmenu(std::vector<std::string> stations);
 	//_mac, _bssid, _pkts, _vendor, _ssid, _apvendor
-	void openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor);
+	void openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor, std::string aprssi);
 
 	// playertoo client
 	void scanMPServers();
