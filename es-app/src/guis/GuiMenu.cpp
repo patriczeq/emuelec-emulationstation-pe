@@ -530,7 +530,7 @@ void GuiMenu::openESP01Settings()
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "DEAUTHER SETTINGS");
 		// ----------------------------------------------------------- MAIN SETTINGS
-		s->addGroup(_("UART SETTINGS"));
+		s->addGroup(_("MAIN"));
 			// PORT
 			auto esp_uart = std::make_shared< OptionListComponent<std::string> >(mWindow, "UART PORT", false);
 			std::vector<std::string> ports;
@@ -549,21 +549,18 @@ void GuiMenu::openESP01Settings()
 			{
 				Settings::getInstance()->setString("pe_hack.uart_port", esp_uart->getSelected());
 			});
-
-			/*auto esp_uart = std::make_shared< OptionListComponent<std::string> >(mWindow, "UART PORT", false);
-			std::vector<std::string> ports;
-			ports.push_back("/dev/ttyS1");
-			ports.push_back("/dev/ttyS2");
-			for (auto it = ports.cbegin(); it != ports.cend(); it++)
-			esp_uart->add(*it, *it, Settings::getInstance()->getString("pe_hack.uart_port") == *it);
-			s->addWithLabel(_("UART PORT"), esp_uart);
-			s->addSaveFunc([esp_uart] {
-				if (esp_uart->changed()) {
-					Settings::getInstance()->set("pe_hack.uart_port", esp_uart->getSelected());
-					Settings::getInstance()->saveSystemConf();
+			// SCAN
+			auto esp_scan = std::make_shared<SwitchComponent>(mWindow);
+			esp_scan->setState(SystemConf::getInstance()->get("pe_hack.scanbyesp") == "1");
+			s->addWithLabel(_("SCAN NETWORKS BY ESP"), esp_scan);
+			s->addSaveFunc([esp_scan] {
+				if (esp_scan->changed()) {
+					bool enabled = esp_scan->getState();
+					SystemConf::getInstance()->set("pe_hack.scanbyesp", enabled ? "1" : "0");
+					SystemConf::getInstance()->saveSystemConf();
 				}
-			});*/
-			// BAUDRATE
+			});
+
 
 		// ----------------------------------------------------------- IR
 		s->addGroup(_("WiFi SETTINGS"));
@@ -690,7 +687,15 @@ void GuiMenu::openESP01Menu()
 
 std::vector<std::string> GuiMenu::scanBSSIDSlist()
 	{
-		const std::string cmd = "scan";
+		if(SystemConf::getInstance()->get("pe_hack.scanbyesp") == "1")
+			{
+
+				const std::string cmd = "espscan";
+			}
+		else
+			{
+				const std::string cmd = "scan";
+			}
 		scanlist =  hacksGet(cmd);//ApiSystem::getInstance()->getScriptResults(cmd);
 		return scanlist;
 	}
@@ -783,25 +788,23 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 				for (auto sta : stations)
 					{
 						std::vector<std::string> tokens = Utils::String::split(sta, ';');
-
-						std::string _mac 		= Utils::String::toUpper(tokens.at(0));
-						std::string _bssid 	= Utils::String::toUpper(tokens.at(1));
-						std::string _pkts		= tokens.at(2);
-						std::string _vendor = macVendor(_mac);
-						std::string _ssid 	= getSSID(_bssid);
-						std::string _apvendor= macVendor(_bssid);
-
-						std::string _title 	=  _mac + " -> " + _ssid;
-						std::string _subtitle 	=  _vendor + " -> " + _bssid;
-
-						s->addWithDescription(_title, _subtitle, nullptr, [this, _mac, _bssid, _pkts, _vendor, _ssid, _apvendor]
+						if(tokens.size() == 3)
 						{
-							openSTADetail(_mac, _bssid, _pkts, _vendor, _ssid, _apvendor);
-						}, "iconNetwork");
+							std::string _mac 		= Utils::String::toUpper(tokens.at(0));
+							std::string _bssid 	= Utils::String::toUpper(tokens.at(1));
+							std::string _pkts		= tokens.at(2);
+							std::string _vendor = macVendor(_mac);
+							std::string _ssid 	= getSSID(_bssid);
+							std::string _apvendor= macVendor(_bssid);
 
-						/*s->addEntry(_title, true, [this, _mac, _bssid, _pkts] {
-							//openDEAUTHMenu(_bssid, _rssi, _ssid);
-						}, "iconNetwork");*/
+							std::string _title 	=  _mac + " -> " + _ssid;
+							std::string _subtitle 	=  _vendor + " -> " + _bssid;
+
+							s->addWithDescription(_title, _subtitle, nullptr, [this, _mac, _bssid, _pkts, _vendor, _ssid, _apvendor]
+							{
+								openSTADetail(_mac, _bssid, _pkts, _vendor, _ssid, _apvendor);
+							}, "iconNetwork");
+						}
 					}
 			}
 		window->pushGui(s);
@@ -809,12 +812,13 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string vendor, std::string ssid, std::string apvendor)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, mac);
+		auto s = new GuiSettings(window, _("STA") + ": " + mac);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
 		s->addGroup(_("STATION INFO"));
+			s->addWithLabel(_("MAC"), 	std::make_shared<TextComponent>(window, mac, 	font, color));
 			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, vendor, 	font, color));
 			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ssid, 	font, color));
 			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, bssid, 	font, color));
@@ -823,12 +827,12 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 		// -------------------------------------------------------------------------------------
 		s->addGroup(_("HELPER"));
 		// -------------------------------------------------------------------------------------
-			s->addEntry(_("STOP"), false, [this, window]() {
+			s->addEntry(_("STOP ALL"), false, [this, window]() {
 					hacksSend("stop");
 				}, "iconQuit");
 		s->addGroup(_("STATION HACKS"));
 			s->addEntry(_("DEAUTH STATION"), true, [this, window, mac, vendor]() {
-				std::string msg = _("DEAUTH STA: ") +"\n" + mac + "\n"+ vendor + "\n";
+				std::string msg = _("DEAUTH STATION: ") +"\n\n" + mac + "\n"+ vendor + "\n";
 				window->pushGui(new GuiMsgBox(window, msg,
 					_("DEAUTH!"), [this, window, mac] {
 						hacksSend("deauthsta " + mac);
@@ -854,15 +858,17 @@ void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 			for (auto bssid : bssids)
 			{
 				std::vector<std::string> tokens = Utils::String::split(bssid, ';');
+				if(tokens.size() == 3)
+					{
+						std::string _bssid 	= Utils::String::toUpper(tokens.at(0));
+						std::string _rssi 	= tokens.at(1);
+						std::string _ssid 	= Utils::String::trim(tokens.at(2));
+						std::string _title =  _rssi + "dBm " + _ssid;
 
-				std::string _bssid 	= Utils::String::toUpper(tokens.at(0));
-				std::string _rssi 	= tokens.at(1);
-				std::string _ssid 	= Utils::String::trim(tokens.at(2));
-				std::string _title =  _rssi + "dBm " + _ssid;
-
-				s->addEntry(_title, true, [this, _bssid, _rssi, _ssid] {
-					openDEAUTHMenu(_bssid, _rssi, _ssid);
-				}, "iconNetwork");
+						s->addEntry(_title, true, [this, _bssid, _rssi, _ssid] {
+							openDEAUTHMenu(_bssid, _rssi, _ssid);
+						}, "iconNetwork");
+					}
 			}
 		}
 
