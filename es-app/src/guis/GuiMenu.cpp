@@ -728,6 +728,24 @@ std::string GuiMenu::getSSID(std::string bssid)
 			}
 		return ssid;
 	}
+std::string GuiMenu::getRSSI(std::string bssid)
+	{
+		std::vector<std::string> bslist = scanlist.size() == 0 ? scanBSSIDSlist() : scanlist;
+		std::string rssi = "0";
+		if(bslist.size() > 0)
+			{
+				for (auto bs : bslist )
+					{
+						std::vector<std::string> tokens = Utils::String::split(bs, ';');
+						if( Utils::String::toUpper(tokens.at(0)) == Utils::String::toUpper(bssid))
+							{
+								ssid = Utils::String::trim(tokens.at(1));
+								break;
+							}
+					}
+			}
+		return ssid;
+	}
 std::string GuiMenu::macVendor(std::string mac)
 {
 	return hacksGetString("vendor " + mac);
@@ -782,27 +800,29 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 						std::vector<std::string> tokens = Utils::String::split(sta, ';');
 						if(tokens.size() >= 3)
 						{
+							//ac:67:84:2c:9e:92; 34:60:f9:e2:07:52; -68; 129
 							std::string _mac 		= Utils::String::toUpper(tokens.at(0));
 							std::string _bssid 	= Utils::String::toUpper(tokens.at(1));
-							std::string _pkts		= tokens.size() == 3 ? tokens.at(2) : tokens.at(3);
+							std::string _pkts		= tokens.size() == 3 ? tokens.at(2) : tokens.at(4);
 							std::string _rssi		= tokens.size() == 4 ? tokens.at(3) : "0";
 							std::string _vendor = macVendor(_mac);
 							std::string _ssid 	= getSSID(_bssid);
+							std::string _aprssi = getRSSI(_bssid);
 							std::string _apvendor= macVendor(_bssid);
 
 							std::string _title 	=  _rssi + "dBm " + _mac + " -> " + _ssid;
 							std::string _subtitle 	=  _vendor + " -> " + _bssid;
 
-							s->addWithDescription(_title, _subtitle, nullptr, [this, _mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor]
+							s->addWithDescription(_title, _subtitle, nullptr, [this, _mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor, _aprssi]
 							{
-								openSTADetail(_mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor);
+								openSTADetail(_mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor, _aprssi);
 							}, "iconNetwork");
 						}
 					}
 			}
 		window->pushGui(s);
 	}
-void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor)
+void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor, std::string aprssi)
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, _("STA") + ": " + mac);
@@ -814,24 +834,29 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, rssi + "dBm", 	font, color));
 			s->addWithLabel(_("MAC"), 	std::make_shared<TextComponent>(window, mac, 	font, color));
 			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, vendor, 	font, color));
+			s->addWithLabel(_("PACKETS SNIFFED"), 	std::make_shared<TextComponent>(window, pkts, 	font, color));
+
+		s->addGroup(_("AP INFO"));
+			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, aprssi + "dBm", 	font, color));
 			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ssid, 	font, color));
 			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, bssid, 	font, color));
-			s->addWithLabel(_("AP VENDOR"), 	std::make_shared<TextComponent>(window, apvendor, 	font, color));
-			s->addWithLabel(_("PACKETS SNIFFED"), 	std::make_shared<TextComponent>(window, pkts, 	font, color));
+			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, apvendor, 	font, color));
 		// -------------------------------------------------------------------------------------
-		s->addGroup(_("HELPER"));
-		// -------------------------------------------------------------------------------------
-			s->addEntry(_("STOP ALL"), false, [this, window]() {
-					hacksSend("stop");
-				}, "iconQuit");
+
 		s->addGroup(_("STATION HACKS"));
+			s->addEntry(_("STOP ALL"), false, [this, window]() {
+				hacksSend("stop");
+				}, "iconQuit");
 			s->addEntry(_("DEAUTH STATION"), true, [this, window, mac, vendor]() {
 				std::string msg = _("DEAUTH STATION: ") +"\n\n" + mac + "\n"+ vendor + "\n";
 				window->pushGui(new GuiMsgBox(window, msg,
 					_("DEAUTH!"), [this, window, mac] {
 						hacksSend("deauthsta " + mac);
 					}, _("CANCEL"),nullptr));
-				});
+				}, "iconHack");
+			/*s->addEntry(_("SNIFF STATION PACKETS"), false, [this, window]() {
+					hacksSend("stop");
+				});*/
 
 
 		window->pushGui(s);

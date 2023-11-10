@@ -91,6 +91,7 @@ private:
 	std::vector<std::string> scanlist;
 	std::vector<std::string> scanBSSIDSlist();
 	std::string getSSID(std::string bssid);
+	std::string getRSSI(std::string bssid);
 	// Deauther
 	void hacksSend(std::string cmd);
 	std::vector<std::string> hacksGet(std::string cmd);
