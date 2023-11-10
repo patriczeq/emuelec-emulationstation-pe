@@ -561,14 +561,6 @@ void GuiMenu::openESP01Settings()
 				}
 			});
 
-
-		// ----------------------------------------------------------- IR
-		s->addGroup(_("WiFi SETTINGS"));
-		// STA SCAN DURATION
-			auto staScanDur = std::make_shared<SliderComponent>(mWindow, 1.f, 20.f, 1.f, "s");
-			staScanDur->setValue(Settings::getInstance()->getInt("pe_hack.stasniffduration"));
-			staScanDur->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.stasniffduration", (int)round(newVal)); });
-			s->addWithLabel(_("STA SNIFF DURATION"), staScanDur);
 		// ----------------------------------------------------------- IR
 		s->addGroup(_("IR SETTINGS"));
 		// SPACE
@@ -597,25 +589,42 @@ void GuiMenu::openESP01Menu()
 	{
 	  	Window* window = mWindow;
 		auto s = new GuiSettings(window, "H4CK TH3 FK1N W0RLD!");
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
 
 		s->addGroup(_("SYSTEM"));
-			s->addEntry(_("REBOOT ESP01"), false, [this, window] {
-				hacksSend("reboot");
-				//runSystemCommand("hacks.sh espconn reboot", "", nullptr);
-				window->displayNotificationMessage(_("REBOOT MESSAGE SENT"));
-			}, "iconRestart");
 			s->addEntry(_("SETTINGS"), true, [this] {
 				openESP01Settings();
 			}, "iconSystem");
+			s->addEntry(_("STOP ALL JOBS"), false, [this, window] {
+				hacksSend("stop");
+			}, "iconQuit");
+			s->addEntry(_("REBOOT ESP01"), false, [this, window] {
+				hacksSend("reboot");
+			}, "iconRestart");
 
 
 		s->addGroup(_("SCAN NETWORK"));
 			s->addEntry(_("AP SCAN"), true, [this] {
 				scanBSSIDS();
 			});
+
+			auto staScanDur = std::make_shared<SliderComponent>(mWindow, 1.f, 20.f, 1.f, "s");
+			staScanDur->setValue(Settings::getInstance()->getInt("pe_hack.stasniffduration"));
+			staScanDur->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.stasniffduration", (int)round(newVal)); });
+			s->addWithLabel(_("STA SNIFF DURATION"), staScanDur);
+
+			s->addWithDescription(_("STA SCAN"), "SNIFF STATIONS AROUND. SET SNIFF TIME!",
+				staScanDur,
+				[this]
+			{
+				scanSTA();
+			}, "iconNetwork");
+			/*
 			s->addEntry(_("STA SCAN"), true, [this] {
 				scanSTA();
-			});
+			});*/
 
 
 		s->addGroup(_("WIFI DEAUTH/BACON"));
@@ -846,13 +855,13 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 
 		s->addGroup(_("AP INFO"));
 			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, aprssi + "dBm", 	font, color));
-			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ssid, 	font, color));
 			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, bssid, 	font, color));
 			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, apvendor, 	font, color));
+			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ssid, 	font, color));
 		// -------------------------------------------------------------------------------------
 
 		s->addGroup(_("STATION HACKS"));
-			s->addEntry(_("STOP ALL"), false, [this, window]() {
+			s->addEntry(_("STOP ALL JOBS"), false, [this, window]() {
 				hacksSend("stop");
 				}, "iconQuit");
 			s->addEntry(_("DEAUTH STATION"), true, [this, window, mac, vendor]() {
@@ -939,7 +948,7 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 							//runSystemCommand("hacks.sh espconn deauthap " + bssid, "", nullptr);
 							window->displayNotificationMessage(_("DEAUTH AP SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
-				},"iconSystem");
+				},"iconHack");
 
 			s->addEntry(_("CLONE BSSID, DEAUTH"), true, [this, window, bssid, ssid]() {
 					std::string msg = _("DEAUTH and clone BSSID AP: ") +"\n" + ssid + "\n"+ bssid + "\n";
@@ -949,7 +958,7 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 							//runSystemCommand("hacks.sh espconn deauthapclone " + bssid, "", nullptr);
 							window->displayNotificationMessage(_("DEAUTH+CLONE BSSID SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
-				},"iconSystem");
+				},"iconHack");
 			s->addEntry(_("FAKE AP, DEAUTH"), true, [this, window, bssid, ssid]() {
 					std::string msg = _("DEAUTH and fake AP: ") +"\n" + ssid + "\n"+ bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
@@ -958,12 +967,10 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 							//runSystemCommand("hacks.sh espconn deauthapcaptive " + bssid, "", nullptr);
 							window->displayNotificationMessage(_("DEAUTH+FAKE AP SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
-				},"iconSystem");
+				},"iconHack");
 		// -------------------------------------------------------------------------------------
-			s->addEntry(_("STOP ALL"), false, [this, window, bssid, ssid]() {
-					hacksSend("stop");
-					//runSystemCommand("hacks.sh espconn stop", "", nullptr);
-					window->displayNotificationMessage(_("STOP MESSAGE SENT"));
+			s->addEntry(_("STOP ALL JOBS"), false, [this, window]() {
+				hacksSend("stop");
 				}, "iconQuit");
 		// -------------------------------------------------------------------------------------
 
