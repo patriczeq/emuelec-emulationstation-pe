@@ -739,12 +739,12 @@ std::string GuiMenu::getRSSI(std::string bssid)
 						std::vector<std::string> tokens = Utils::String::split(bs, ';');
 						if( Utils::String::toUpper(tokens.at(0)) == Utils::String::toUpper(bssid))
 							{
-								ssid = Utils::String::trim(tokens.at(1));
+								rssi = Utils::String::trim(tokens.at(1));
 								break;
 							}
 					}
 			}
-		return ssid;
+		return rssi;
 	}
 std::string GuiMenu::macVendor(std::string mac)
 {
