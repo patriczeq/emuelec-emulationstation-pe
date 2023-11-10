@@ -549,6 +549,7 @@ void GuiMenu::openESP01Settings()
 			{
 				Settings::getInstance()->setString("pe_hack.uart_port", esp_uart->getSelected());
 			});
+		s->addGroup(_("WiFi SETTINGS"));
 			// SCAN
 			auto esp_scan = std::make_shared<SwitchComponent>(mWindow);
 			esp_scan->setState(SystemConf::getInstance()->get("pe_hack.scanbyesp") == "1");
@@ -560,6 +561,11 @@ void GuiMenu::openESP01Settings()
 					SystemConf::getInstance()->saveSystemConf();
 				}
 			});
+			// snifftime
+			auto staScanDur = std::make_shared<SliderComponent>(mWindow, 1.f, 20.f, 1.f, "s");
+			staScanDur->setValue(Settings::getInstance()->getInt("pe_hack.stasniffduration"));
+			staScanDur->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.stasniffduration", (int)round(newVal)); });
+			s->addWithLabel(_("STA SNIFF DURATION"), staScanDur);
 
 		// ----------------------------------------------------------- IR
 		s->addGroup(_("IR SETTINGS"));
@@ -606,25 +612,13 @@ void GuiMenu::openESP01Menu()
 
 
 		s->addGroup(_("SCAN NETWORK"));
-			s->addEntry(_("AP SCAN"), true, [this] {
+			s->addEntry(_("SCAN AP"), true, [this] {
 				scanBSSIDS();
 			}, "iconNetwork");
 
-			auto staScanDur = std::make_shared<SliderComponent>(mWindow, 1.f, 20.f, 1.f, "s");
-			staScanDur->setValue(Settings::getInstance()->getInt("pe_hack.stasniffduration"));
-			staScanDur->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.stasniffduration", (int)round(newVal)); });
-			//s->addWithLabel(_("STA SNIFF DURATION"), staScanDur);
-
-			s->addWithDescription(_("STA SCAN"), "SNIFF STATIONS AROUND. SET SNIFF TIME!",
-				staScanDur,
-				[this]
-			{
+			s->addEntry(_("SCAN STA"), true, [this] {
 				scanSTA();
 			}, "iconNetwork");
-			/*
-			s->addEntry(_("STA SCAN"), true, [this] {
-				scanSTA();
-			});*/
 
 
 		s->addGroup(_("WIFI DEAUTH/BACON"));
