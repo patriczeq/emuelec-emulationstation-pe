@@ -687,16 +687,8 @@ void GuiMenu::openESP01Menu()
 
 std::vector<std::string> GuiMenu::scanBSSIDSlist()
 	{
-		if(SystemConf::getInstance()->get("pe_hack.scanbyesp") == "1")
-			{
-
-				const std::string cmd = "espscan";
-			}
-		else
-			{
-				const std::string cmd = "scan";
-			}
-		scanlist =  hacksGet(cmd);//ApiSystem::getInstance()->getScriptResults(cmd);
+		const std::string cmd = SystemConf::getInstance()->get("pe_hack.scanbyesp") == "1" ? "espscan" : "scan";
+		scanlist =  hacksGet(cmd);
 		return scanlist;
 	}
 
