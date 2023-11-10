@@ -608,12 +608,12 @@ void GuiMenu::openESP01Menu()
 		s->addGroup(_("SCAN NETWORK"));
 			s->addEntry(_("AP SCAN"), true, [this] {
 				scanBSSIDS();
-			});
+			}, "iconNetwork");
 
 			auto staScanDur = std::make_shared<SliderComponent>(mWindow, 1.f, 20.f, 1.f, "s");
 			staScanDur->setValue(Settings::getInstance()->getInt("pe_hack.stasniffduration"));
 			staScanDur->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.stasniffduration", (int)round(newVal)); });
-			s->addWithLabel(_("STA SNIFF DURATION"), staScanDur);
+			//s->addWithLabel(_("STA SNIFF DURATION"), staScanDur);
 
 			s->addWithDescription(_("STA SCAN"), "SNIFF STATIONS AROUND. SET SNIFF TIME!",
 				staScanDur,
@@ -655,7 +655,7 @@ void GuiMenu::openESP01Menu()
 				});
 
 		s->addGroup(_("IR ATTACKS"));
-			s->addEntry(_("POWER-OFF"), false, [this, window] {
+			s->addEntry(_("IR POWER-OFF"), false, [this, window] {
 				//set space
 				std::string space = Settings::getInstance()->getString("pe_hack.irspace");
 				if(space != ""){
@@ -672,7 +672,7 @@ void GuiMenu::openESP01Menu()
 				//runSystemCommand("hacks.sh espconn irkillonce", "", nullptr);
 				window->pushGui(new GuiMsgBox(window, _("SENDING POWER CODES"), _("OK"), nullptr));
 			});
-			s->addEntry(_("POWER-OFF (LOOP)"), false, [this, window] {
+			s->addEntry(_("IR POWER-OFF (LOOP)"), false, [this, window] {
 				//set space
 				std::string space = Settings::getInstance()->getString("pe_hack.irspace");
 				if(space != ""){
