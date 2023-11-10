@@ -913,7 +913,7 @@ void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ssid)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, ssid);
+		auto s = new GuiSettings(window, "AP: " + ssid);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -928,9 +928,10 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 */
 		s->addGroup(_("AP INFO"));
 		// -------------------------------------------------------------------------------------
-			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, vendor, 	font, color));
-			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, bssid, 	font, color));
 			s->addWithLabel(_("RSSI"), 		std::make_shared<TextComponent>(window, rssi + _("dBm"), 	font, color));
+			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, bssid, 	font, color));
+			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, vendor, 	font, color));
+			s->addWithLabel(_("SSID"), 		std::make_shared<TextComponent>(window, ssid, 	font, color));
 		// -------------------------------------------------------------------------------------
 		s->addGroup(_("AP HACKS"));
 		// -------------------------------------------------------------------------------------
@@ -1812,7 +1813,7 @@ void GuiMenu::addVersionInfo()
 		else
 		{
 #ifdef _ENABLEEMUELEC
-		label = "PEmod v" + std::string("1.0") + " EMUELEC V" + ApiSystem::getInstance()->getVersion() + buildDate + " IP:" + getShOutput(R"(/usr/bin/emuelec-utils getip)");
+		label = "PEmod v" + std::string("1.1") + " EMUELEC V" + ApiSystem::getInstance()->getVersion() + buildDate + " IP:" + getShOutput(R"(/usr/bin/emuelec-utils getip)");
 #else
 			std::string aboutInfo = ApiSystem::getInstance()->getApplicationName() + " V" + ApiSystem::getInstance()->getVersion();
 			label = aboutInfo + buildDate;
