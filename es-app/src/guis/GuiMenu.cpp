@@ -888,8 +888,6 @@ void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 						std::string _bssid 	= Utils::String::toUpper(tokens.at(0));
 						std::string _rssi 	= tokens.at(1);
 						std::string _ssid 	= Utils::String::trim(tokens.at(2));
-						std::string _title =  _rssi + "dBm " + _ssid;
-
 						std::string _vendor = macVendor(_bssid);
 
 						std::string _title 	=  _ssid;
