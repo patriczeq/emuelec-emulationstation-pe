@@ -793,6 +793,10 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, (stations.size() == 0 ? _("NO STA FOUND!") : _("STATIONS IN THE AIR")).c_str());
 
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
 		if (stations.size() > 0)
 			{
 				for (auto sta : stations)
@@ -803,20 +807,24 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 							//ac:67:84:2c:9e:92; 34:60:f9:e2:07:52; -68; 129
 							std::string _mac 		= Utils::String::toUpper(tokens.at(0));
 							std::string _bssid 	= Utils::String::toUpper(tokens.at(1));
-							std::string _pkts		= tokens.size() == 3 ? tokens.at(2) : tokens.at(3);
-							std::string _rssi		= tokens.size() == 4 ? tokens.at(3) : "0";
+							std::string _pkts		= tokens.size() == 4 ? tokens.at(3) : tokens.at(2);
+							std::string _rssi		= tokens.size() == 4 ? tokens.at(2) : "0";
 							std::string _vendor = macVendor(_mac);
 							std::string _ssid 	= getSSID(_bssid);
 							std::string _aprssi = getRSSI(_bssid);
 							std::string _apvendor= macVendor(_bssid);
 
-							std::string _title 	=  _rssi + "dBm " + _mac + " -> " + _ssid;
+							std::string _title 	=  _mac + " -> " + _ssid;
 							std::string _subtitle 	=  _vendor + " -> " + _bssid;
+							//inline void addWithDescription(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func, const std::string iconName = "", bool setCursorHere = false, /*bool invert_when_selected = true,*/ bool multiLine = false)
 
-							s->addWithDescription(_title, _subtitle, nullptr, [this, _mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor, _aprssi]
+							s->addWithDescription(_title, _subtitle,
+								std::make_shared<TextComponent>(window, _rssi + "dBm", 	font, color),
+								[this, _mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor, _aprssi]
 							{
 								openSTADetail(_mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor, _aprssi);
 							}, "iconNetwork");
+
 						}
 					}
 			}
