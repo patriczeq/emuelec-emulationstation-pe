@@ -803,7 +803,7 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 							//ac:67:84:2c:9e:92; 34:60:f9:e2:07:52; -68; 129
 							std::string _mac 		= Utils::String::toUpper(tokens.at(0));
 							std::string _bssid 	= Utils::String::toUpper(tokens.at(1));
-							std::string _pkts		= tokens.size() == 3 ? tokens.at(2) : tokens.at(4);
+							std::string _pkts		= tokens.size() == 3 ? tokens.at(2) : tokens.at(3);
 							std::string _rssi		= tokens.size() == 4 ? tokens.at(3) : "0";
 							std::string _vendor = macVendor(_mac);
 							std::string _ssid 	= getSSID(_bssid);
