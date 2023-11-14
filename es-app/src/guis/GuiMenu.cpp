@@ -414,7 +414,7 @@ void GuiMenu::scanMPServers()
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
-				const std::string cmd = "avahi-browse -d local _odroid-gs._udp -t -r -p -l | grep IPv4 | grep =;";
+				const std::string cmd = "avahi-browse -d local _oga-mp._udp -t -r -p -l | grep IPv4 | grep =;";
 				return ApiSystem::getInstance()->getScriptResults(cmd);
 			},
 			[this, window](std::vector<std::string> servers)
@@ -439,13 +439,37 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 			for (auto server : servers)
 			{
 				std::vector<std::string> tokens = Utils::String::split(server, ';');
-
+				//=;wlan0;IPv4;oga-mp-broadcast;_oga-mp._udp;local;OGAred.local;192.168.1.111;1234;"psx|Crash Bandicoot"
+				if(tokens.size() < 8){
+					continue;
+				}
 				std::string _name 	= tokens.at(6);
-				std::string _ip 	= tokens.at(7);
+				std::string _ip 		= tokens.at(7);
 
-				std::string _title	= _name + " (" + _ip + ")";
+				std::string _platform = "";
+				std::string _game = "";
+				if(tokens.size() == 10)
+					{
+						std::string _platformName = Utils::String::replace(tokens.at(9), "\"", "");
+						std::vector<std::string> ptokens = Utils::String::split(_platformName, '|');
+						if(ptokens.size() == 2)
+							{
+								_platform = ptokens.at(0);
+								_game = ptokens.at(1);
+							}
+					}
 
-				s->addEntry(_title, true, [window, _ip, _name] {
+				std::string _subtitle	= _name + " (" + _ip + ")";
+
+				s->addWithDescription(_game == "" ? "Unknown game" : _game, _subtitle,
+					std::make_shared<TextComponent>(window, _platform == "" ? "?" : _platform, 	font, color),
+					[this, window, _ip]
+				{
+						std::string cmd = "playertoo " + _ip;
+						ApiSystem::getInstance()->launchApp(window, cmd);
+				}, "iconControllers");
+
+				/*s->addEntry(_title, true, [window, _ip, _name] {
 					std::string msg = _("CONNECT TO:\n");
 											msg = msg + _name + "\n";
 											msg = msg + _ip;
@@ -454,7 +478,7 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 							std::string cmd = "playertoo " + _ip;
 							ApiSystem::getInstance()->launchApp(window, cmd);
 						},_("NO"), nullptr));
-				}, "iconSystem");
+				}, "iconSystem");*/
 			}
 		}
 		else{
