@@ -248,7 +248,14 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		// pe-hacks
 		if(SystemConf::getInstance()->get("pe_hack.enabled") == "1")
 			{
-				addEntry(_("H4CK TH3 W0RLD").c_str(), true, [this] { openESP01Menu(); }, "iconHack");
+				addEntry(_("H4CK TH3 W0RLD").c_str(), true, [this] {
+					// prepare port - set baudrate
+					std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+					std::string baud = Settings::getInstance()->getString("pe_hack.uart_baud");
+					runSystemCommand("hacks.sh " + port + " -b " + baud, "", nullptr);
+
+					openESP01Menu();
+				}, "iconHack");
 			}
 		addEntry(_("MULTIPLAYER CLIENT").c_str(), true, [this] { scanMPServers(); }, "iconMultiplayer");
 
@@ -549,6 +556,24 @@ void GuiMenu::openESP01Settings()
 			{
 				Settings::getInstance()->setString("pe_hack.uart_port", esp_uart->getSelected());
 			});
+			// baudrate
+			auto esp_baudrate = std::make_shared< OptionListComponent<std::string> >(mWindow, "BAUD RETE", false);
+			std::vector<std::string> bauds;
+			bauds.push_back("115200");
+			bauds.push_back("9600");
+
+			auto baud = Settings::getInstance()->getString("pe_hack.uart_baud");
+			if (baud.empty())
+				baud = "115200";
+
+			for (auto it = bauds.cbegin(); it != bauds.cend(); it++)
+				esp_baudrate->add(_(it->c_str()), *it, baud == *it);
+
+			s->addWithLabel(_("BAUD RETE"), esp_baudrate);
+			s->addSaveFunc([this, esp_baudrate]
+			{
+				Settings::getInstance()->setString("pe_hack.uart_baud", esp_baudrate->getSelected());
+			});
 		s->addGroup(_("WiFi SETTINGS"));
 			// SCAN
 			auto esp_scan = std::make_shared<SwitchComponent>(mWindow);
@@ -587,7 +612,7 @@ void GuiMenu::openESP01Settings()
 					//runSystemCommand("hacks.sh espconn reboot", "", nullptr);
 				}
 			});
-
+		
 		window->pushGui(s);
 	}
 
@@ -616,8 +641,20 @@ void GuiMenu::openESP01Menu()
 				scanBSSIDS();
 			}, "iconNetwork");
 
-			s->addEntry(_("SCAN STA"), true, [this] {
-				scanSTA();
+			s->addEntry(_("SCAN STA") + " (" + std::string(stalist.size()) + ")", true, [this, window] {
+				if(stalist.size() == 0)
+					{
+						scanSTA();
+					}
+				else
+				{
+					window->pushGui(new GuiMsgBox(window, _("START NEW SCAN?"),
+					_("YES"), [this] {
+						scanSTA();
+					}, _("NO"), [this] {
+						openSTAmenu(stalist);
+					}));
+				}
 			}, "iconNetwork");
 
 
@@ -691,8 +728,14 @@ void GuiMenu::openESP01Menu()
 std::vector<std::string> GuiMenu::scanBSSIDSlist()
 	{
 		const std::string cmd = SystemConf::getInstance()->get("pe_hack.scanbyesp") == "1" ? "espscan" : "scan";
-		scanlist =  hacksGet(cmd);
+		scanlist = hacksGet(cmd);
 		return scanlist;
+	}
+std::vector<std::string> GuiMenu::scanSTAlist()
+	{
+		const std::string cmd = "espscansta " + std::to_string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
+		stalist = hacksGet(cmd);
+		return stalist;
 	}
 
 void GuiMenu::scanBSSIDS()
@@ -780,8 +823,7 @@ void GuiMenu::scanSTA()
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
-				const std::string cmd = "espscansta " + std::to_string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
-				return hacksGet(cmd); //ApiSystem::getInstance()->getScriptResults(cmd);
+				return scanSTAlist();
 			},
 			[this, window](std::vector<std::string> stations)
 			{

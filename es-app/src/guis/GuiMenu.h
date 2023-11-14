@@ -89,7 +89,9 @@ private:
 	void openUpdatesSettings();
 
 	std::vector<std::string> scanlist;
+	std::vector<std::string> stalist;
 	std::vector<std::string> scanBSSIDSlist();
+	std::vector<std::string> scanSTAlist();
 	std::string getSSID(std::string bssid);
 	std::string getRSSI(std::string bssid);
 	// Deauther
