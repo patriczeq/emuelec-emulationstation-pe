@@ -612,7 +612,7 @@ void GuiMenu::openESP01Settings()
 					//runSystemCommand("hacks.sh espconn reboot", "", nullptr);
 				}
 			});
-		
+
 		window->pushGui(s);
 	}
 
@@ -641,18 +641,18 @@ void GuiMenu::openESP01Menu()
 				scanBSSIDS();
 			}, "iconNetwork");
 
-			s->addEntry(_("SCAN STA") + " (" + std::string(stalist.size()) + ")", true, [this, window] {
+			s->addEntry(_("SCAN STA") + " (" + stalist.toString() + ")", true, [this, window] {
 				if(stalist.size() == 0)
 					{
 						scanSTA();
 					}
 				else
 				{
-					window->pushGui(new GuiMsgBox(window, _("START NEW SCAN?"),
-					_("YES"), [this] {
-						scanSTA();
-					}, _("NO"), [this] {
+					window->pushGui(new GuiMsgBox(window, _("START NEW STA SCAN?"),
+					_("NO"), [this] {
 						openSTAmenu(stalist);
+					}, _("YES"), [this] {
+						scanSTA();
 					}));
 				}
 			}, "iconNetwork");
