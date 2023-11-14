@@ -19,7 +19,7 @@
 #include "SystemConf.h"
 #include "InputManager.h"
 #include "scrapers/ThreadedScraper.h"
-#include "Gamelist.h" 
+#include "Gamelist.h"
 #include "ApiSystem.h"
 #include <time.h>
 #include <algorithm>
@@ -46,7 +46,7 @@ FileData::FileData(FileType type, const std::string& path, SystemData* system)
 	// metadata needs at least a name field (since that's what getName() will return)
 	if (mMetadata.get(MetaDataId::Name).empty() && !mPath.empty())
 		mMetadata.set(MetaDataId::Name, getDisplayName());
-	
+
 	mMetadata.resetChangedFlag();
 }
 
@@ -70,13 +70,13 @@ const std::string FileData::getBreadCrumbPath()
 	{
 		if (parent == root->getSystem()->getRootFolder() && !parent->getSystem()->isCollection())
 			break;
-		
+
 		if (parent->getSystem()->getName() == CollectionSystemManager::get()->getCustomCollectionsBundle()->getName())
 			break;
 
-		if (parent->getSystem()->isGroupChildSystem() && 
-			parent->getSystem()->getParentGroupSystem() != nullptr && 
-			parent->getParent() == parent->getSystem()->getParentGroupSystem()->getRootFolder() && 			
+		if (parent->getSystem()->isGroupChildSystem() &&
+			parent->getSystem()->getParentGroupSystem() != nullptr &&
+			parent->getParent() == parent->getSystem()->getParentGroupSystem()->getRootFolder() &&
 			parent->getSystem()->getName() != "windows_installers")
 			break;
 
@@ -99,8 +99,8 @@ const std::string FileData::getConfigurationName()
 }
 
 inline SystemEnvironmentData* FileData::getSystemEnvData() const
-{ 
-	return mSystem->getSystemEnvData(); 
+{
+	return mSystem->getSystemEnvData();
 }
 
 std::string FileData::getSystemName() const
@@ -285,7 +285,7 @@ std::vector<std::string> FileData::getFileMedias()
 
 		if (!Utils::FileSystem::isImage(path))
 			continue;
-		
+
 		if (Utils::FileSystem::exists(path))
 			ret.push_back(path);
 	}
@@ -293,9 +293,9 @@ std::vector<std::string> FileData::getFileMedias()
 	return ret;
 }
 
-void FileData::resetSettings() 
+void FileData::resetSettings()
 {
-	
+
 }
 
 const std::string& FileData::getName()
@@ -330,7 +330,7 @@ const std::string FileData::getSortOrName()
 const std::string FileData::getVideoPath()
 {
 	std::string video = getMetadata(MetaDataId::Video);
-	
+
 	// no video, try to use local video
 	if (video.empty())
 	{
@@ -338,7 +338,7 @@ const std::string FileData::getVideoPath()
 		if (!video.empty())
 			setMetadata(MetaDataId::Video, video);
 	}
-	
+
 	if (video.empty() && getSourceFileData()->getSystem()->hasPlatformId(PlatformIds::IMAGEVIEWER))
 	{
 		if (getType() == FOLDER && ((FolderData*)this)->mChildren.size())
@@ -367,7 +367,7 @@ const std::string FileData::getMarqueePath()
 		if (!marquee.empty())
 			setMetadata(MetaDataId::Marquee, marquee);
 	}
-	
+
 	return marquee;
 }
 
@@ -420,9 +420,9 @@ std::string FileData::getKey()
 const bool FileData::isArcadeAsset()
 {
 	if (mSystem && (mSystem->hasPlatformId(PlatformIds::ARCADE) || mSystem->hasPlatformId(PlatformIds::NEOGEO)))
-	{	
+	{
 		const std::string stem = Utils::FileSystem::getStem(getPath());
-		return MameNames::getInstance()->isBios(stem) || MameNames::getInstance()->isDevice(stem);		
+		return MameNames::getInstance()->isBios(stem) || MameNames::getInstance()->isDevice(stem);
 	}
 
 	return false;
@@ -474,7 +474,7 @@ std::string FileData::getlaunchCommand(LaunchGameOptions& options, bool includeC
 	if (InputManager::getInstance()->getGuns().size() && gameToUpdate->isLightGunGame())
 #endif
 		controllersConfig = controllersConfig + "-lightgun ";
-	
+
 	std::string systemName = system->getName();
 	std::string emulator = getEmulator();
 	std::string core = getCore();
@@ -499,7 +499,7 @@ std::string FileData::getlaunchCommand(LaunchGameOptions& options, bool includeC
 			if (forceCore)
 				break;
 		}
-	}	
+	}
 	/*else if (!isExtensionCompatible())
 	{
 		auto extension = Utils::String::toLower(Utils::FileSystem::getExtension(gameToUpdate->getPath()));
@@ -520,10 +520,10 @@ std::string FileData::getlaunchCommand(LaunchGameOptions& options, bool includeC
 			}
 		}
 	}*/
-	
+
 	std::string command = system->getLaunchCommand(emulator, core);
 
-	
+
 	if (forceCore)
 	{
 		if (command.find("%EMULATOR%") == std::string::npos && command.find("-emulator") == std::string::npos)
@@ -532,11 +532,12 @@ std::string FileData::getlaunchCommand(LaunchGameOptions& options, bool includeC
 		if (command.find("%CORE%") == std::string::npos && command.find("-core") == std::string::npos)
 			command = command + " -core %CORE%";
 	}
+	command = command + " -gamename \"%GAMENAME%\"";
 
 	const std::string rom = Utils::FileSystem::getEscapedPath(getPath());
 	const std::string basename = Utils::FileSystem::getStem(getPath());
 	const std::string rom_raw = Utils::FileSystem::getPreferredPath(getPath());
-	
+
 	command = Utils::String::replace(command, "%SYSTEM%", systemName);
 	command = Utils::String::replace(command, "%ROM%", rom);
 	command = Utils::String::replace(command, "%BASENAME%", basename);
@@ -561,7 +562,7 @@ std::string FileData::getlaunchCommand(LaunchGameOptions& options, bool includeC
 		command = Utils::String::replace(command, "%GAMEINFOXML%", "");
 		Utils::FileSystem::removeFile(fileInfo);
 	}
-	
+
 	if (includeControllers)
 		command = Utils::String::replace(command, "%CONTROLLERSCONFIG%", controllersConfig);
 
@@ -679,7 +680,7 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 	hideWindow = false;
 #endif
 	window->deinit(hideWindow);
-	
+
 	const std::string rom = Utils::FileSystem::getEscapedPath(getPath());
 	const std::string basename = Utils::FileSystem::getStem(getPath());
 
@@ -709,7 +710,7 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		Utils::FileSystem::removeFile(p2kConv);
 
 	Scripting::fireEvent("game-end");
-	
+
 	if (!hideWindow && Settings::getInstance()->getBool("HideWindowFullReinit"))
 	{
 		ResourceManager::getInstance()->reloadAll();
@@ -758,7 +759,7 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 #ifndef _ENABLEEMUELEC // EmuELEC has its own error checking
 	if (exitCode >= 200 && exitCode <= 300)
 		window->pushGui(new GuiMsgBox(window, _("AN ERROR OCCURED") + ":\r\n" + getMessageFromExitCode(exitCode), _("OK"), nullptr, GuiMsgBoxIcon::ICON_ERROR));
-#endif 
+#endif
 	return exitCode == 0;
 }
 
@@ -896,7 +897,7 @@ std::set<std::string> FileData::getContentFiles()
 				}
 
 				gdi.close();
-			}			
+			}
 		}
 	}
 
@@ -923,11 +924,11 @@ CollectionFileData::CollectionFileData(FileData* file, SystemData* system)
 	: FileData(file->getSourceFileData()->getType(), "", system)
 {
 	mSourceFileData = file->getSourceFileData();
-	mParent = NULL; 
+	mParent = NULL;
 }
 
 SystemEnvironmentData* CollectionFileData::getSystemEnvData() const
-{ 
+{
 	return mSourceFileData->getSystemEnvData();
 }
 
@@ -950,7 +951,7 @@ CollectionFileData::~CollectionFileData()
 	mParent = NULL;
 }
 
-std::string CollectionFileData::getKey() 
+std::string CollectionFileData::getKey()
 {
 	return getFullPath();
 }
@@ -965,12 +966,12 @@ const std::string& CollectionFileData::getName()
 	return mSourceFileData->getName();
 }
 
-const std::vector<FileData*> FolderData::getChildrenListToDisplay() 
+const std::vector<FileData*> FolderData::getChildrenListToDisplay()
 {
 	std::vector<FileData*> ret;
 
 	std::string showFoldersMode = getSystem()->getFolderViewMode();
-	
+
 	bool showHiddenFiles = Settings::ShowHiddenFiles();
 
 	auto shv = Settings::getInstance()->getString(getSystem()->getName() + ".ShowHiddenFiles");
@@ -999,12 +1000,12 @@ const std::vector<FileData*> FolderData::getChildrenListToDisplay()
 		idx = nullptr;
 
   	std::vector<FileData*>* items = &mChildren;
-	
+
 	std::vector<FileData*> flatGameList;
 	if (showFoldersMode == "never")
 	{
 		flatGameList = getFlatGameList(false, sys);
-		items = &flatGameList;		
+		items = &flatGameList;
 	}
 
 	std::map<FileData*, int> scoringBoard;
@@ -1079,13 +1080,13 @@ const std::vector<FileData*> FolderData::getChildrenListToDisplay()
 		auto compf = sort.comparisonFunction;
 
 		std::sort(ret.begin(), ret.end(), [scoringBoard, compf](const FileData* file1, const FileData* file2) -> bool
-		{ 
+		{
 			auto s1 = scoringBoard.find((FileData*) file1);
-			auto s2 = scoringBoard.find((FileData*) file2);		
+			auto s2 = scoringBoard.find((FileData*) file2);
 
 			if (s1 != scoringBoard.cend() && s2 != scoringBoard.cend() && s1->second != s2->second)
 				return s1->second < s2->second;
-			
+
 			return compf(file1, file2);
 		});
 	}
@@ -1112,14 +1113,14 @@ std::shared_ptr<std::vector<FileData*>> FolderData::findChildrenListToDisplayAtC
 	{
 		if (item->getType() != FOLDER)
 			continue;
-		
+
 		stack.push(item);
 
 		auto ret = ((FolderData*)item)->findChildrenListToDisplayAtCursor(toFind, stack);
 		if (ret != nullptr)
 			return ret;
 
-		stack.pop();		
+		stack.pop();
 	}
 
 	if (stack.empty())
@@ -1154,7 +1155,7 @@ FileData* FolderData::findUniqueGameForFolder()
 		if (count > 1)
 			break;
 	}
-	
+
 	if (count == 1)
 		return found;
 	/*{
@@ -1183,7 +1184,7 @@ void FolderData::getFilesRecursiveWithContext(std::vector<FileData*>& out, unsig
 	};
 
 	SystemData* pSystem = (system != nullptr ? system : mSystem);
-	
+
 	FileFilterIndex* idx = pSystem->getIndex(false);
 
 	for (auto it : mChildren)
@@ -1238,7 +1239,7 @@ std::vector<FileData*> FolderData::getFlatGameList(bool displayedOnly, SystemDat
 std::vector<FileData*> FolderData::getFilesRecursive(unsigned int typeMask, bool displayedOnly, SystemData* system, bool includeVirtualStorage) const
 {
 	SystemData* pSystem = (system != nullptr ? system : mSystem);
-	
+
 	GetFileContext ctx;
 	ctx.showHiddenFiles = Settings::ShowHiddenFiles() && !UIModeController::getInstance()->isUIModeKiosk();
 
@@ -1271,7 +1272,7 @@ void FolderData::addChild(FileData* file, bool assignParent)
 	mChildren.push_back(file);
 
 	if (assignParent)
-		file->setParent(this);	
+		file->setParent(this);
 }
 
 void FolderData::removeChild(FileData* file)
@@ -1308,7 +1309,7 @@ FileData* FolderData::FindByPath(const std::string& path)
 
 		if ((*it)->getType() != FOLDER)
 			continue;
-		
+
 		auto item = ((FolderData*)(*it))->FindByPath(path);
 		if (item != nullptr)
 			return item;
@@ -1324,10 +1325,10 @@ void FolderData::createChildrenByFilenameMap(std::unordered_map<std::string, Fil
 	for (std::vector<FileData*>::const_iterator it = children.cbegin(); it != children.cend(); ++it)
 	{
 		if ((*it)->getType() == FOLDER)
-			((FolderData*)(*it))->createChildrenByFilenameMap(map);			
-		else 
+			((FolderData*)(*it))->createChildrenByFilenameMap(map);
+		else
 			map[(*it)->getKey()] = (*it);
-	}	
+	}
 }
 
 const std::string FileData::getCore(bool resolveDefault)
@@ -1335,7 +1336,7 @@ const std::string FileData::getCore(bool resolveDefault)
 #if WIN32 && !_DEBUG
 	std::string core = getMetadata(MetaDataId::Core);
 #else
-	std::string core = SystemConf::getInstance()->get(getConfigurationName() + ".core"); 
+	std::string core = SystemConf::getInstance()->get(getConfigurationName() + ".core");
 #endif
 
 	if (core == "auto")
@@ -1343,7 +1344,7 @@ const std::string FileData::getCore(bool resolveDefault)
 
 	if (!core.empty())
 	{
-		// Check core exists 
+		// Check core exists
 		std::string emulator = getEmulator();
 		if (emulator.empty())
 			core = "";
@@ -1393,7 +1394,7 @@ const std::string FileData::getEmulator(bool resolveDefault)
 
 	if (!emulator.empty())
 	{
-		// Check emulator exists 
+		// Check emulator exists
 		bool exists = false;
 
 		for (auto emul : getSourceFileData()->getSystem()->getEmulators())
@@ -1439,7 +1440,7 @@ bool FileData::isNetplaySupported()
 	auto system = file->getSystem();
 	if (system == nullptr)
 		return false;
-	
+
 	std::string emulName = getEmulator();
 	std::string coreName = getCore();
 
@@ -1449,13 +1450,13 @@ bool FileData::isNetplaySupported()
 		if (command.find("%NETPLAY%") != std::string::npos)
 			return true;
 	}
-	
+
 	for (auto emul : system->getEmulators())
 		if (emulName == emul.name)
 			for (auto core : emul.cores)
 				if (coreName == core.name)
 					return core.netplay;
-					
+
 	return false;
 }
 
@@ -1638,7 +1639,7 @@ KeyMappingFile FileData::getKeyboardMapping()
 		Utils::FileSystem::removeFile(path);
 		return ret;
 	}
-		
+
 	if (Utils::FileSystem::exists(path))
 		ret = KeyMappingFile::load(path);
 	else
@@ -1707,8 +1708,8 @@ void FolderData::clear()
 
 void FolderData::removeFromVirtualFolders(FileData* game)
 {
-	for (auto it = mChildren.begin(); it != mChildren.end(); ++it) 
-	{		
+	for (auto it = mChildren.begin(); it != mChildren.end(); ++it)
+	{
 		if ((*it)->getType() == FOLDER)
 		{
 			((FolderData*)(*it))->removeFromVirtualFolders(game);
@@ -1746,7 +1747,7 @@ void FileData::setSelectedGame()
 
 	std::string desc = getMetadata(MetaDataId::Desc);
 	if (!desc.empty())
-		TextToSpeech::getInstance()->say(desc, true);	
+		TextToSpeech::getInstance()->say(desc, true);
 }
 
 std::string FileData::getProperty(const std::string& name)
@@ -1759,7 +1760,7 @@ std::string FileData::getProperty(const std::string& name)
 
 	if (name == "path")
 		return getPath();
-	
+
 	if (name == "favorite")
 		return getFavorite() ? _("YES") : _("NO");
 
@@ -1783,7 +1784,7 @@ std::string FileData::getProperty(const std::string& name)
 		int seconds = atol(getMetadata(MetaDataId::GameTime).c_str());
 		if (seconds == 0)
 			return "";
-		
+
 		int h = 0, m = 0, s = 0;
 		h = (seconds / 3600) % 24;
 		m = (seconds / 60) % 60;
@@ -1792,8 +1793,8 @@ std::string FileData::getProperty(const std::string& name)
 		if (h > 0)
 			return Utils::String::format("%02d:%02d:%02d", h, m, s);
 
-		return Utils::String::format("%02d:%02d", m, s);		
+		return Utils::String::format("%02d:%02d", m, s);
 	}
 
-	return getMetadata().get(name);	
+	return getMetadata().get(name);
 }
