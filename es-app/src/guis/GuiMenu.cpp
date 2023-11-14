@@ -641,7 +641,7 @@ void GuiMenu::openESP01Menu()
 				scanBSSIDS();
 			}, "iconNetwork");
 
-			s->addEntry(_("SCAN STA") + " (" + stalist.toString() + ")", true, [this, window] {
+			s->addEntry(_("SCAN STA"), true, [this, window] {
 				if(stalist.size() == 0)
 					{
 						scanSTA();
