@@ -102,6 +102,10 @@ private:
 	std::vector<std::string> hacksGet(std::string cmd);
 	std::string hacksGetString(std::string cmd);
 	std::string macVendor(std::string mac);
+	// macnames
+	std::string macName(std::string mac);
+	void setMacName(std::string mac, std::string name);
+	void remMacName(std::string mac);
 
 
 	void openESP01Menu();
@@ -110,10 +114,13 @@ private:
 	void openBSSIDSMenu(std::vector<std::string> bssids);
 	void openDEAUTHMenu(std::string bssid, std::string rssi, std::string ssid);
 
+	// bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_t ch)
+	// void saveSTA(std::string mac, std::string bssid, std::string ch);
+
 	void scanSTA();
 	void openSTAmenu(std::vector<std::string> stations);
 	//_mac, _bssid, _pkts, _vendor, _ssid, _apvendor
-	void openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor, std::string aprssi, std::string channel);
+	void openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor, std::string aprssi, std::string channel, std::string macname);
 
 	// playertoo client
 	void scanMPServers();

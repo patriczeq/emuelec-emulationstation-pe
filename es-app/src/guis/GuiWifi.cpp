@@ -25,7 +25,7 @@ GuiWifi::GuiWifi(Window* window, const std::string title, std::string data, cons
 
 	std::vector<std::string> ssids = ApiSystem::getInstance()->getWifiNetworks();
 	if (ssids.empty())
-		mWindow->postToUiThread([this]() { onRefresh(); });		
+		mWindow->postToUiThread([this]() { onRefresh(); });
 	else
 		load(ssids);
 
@@ -100,10 +100,10 @@ std::vector<HelpPrompt> GuiWifi::getHelpPrompts()
 }
 
 void GuiWifi::onRefresh()
-{		
+{
 	Window* window = mWindow;
 
-	mWindow->pushGui(new GuiLoading<std::vector<std::string>>(mWindow, _("SEARCHING WI-FI NETWORKS"), 
+	mWindow->pushGui(new GuiLoading<std::vector<std::string>>(mWindow, _("SEARCHING WI-FI NETWORKS"),
 		[this, window](auto gui)
 		{
 			mWaitingLoad = true;
@@ -113,5 +113,5 @@ void GuiWifi::onRefresh()
 		{
 			mWaitingLoad = false;
 			load(ssids);
-		}));	
+		}));
 }

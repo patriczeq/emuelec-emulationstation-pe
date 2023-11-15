@@ -780,6 +780,20 @@ void GuiMenu::scanBSSIDS()
 			}
 		));
 	}
+
+std::string GuiMenu::macName(std::string mac)
+	{
+		return hacksGetString("getname " + mac);
+	}
+void GuiMenu::setMacName(std::string mac, std::string name)
+	{
+		hacksSend("setname " + mac + " " + name);
+	}
+void GuiMenu::remMacName(std::string mac)
+	{
+		hacksSend("remname " + mac);
+	}
+
 std::vector<std::string> GuiMenu::getAP(std::string bssid)
 	{
 		std::vector<std::string> bslist = scanlist.size() == 0 ? scanBSSIDSlist() : scanlist;
@@ -906,15 +920,15 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 				for (auto sta : stations)
 					{
 						std::vector<std::string> tokens = Utils::String::split(sta, ';');
-							std::string _mac;
-							std::string _bssid;
-							std::string _pkts;
-							std::string _rssi;
-							std::string _vendor;
-							std::string _ssid;
-							std::string _aprssi;
-							std::string _apvendor;
-							std::string _channel;
+						std::string _mac;
+						std::string _bssid;
+						std::string _pkts;
+						std::string _rssi;
+						std::string _vendor;
+						std::string _ssid;
+						std::string _aprssi;
+						std::string _apvendor;
+						std::string _channel;
 
 						if(tokens.size() >= 4) // simplePrint
 						{
@@ -947,26 +961,31 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 								_apvendor	= macVendor(_bssid);
 							}
 
+							std::string _macname = macName(_mac);
 
-							std::string _title 	=  _mac + " -> " + _ssid;
+							std::string _title 	=  _mac + (_macname.empty() ? "" : " (" + _macname + ")") + " -> " + _ssid;
 							std::string _subtitle 	=  _vendor + " -> " + _bssid + (_channel.empty() ? "" : (" (CH" + _channel + ")"));
 							//inline void addWithDescription(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func, const std::string iconName = "", bool setCursorHere = false, /*bool invert_when_selected = true,*/ bool multiLine = false)
 
 							s->addWithDescription(_title, _subtitle,
 								std::make_shared<TextComponent>(window, _rssi + "dBm", 	font, color),
-								[this, _mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor, _aprssi, _channel]
+								[this, _mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor, _aprssi, _channel, _macname]
 							{
-								openSTADetail(_mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor, _aprssi, _channel);
+								openSTADetail(_mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor, _aprssi, _channel, _macname);
 							}, "iconNetwork");
 						}
 					}
 			}
 		window->pushGui(s);
 	}
-void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor, std::string aprssi, std::string channel)
+void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor, std::string aprssi, std::string channel, std::string macname)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("STA") + ": " + mac + (channel.empty() ? "" : (" (CH" + channel + ")") ) );
+		std::string windowName = _("STA") + ": ";
+								windowName = windowName + (macname.empty() ? mac : macname);
+								windowName = windowName + (channel.empty() ? "" : (" (CH" + channel + ")") );
+
+		auto s = new GuiSettings(window, windowName);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -976,6 +995,17 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 			s->addWithLabel(_("MAC"), 	std::make_shared<TextComponent>(window, mac, 	font, color));
 			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, vendor, 	font, color));
 			s->addWithLabel(_("PACKETS SNIFFED"), 	std::make_shared<TextComponent>(window, pkts, 	font, color));
+
+			s->addEntry(_("REMOVE NAME"), true, [this, mac]() {
+				remMacName(mac);
+			}, "iconStop");
+
+			s->addEntry(_("ADD NAME"), true, [this, mac]() {
+				if (Settings::getInstance()->getBool("UseOSK"))
+					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "NAME " + mac, "", [this, mac](const std::string& value) { setMacName(mac, value); }, false));
+				else
+					mWindow->pushGui(new GuiTextEditPopup(mWindow, "NAME " + mac, "", [this, mac](const std::string& value) { setMacName(mac, value); }, false));
+			});
 
 		s->addGroup(_("AP INFO"));
 			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, aprssi + "dBm", 	font, color));
