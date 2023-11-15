@@ -976,7 +976,7 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 
 							std::string _macname = macName(_mac);
 
-							std::string _title 	=  _mac + (_macname.empty() ? "" : " (" + _macname + ")") + " -> " + _ssid;
+							std::string _title 	=  (_macname.empty() ? _mac : _macname) + " -> " + _ssid;
 							std::string _subtitle 	=  _vendor + " -> " + _bssid + (_channel.empty() ? "" : (" (CH" + _channel + ")"));
 							//inline void addWithDescription(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func, const std::string iconName = "", bool setCursorHere = false, /*bool invert_when_selected = true,*/ bool multiLine = false)
 
@@ -1011,16 +1011,19 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 
 			if(!macname.empty())
 			{
-				s->addEntry(_("REMOVE NAME"), true, [this, mac]() {
-					remMacName(mac);
-				}, "iconStop");
+				s->addEntry(_("REMOVE NAME"), true, [this, mac, macname]() {
+					window->pushGui(new GuiMsgBox(window, _("REMOVE NAME?") + "\n" + macname,
+						_("YES"), [this,mac] {
+							remMacName(mac);
+						}, _("NO"),nullptr));
+				}, "iconRemove");
 			}
 
-			s->addEntry(macname.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, mac]() {
+			s->addEntry(macname.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, mac, macname]() {
 				if (Settings::getInstance()->getBool("UseOSK"))
-					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "NAME " + mac, "", [this, mac](const std::string& value) { setMacName(mac, value); }, false));
+					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "NAME " + mac, macname, [this, mac](const std::string& value) { setMacName(mac, value); }, false));
 				else
-					mWindow->pushGui(new GuiTextEditPopup(mWindow, "NAME " + mac, "", [this, mac](const std::string& value) { setMacName(mac, value); }, false));
+					mWindow->pushGui(new GuiTextEditPopup(mWindow, "NAME " + mac, macname, [this, mac](const std::string& value) { setMacName(mac, value); }, false));
 			});
 
 		s->addGroup(_("AP INFO"));
