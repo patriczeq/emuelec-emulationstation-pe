@@ -862,14 +862,13 @@ std::string GuiMenu::hacksGetString(std::string cmd, bool tty)
 	{
 		std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
 		const std::string cmds = "hacks.sh " + port + " " + cmd;
+		return getShOutput(cmds);
 	}
 	else
 	{
 		const std::string cmds = "hacks.sh " + cmd;
+		return getShOutput(cmds);
 	}
-
-
-	return getShOutput(cmds);
 };
 
 std::string GuiMenu::macName(std::string mac)
