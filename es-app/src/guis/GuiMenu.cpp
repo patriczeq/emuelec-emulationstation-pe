@@ -1011,9 +1011,9 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 
 			if(!macname.empty())
 			{
-				s->addEntry(_("REMOVE NAME"), true, [this, mac, macname]() {
+				s->addEntry(_("REMOVE NAME"), true, [this, window, mac, macname]() {
 					window->pushGui(new GuiMsgBox(window, _("REMOVE NAME?") + "\n" + macname,
-						_("YES"), [this,mac] {
+						_("YES"), [this, mac] {
 							remMacName(mac);
 						}, _("NO"),nullptr));
 				}, "iconRemove");
