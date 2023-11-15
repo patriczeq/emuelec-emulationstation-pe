@@ -932,7 +932,7 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 
 
 							std::string _title 	=  _mac + " -> " + _ssid;
-							std::string _subtitle 	=  _vendor + " -> " + _bssid + (_channel.empty() ? "" : (" CH" + channel);
+							std::string _subtitle 	=  _vendor + " -> " + _bssid + (_channel.empty() ? "" : (" CH" + _channel);
 							//inline void addWithDescription(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func, const std::string iconName = "", bool setCursorHere = false, /*bool invert_when_selected = true,*/ bool multiLine = false)
 
 							s->addWithDescription(_title, _subtitle,
