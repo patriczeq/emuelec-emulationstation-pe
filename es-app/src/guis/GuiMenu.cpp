@@ -889,38 +889,67 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 				for (auto sta : stations)
 					{
 						std::vector<std::string> tokens = Utils::String::split(sta, ';');
-						if(tokens.size() >= 3)
+							std::string _mac;
+							std::string _bssid;
+							std::string _pkts;
+							std::string _rssi;
+							std::string _vendor;
+							std::string _ssid;
+							std::string _aprssi;
+							std::string _apvendor;
+							std::string _channel;
+
+						if(tokens.size() >= 4) // simplePrint
 						{
-							//ac:67:84:2c:9e:92; 34:60:f9:e2:07:52; -68; 129
-							std::string _mac 		= Utils::String::toUpper(tokens.at(0));
-							std::string _bssid 	= Utils::String::toUpper(tokens.at(1));
-							std::string _pkts		= tokens.size() == 4 ? tokens.at(3) : tokens.at(2);
-							std::string _rssi		= tokens.size() == 4 ? tokens.at(2) : "0";
-							std::string _vendor = macVendor(_mac);
-							std::string _ssid 	= getSSID(_bssid);
-							std::string _aprssi = getRSSI(_bssid);
-							std::string _apvendor= macVendor(_bssid);
+							if(tokens.size() == 4) // simplePrint
+							{
+								//ac:67:84:2c:9e:92; 34:60:f9:e2:07:52; -68; 129
+								// mac; bssid; rssi; packets
+								_mac 			= Utils::String::toUpper(tokens.at(0));
+								_bssid 		= Utils::String::toUpper(tokens.at(1));
+								_pkts			= tokens.at(3);
+								_rssi			= tokens.at(2);
+								_vendor 	= macVendor(_mac);
+								_ssid 		= getSSID(_bssid);
+								_aprssi 	= getRSSI(_bssid);
+								_apvendor	= macVendor(_bssid);
+							}
+
+							if(tokens.size() == 7) // simplePrint
+							{
+								//cc:db:a7:a2:0f:c4;-23;7;c0:c9:e3:9e:dd:b7;-38;4;WRT_AP
+								// mac, rssi, packets, bssid, aprssi, channel, ssid
+								_mac 			= Utils::String::toUpper(tokens.at(0));
+								_bssid 		= Utils::String::toUpper(tokens.at(3));
+								_pkts			= tokens.at(2);
+								_rssi			= tokens.at(1);
+								_vendor 	= macVendor(_mac);
+								_ssid 		= tokens.at(6);
+								_aprssi 	= tokens.at(4);
+								_channel	= tokens.at(5);
+								_apvendor	= macVendor(_bssid);
+							}
+
 
 							std::string _title 	=  _mac + " -> " + _ssid;
-							std::string _subtitle 	=  _vendor + " -> " + _bssid;
+							std::string _subtitle 	=  _vendor + " -> " + _bssid + (_channel.empty() ? "" : (" CH" + channel);
 							//inline void addWithDescription(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func, const std::string iconName = "", bool setCursorHere = false, /*bool invert_when_selected = true,*/ bool multiLine = false)
 
 							s->addWithDescription(_title, _subtitle,
 								std::make_shared<TextComponent>(window, _rssi + "dBm", 	font, color),
-								[this, _mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor, _aprssi]
+								[this, _mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor, _aprssi, _channel]
 							{
-								openSTADetail(_mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor, _aprssi);
+								openSTADetail(_mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor, _aprssi, _channel);
 							}, "iconNetwork");
-
 						}
 					}
 			}
 		window->pushGui(s);
 	}
-void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor, std::string aprssi)
+void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor, std::string aprssi, std::string channel)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("STA") + ": " + mac);
+		auto s = new GuiSettings(window, _("STA") + "-> " + mac + (channel.empty() ? "" : (" CH" + channel)));
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
