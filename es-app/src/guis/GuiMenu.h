@@ -99,8 +99,9 @@ private:
 	float rssiToPerc(int rssi);*/
 	// Deauther
 	void hacksSend(std::string cmd);
+	void hacksSet(std::string cmd);
 	std::vector<std::string> hacksGet(std::string cmd);
-	std::string hacksGetString(std::string cmd);
+	std::string hacksGetString(std::string cmd, bool tty = true);
 	std::string macVendor(std::string mac);
 	// macnames
 	std::string macName(std::string mac);

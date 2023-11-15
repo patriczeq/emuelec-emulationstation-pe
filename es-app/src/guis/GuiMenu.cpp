@@ -781,18 +781,6 @@ void GuiMenu::scanBSSIDS()
 		));
 	}
 
-std::string GuiMenu::macName(std::string mac)
-	{
-		return hacksGetString("getname " + mac);
-	}
-void GuiMenu::setMacName(std::string mac, std::string name)
-	{
-		hacksSend("setname " + mac + " " + name);
-	}
-void GuiMenu::remMacName(std::string mac)
-	{
-		hacksSend("remname " + mac);
-	}
 
 std::vector<std::string> GuiMenu::getAP(std::string bssid)
 	{
@@ -849,13 +837,17 @@ std::string GuiMenu::getRSSI(std::string bssid)
 	}
 std::string GuiMenu::macVendor(std::string mac)
 {
-	return hacksGetString("vendor " + mac);
+	return hacksGetString("vendor " + mac, false);
 }
 
 void GuiMenu::hacksSend(std::string cmd)
 {
 	std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
 	runSystemCommand("hacks.sh " + port + " espconn " + cmd, "", nullptr);
+};
+void GuiMenu::hacksSet(std::string cmd)
+{
+	runSystemCommand("hacks.sh " + cmd, "", nullptr);
 };
 std::vector<std::string> GuiMenu::hacksGet(std::string cmd)
 {
@@ -864,12 +856,34 @@ std::vector<std::string> GuiMenu::hacksGet(std::string cmd)
 	return ApiSystem::getInstance()->getScriptResults(cmds);
 };
 
-std::string GuiMenu::hacksGetString(std::string cmd)
+std::string GuiMenu::hacksGetString(std::string cmd, bool tty)
 {
-	std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
-	const std::string cmds = "hacks.sh " + port + " " + cmd;
+	if(tty)
+	{
+		std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+		const std::string cmds = "hacks.sh " + port + " " + cmd;
+	}
+	else
+	{
+		const std::string cmds = "hacks.sh " + cmd;
+	}
+
+
 	return getShOutput(cmds);
 };
+
+std::string GuiMenu::macName(std::string mac)
+	{
+		return hacksGetString("getname " + mac, false);
+	}
+void GuiMenu::setMacName(std::string mac, std::string name)
+	{
+		hacksSet("setname " + mac + " " + name);
+	}
+void GuiMenu::remMacName(std::string mac)
+	{
+		hacksSet("remname " + mac);
+	}
 /*
 float GuiMenu::rssiToPerc(std::string rssi)
 	{
@@ -996,11 +1010,14 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, vendor, 	font, color));
 			s->addWithLabel(_("PACKETS SNIFFED"), 	std::make_shared<TextComponent>(window, pkts, 	font, color));
 
-			s->addEntry(_("REMOVE NAME"), true, [this, mac]() {
-				remMacName(mac);
-			}, "iconStop");
+			if(!macname.empty())
+			{
+				s->addEntry(_("REMOVE NAME"), true, [this, mac]() {
+					remMacName(mac);
+				}, "iconStop");
+			}
 
-			s->addEntry(_("ADD NAME"), true, [this, mac]() {
+			s->addEntry(macname.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, mac]() {
 				if (Settings::getInstance()->getBool("UseOSK"))
 					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "NAME " + mac, "", [this, mac](const std::string& value) { setMacName(mac, value); }, false));
 				else
