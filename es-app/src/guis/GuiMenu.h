@@ -92,6 +92,7 @@ private:
 	std::vector<std::string> stalist;
 	std::vector<std::string> scanBSSIDSlist();
 	std::vector<std::string> scanSTAlist();
+	std::vector<std::string> getAP(std::string bssid);
 	std::string getSSID(std::string bssid);
 	std::string getRSSI(std::string bssid);
 	// Deauther

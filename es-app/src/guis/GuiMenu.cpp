@@ -564,13 +564,11 @@ void GuiMenu::openESP01Settings()
 		s->addGroup(_("MAIN"));
 			// PORT
 			auto esp_uart = std::make_shared< OptionListComponent<std::string> >(mWindow, "UART PORT", false);
-			std::vector<std::string> ports;
-			ports.push_back("/dev/ttyS1");
-			ports.push_back("/dev/ttyS2");
+			std::vector<std::string> ports = hacksGet("ports");
 
 			auto port = Settings::getInstance()->getString("pe_hack.uart_port");
 			if (port.empty())
-				port = "/dev/ttyS1";
+				port = "";
 
 			for (auto it = ports.cbegin(); it != ports.cend(); it++)
 				esp_uart->add(_(it->c_str()), *it, port == *it);
@@ -581,7 +579,7 @@ void GuiMenu::openESP01Settings()
 				Settings::getInstance()->setString("pe_hack.uart_port", esp_uart->getSelected());
 			});
 			// baudrate
-			auto esp_baudrate = std::make_shared< OptionListComponent<std::string> >(mWindow, "BAUD RETE", false);
+			auto esp_baudrate = std::make_shared< OptionListComponent<std::string> >(mWindow, "BAUD RATE", false);
 			std::vector<std::string> bauds;
 			bauds.push_back("115200");
 			bauds.push_back("9600");
@@ -593,10 +591,13 @@ void GuiMenu::openESP01Settings()
 			for (auto it = bauds.cbegin(); it != bauds.cend(); it++)
 				esp_baudrate->add(_(it->c_str()), *it, baud == *it);
 
-			s->addWithLabel(_("BAUD RETE"), esp_baudrate);
+			s->addWithLabel(_("BAUD RATE"), esp_baudrate);
 			s->addSaveFunc([this, esp_baudrate]
 			{
 				Settings::getInstance()->setString("pe_hack.uart_baud", esp_baudrate->getSelected());
+
+				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+				runSystemCommand("hacks.sh " + port + " -b " + esp_baudrate->getSelected(), "", nullptr);
 			});
 		s->addGroup(_("WiFi SETTINGS"));
 			// SCAN
@@ -779,7 +780,23 @@ void GuiMenu::scanBSSIDS()
 			}
 		));
 	}
-
+std::vector<std::string> GuiMenu::getAP(std::string bssid)
+	{
+		std::vector<std::string> bslist = scanlist.size() == 0 ? scanBSSIDSlist() : scanlist;
+		std::vector<std::string> ap;
+		if(bslist.size() > 0)
+			{
+				for (auto bs : bslist )
+					{
+						std::vector<std::string> tokens = Utils::String::split(bs, ';');
+						if( Utils::String::toUpper(tokens.at(0)) == Utils::String::toUpper(bssid))
+							{
+								return tokens;
+							}
+					}
+			}
+		return ap;
+	}
 std::string GuiMenu::getSSID(std::string bssid)
 	{
 		std::vector<std::string> bslist = scanlist.size() == 0 ? scanBSSIDSlist() : scanlist;
@@ -820,6 +837,7 @@ std::string GuiMenu::macVendor(std::string mac)
 {
 	return hacksGetString("vendor " + mac);
 }
+
 void GuiMenu::hacksSend(std::string cmd)
 {
 	std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
