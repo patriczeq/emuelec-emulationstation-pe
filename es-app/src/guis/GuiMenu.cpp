@@ -856,7 +856,24 @@ std::string GuiMenu::hacksGetString(std::string cmd)
 	const std::string cmds = "hacks.sh " + port + " " + cmd;
 	return getShOutput(cmds);
 };
-
+/*
+float GuiMenu::rssiToPerc(std::string rssi)
+	{
+		rssiToPerc(rssi.toInt());
+	}
+float GuiMenu::rssiToPerc(int rssi)
+	{
+		if(rssi >= -50)
+			{
+				return 100;
+			}
+		else if(rssi <= -99)
+			{
+				return 0;
+			}
+		return 2* (rssi + 100)
+	}
+*/
 void GuiMenu::scanSTA()
 	{
 		Window* window = mWindow;
@@ -878,7 +895,7 @@ void GuiMenu::scanSTA()
 void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, (stations.size() == 0 ? _("NO STA FOUND!") : _("STATIONS LIST")).c_str());
+		auto s = new GuiSettings(window, (stations.size() == 0 ? _("NO STA FOUND!") : (_("STATIONS LIST") + " ("+std::to_string(stations.size())+")")).c_str());
 
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
@@ -932,7 +949,7 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 
 
 							std::string _title 	=  _mac + " -> " + _ssid;
-							std::string _subtitle 	=  _vendor + " -> " + _bssid + (_channel.empty() ? "" : (" CH" + _channel));
+							std::string _subtitle 	=  _vendor + " -> " + _bssid + (_channel.empty() ? "" : (" (CH" + _channel + ")"));
 							//inline void addWithDescription(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func, const std::string iconName = "", bool setCursorHere = false, /*bool invert_when_selected = true,*/ bool multiLine = false)
 
 							s->addWithDescription(_title, _subtitle,
@@ -949,7 +966,7 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor, std::string aprssi, std::string channel)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("STA") + "-> " + mac + (channel.empty() ? "" : (" CH" + channel) ) );
+		auto s = new GuiSettings(window, _("STA") + ": " + mac + (channel.empty() ? "" : (" (CH" + channel + ")") ) );
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -988,8 +1005,8 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, (bssids.size() == 0 ? _("NO APs FOUND!") : _("ACCESSPOINTs LIST")).c_str());
-
+		auto s = new GuiSettings(window, (bssids.size() == 0 ? _("NO APs FOUND!") : (_("ACCESSPOINTS LIST") + " ("+std::to_string(bssids.size())+")")).c_str());
+		//auto staScanDur = std::make_shared<SliderComponent>(mWindow, 1.f, 20.f, 1.f, "s");
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;

@@ -95,6 +95,8 @@ private:
 	std::vector<std::string> getAP(std::string bssid);
 	std::string getSSID(std::string bssid);
 	std::string getRSSI(std::string bssid);
+	/*float rssiToPerc(std::string rssi);
+	float rssiToPerc(int rssi);*/
 	// Deauther
 	void hacksSend(std::string cmd);
 	std::vector<std::string> hacksGet(std::string cmd);
