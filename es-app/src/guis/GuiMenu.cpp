@@ -932,7 +932,7 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 
 
 							std::string _title 	=  _mac + " -> " + _ssid;
-							std::string _subtitle 	=  _vendor + " -> " + _bssid + (_channel.empty() ? "" : (" CH" + _channel);
+							std::string _subtitle 	=  _vendor + " -> " + _bssid + (_channel.empty() ? "" : (" CH" + _channel));
 							//inline void addWithDescription(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func, const std::string iconName = "", bool setCursorHere = false, /*bool invert_when_selected = true,*/ bool multiLine = false)
 
 							s->addWithDescription(_title, _subtitle,
@@ -949,7 +949,7 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor, std::string aprssi, std::string channel)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("STA") + "-> " + mac + (channel.empty() ? "" : (" CH" + channel)));
+		auto s = new GuiSettings(window, _("STA") + "-> " + mac + (channel.empty() ? "" : (" CH" + channel) ) );
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
