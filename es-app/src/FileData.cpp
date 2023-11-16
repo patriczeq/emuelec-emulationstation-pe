@@ -532,7 +532,13 @@ std::string FileData::getlaunchCommand(LaunchGameOptions& options, bool includeC
 		if (command.find("%CORE%") == std::string::npos && command.find("-core") == std::string::npos)
 			command = command + " -core %CORE%";
 	}
-	command = command + " --gamename=%GAMENAME%";
+
+	if(options.hostMP)
+		{
+			command = command + " --gamename=%GAMENAME%";
+			command = command + " -hostMP";
+		}
+
 
 	const std::string rom = Utils::FileSystem::getEscapedPath(getPath());
 	const std::string basename = Utils::FileSystem::getStem(getPath());
@@ -611,10 +617,6 @@ std::string FileData::getlaunchCommand(LaunchGameOptions& options, bool includeC
 	if (SaveStateRepository::isEnabled(this))
 		command = options.saveStateInfo.setupSaveState(this, command);
 
-	if(options.hostMP)
-		{
-			command = command + " -hostMP";
-		}
 
 	return command;
 }
