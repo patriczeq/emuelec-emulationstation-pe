@@ -13,11 +13,12 @@
   };
   std::string OUI_VENDOR(std::string prefix)
     {
-      int id = oui_macs.find(prefix);
-      if(id != oui_macs.end())
-        {
-          return oui_vendors.at(id);
-        }
+      auto it = find(oui_macs.begin(), oui_macs.end(), prefix); 
+      if (it != oui_macs.end())
+      {
+          int index = it - oui_macs.begin();
+          return oui_vendors.at(index);
+      }
       return "Unknown vendor";
     }
 #else
