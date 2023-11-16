@@ -89,6 +89,7 @@ private:
 	void openUpdatesSettings();
 
 	void openAllSettings();
+	void openAppsMenu();
 
 	std::vector<std::string> scanlist;
 	std::vector<std::string> stalist;

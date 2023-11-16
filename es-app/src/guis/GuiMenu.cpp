@@ -261,7 +261,6 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 			}
 
 		addEntry(_("MULTIPLAYER CLIENT").c_str(), true, [this] { scanMPServers(); }, "iconMultiplayer");
-		addEntry(_("FILE MANAGER").c_str(), true, [this, window] { ApiSystem::getInstance()->launchApp(window, "/roms/_apps/FileManager.sh"); }, "iconFiles");
 
 #ifdef _ENABLEEMUELEC
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::WIFI))
@@ -275,6 +274,9 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 				if (!checkNetwork())
 					return;
 				GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
+
+	addEntry(_("FILE MANAGER").c_str(), true, [this, window] { ApiSystem::getInstance()->launchApp(window, "file_manager.sh"); }, "iconFileManager");
+	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "iconApps");
 
 	if (isFullUI)
 	{
@@ -314,6 +316,21 @@ if (!isKidUI)
 		else
 			setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, Renderer::getScreenHeight() * 0.15f);
 	}
+}
+void GuiMenu::openAppsMenu()
+{
+	Window* window = mWindow;
+	auto s = new GuiSettings(window, _("APPS").c_str());
+	s->addEntry(_("GMU MUSIC PLAYER").c_str(), false, [this, window] { ApiSystem::getInstance()->launchApp(window, "gmu_player.sh"); });
+
+	s->addGroup(_("EMULATORS"));
+		s->addEntry(_("PPSSPP").c_str(), false, [this, window] { ApiSystem::getInstance()->launchApp(window, "PPSSPPSDL"); });
+		s->addEntry(_("DUCKSTATION").c_str(), false, [this, window] { ApiSystem::getInstance()->launchApp(window, "duckstation-nogui"); });
+		s->addEntry(_("FLYCAST").c_str(), false, [this, window] { ApiSystem::getInstance()->launchApp(window, "flycast"); });
+		s->addEntry(_("RETROARCH").c_str(), false, [this, window] { ApiSystem::getInstance()->launchApp(window, "retroarch"); });
+		s->addEntry(_("RETROARCH 32bit").c_str(), false, [this, window] { ApiSystem::getInstance()->launchApp(window, "retroarch32"); });
+
+	window->pushGui(s);
 }
 
 void GuiMenu::openAllSettings()
@@ -430,7 +447,18 @@ void GuiMenu::scanMPServers()
 			[this, window](std::vector<std::string> servers)
 			{
 				mWaitingLoad = false;
-				openMPServers(servers);
+				if(servers.size() > 0)
+					{
+						openMPServers(servers);
+					}
+				else
+					{
+						std::string msg = _(".");
+						window->pushGui(new GuiMsgBox(window, _("SERVER(s) NOT FOUND!"),
+							_("OK"),nullptr,_("CFG. NETWORK"), [this] {
+								openNetworkSettings();
+							}));
+					}
 			}
 		));
 	}
@@ -442,66 +470,51 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		auto s = new GuiSettings(window, _("MULTIPLAYER CLIENT").c_str());
+		auto s = new GuiSettings(window, _("SELECT GAME SERVER").c_str());
 
-		if (servers.size() > 0)
+		for (auto server : servers)
 		{
-			for (auto server : servers)
-			{
-				std::vector<std::string> tokens = Utils::String::split(server, ';');
-				//=;wlan0;IPv4;oga-mp-broadcast;_oga-mp._udp;local;OGAred.local;192.168.1.111;1234;"psx|Crash Bandicoot"
-				if(tokens.size() < 8){
-					continue;
-				}
-				std::string _name 	= tokens.at(6);
-				std::string _ip 		= tokens.at(7);
+			std::vector<std::string> tokens = Utils::String::split(server, ';');
+			//=;wlan0;IPv4;oga-mp-broadcast;_oga-mp._udp;local;OGAred.local;192.168.1.111;1234;"psx|Crash Bandicoot"
+			if(tokens.size() < 8){
+				continue;
+			}
+			std::string _name 	= tokens.at(6);
+			std::string _ip 		= tokens.at(7);
 
-				std::string _platform = "";
-				std::string _game = "";
-				if(tokens.size() == 10)
-					{
-						std::string _platformName = Utils::String::replace(tokens.at(9), "\"", "");
-						std::vector<std::string> ptokens = Utils::String::split(_platformName, '|');
-						if(ptokens.size() == 2)
-							{
-								_platform = ptokens.at(0);
-								_game = ptokens.at(1);
-							}
-					}
-
-				std::string _subtitle	= _name + " (" + _ip + ")";
-
-				s->addWithDescription(_game == "" ? "Unknown game" : _game, _subtitle,
-					std::make_shared<TextComponent>(window, _platform == "" ? "?" : _platform, 	font, color),
-					[this, window, _ip]
+			std::string _platform = "";
+			std::string _game = "";
+			if(tokens.size() == 10)
 				{
+					std::string _platformName = Utils::String::replace(tokens.at(9), "\"", "");
+					std::vector<std::string> ptokens = Utils::String::split(_platformName, '|');
+					if(ptokens.size() == 2)
+						{
+							_platform = ptokens.at(0);
+							_game = ptokens.at(1);
+						}
+				}
+
+			std::string _subtitle	= _name + " (" + _ip + ")";
+
+			s->addWithDescription(_game == "" ? "Unknown game" : _game, _subtitle,
+				std::make_shared<TextComponent>(window, _platform == "" ? "?" : _platform, 	font, color),
+				[this, window, _ip]
+			{
+					std::string cmd = "playertoo " + _ip;
+					ApiSystem::getInstance()->launchApp(window, cmd);
+			}, "iconControllers");
+
+			/*s->addEntry(_title, true, [window, _ip, _name] {
+				std::string msg = _("CONNECT TO:\n");
+										msg = msg + _name + "\n";
+										msg = msg + _ip;
+				window->pushGui(new GuiMsgBox(window, msg,
+					_("YES"),[window, _ip] {
 						std::string cmd = "playertoo " + _ip;
 						ApiSystem::getInstance()->launchApp(window, cmd);
-				}, "iconControllers");
-
-				/*s->addEntry(_title, true, [window, _ip, _name] {
-					std::string msg = _("CONNECT TO:\n");
-											msg = msg + _name + "\n";
-											msg = msg + _ip;
-					window->pushGui(new GuiMsgBox(window, msg,
-						_("YES"),[window, _ip] {
-							std::string cmd = "playertoo " + _ip;
-							ApiSystem::getInstance()->launchApp(window, cmd);
-						},_("NO"), nullptr));
-				}, "iconSystem");*/
-			}
-		}
-		else{
-			if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED"){
-				s->addWithLabel(_("NETWORK ERROR"), std::make_shared<TextComponent>(mWindow, "NO IP ADDRESS", font, color));
-			}
-			s->addEntry(_("HELP"), false, [window, this] {
-				std::string msg = _("START MULTIPLAYER HOST ON 2ND DEVICE.\nCHECK NETWORK CONNECTION.\nDEVICES MUST BE IN SAME LOCAL NETWORK.");
-				window->pushGui(new GuiMsgBox(window, msg,
-					_("OK"),nullptr,_("CONFIGURE NETWORK"), [this] {
-						openNetworkSettings();
-					}));
-				}, "iconManual");
+					},_("NO"), nullptr));
+			}, "iconSystem");*/
 		}
 
 		window->pushGui(s);
