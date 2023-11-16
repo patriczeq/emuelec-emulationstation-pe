@@ -1,7 +1,7 @@
 #ifndef OUI_H
 #define OUI_H
 
-std::map<std::string, std::string> OUIMAP{
+const std::unordered_map<std::string,std::string> OUIMAP{
   {"000000","XEROX CORPORATION"},
   {"000001","XEROX CORPORATION"},
   {"000002","XEROX CORPORATION"},
