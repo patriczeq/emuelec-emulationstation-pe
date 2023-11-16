@@ -837,7 +837,10 @@ std::string GuiMenu::getRSSI(std::string bssid)
 	}
 std::string GuiMenu::macVendor(std::string mac)
 {
-	return hacksGetString("vendor " + mac, false);
+	std::string _oui = Utils::String::toUpper(Utils::String::replace(mac, ":", "")).substr(0, 5);
+	std::string vendor = OUI[_oui];
+
+	return !vendor.empty() ? vendor : hacksGetString("vendor " + mac, false);
 }
 
 void GuiMenu::hacksSend(std::string cmd)
