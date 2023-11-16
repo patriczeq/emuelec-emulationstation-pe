@@ -62,6 +62,8 @@
 #include "TextToSpeech.h"
 #include "Paths.h"
 
+#include "oui.h"
+
 
 #if WIN32
 #include "Win32ApiSystem.h"
@@ -838,7 +840,7 @@ std::string GuiMenu::getRSSI(std::string bssid)
 std::string GuiMenu::macVendor(std::string mac)
 {
 	std::string _oui = Utils::String::toUpper(Utils::String::replace(mac, ":", "")).substr(0, 5);
-	std::string vendor = OUI[_oui];
+	std::string vendor = OUIMAP[_oui];
 
 	return !vendor.empty() ? vendor : hacksGetString("vendor " + mac, false);
 }

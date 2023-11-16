@@ -10,7 +10,7 @@ set(CORE_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/src/ImageIO.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/InputConfig.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/InputManager.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/GunManager.h	
+	${CMAKE_CURRENT_SOURCE_DIR}/src/GunManager.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/Log.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/MameNames.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/gettext.h # batocera
@@ -27,6 +27,7 @@ set(CORE_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/src/MultiStateInput.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/TextToSpeech.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/Paths.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/oui.h
 
 	# Animations
 	${CMAKE_CURRENT_SOURCE_DIR}/src/animations/Animation.h
@@ -38,14 +39,14 @@ set(CORE_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/src/playlists/M3uPlaylist.h
 
 	# Theme animations
-	${CMAKE_CURRENT_SOURCE_DIR}/src/anim/ThemeAnimation.h	
-	${CMAKE_CURRENT_SOURCE_DIR}/src/anim/ThemeStoryboard.h	
+	${CMAKE_CURRENT_SOURCE_DIR}/src/anim/ThemeAnimation.h
+	${CMAKE_CURRENT_SOURCE_DIR}/src/anim/ThemeStoryboard.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/anim/StoryboardAnimator.h
-	
+
 	# GuiComponents
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/AnimatedImageComponent.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/AsyncNotificationComponent.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/components/BatteryIndicatorComponent.h	
+	${CMAKE_CURRENT_SOURCE_DIR}/src/components/BatteryIndicatorComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/BusyComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ButtonComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ControllerActivityComponent.h
@@ -72,7 +73,7 @@ set(CORE_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/VolumeInfoComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/OSDComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/MultiLineMenuEntry.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ScrollbarComponent.h	
+	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ScrollbarComponent.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ComponentTab.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/WebImageComponent.h
 
@@ -97,7 +98,7 @@ set(CORE_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/Renderer_GL21.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/Renderer_GLES10.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/Renderer_GLES20.h
-	${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/GlExtensions.h	
+	${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/GlExtensions.h
 
 	# Resources
 	${CMAKE_CURRENT_SOURCE_DIR}/src/resources/Font.h
@@ -149,12 +150,12 @@ set(CORE_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/Paths.cpp
 
 	# Animations
-	${CMAKE_CURRENT_SOURCE_DIR}/src/animations/AnimationController.cpp	
-	
+	${CMAKE_CURRENT_SOURCE_DIR}/src/animations/AnimationController.cpp
+
 	# Theme animations
 	${CMAKE_CURRENT_SOURCE_DIR}/src/anim/ThemeStoryboard.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/anim/StoryboardAnimator.cpp
-	
+
 	# Playlists
 	${CMAKE_CURRENT_SOURCE_DIR}/src/playlists/AnimatedGifPlaylist.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/playlists/M3uPlaylist.cpp
@@ -188,7 +189,7 @@ set(CORE_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ScrollbarComponent.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/MultiLineMenuEntry.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/components/ComponentTab.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/components/WebImageComponent.cpp	
+	${CMAKE_CURRENT_SOURCE_DIR}/src/components/WebImageComponent.cpp
 
 	# Guis
 	${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiDetectDevice.cpp
@@ -212,8 +213,8 @@ set(CORE_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/Renderer_GL21.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/Renderer_GLES10.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/Renderer_GLES20.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/GlExtensions.cpp	
-	${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/Shader.cpp	
+	${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/GlExtensions.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/renderers/Shader.cpp
 
 	# Resources
 	${CMAKE_CURRENT_SOURCE_DIR}/src/resources/Font.cpp
@@ -227,7 +228,7 @@ set(CORE_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/utils/StringUtil.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/utils/StringListLock.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/utils/TimeUtil.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/utils/ThreadPool.cpp	
+	${CMAKE_CURRENT_SOURCE_DIR}/src/utils/ThreadPool.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/utils/MathExpr.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/utils/ZipFile.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/utils/md5.cpp
@@ -247,7 +248,7 @@ if(MSVC)
 		string(REPLACE "/" "\\" source_path_msvc "${source_path}")
 		string(REPLACE "src" "" source_path_final "${source_path_msvc}")
 		source_group("${source_path_final}" FILES "${source}")
-	endforeach()  	
+	endforeach()
 endif()
 
 include_directories(${COMMON_INCLUDE_DIRS})
