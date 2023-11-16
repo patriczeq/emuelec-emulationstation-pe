@@ -275,7 +275,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 					return;
 				GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
-	addEntry(_("FILE MANAGER").c_str(), true, [this, window] { ApiSystem::getInstance()->launchApp(window, "file_manager.sh"); }, "iconFileManager");
+	addEntry(_("FILE MANAGER").c_str(), false, [this, window] { ApiSystem::getInstance()->launchApp(window, "file_manager.sh"); }, "iconFileManager");
 	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "iconApps");
 
 	if (isFullUI)
@@ -906,7 +906,7 @@ std::string GuiMenu::macName(std::string mac)
 	}
 void GuiMenu::setMacName(std::string mac, std::string name)
 	{
-		hacksSet("setname " + mac + " " + name);
+		hacksSet("setname " + mac + " \"" + name + "\"");
 	}
 void GuiMenu::remMacName(std::string mac)
 	{
@@ -2021,7 +2021,7 @@ void GuiMenu::addVersionInfo()
 		else
 		{
 #ifdef _ENABLEEMUELEC
-		label = "PEmod v" + std::string("1.1") + " EMUELEC V" + ApiSystem::getInstance()->getVersion() + buildDate + " IP:" + getShOutput(R"(/usr/bin/emuelec-utils getip)");
+		label = "PEmod v" + std::string("1.1.1") + " EMUELEC V" + ApiSystem::getInstance()->getVersion() + buildDate + " IP:" + getShOutput(R"(/usr/bin/emuelec-utils getip)");
 #else
 			std::string aboutInfo = ApiSystem::getInstance()->getApplicationName() + " V" + ApiSystem::getInstance()->getVersion();
 			label = aboutInfo + buildDate;
