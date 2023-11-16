@@ -5,7 +5,7 @@
 
 class OUI{
   public:
-    static std::string vendor(std::string prefix)
+    std::string vendor(std::string prefix)
       {
         if(OUIMAP.find(prefix) != OUIMAP.end())
           {
