@@ -845,7 +845,7 @@ std::string GuiMenu::macVendor(std::string mac)
 	/*if (OUIMAP.find(_oui) != OUIMAP.end()) {
 	    return OUIMAP.at(_oui);
 	}*/
-	return OUI::vendor(_oui);//hacksGetString("vendor " + _oui, false);
+	return OUI_VENDOR(_oui);//hacksGetString("vendor " + _oui, false);
 }
 
 void GuiMenu::hacksSend(std::string cmd)
