@@ -837,16 +837,15 @@ std::string GuiMenu::getRSSI(std::string bssid)
 			}
 		return rssi;
 	}
+
 std::string GuiMenu::macVendor(std::string mac)
 {
 	std::string _oui = Utils::String::toUpper(Utils::String::replace(mac, ":", "")).substr(0, 6);
 
-	auto found = OUIMAP.find(_oui);
-	if (found != OUIMAP.end()) {
-	    OUIMAP.at(_oui);
-	}
-	return hacksGetString("vendor " + _oui, false);
-	
+	/*if (OUIMAP.find(_oui) != OUIMAP.end()) {
+	    return OUIMAP.at(_oui);
+	}*/
+	return OUI::vendor(_oui);//hacksGetString("vendor " + _oui, false);
 }
 
 void GuiMenu::hacksSend(std::string cmd)
