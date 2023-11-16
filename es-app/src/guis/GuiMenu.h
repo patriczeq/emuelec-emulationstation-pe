@@ -88,6 +88,8 @@ private:
 	void openUISettings();
 	void openUpdatesSettings();
 
+	void openAllSettings();
+
 	std::vector<std::string> scanlist;
 	std::vector<std::string> stalist;
 	std::vector<std::string> scanBSSIDSlist();
