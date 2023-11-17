@@ -985,7 +985,7 @@ void GuiMenu::openSTADetail(WifiStation sta)
 				if (Settings::getInstance()->getBool("UseOSK"))
 					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "NAME " + sta.mac, sta.name, [this, sta](const std::string& value) { setMacName(sta.mac, value); }, false));
 				else
-					mWindow->pushGui(new GuiTextEditPopup(mWindow, "NAME " + mac, macname, [this, sta](const std::string& value) { setMacName(sta.mac, value); }, false));
+					mWindow->pushGui(new GuiTextEditPopup(mWindow, "NAME " + sta.mac, sta.name, [this, sta](const std::string& value) { setMacName(sta.mac, value); }, false));
 			});
 
 		s->addGroup(_("AP INFO"));
