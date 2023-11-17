@@ -137,7 +137,7 @@ struct WifiStation {
 					ap.bssid	= Utils::String::toUpper(tokens.at(1));
 					pkts			= tokens.at(3);
 					rssi			= tokens.at(2);
-					vendor 		= macVendor(_mac);
+					vendor 		= macVendor(mac);
 					ap.ssid		= "UpdateESP!";//getSSID(_bssid);
 					ap.rssi 	= "UpdateESP!";//getRSSI(_bssid);
 					ap.vendor	= macVendor(ap.bssid);
