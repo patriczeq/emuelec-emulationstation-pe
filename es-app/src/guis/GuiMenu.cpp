@@ -62,7 +62,7 @@
 #include "TextToSpeech.h"
 #include "Paths.h"
 
-
+#include "oui.h"
 
 #if WIN32
 #include "Win32ApiSystem.h"
@@ -745,39 +745,65 @@ void GuiMenu::openESP01Menu()
 		window->pushGui(s);
 	}
 
-std::vector<AccessPoint> AccessPointList(std::vector<std::string> bssids)
+AccessPoint GuiMenu::rawToAP(std::string raw)
+	{
+		AccessPoint ap(raw);
+		ap.vendor = macVendor(ap.bssid);
+		return ap;
+	}
+
+std::vector<AccessPoint> GuiMenu::AccessPointList(std::vector<std::string> bssids)
 	{
 		std::vector<AccessPoint> list;
 		for(auto bssid : bssids)
 			{
-				list.push_back(AccessPoint(bssid));
+				AccessPoint ap = rawToAP(bssid);
+				list.push_back(ap);
 			}
 		return list;
 	}
+WifiStation GuiMenu::rawToSTA(std::string raw)
+{
+	WifiStation sta(raw);
+	sta.vendor 	= macVendor(sta.mac);
+	sta.name 		= macName(sta.mac);
+	sta.ap.vendor = macVendor(sta.ap.bssid);
+}
+std::vector<WifiStation> GuiMenu::StationsList(std::vector<std::string> stations)
+{
+	std::vector<WifiStation> list;
+	for(auto sta : stations)
+		{
+			WifiStation sta_ = rawToSTA(sta);
+			list.push_back(sta_);
+		}
+	return list;
+}
+
 std::vector<std::string> GuiMenu::scanBSSIDSlist()
 	{
 		const std::string cmd = SystemConf::getInstance()->get("pe_hack.scanbyesp") == "1" ? "espscan" : "scan";
-		scanlist = hacksGet(cmd);
+		scanlist = AccessPointList(hacksGet(cmd));
 		return scanlist;
 	}
 std::vector<std::string> GuiMenu::scanSTAlist()
 	{
 		const std::string cmd = "espscansta " + std::to_string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
-		stalist = hacksGet(cmd);
+		stalist = StationsList(hacksGet(cmd));
 		return stalist;
 	}
 
 void GuiMenu::scanBSSIDS()
 	{
 		Window* window = mWindow;
-
-		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING APs..."),
+//std::vector<AccessPoint> GuiMenu::AccessPointList(std::vector<std::string> bssids)
+		mWindow->pushGui(new GuiLoading<std::vector<AccessPoint>>(window, _("SEARCHING APs..."),
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
 				return scanBSSIDSlist();
 			},
-			[this, window](std::vector<std::string> bssids)
+			[this, window](std::vector<AccessPoint> bssids)
 			{
 				mWaitingLoad = false;
 				if(bssids.size() > 0)
@@ -793,58 +819,20 @@ void GuiMenu::scanBSSIDS()
 	}
 
 
-std::vector<std::string> GuiMenu::getAP(std::string bssid)
+AccessPoint GuiMenu::getAP(std::string bssid)
 	{
-		std::vector<std::string> bslist = scanlist.size() == 0 ? scanBSSIDSlist() : scanlist;
-		std::vector<std::string> ap;
+		std::vector<AccessPoint> bslist = scanlist.size() == 0 ? scanBSSIDSlist() : scanlist;
+		AccessPoint ap;
 		if(bslist.size() > 0)
 			{
 				for (auto bs : bslist )
 					{
-						std::vector<std::string> tokens = Utils::String::split(bs, ';');
-						if( Utils::String::toUpper(tokens.at(0)) == Utils::String::toUpper(bssid))
-							{
-								return tokens;
-							}
+						if(Utils::String::toUpper(bs.bssid) == Utils::String::toUpper(bssid)){
+							return bs;
+						}
 					}
 			}
 		return ap;
-	}
-std::string GuiMenu::getSSID(std::string bssid)
-	{
-		std::vector<std::string> bslist = scanlist.size() == 0 ? scanBSSIDSlist() : scanlist;
-		std::string ssid = "Unknown SSID";
-		if(bslist.size() > 0)
-			{
-				for (auto bs : bslist )
-					{
-						std::vector<std::string> tokens = Utils::String::split(bs, ';');
-						if( Utils::String::toUpper(tokens.at(0)) == Utils::String::toUpper(bssid))
-							{
-								ssid = Utils::String::trim(tokens.at(2));
-								break;
-							}
-					}
-			}
-		return ssid;
-	}
-std::string GuiMenu::getRSSI(std::string bssid)
-	{
-		std::vector<std::string> bslist = scanlist.size() == 0 ? scanBSSIDSlist() : scanlist;
-		std::string rssi = "0";
-		if(bslist.size() > 0)
-			{
-				for (auto bs : bslist )
-					{
-						std::vector<std::string> tokens = Utils::String::split(bs, ';');
-						if( Utils::String::toUpper(tokens.at(0)) == Utils::String::toUpper(bssid))
-							{
-								rssi = Utils::String::trim(tokens.at(1));
-								break;
-							}
-					}
-			}
-		return rssi;
 	}
 
 std::string GuiMenu::macVendor(std::string mac)
@@ -918,13 +906,13 @@ void GuiMenu::scanSTA()
 	{
 		Window* window = mWindow;
 
-		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING STATIONS..."),
+		mWindow->pushGui(new GuiLoading<std::vector<WifiStation>>(window, _("SEARCHING STATIONS..."),
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
 				return scanSTAlist();
 			},
-			[this, window](std::vector<std::string> stations)
+			[this, window](std::vector<WifiStation> stations)
 			{
 				mWaitingLoad = false;
 				if(stations.size() > 0)
@@ -939,7 +927,7 @@ void GuiMenu::scanSTA()
 		));
 	}
 
-void GuiMenu::openSTAmenu(std::vector<std::string> stations)
+void GuiMenu::openSTAmenu(std::vector<WifiStation> stations)
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, (_("STATIONS LIST") + " ("+std::to_string(stations.size())+")").c_str());
@@ -952,71 +940,25 @@ void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 			{
 				for (auto sta : stations)
 					{
-						std::vector<std::string> tokens = Utils::String::split(sta, ';');
-						std::string _mac;
-						std::string _bssid;
-						std::string _pkts;
-						std::string _rssi;
-						std::string _vendor;
-						std::string _ssid;
-						std::string _aprssi;
-						std::string _apvendor;
-						std::string _channel;
+						std::string _title 	=  (sta.name.empty() ? sta.mac : sta.name) + " -> " + sta.ap.ssid;
+						std::string _subtitle 	= sta.vendor + " -> " + sta.ap.bssid + (sta.ap.channel.empty() ? "" : (" (CH" + sta.ap.channel + ")"));
 
-						if(tokens.size() >= 4) // simplePrint
+						s->addWithDescription(_title, _subtitle,
+							std::make_shared<TextComponent>(window, sta.rssi + "dBm", 	font, color),
+							[this, sta]
 						{
-							if(tokens.size() == 4) // simplePrint
-							{
-								//ac:67:84:2c:9e:92; 34:60:f9:e2:07:52; -68; 129
-								// mac; bssid; rssi; packets
-								_mac 			= Utils::String::toUpper(tokens.at(0));
-								_bssid 		= Utils::String::toUpper(tokens.at(1));
-								_pkts			= tokens.at(3);
-								_rssi			= tokens.at(2);
-								_vendor 	= macVendor(_mac);
-								_ssid 		= getSSID(_bssid);
-								_aprssi 	= getRSSI(_bssid);
-								_apvendor	= macVendor(_bssid);
-							}
-
-							if(tokens.size() == 7) // simplePrint
-							{
-								//cc:db:a7:a2:0f:c4;-23;7;c0:c9:e3:9e:dd:b7;-38;4;WRT_AP
-								// mac, rssi, packets, bssid, aprssi, channel, ssid
-								_mac 			= Utils::String::toUpper(tokens.at(0));
-								_bssid 		= Utils::String::toUpper(tokens.at(3));
-								_pkts			= tokens.at(2);
-								_rssi			= tokens.at(1);
-								_vendor 	= macVendor(_mac);
-								_ssid 		= tokens.at(6);
-								_aprssi 	= tokens.at(4);
-								_channel	= tokens.at(5);
-								_apvendor	= macVendor(_bssid);
-							}
-
-							std::string _macname = macName(_mac);
-
-							std::string _title 	=  (_macname.empty() ? _mac : _macname) + " -> " + _ssid;
-							std::string _subtitle 	=  _vendor + " -> " + _bssid + (_channel.empty() ? "" : (" (CH" + _channel + ")"));
-							//inline void addWithDescription(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func, const std::string iconName = "", bool setCursorHere = false, /*bool invert_when_selected = true,*/ bool multiLine = false)
-
-							s->addWithDescription(_title, _subtitle,
-								std::make_shared<TextComponent>(window, _rssi + "dBm", 	font, color),
-								[this, _mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor, _aprssi, _channel, _macname]
-							{
-								openSTADetail(_mac, _bssid, _pkts, _rssi, _vendor, _ssid, _apvendor, _aprssi, _channel, _macname);
-							}, "iconNetwork");
-						}
+							openSTADetail(sta);
+						}, "iconNetwork");
 					}
 			}
 		window->pushGui(s);
 	}
-void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor, std::string aprssi, std::string channel, std::string macname)
+void GuiMenu::openSTADetail(WifiStation sta)
 	{
 		Window* window = mWindow;
 		std::string windowName = _("STA") + ": ";
-								windowName = windowName + (macname.empty() ? mac : macname);
-								windowName = windowName + (channel.empty() ? "" : (" (CH" + channel + ")") );
+								windowName = windowName + (sta.name.empty() ? sta.mac : sta.mac);
+								windowName = windowName + (sta.ap.channel.empty() ? "" : (" (CH" + sta.ap.channel + ")") );
 
 		auto s = new GuiSettings(window, windowName);
 		auto theme = ThemeData::getMenuTheme();
@@ -1024,50 +966,50 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 		unsigned int color = theme->Text.color;
 
 		s->addGroup(_("STATION INFO"));
-			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, rssi + "dBm", 	font, color));
-			s->addWithLabel(_("MAC"), 	std::make_shared<TextComponent>(window, mac, 	font, color));
-			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, vendor, 	font, color));
-			s->addWithLabel(_("PACKETS SNIFFED"), 	std::make_shared<TextComponent>(window, pkts, 	font, color));
+			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, sta.rssi + "dBm", 	font, color));
+			s->addWithLabel(_("MAC"), 	std::make_shared<TextComponent>(window, sta.mac, 	font, color));
+			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, sta.vendor, 	font, color));
+			s->addWithLabel(_("PACKETS SNIFFED"), 	std::make_shared<TextComponent>(window, sta.pkts, 	font, color));
 
-			if(!macname.empty())
+			if(!sta.name.empty())
 			{
-				s->addEntry(_("REMOVE NAME"), true, [this, window, mac, macname]() {
-					window->pushGui(new GuiMsgBox(window, _("REMOVE NAME") + "?\n" + macname,
-						_("YES"), [this, mac] {
-							remMacName(mac);
+				s->addEntry(_("REMOVE NAME"), true, [this, window, sta]() {
+					window->pushGui(new GuiMsgBox(window, _("REMOVE NAME") + "?\n" + sta.name,
+						_("YES"), [this, sta] {
+							remMacName(sta.mac);
 						}, _("NO"),nullptr));
 				}, "iconRemove");
 			}
 
-			s->addEntry(macname.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, mac, macname]() {
+			s->addEntry(macname.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, sta]() {
 				if (Settings::getInstance()->getBool("UseOSK"))
-					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "NAME " + mac, macname, [this, mac](const std::string& value) { setMacName(mac, value); }, false));
+					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "NAME " + sta.mac, sta.name, [this, sta](const std::string& value) { setMacName(sta.mac, value); }, false));
 				else
-					mWindow->pushGui(new GuiTextEditPopup(mWindow, "NAME " + mac, macname, [this, mac](const std::string& value) { setMacName(mac, value); }, false));
+					mWindow->pushGui(new GuiTextEditPopup(mWindow, "NAME " + mac, macname, [this, sta](const std::string& value) { setMacName(sta.mac, value); }, false));
 			});
 
 		s->addGroup(_("AP INFO"));
-			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, aprssi + "dBm", 	font, color));
-			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, bssid, 	font, color));
-			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, apvendor, 	font, color));
-			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ssid, 	font, color));
+			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, sta.ap.rssi + "dBm", 	font, color));
+			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, sta.ap.bssid, 	font, color));
+			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, sta.ap.vendor, 	font, color));
+			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, sta.ap.ssid, 	font, color));
 		// -------------------------------------------------------------------------------------
 
 		s->addGroup(_("STATION HACKS"));
 			s->addEntry(_("STOP ALL JOBS"), false, [this, window]() {
 				hacksSend("stop");
 				}, "iconQuit");
-			s->addEntry(_("DEAUTH STATION"), true, [this, window, mac, vendor]() {
-				std::string msg = _("DEAUTH STATION") +":\n\n" + mac + "\n"+ vendor + "\n";
+			s->addEntry(_("DEAUTH STATION"), true, [this, window, sta]() {
+				std::string msg = _("DEAUTH STATION") +":\n\n" + sta.mac + "\n"+ sta.vendor + "\n";
 				window->pushGui(new GuiMsgBox(window, msg,
-					_("YES"), [this, window, mac] {
-						hacksSend("deauthsta " + mac);
+					_("YES"), [this, window, sta] {
+						hacksSend("deauthsta " + sta.mac);
 					}, _("CANCEL"),nullptr));
 				}, "iconHack");
 
 		window->pushGui(s);
 	}
-void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
+void GuiMenu::openBSSIDSMenu(std::vector<AccessPoint> bssids)
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, (_("ACCESSPOINTS LIST") + " ("+std::to_string(bssids.size())+")").c_str());
@@ -1077,9 +1019,8 @@ void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 
 		if (bssids.size() > 0)
 		{
-			for (auto bssid : bssids)
+			for (auto ap : bssids)
 			{
-				AccessPoint ap(bssid);
 				if(!ap.bssid.empty())
 					{
 						s->addWithDescription(ap.ssid, ap.bssid + " -> " + ap.vendor,
@@ -1112,7 +1053,7 @@ void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 
 		window->pushGui(s);
 	}
-void GuiMenu::openDEAUTHMenu(const AccessPoint ap/*std::string bssid, std::string rssi, std::string ssid*/)
+void GuiMenu::openDEAUTHMenu(AccessPoint ap/*std::string bssid, std::string rssi, std::string ssid*/)
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "AP: " + ap.ssid);

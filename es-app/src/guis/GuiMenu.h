@@ -11,8 +11,6 @@
 #include "KeyboardMapping.h"
 #include "utils/VectorEx.h"
 
-#include "oui.h"
-
 
 class StrInputConfig
 {
@@ -97,7 +95,6 @@ struct AccessPoint {
 				bssid 	= Utils::String::toUpper(tokens.at(0));
 				rssi 		= tokens.at(1);
 				ssid 		= Utils::String::trim(tokens.at(2));
-				vendor 	= OUI_VENDOR(Utils::String::toUpper(Utils::String::replace(bssid, ":", "")).substr(0, 6));
 			}
 		//c0:c9:e3:9e:dd:b7;-43;4;WRT_AP
 		else if(tokens.size() == 4)
@@ -105,7 +102,6 @@ struct AccessPoint {
 				bssid 	= Utils::String::toUpper(tokens.at(0));
 				rssi 		= tokens.at(1);
 				ssid 		= Utils::String::trim(tokens.at(3));
-				vendor 	= OUI_VENDOR(Utils::String::toUpper(Utils::String::replace(bssid, ":", "")).substr(0, 6));
 				channel = tokens.at(2);
 			}
 	}
@@ -127,13 +123,13 @@ struct WifiStation {
 					//ac:67:84:2c:9e:92; 34:60:f9:e2:07:52; -68; 129
 					// mac; bssid; rssi; packets
 					mac 			= Utils::String::toUpper(tokens.at(0));
-					ap.bssid	= Utils::String::toUpper(tokens.at(1));
 					pkts			= tokens.at(3);
 					rssi			= tokens.at(2);
-					vendor 		= OUI_VENDOR(Utils::String::toUpper(Utils::String::replace(mac, ":", "")).substr(0, 6));
+					// name
+					ap.bssid	= Utils::String::toUpper(tokens.at(1));
 					ap.ssid		= "UpdateESP!";//getSSID(_bssid);
 					ap.rssi 	= "UpdateESP!";//getRSSI(_bssid);
-					ap.vendor	= OUI_VENDOR(Utils::String::toUpper(Utils::String::replace(ap.bssid, ":", "")).substr(0, 6));
+					ap.channel= "";
 				}
 
 				if(tokens.size() == 7) // simplePrint
@@ -143,13 +139,11 @@ struct WifiStation {
 					mac 			= Utils::String::toUpper(tokens.at(0));
 					pkts 			= tokens.at(2);
 					rssi 			= tokens.at(1);
-					vendor 		= OUI_VENDOR(Utils::String::toUpper(Utils::String::replace(mac, ":", "")).substr(0, 6));
 					//name
 					ap.bssid  = Utils::String::toUpper(tokens.at(3));
 					ap.ssid 	= tokens.at(6);
 					ap.rssi		= tokens.at(4);
 					ap.channel= tokens.at(5);
-					ap.vendor = OUI_VENDOR(Utils::String::toUpper(Utils::String::replace(ap.bssid, ":", "")).substr(0, 6));
 				}
 			}
 	}
@@ -198,13 +192,17 @@ private:
 	void openAllSettings();
 	void openAppsMenu();
 
-	std::vector<std::string> scanlist;
-	std::vector<std::string> stalist;
-	std::vector<std::string> scanBSSIDSlist();
-	std::vector<std::string> scanSTAlist();
-	std::vector<std::string> getAP(std::string bssid);
-	std::string getSSID(std::string bssid);
-	std::string getRSSI(std::string bssid);
+	std::vector<AccessPoint> scanlist;
+	std::vector<WifiStation> stalist;
+	std::vector<AccessPoint> scanBSSIDSlist();
+	std::vector<WifiStation> scanSTAlist();
+	AccessPoint getAP(std::string bssid);
+	WifiStation getSTA(std::string mac);
+	AccessPoint rawToAP(std::string raw);
+	std::vector<AccessPoint> AccessPointList(std::vector<std::string> bssids);
+	WifiStation rawToSTA(std::string raw);
+	std::vector<WifiStation> StationsList(std::vector<std::string> stations);
+
 	/*float rssiToPerc(std::string rssi);
 	float rssiToPerc(int rssi);*/
 
@@ -225,14 +223,13 @@ private:
 	void openESP01Settings();
 
 	void scanBSSIDS();
-	std::vector<AccessPoint> AccessPointList(std::vector<std::string> bssids);
-	void openBSSIDSMenu(std::vector<std::string> bssids);
-	void openDEAUTHMenu(const AccessPoint ap/*std::string bssid, std::string rssi, std::string ssid*/);
+	void openBSSIDSMenu(std::vector<AccessPoint> bssids);
+	void openDEAUTHMenu(AccessPoint ap);
 
 
 	void scanSTA();
-	void openSTAmenu(std::vector<std::string> stations);
-	void openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor, std::string aprssi, std::string channel, std::string macname);
+	void openSTAmenu(std::vector<WifiStation> stations);
+	void openSTADetail(WifiStation sta);
 
 
 	// playertoo client
