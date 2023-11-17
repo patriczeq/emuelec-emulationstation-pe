@@ -125,6 +125,9 @@ struct AccessPoint {
 //cc:db:a7:a2:0f:c4;-23;7;c0:c9:e3:9e:dd:b7;-38;4;WRT_AP
 struct WifiStation {
 	WifiStation() {}
+	WifiStation(std::string raw) {
+		std::vector<std::string> tokens = Utils::String::split(raw, ';');
+	}
 
 	std::string mac;
 	std::string pkts;
@@ -197,7 +200,7 @@ private:
 	void openESP01Settings();
 	void scanBSSIDS();
 	void openBSSIDSMenu(std::vector<std::string> bssids);
-	void openDEAUTHMenu(std::string bssid, std::string rssi, std::string ssid);
+	void openDEAUTHMenu(AccessPoint ap/*std::string bssid, std::string rssi, std::string ssid*/);
 
 	// bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_t ch)
 	// void saveSTA(std::string mac, std::string bssid, std::string ch);
