@@ -981,7 +981,7 @@ void GuiMenu::openSTADetail(WifiStation sta)
 				}, "iconRemove");
 			}
 
-			s->addEntry(macname.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, sta]() {
+			s->addEntry(sta.name.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, sta]() {
 				if (Settings::getInstance()->getBool("UseOSK"))
 					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "NAME " + sta.mac, sta.name, [this, sta](const std::string& value) { setMacName(sta.mac, value); }, false));
 				else
