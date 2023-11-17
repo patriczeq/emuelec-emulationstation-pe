@@ -56,6 +56,13 @@ struct sScreenBorders
 
 #endif
 
+struct MPserver {
+	std::string ip;
+	std::string hostname;
+	std::string platform;
+	std::string gamename;
+};
+
 class GuiMenu : public GuiComponent
 {
 public:
@@ -127,12 +134,6 @@ private:
 	void openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor, std::string aprssi, std::string channel, std::string macname);
 
 	// playertoo client
-	struct MPserver {
-		std::string ip;
-		std::string hostname;
-		std::string platform;
-		std::string gamename;
-	};
 	MPserver genMPserver(std::string raw);
 	void scanMPServers();
 	void openMPServers(std::vector<std::string> servers);
