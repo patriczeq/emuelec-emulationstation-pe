@@ -111,7 +111,7 @@ struct AccessPoint {
 				rssi 		= tokens.at(1);
 				ssid 		= Utils::String::trim(tokens.at(3));
 				vendor 	= macVendor(bssid);
-				channel = tokens.at(2)
+				channel = tokens.at(2);
 			}
 	}
 	std::string bssid;
@@ -123,13 +123,15 @@ struct AccessPoint {
 
 //ac:67:84:2c:9e:92; 34:60:f9:e2:07:52; -68; 129
 //cc:db:a7:a2:0f:c4;-23;7;c0:c9:e3:9e:dd:b7;-38;4;WRT_AP
-struct STA {
+struct WifiStation {
+	WifiStation() {}
+
 	std::string mac;
-	int pkts;
-	int rssi;
+	std::string pkts;
+	std::string rssi;
 	std::string vendor;
 	std::string name;
-	AP ap;
+	AccessPoint ap;
 };
 
 
