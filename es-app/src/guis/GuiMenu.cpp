@@ -480,7 +480,7 @@ void GuiMenu::scanMPServers()
 														msg+= !_server.hostname.empty() ? "\n" + _server.hostname : "";
 														msg+= "\n?";
 								window->pushGui(new GuiMsgBox(window, msg,
-									_("YES"),[this, ip] {
+									_("YES"),[this, _server] {
 											appLauncher("playertoo " + _server.ip);
 									},_("CANCEL"), nullptr));
 							}
