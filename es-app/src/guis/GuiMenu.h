@@ -11,6 +11,8 @@
 #include "KeyboardMapping.h"
 #include "utils/VectorEx.h"
 
+#include "oui.h"
+
 class StrInputConfig
 {
 public:
