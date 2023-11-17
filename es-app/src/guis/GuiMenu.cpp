@@ -485,7 +485,7 @@ MPserver GuiMenu::genMPserver(std::string raw)
 			}
 		return gen;
 	}
-	
+
 void GuiMenu::openMPServers(std::vector<std::string> servers)
 	{
 		Window* window = mWindow;
@@ -942,7 +942,7 @@ void GuiMenu::scanSTA()
 void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("STATIONS LIST") + " ("+std::to_string(stations.size())+")").c_str());
+		auto s = new GuiSettings(window, (_("STATIONS LIST") + " ("+std::to_string(stations.size())+")").c_str());
 
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
