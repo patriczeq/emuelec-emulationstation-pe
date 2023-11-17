@@ -322,7 +322,7 @@ void GuiMenu::appLauncher(std::string cmd)
 {
 	Window* window = mWindow;
 	mWindow->pushGui(new GuiLoading<bool>(window, _("Loading..."),
-		[this, cmd](auto gui)
+		[this, window, cmd](auto gui)
 		{
 			mWaitingLoad = true;
 			return ApiSystem::getInstance()->launchApp(window, cmd);
