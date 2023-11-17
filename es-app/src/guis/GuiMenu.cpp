@@ -780,13 +780,13 @@ std::vector<WifiStation> GuiMenu::StationsList(std::vector<std::string> stations
 	return list;
 }
 
-std::vector<std::string> GuiMenu::scanBSSIDSlist()
+std::vector<AccessPoint> GuiMenu::scanBSSIDSlist()
 	{
 		const std::string cmd = SystemConf::getInstance()->get("pe_hack.scanbyesp") == "1" ? "espscan" : "scan";
 		scanlist = AccessPointList(hacksGet(cmd));
 		return scanlist;
 	}
-std::vector<std::string> GuiMenu::scanSTAlist()
+std::vector<WifiStation> GuiMenu::scanSTAlist()
 	{
 		const std::string cmd = "espscansta " + std::to_string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
 		stalist = StationsList(hacksGet(cmd));
