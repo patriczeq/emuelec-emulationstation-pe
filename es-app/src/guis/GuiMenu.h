@@ -57,14 +57,6 @@ struct sScreenBorders
 
 #endif
 
-#ifndef _MACVENDOR_FUNCTION
-#define _MACVENDOR_FUNCTION
-std::string macVendor(std::string mac)
-{
-	std::string _oui = Utils::String::toUpper(Utils::String::replace(mac, ":", "")).substr(0, 6);
-	return OUI_VENDOR(_oui);
-}
-#endif
 
 struct MPserver {
 	MPserver() {}
