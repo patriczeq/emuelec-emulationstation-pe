@@ -11,6 +11,8 @@
 #include "KeyboardMapping.h"
 #include "utils/VectorEx.h"
 
+#include "oui.h"
+
 
 class StrInputConfig
 {
@@ -57,7 +59,6 @@ struct sScreenBorders
 
 #endif
 
-
 struct MPserver {
 	MPserver() {}
 	MPserver(std::string raw) {
@@ -96,7 +97,7 @@ struct AccessPoint {
 				bssid 	= Utils::String::toUpper(tokens.at(0));
 				rssi 		= tokens.at(1);
 				ssid 		= Utils::String::trim(tokens.at(2));
-				//vendor 	= macVendor(bssid);
+				vendor 	= OUI_VENDOR(Utils::String::toUpper(Utils::String::replace(bssid, ":", "")).substr(0, 6));
 			}
 		//c0:c9:e3:9e:dd:b7;-43;4;WRT_AP
 		else if(tokens.size() == 4)
@@ -104,7 +105,7 @@ struct AccessPoint {
 				bssid 	= Utils::String::toUpper(tokens.at(0));
 				rssi 		= tokens.at(1);
 				ssid 		= Utils::String::trim(tokens.at(3));
-				//vendor 	= macVendor(bssid);
+				vendor 	= OUI_VENDOR(Utils::String::toUpper(Utils::String::replace(bssid, ":", "")).substr(0, 6));
 				channel = tokens.at(2);
 			}
 	}
@@ -129,10 +130,10 @@ struct WifiStation {
 					ap.bssid	= Utils::String::toUpper(tokens.at(1));
 					pkts			= tokens.at(3);
 					rssi			= tokens.at(2);
-					//vendor 		= macVendor(mac);
+					vendor 		= OUI_VENDOR(Utils::String::toUpper(Utils::String::replace(mac, ":", "")).substr(0, 6));
 					ap.ssid		= "UpdateESP!";//getSSID(_bssid);
 					ap.rssi 	= "UpdateESP!";//getRSSI(_bssid);
-					//ap.vendor	= macVendor(ap.bssid);
+					ap.vendor	= OUI_VENDOR(Utils::String::toUpper(Utils::String::replace(ap.bssid, ":", "")).substr(0, 6));
 				}
 
 				if(tokens.size() == 7) // simplePrint
@@ -142,13 +143,13 @@ struct WifiStation {
 					mac 			= Utils::String::toUpper(tokens.at(0));
 					pkts 			= tokens.at(2);
 					rssi 			= tokens.at(1);
-					//vendor 		= macVendor(mac);
+					vendor 		= OUI_VENDOR(Utils::String::toUpper(Utils::String::replace(mac, ":", "")).substr(0, 6));
 					//name
 					ap.bssid  = Utils::String::toUpper(tokens.at(3));
 					ap.ssid 	= tokens.at(6);
 					ap.rssi		= tokens.at(4);
 					ap.channel= tokens.at(5);
-					//ap.vendor = macVendor(ap.bssid);
+					ap.vendor = OUI_VENDOR(Utils::String::toUpper(Utils::String::replace(ap.bssid, ":", "")).substr(0, 6));
 				}
 			}
 	}

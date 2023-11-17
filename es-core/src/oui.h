@@ -1,3 +1,4 @@
+#pragma once
 #ifndef OUI_H
 #define OUI_H
 
