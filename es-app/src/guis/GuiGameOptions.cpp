@@ -118,16 +118,38 @@ if (game->getType() == GAME)
 				ViewController::get()->launch(game);
 				this->close();
 			}, isImageViewer ? "iconScraper" : "iconController");
-		
+
 		if(!isAudio && !isVideo && !isImageViewer){
 
 			// PLAYERTOO
 			mMenu.addEntry(_("LAUNCH MULTIPLAYER HOST"), false, [window, game, this]
 				{
-					LaunchGameOptions options;
+					mWindow->pushGui(new GuiLoading<bool>(window, _("STARTING GAME SERVER"),
+						[this, game](auto gui)
+						{
+
+							SystemData* system 		= game->getSystem();
+							std::string platform 	= system->getName();
+							std::string name 			= game->getName();
+
+							runSystemCommand("killall gamestream_encoder_server & && gamestream_encoder_server &", "", nullptr);
+							runSystemCommand("avahi-publish -s --domain=local --subtype=\"_ann._sub._oga-mp._udp\" \"oga-mp-broadcast\" \"_oga-mp._udp\" 1234 \"" + platform + "|" + name + "\" &", "", nullptr);
+
+							return false;
+						},
+						[this, game](bool s)
+						{
+							LaunchGameOptions options;
+							options.hostMP = true;
+							ViewController::get()->launch(game, options);
+							this->close();
+						}
+					));
+
+					/*LaunchGameOptions options;
 					options.hostMP = true;
 					ViewController::get()->launch(game, options);
-					this->close();
+					this->close();*/
 
 				}, "iconMultiplayer");
 

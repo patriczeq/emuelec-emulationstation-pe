@@ -7,14 +7,14 @@
 #include "components/BusyComponent.h"
 #include "resources/TextureData.h"
 
-struct BiosFile 
+struct BiosFile
 {
   std::string status;
   std::string md5;
   std::string path;
 };
 
-struct BiosSystem 
+struct BiosSystem
 {
   std::string name;
   std::vector<BiosFile> bios;
@@ -30,14 +30,14 @@ struct BatoceraBezel
 
 struct BatoceraTheme
 {
-	std::string name; 
-	std::string url;  
+	std::string name;
+	std::string url;
 	std::string author;
 	std::string lastUpdate;
 	int upToDate;
 	int size;
 	std::string image;
-	
+
 	bool isInstalled;
 };
 
@@ -62,7 +62,7 @@ struct PacmanPackage
 	size_t installed_size;
 
 	std::string group;
-	std::vector<std::string> licenses;	
+	std::vector<std::string> licenses;
 
 	std::string arch;
 
@@ -86,7 +86,7 @@ public:
 	{
 		WIFI = 0,
 		RETROACHIVEMENTS = 1,
-		BLUETOOTH = 2,		
+		BLUETOOTH = 2,
 		RESOLUTION = 3,
 		BIOSINFORMATION = 4,
 		NETPLAY = 5,
@@ -235,7 +235,7 @@ public:
 	std::vector<std::string> getScriptResults(const std::string cmd);
 
 	bool downloadFile(const std::string url, const std::string fileName, const std::string label = "", const std::function<void(const std::string)>& func = nullptr);
-	
+
 	// Formating
 	std::vector<std::string> getFormatDiskList();
 	std::vector<std::string> getFormatFileSystems();
@@ -257,16 +257,16 @@ public:
 
   	virtual void replugControllers_sindenguns();
     	virtual void replugControllers_wiimotes();
-	
+
 protected:
 	ApiSystem();
 
-	virtual bool executeScript(const std::string command);  
+	virtual bool executeScript(const std::string command);
 	virtual std::pair<std::string, int> executeScript(const std::string command, const std::function<void(const std::string)>& func);
 	virtual std::vector<std::string> executeEnumerationScript(const std::string command);
 	virtual bool downloadGitRepository(const std::string& url, const std::string& branch, const std::string& fileName, const std::string& label, const std::function<void(const std::string)>& func, long defaultDownloadSize = 0);
 	virtual std::string getGitRepositoryDefaultBranch(const std::string& url);
-		
+
 	virtual std::string getUpdateUrl();
 	virtual std::string getThemesUrl();
 
@@ -277,4 +277,3 @@ protected:
 };
 
 #endif
-

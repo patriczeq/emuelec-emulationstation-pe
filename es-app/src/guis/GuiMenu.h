@@ -83,12 +83,7 @@ struct MPserver {
 	std::string platform;
 	std::string gamename;
 };
-/*
-std::string _bssid 	= Utils::String::toUpper(tokens.at(0));
-std::string _rssi 	= tokens.at(1);
-std::string _ssid 	= Utils::String::trim(tokens.at(2));
-std::string _vendor = macVendor(_bssid);
-*/
+
 struct AP {
 	std::string bssid;
 	int rssi;
@@ -153,6 +148,8 @@ private:
 	std::string getRSSI(std::string bssid);
 	/*float rssiToPerc(std::string rssi);
 	float rssiToPerc(int rssi);*/
+
+	void appLauncher(std::string cmd);
 	// Deauther
 	void hacksSend(std::string cmd);
 	void hacksSet(std::string cmd);
@@ -179,8 +176,8 @@ private:
 	//_mac, _bssid, _pkts, _vendor, _ssid, _apvendor
 	void openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor, std::string aprssi, std::string channel, std::string macname);
 
+
 	// playertoo client
-	MPserver genMPserver(std::string raw);
 	void scanMPServers();
 	void openMPServers(std::vector<std::string> servers);
 

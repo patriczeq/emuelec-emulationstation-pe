@@ -275,7 +275,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 					return;
 				GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
-	addEntry(_("FILE MANAGER").c_str(), false, [this, window] { ApiSystem::getInstance()->launchApp(window, "file_manager.sh"); }, "iconFileManager");
+	addEntry(_("FILE MANAGER").c_str(), false, [this] { appLauncher("file_manager.sh"); }, "iconFileManager");
 	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "iconApps");
 
 	if (isFullUI)
@@ -317,18 +317,35 @@ if (!isKidUI)
 			setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, Renderer::getScreenHeight() * 0.15f);
 	}
 }
+
+void GuiMenu::appLauncher(std::string cmd)
+{
+	Window* window = mWindow;
+	mWindow->pushGui(new GuiLoading<bool>(window, _("Loading..."),
+		[this, cmd](auto gui)
+		{
+			mWaitingLoad = true;
+			return ApiSystem::getInstance()->launchApp(window, cmd);
+		},
+		[this](bool s)
+		{
+			mWaitingLoad = false;
+		}
+	));
+}
+
 void GuiMenu::openAppsMenu()
 {
 	Window* window = mWindow;
 	auto s = new GuiSettings(window, _("APPS").c_str());
-	s->addEntry(_("GMU MUSIC PLAYER").c_str(), false, [this, window] { ApiSystem::getInstance()->launchApp(window, "gmu_player.sh"); });
+	s->addEntry(_("GMU MUSIC PLAYER").c_str(), false, [this] { appLauncher("gmu_player.sh"); });
 
 	s->addGroup(_("EMULATORS"));
-		s->addEntry(_("PPSSPP").c_str(), false, [this, window] { ApiSystem::getInstance()->launchApp(window, "PPSSPPSDL"); });
-		s->addEntry(_("DUCKSTATION").c_str(), false, [this, window] { ApiSystem::getInstance()->launchApp(window, "duckstation-nogui"); });
-		s->addEntry(_("FLYCAST").c_str(), false, [this, window] { ApiSystem::getInstance()->launchApp(window, "flycast"); });
-		s->addEntry(_("RETROARCH").c_str(), false, [this, window] { ApiSystem::getInstance()->launchApp(window, "retroarch"); });
-		s->addEntry(_("RETROARCH 32bit").c_str(), false, [this, window] { ApiSystem::getInstance()->launchApp(window, "retroarch32"); });
+		s->addEntry(_("PPSSPP").c_str(), false, [this] { appLauncher("PPSSPPSDL"); });
+		s->addEntry(_("DUCKSTATION").c_str(), false, [this] { appLauncher("duckstation-nogui"); });
+		s->addEntry(_("FLYCAST").c_str(), false, [this] { appLauncher("flycast"); });
+		s->addEntry(_("RETROARCH").c_str(), false, [this] { appLauncher("retroarch"); });
+		s->addEntry(_("RETROARCH 32bit").c_str(), false, [this] { appLauncher("retroarch32"); });
 
 	window->pushGui(s);
 }
@@ -447,11 +464,27 @@ void GuiMenu::scanMPServers()
 			[this, window](std::vector<std::string> servers)
 			{
 				mWaitingLoad = false;
-				if(servers.size() > 0)
+				if(servers.size() > 1)
 					{
 						openMPServers(servers);
 					}
-					// TODO: size() == 1, rovnou nabídnout
+				else if(servers.size() == 1)
+					{
+						MPserver _server(servers.at(0));
+						if(!_server.ip.empty())
+							{
+								std::string msg = _("LAUNCH");
+														msg+= !_server.gamename.empty() ? "\n" + _server.gamename : "";
+														msg+= !_server.platform.empty() ? "\n" + _server.platform : "";
+														msg+= !_server.ip.empty() ? "\n" + _server.ip : "";
+														msg+= !_server.hostname.empty() ? "\n" + _server.hostname : "";
+														msg+= "\n?";
+								window->pushGui(new GuiMsgBox(window, msg,
+									_("YES"),[this, ip] {
+											appLauncher("playertoo " + _server.ip);
+									},_("CANCEL"), nullptr));
+							}
+					}
 				else
 					{
 						window->pushGui(new GuiMsgBox(window, _("SERVER(s) NOT FOUND!"),
@@ -462,30 +495,6 @@ void GuiMenu::scanMPServers()
 			}
 		));
 	}
-
-MPserver GuiMenu::genMPserver(std::string raw)
-	{
-		//=;wlan0;IPv4;oga-mp-broadcast;_oga-mp._udp;local;OGAred.local;192.168.1.111;1234;"psx|Crash Bandicoot"
-		MPserver gen;
-		std::vector<std::string> tokens = Utils::String::split(raw, ';');
-		if(tokens.size() < 8){
-			return gen;
-		}
-		gen.ip 				= tokens.at(7);
-		gen.hostname 	= tokens.at(6);
-		if(tokens.size() == 10)
-			{
-				std::string _platformName = Utils::String::replace(tokens.at(9), "\"", "");
-				std::vector<std::string> ptokens = Utils::String::split(_platformName, '|');
-				if(ptokens.size() == 2)
-					{
-						gen.platform = ptokens.at(0);
-						gen.gamename = ptokens.at(1);
-					}
-			}
-		return gen;
-	}
-
 void GuiMenu::openMPServers(std::vector<std::string> servers)
 	{
 		Window* window = mWindow;
@@ -509,14 +518,12 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 			}, "iconControllers");
 
 		}
-
 		window->pushGui(s);
 	}
 /**
  *
  * Music player
  */
-
 void GuiMenu::openMusicPlayer()
 	{
 		Window* window = mWindow;
