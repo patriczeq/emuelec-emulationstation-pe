@@ -462,27 +462,6 @@ void GuiMenu::scanMPServers()
 			}
 		));
 	}
-/*void GuiMenu::void startMPServer(std::string ip, std::string hostname, std::string platform, std::string gamename);
-	{
-		//=;wlan0;IPv4;oga-mp-broadcast;_oga-mp._udp;local;OGAred.local;192.168.1.111;1234;"psx|Crash Bandicoot"
-		if(server.size() < 8){
-			return;
-		}
-		std::string _name 	= server.at(6);
-		std::string _ip 		= server.at(7);
-		std::string _platform = "";
-		std::string _game 		= "";
-		if(server.size() == 10)
-			{
-				std::string _platformName = Utils::String::replace(server.at(9), "\"", "");
-				std::vector<std::string> ptokens = Utils::String::split(_platformName, '|');
-				if(ptokens.size() == 2)
-					{
-						_platform = ptokens.at(0);
-						_game = ptokens.at(1);
-					}
-			}
-	}*/
 
 MPserver GuiMenu::genMPserver(std::string raw)
 	{
@@ -506,6 +485,7 @@ MPserver GuiMenu::genMPserver(std::string raw)
 			}
 		return gen;
 	}
+	
 void GuiMenu::openMPServers(std::vector<std::string> servers)
 	{
 		Window* window = mWindow;

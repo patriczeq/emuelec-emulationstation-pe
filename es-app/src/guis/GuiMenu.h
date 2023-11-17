@@ -133,10 +133,10 @@ private:
 		std::string platform;
 		std::string gamename;
 	};
-	MPserver generate(std::string raw);
+	MPserver genMPserver(std::string raw);
 	void scanMPServers();
 	void openMPServers(std::vector<std::string> servers);
-	//void startMPServer(std::string ip, std::string hostname, std::string platform, std::string gamename);
+
 	// wifi ap helper
 	std::string apInlineInfo(std::string cmd);
 	void openAPleases();
