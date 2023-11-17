@@ -451,9 +451,9 @@ void GuiMenu::scanMPServers()
 					{
 						openMPServers(servers);
 					}
+					// TODO: size() == 1, rovnou nabídnout
 				else
 					{
-						std::string msg = _(".");
 						window->pushGui(new GuiMsgBox(window, _("SERVER(s) NOT FOUND!"),
 							_("OK"),nullptr,_("CFG. NETWORK"), [this] {
 								openNetworkSettings();
@@ -462,7 +462,50 @@ void GuiMenu::scanMPServers()
 			}
 		));
 	}
+/*void GuiMenu::void startMPServer(std::string ip, std::string hostname, std::string platform, std::string gamename);
+	{
+		//=;wlan0;IPv4;oga-mp-broadcast;_oga-mp._udp;local;OGAred.local;192.168.1.111;1234;"psx|Crash Bandicoot"
+		if(server.size() < 8){
+			return;
+		}
+		std::string _name 	= server.at(6);
+		std::string _ip 		= server.at(7);
+		std::string _platform = "";
+		std::string _game 		= "";
+		if(server.size() == 10)
+			{
+				std::string _platformName = Utils::String::replace(server.at(9), "\"", "");
+				std::vector<std::string> ptokens = Utils::String::split(_platformName, '|');
+				if(ptokens.size() == 2)
+					{
+						_platform = ptokens.at(0);
+						_game = ptokens.at(1);
+					}
+			}
+	}*/
 
+MPserver GuiMenu::genMPserver(std::string raw)
+	{
+		//=;wlan0;IPv4;oga-mp-broadcast;_oga-mp._udp;local;OGAred.local;192.168.1.111;1234;"psx|Crash Bandicoot"
+		MPserver gen;
+		std::vector<std::string> tokens = Utils::String::split(raw, ';');
+		if(tokens.size() < 8){
+			return gen;
+		}
+		gen.ip 				= tokens.at(7);
+		gen.hostname 	= tokens.at(6);
+		if(tokens.size() == 10)
+			{
+				std::string _platformName = Utils::String::replace(tokens.at(9), "\"", "");
+				std::vector<std::string> ptokens = Utils::String::split(_platformName, '|');
+				if(ptokens.size() == 2)
+					{
+						gen.platform = ptokens.at(0);
+						gen.gamename = ptokens.at(1);
+					}
+			}
+		return gen;
+	}
 void GuiMenu::openMPServers(std::vector<std::string> servers)
 	{
 		Window* window = mWindow;
@@ -474,47 +517,17 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 
 		for (auto server : servers)
 		{
-			std::vector<std::string> tokens = Utils::String::split(server, ';');
-			//=;wlan0;IPv4;oga-mp-broadcast;_oga-mp._udp;local;OGAred.local;192.168.1.111;1234;"psx|Crash Bandicoot"
-			if(tokens.size() < 8){
-				continue;
-			}
-			std::string _name 	= tokens.at(6);
-			std::string _ip 		= tokens.at(7);
+			MPserver _server = genMPserver(server);
 
-			std::string _platform = "";
-			std::string _game = "";
-			if(tokens.size() == 10)
-				{
-					std::string _platformName = Utils::String::replace(tokens.at(9), "\"", "");
-					std::vector<std::string> ptokens = Utils::String::split(_platformName, '|');
-					if(ptokens.size() == 2)
-						{
-							_platform = ptokens.at(0);
-							_game = ptokens.at(1);
-						}
-				}
+			std::string _subtitle	= _server.hostname + " (" + _server.ip + ")";
 
-			std::string _subtitle	= _name + " (" + _ip + ")";
-
-			s->addWithDescription(_game == "" ? "Unknown game" : _game, _subtitle,
-				std::make_shared<TextComponent>(window, _platform == "" ? "?" : _platform, 	font, color),
-				[this, window, _ip]
+			s->addWithDescription(_server.gamename.empty() ? "Unknown game" : _server.gamename, _subtitle,
+				std::make_shared<TextComponent>(window, _server.platform.empty() ? "?" : _server.platform, font, color),
+				[this, window, _server]
 			{
-					std::string cmd = "playertoo " + _ip;
-					ApiSystem::getInstance()->launchApp(window, cmd);
+					ApiSystem::getInstance()->launchApp(window, "playertoo " + _server.ip);
 			}, "iconControllers");
 
-			/*s->addEntry(_title, true, [window, _ip, _name] {
-				std::string msg = _("CONNECT TO:\n");
-										msg = msg + _name + "\n";
-										msg = msg + _ip;
-				window->pushGui(new GuiMsgBox(window, msg,
-					_("YES"),[window, _ip] {
-						std::string cmd = "playertoo " + _ip;
-						ApiSystem::getInstance()->launchApp(window, cmd);
-					},_("NO"), nullptr));
-			}, "iconSystem");*/
 		}
 
 		window->pushGui(s);
@@ -584,7 +597,7 @@ void GuiMenu::openESP01Settings()
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "DEAUTHER SETTINGS");
 		// ----------------------------------------------------------- MAIN SETTINGS
-		s->addGroup(_("MAIN"));
+		s->addGroup(_("UART"));
 			// PORT
 			auto esp_uart = std::make_shared< OptionListComponent<std::string> >(mWindow, "UART PORT", false);
 			std::vector<std::string> ports = hacksGet("ports");
@@ -622,7 +635,7 @@ void GuiMenu::openESP01Settings()
 				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
 				runSystemCommand("hacks.sh " + port + " -b " + esp_baudrate->getSelected(), "", nullptr);
 			});
-		s->addGroup(_("WiFi SETTINGS"));
+		s->addGroup(_("WIFI SETTINGS"));
 			// SCAN
 			auto esp_scan = std::make_shared<SwitchComponent>(mWindow);
 			esp_scan->setState(SystemConf::getInstance()->get("pe_hack.scanbyesp") == "1");
@@ -709,27 +722,19 @@ void GuiMenu::openESP01Menu()
 		s->addGroup(_("WIFI DEAUTH/BACON"));
 			s->addEntry(_("SEND RANDOM BACONS"), false, [this, window] {
 					hacksSend("beacon");
-					//runSystemCommand("hacks.sh espconn beacon", "", nullptr);
-					window->displayNotificationMessage(_("RANDOM BACON SCRIPT STARTED!"));
 				});
 			s->addEntry(_("CLONE APs"), false, [this, window] {
 					window->pushGui(new GuiMsgBox(window, _("SEND DEAUTH PACKETS?"),
 					_("YES"), [this, window] {
 						hacksSend("clonedeauth");
-						//runSystemCommand("hacks.sh espconn clonedeauth", "", nullptr);
-						window->displayNotificationMessage(_("CLONE & DEAUTH SCRIPT STARTED!"));
 					}, _("NO"), [this, window] {
 						hacksSend("clonebeacon");
-						//runSystemCommand("hacks.sh espconn clonebeacon", "", nullptr);
-						window->displayNotificationMessage(_("CLONE APs SCRIPT STARTED!"));
 					}));
 				});
 				s->addEntry(_("DEAUTH ALL APs"), false, [this, window] {
 					window->pushGui(new GuiMsgBox(window, _("DEAUTHORIZE ALL APs?"),
 						_("YES"), [this, window] {
 							hacksSend("killall");
-							//runSystemCommand("hacks.sh espconn killall", "", nullptr);
-							window->displayNotificationMessage(_("DEAUTH ALL RUNNING!"));
 						}, _("NO"),nullptr));
 				});
 
@@ -739,34 +744,26 @@ void GuiMenu::openESP01Menu()
 				std::string space = Settings::getInstance()->getString("pe_hack.irspace");
 				if(space != ""){
 					hacksSend("irspace " + space);
-					//runSystemCommand("hacks.sh espconn irspace " + space, "", nullptr);
 				}
 				//set invert
 				if(SystemConf::getInstance()->get("pe_hack.irinvert") == "1"){
 					hacksSend("irinvert");
-					//runSystemCommand("hacks.sh espconn irinvert", "", nullptr);
 				}
 				// run
 				hacksSend("irkillonce");
-				//runSystemCommand("hacks.sh espconn irkillonce", "", nullptr);
-				window->pushGui(new GuiMsgBox(window, _("SENDING POWER CODES"), _("OK"), nullptr));
 			});
 			s->addEntry(_("IR POWER-OFF (LOOP)"), false, [this, window] {
 				//set space
 				std::string space = Settings::getInstance()->getString("pe_hack.irspace");
 				if(space != ""){
 					hacksSend("irspace " + space);
-					//runSystemCommand("hacks.sh espconn irspace " + space, "", nullptr);
 				}
 				//set invert
 				if(SystemConf::getInstance()->get("pe_hack.irinvert") == "1"){
 					hacksSend("irinvert");
-					//runSystemCommand("hacks.sh espconn irinvert", "", nullptr);
 				}
 				// run
 				hacksSend("irkill");
-				//runSystemCommand("hacks.sh espconn irkill", "", nullptr);
-				window->pushGui(new GuiMsgBox(window, _("SENDING POWER CODES IN LOOP"), _("OK"), nullptr));
 			});
 
 
@@ -799,7 +796,14 @@ void GuiMenu::scanBSSIDS()
 			[this, window](std::vector<std::string> bssids)
 			{
 				mWaitingLoad = false;
-				openBSSIDSMenu(bssids);
+				if(bssids.size() > 0)
+				{
+					openBSSIDSMenu(bssids);
+				}
+				else
+				{
+					window->pushGui(new GuiMsgBox(window, _("NO AP FOUND!"),_("OK"),nullptr));
+				}
 			}
 		));
 	}
@@ -943,7 +947,14 @@ void GuiMenu::scanSTA()
 			[this, window](std::vector<std::string> stations)
 			{
 				mWaitingLoad = false;
-				openSTAmenu(stations);
+				if(stations.size() > 0)
+				{
+					openSTAmenu(stations);
+				}
+				else
+				{
+					window->pushGui(new GuiMsgBox(window, _("NO STA FOUND!"),_("OK"),nullptr));
+				}
 			}
 		));
 	}
@@ -951,7 +962,7 @@ void GuiMenu::scanSTA()
 void GuiMenu::openSTAmenu(std::vector<std::string> stations)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, (stations.size() == 0 ? _("NO STA FOUND!") : (_("STATIONS LIST") + " ("+std::to_string(stations.size())+")")).c_str());
+		auto s = new GuiSettings(window, _("STATIONS LIST") + " ("+std::to_string(stations.size())+")").c_str());
 
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
@@ -1041,7 +1052,7 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 			if(!macname.empty())
 			{
 				s->addEntry(_("REMOVE NAME"), true, [this, window, mac, macname]() {
-					window->pushGui(new GuiMsgBox(window, _("REMOVE NAME?") + "\n" + macname,
+					window->pushGui(new GuiMsgBox(window, _("REMOVE NAME") + "?\n" + macname,
 						_("YES"), [this, mac] {
 							remMacName(mac);
 						}, _("NO"),nullptr));
@@ -1067,24 +1078,19 @@ void GuiMenu::openSTADetail(std::string mac, std::string bssid, std::string pkts
 				hacksSend("stop");
 				}, "iconQuit");
 			s->addEntry(_("DEAUTH STATION"), true, [this, window, mac, vendor]() {
-				std::string msg = _("DEAUTH STATION: ") +"\n\n" + mac + "\n"+ vendor + "\n";
+				std::string msg = _("DEAUTH STATION") +":\n\n" + mac + "\n"+ vendor + "\n";
 				window->pushGui(new GuiMsgBox(window, msg,
-					_("DEAUTH!"), [this, window, mac] {
+					_("YES"), [this, window, mac] {
 						hacksSend("deauthsta " + mac);
 					}, _("CANCEL"),nullptr));
 				}, "iconHack");
-			/*s->addEntry(_("SNIFF STATION PACKETS"), false, [this, window]() {
-					hacksSend("stop");
-				});*/
-
 
 		window->pushGui(s);
 	}
 void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, (bssids.size() == 0 ? _("NO APs FOUND!") : (_("ACCESSPOINTS LIST") + " ("+std::to_string(bssids.size())+")")).c_str());
-		//auto staScanDur = std::make_shared<SliderComponent>(mWindow, 1.f, 20.f, 1.f, "s");
+		auto s = new GuiSettings(window, (_("ACCESSPOINTS LIST") + " ("+std::to_string(bssids.size())+")").c_str());
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -1103,7 +1109,6 @@ void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 
 						std::string _title 	=  _ssid;
 						std::string _subtitle 	=  _bssid + " -> " + _vendor;
-						//inline void addWithDescription(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func, const std::string iconName = "", bool setCursorHere = false, /*bool invert_when_selected = true,*/ bool multiLine = false)
 
 						s->addWithDescription(_title, _subtitle,
 							std::make_shared<TextComponent>(window, _rssi + "dBm", 	font, color),
@@ -1126,14 +1131,7 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		std::string vendor = macVendor(bssid);/*"?";
-		const std::string cmd = "hacks.sh vendor " + bssid;
-		std::vector<std::string> vendorRes = ApiSystem::getInstance()->getScriptResults(cmd);
-		if(vendorRes.size() > 0)
-			{
-				vendor = vendorRes.at(0);
-			}
-*/
+		std::string vendor = macVendor(bssid);
 		s->addGroup(_("AP INFO"));
 		// -------------------------------------------------------------------------------------
 			s->addWithLabel(_("RSSI"), 		std::make_shared<TextComponent>(window, rssi + _("dBm"), 	font, color));
@@ -1143,32 +1141,27 @@ void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ss
 		// -------------------------------------------------------------------------------------
 		s->addGroup(_("AP HACKS"));
 		// -------------------------------------------------------------------------------------
-			s->addEntry(_("JUST DEAUTH"), true, [this, window, bssid, ssid]() {
-					std::string msg = _("DEAUTH all STS on AP: ") +"\n" + ssid + "\n"+ bssid + "\n";
+			s->addEntry(_("DEAUTH"), true, [this, window, bssid, ssid]() {
+					std::string msg = _("DEAUTH") +"\n" + ssid + "\n"+ bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("DEAUTH!"), [this, window, bssid] {
+						_("YES"), [this, window, bssid] {
 							hacksSend("deauthap " + bssid);
-							//runSystemCommand("hacks.sh espconn deauthap " + bssid, "", nullptr);
-							window->displayNotificationMessage(_("DEAUTH AP SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
 				},"iconHack");
 
 			s->addEntry(_("CLONE BSSID, DEAUTH"), true, [this, window, bssid, ssid]() {
-					std::string msg = _("DEAUTH and clone BSSID AP: ") +"\n" + ssid + "\n"+ bssid + "\n";
+					std::string msg = _("CLONE BSSID, DEAUTH") +"\n" + ssid + "\n"+ bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("DEAUTH!"), [this, window, bssid] {
+						_("YES"), [this, window, bssid] {
 							hacksSend("deauthapclone " + bssid);
-							//runSystemCommand("hacks.sh espconn deauthapclone " + bssid, "", nullptr);
-							window->displayNotificationMessage(_("DEAUTH+CLONE BSSID SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
 				},"iconHack");
+
 			s->addEntry(_("FAKE AP, DEAUTH"), true, [this, window, bssid, ssid]() {
-					std::string msg = _("DEAUTH and fake AP: ") +"\n" + ssid + "\n"+ bssid + "\n";
+					std::string msg = _("FAKE AP, DEAUTH") +"\n" + ssid + "\n"+ bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("DEAUTH!"), [this, window, bssid] {
+						_("YES"), [this, window, bssid] {
 							hacksSend("deauthapcaptive " + bssid);
-							//runSystemCommand("hacks.sh espconn deauthapcaptive " + bssid, "", nullptr);
-							window->displayNotificationMessage(_("DEAUTH+FAKE AP SCRIPT STARTED!"));
 						}, _("CANCEL"),nullptr));
 				},"iconHack");
 		// -------------------------------------------------------------------------------------

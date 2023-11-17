@@ -13,6 +13,167 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Poedit 3.2.2\n"
 
+
+msgid "MUSIC PLAYER"
+msgstr "HUDEBNÍ PŘEHRÁVAČ"
+
+msgid "LOAD ALL MUSIC"
+msgstr "NAČÍST VŠECHNU HUDBU"
+
+msgid "PAUSE/RESUME"
+msgstr "POZASTAVIT/SPUSTIT"
+
+msgid "CLEAR PLAYLIST"
+msgstr "SMAZAT PLAYLIST"
+
+msgid "PLAY AUDIO FILE"
+msgstr "PŘEHRÁT HUDEBNÍ SOUBOR"
+
+msgid "ADD TO PLAYLIST"
+msgstr "PŘIDAT DO PLAYLISTU"
+
+msgid "PLAY MUSIC FROM DIRECTORY"
+msgstr "PŘEHRÁT HUDEBNÍ SOUBORY ZE SLOŽKY"
+
+msgid "PLAY VIDEO FILE"
+msgstr "PŘEHRÁT VIDEO SOUBOR"
+
+
+msgid "MULTIPLAYER CLIENT"
+msgstr "KLIENT MULTIPLAYERU"
+
+msgid "SEARCHING GAME SERVERS..."
+msgstr "VYHLEDÁVÁM SERVERY..."
+
+msgid "SERVER(s) NOT FOUND!"
+msgstr "NEBYL NALEZEN ŽÁDNÝ SERVER!"
+
+msgid "CFG NETWORK"
+msgstr "NASTAVENÍ SÍTĚ"
+
+msgid "SELECT GAME SERVER"
+msgstr "VYBERTE HERNÍ SERVER"
+
+msgid "LAUNCH MULTIPLAYER HOST"
+msgstr "SPUSTIT MULTIPLAYER"
+
+
+
+msgid "FILE MANAGER"
+msgstr "SPRÁVCE SOUBORŮ"
+
+msgid "APPS"
+msgstr "APLIKACE"
+
+msgid "EMULATORS"
+msgstr "EMULÁTORY"
+
+msgid "H4CK TH3 W0RLD"
+msgstr "H4CKN1 J3 V53CHNY"
+
+msgid "H4CK TH3 FK1N W0RLD!"
+msgstr "H4CKN1 J3 V53CHNY!"
+
+msgid "WIFI SETTINGS"
+msgstr "NASTAVENÍ WIFI"
+
+msgid "SCAN NETWORKS BY ESP"
+msgstr "SKENOVAT AP PŘES ESP"
+
+msgid "STA SNIFF DURATION"
+msgstr "ČAS ZACHYTÁVÁNÍ STANIC"
+
+msgid "IR SETTINGS"
+msgstr "NASTAVENÍ INFRA LED"
+
+msgid "SPACE BETWEEN SENDS"
+msgstr "MEZERA V ODESÍLÁNÍ"
+
+msgid "INVERT GPIO2 OUTPUT"
+msgstr "INVERTOVAT VÝSTUP GPIO2"
+
+msgid "STOP ALL JOBS"
+msgstr "ZASTAVIT VŠE"
+
+msgid "REBOOT ESP01"
+msgstr "RESTARTOVAT ESP01"
+
+msgid "SCAN NETWORK"
+msgstr "SKENOVÁNÍ SÍTĚ"
+
+msgid "SCAN AP"
+msgstr "SKENOVAT AP"
+
+msgid "SCAN STA"
+msgstr "SKENOVAT STA"
+
+msgid "SEARCHING APs..."
+msgstr "VYHLEDÁVÁM AP..."
+
+msgid "NO AP FOUND!"
+msgstr "NENALEZEN ŽÁDNÝ AP!"
+
+msgid "ACCESSPOINTS LIST"
+msgstr "SEZNAM PŘÍSTUPOVÝCH BODŮ"
+
+msgid "JUST DEAUTH"
+msgstr "DEAUTORIZOVAT"
+
+msgid "CLONE BSSID, DEAUTH"
+msgstr "NAKLONOVAT BSSID, DEAUTORIZOVAT"
+
+msgid "FAKE AP, DEAUTH"
+msgstr "FALEŠNÁ AP, DEAUTORIZOVAT"
+
+msgid "SEARCHING STATIONS..."
+msgstr "VYHLEDÁVÁM STANICE..."
+
+msgid "NO STA FOUND!"
+msgstr "NENALEZENA ŽÁDNÁ STANICE!"
+
+msgid "STATIONS LIST"
+msgstr "SEZNAM STANIC"
+
+msgid "PACKETS SNIFFED"
+msgstr "ZACHYCENO PAKETŮ"
+
+msgid "REMOVE NAME"
+msgstr "ODEBRAT NÁZEV"
+
+msgid "ADD NAME"
+msgstr "PŘIDAT NÁZEV"
+
+msgid "EDIT NAME"
+msgstr "UPRAVIT NÁZEV"
+
+msgid "DEAUTH STATION"
+msgstr "DEAUTORIZOVAT STANICI"
+
+msgid "WIFI DEAUTH/BACON"
+msgstr "WIFI DEAUTORIZACE/BACON"
+
+msgid "SEND RANDOM BACONS"
+msgstr "ODESÍLAT NÁHODNÉ BACONY"
+
+msgid "CLONE APs"
+msgstr "NAKLONOVAT PŘÍSTUPOVÉ BODY"
+
+msgid "DEAUTH ALL APs"
+msgstr "DEAUTORIZOVAT VŠECHNY AP"
+
+msgid "IR ATTACKS"
+msgstr "IR ÚTOKY"
+
+msgid "IR POWER-OFF"
+msgstr "ODESLAT POWER-OFF KÓDY"
+
+msgid "IR POWER-OFF (LOOP)"
+msgstr "ODESÍLAT POWER-OFF KÓDY VE SMYČCE"
+
+
+
+
+
 msgid "UPDATE AVAILABLE"
 msgstr "AKTUALIZACE DOSTUPNÁ"
 
@@ -1496,7 +1657,7 @@ msgid "SOUND SETTINGS"
 msgstr "NASTAVENÍ ZVUKU"
 
 msgid "NETWORK SETTINGS"
-msgstr "NASTAVENÍ INTERNETU"
+msgstr "NASTAVENÍ SÍTĚ"
 
 msgid "CONFIGURE INPUT"
 msgstr "KONFIGURACE VSTUPU"
