@@ -11,7 +11,6 @@
 #include "KeyboardMapping.h"
 #include "utils/VectorEx.h"
 
-#include "oui.h"
 
 class StrInputConfig
 {
@@ -105,7 +104,7 @@ struct AccessPoint {
 				bssid 	= Utils::String::toUpper(tokens.at(0));
 				rssi 		= tokens.at(1);
 				ssid 		= Utils::String::trim(tokens.at(2));
-				vendor 	= macVendor(bssid);
+				//vendor 	= macVendor(bssid);
 			}
 		//c0:c9:e3:9e:dd:b7;-43;4;WRT_AP
 		else if(tokens.size() == 4)
@@ -113,7 +112,7 @@ struct AccessPoint {
 				bssid 	= Utils::String::toUpper(tokens.at(0));
 				rssi 		= tokens.at(1);
 				ssid 		= Utils::String::trim(tokens.at(3));
-				vendor 	= macVendor(bssid);
+				//vendor 	= macVendor(bssid);
 				channel = tokens.at(2);
 			}
 	}
@@ -141,7 +140,7 @@ struct WifiStation {
 					vendor 		= macVendor(mac);
 					ap.ssid		= "UpdateESP!";//getSSID(_bssid);
 					ap.rssi 	= "UpdateESP!";//getRSSI(_bssid);
-					ap.vendor	= macVendor(ap.bssid);
+					//ap.vendor	= macVendor(ap.bssid);
 				}
 
 				if(tokens.size() == 7) // simplePrint
@@ -157,7 +156,7 @@ struct WifiStation {
 					ap.ssid 	= tokens.at(6);
 					ap.rssi		= tokens.at(4);
 					ap.channel= tokens.at(5);
-					ap.vendor = macVendor(ap.bssid);
+					//ap.vendor = macVendor(ap.bssid);
 				}
 			}
 	}
@@ -222,7 +221,7 @@ private:
 	void hacksSet(std::string cmd);
 	std::vector<std::string> hacksGet(std::string cmd);
 	std::string hacksGetString(std::string cmd, bool tty = true);
-	//std::string macVendor(std::string mac);
+	std::string macVendor(std::string mac);
 	// macnames
 	std::string macName(std::string mac);
 	void setMacName(std::string mac, std::string name);
@@ -231,16 +230,15 @@ private:
 
 	void openESP01Menu();
 	void openESP01Settings();
+
 	void scanBSSIDS();
+	std::vector<AccessPoint> AccessPointList(std::vector<std::string> bssids);
 	void openBSSIDSMenu(std::vector<std::string> bssids);
 	void openDEAUTHMenu(const AccessPoint ap/*std::string bssid, std::string rssi, std::string ssid*/);
 
-	// bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_t ch)
-	// void saveSTA(std::string mac, std::string bssid, std::string ch);
 
 	void scanSTA();
 	void openSTAmenu(std::vector<std::string> stations);
-	//_mac, _bssid, _pkts, _vendor, _ssid, _apvendor
 	void openSTADetail(std::string mac, std::string bssid, std::string pkts, std::string rssi, std::string vendor, std::string ssid, std::string apvendor, std::string aprssi, std::string channel, std::string macname);
 
 

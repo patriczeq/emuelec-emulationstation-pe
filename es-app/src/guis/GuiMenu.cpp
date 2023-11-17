@@ -62,6 +62,7 @@
 #include "TextToSpeech.h"
 #include "Paths.h"
 
+#include "oui.h"
 
 #if WIN32
 #include "Win32ApiSystem.h"
@@ -744,6 +745,15 @@ void GuiMenu::openESP01Menu()
 		window->pushGui(s);
 	}
 
+std::vector<AccessPoint> AccessPointList(std::vector<std::string> bssids)
+	{
+		std::vector<AccessPoint> list;
+		for(auto bssid : bssids)
+			{
+				list.push_back(AccessPoint(bssid));
+			}
+		return list;
+	}
 std::vector<std::string> GuiMenu::scanBSSIDSlist()
 	{
 		const std::string cmd = SystemConf::getInstance()->get("pe_hack.scanbyesp") == "1" ? "espscan" : "scan";
@@ -837,11 +847,11 @@ std::string GuiMenu::getRSSI(std::string bssid)
 		return rssi;
 	}
 
-/*std::string GuiMenu::macVendor(std::string mac)
+std::string GuiMenu::macVendor(std::string mac)
 {
 	std::string _oui = Utils::String::toUpper(Utils::String::replace(mac, ":", "")).substr(0, 6);
 	return OUI_VENDOR(_oui);
-}*/
+}
 
 void GuiMenu::hacksSend(std::string cmd)
 {
