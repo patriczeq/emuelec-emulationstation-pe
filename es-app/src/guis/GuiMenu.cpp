@@ -321,17 +321,7 @@ if (!isKidUI)
 void GuiMenu::appLauncher(std::string cmd)
 {
 	Window* window = mWindow;
-	mWindow->pushGui(new GuiLoading<bool>(window, _("Loading..."),
-		[this, window, cmd](auto gui)
-		{
-			mWaitingLoad = true;
-			return ApiSystem::getInstance()->launchApp(window, cmd);
-		},
-		[this](bool s)
-		{
-			mWaitingLoad = false;
-		}
-	));
+	ApiSystem::getInstance()->launchApp(window, cmd);
 }
 
 void GuiMenu::openAppsMenu()
@@ -475,9 +465,8 @@ void GuiMenu::scanMPServers()
 							{
 								std::string msg = _("LAUNCH");
 														msg+= !_server.gamename.empty() ? "\n" + _server.gamename : "";
-														msg+= !_server.platform.empty() ? "\n" + _server.platform : "";
-														msg+= !_server.ip.empty() ? "\n" + _server.ip : "";
-														msg+= !_server.hostname.empty() ? "\n" + _server.hostname : "";
+														msg+= !_server.platform.empty() ? " (" + _server.platform : ")";
+														msg+= !_server.hostname.empty() ? "\nSERVER:" + _server.hostname : "";
 														msg+= "\n?";
 								window->pushGui(new GuiMsgBox(window, msg,
 									_("YES"),[this, _server] {
@@ -850,15 +839,11 @@ std::string GuiMenu::getRSSI(std::string bssid)
 		return rssi;
 	}
 
-std::string GuiMenu::macVendor(std::string mac)
+/*std::string GuiMenu::macVendor(std::string mac)
 {
 	std::string _oui = Utils::String::toUpper(Utils::String::replace(mac, ":", "")).substr(0, 6);
-
-	/*if (OUIMAP.find(_oui) != OUIMAP.end()) {
-	    return OUIMAP.at(_oui);
-	}*/
-	return OUI_VENDOR(_oui);//hacksGetString("vendor " + _oui, false);
-}
+	return OUI_VENDOR(_oui);
+}*/
 
 void GuiMenu::hacksSend(std::string cmd)
 {
@@ -1086,7 +1071,17 @@ void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 		{
 			for (auto bssid : bssids)
 			{
-				std::vector<std::string> tokens = Utils::String::split(bssid, ';');
+				AccessPoint ap(bssid);
+				if(!ap.bssid.empty())
+					{
+						s->addWithDescription(ap.ssid, ap.bssid + " -> " + ap.vendor,
+							std::make_shared<TextComponent>(window,ap.rssi + "dBm", 	font, color),
+							[this, ap]
+						{
+							openDEAUTHMenu(ap);
+						}, "iconNetwork");
+					}
+				/*std::vector<std::string> tokens = Utils::String::split(bssid, ';');
 				if(tokens.size() == 3)
 					{
 						std::string _bssid 	= Utils::String::toUpper(tokens.at(0));
@@ -1103,52 +1098,51 @@ void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 						{
 							openDEAUTHMenu(_bssid, _rssi, _ssid);
 						}, "iconNetwork");
-
-					}
+					}*/
 			}
 		}
 
 		window->pushGui(s);
 	}
-void GuiMenu::openDEAUTHMenu(std::string bssid, std::string rssi, std::string ssid)
+void GuiMenu::openDEAUTHMenu(AccessPoint ap/*std::string bssid, std::string rssi, std::string ssid*/)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, "AP: " + ssid);
+		auto s = new GuiSettings(window, "AP: " + ap.ssid);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		std::string vendor = macVendor(bssid);
+		//std::string vendor = macVendor(bssid);
 		s->addGroup(_("AP INFO"));
 		// -------------------------------------------------------------------------------------
-			s->addWithLabel(_("RSSI"), 		std::make_shared<TextComponent>(window, rssi + _("dBm"), 	font, color));
-			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, bssid, 	font, color));
-			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, vendor, 	font, color));
-			s->addWithLabel(_("SSID"), 		std::make_shared<TextComponent>(window, ssid, 	font, color));
+			s->addWithLabel(_("RSSI"), 		std::make_shared<TextComponent>(window, ap.rssi + _("dBm"), 	font, color));
+			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, ap.bssid, 	font, color));
+			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, ap.vendor, 	font, color));
+			s->addWithLabel(_("SSID"), 		std::make_shared<TextComponent>(window, ap.ssid, 	font, color));
 		// -------------------------------------------------------------------------------------
 		s->addGroup(_("AP HACKS"));
 		// -------------------------------------------------------------------------------------
-			s->addEntry(_("DEAUTH"), true, [this, window, bssid, ssid]() {
-					std::string msg = _("DEAUTH") +"\n" + ssid + "\n"+ bssid + "\n";
+			s->addEntry(_("DEAUTH"), true, [this, window, ap/*bssid, ssid*/]() {
+					std::string msg = _("DEAUTH") +"\n" + ap.ssid + "\n"+ ap.bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("YES"), [this, window, bssid] {
-							hacksSend("deauthap " + bssid);
+						_("YES"), [this, window, ap/*bssid*/] {
+							hacksSend("deauthap " + ap.bssid);
 						}, _("CANCEL"),nullptr));
 				},"iconHack");
 
-			s->addEntry(_("CLONE BSSID, DEAUTH"), true, [this, window, bssid, ssid]() {
-					std::string msg = _("CLONE BSSID, DEAUTH") +"\n" + ssid + "\n"+ bssid + "\n";
+			s->addEntry(_("CLONE BSSID, DEAUTH"), true, [this, window, ap/*bssid, ssid*/]() {
+					std::string msg = _("CLONE BSSID, DEAUTH") +"\n" + ap.ssid + "\n"+ ap.bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("YES"), [this, window, bssid] {
-							hacksSend("deauthapclone " + bssid);
+						_("YES"), [this, window, ap/*bssid*/] {
+							hacksSend("deauthapclone " + ap.bssid);
 						}, _("CANCEL"),nullptr));
 				},"iconHack");
 
-			s->addEntry(_("FAKE AP, DEAUTH"), true, [this, window, bssid, ssid]() {
-					std::string msg = _("FAKE AP, DEAUTH") +"\n" + ssid + "\n"+ bssid + "\n";
+			s->addEntry(_("FAKE AP, DEAUTH"), true, [this, window, ap/*bssid, ssid*/]() {
+					std::string msg = _("FAKE AP, DEAUTH") +"\n" + ap.ssid + "\n"+ ap.bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("YES"), [this, window, bssid] {
-							hacksSend("deauthapcaptive " + bssid);
+						_("YES"), [this, window, ap/*bssid*/] {
+							hacksSend("deauthapcaptive " + ap.bssid);
 						}, _("CANCEL"),nullptr));
 				},"iconHack");
 		// -------------------------------------------------------------------------------------

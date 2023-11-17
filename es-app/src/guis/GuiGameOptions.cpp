@@ -131,6 +131,7 @@ if (game->getType() == GAME)
 							SystemData* system 		= game->getSystem();
 							std::string platform 	= system->getName();
 							std::string name 			= game->getName();
+
 							runSystemCommand("killall gamestream_encoder_server &", "", nullptr);
 							runSystemCommand("killall avahi-publish &", "", nullptr);
 							runSystemCommand("gamestream_encoder_server &", "", nullptr);

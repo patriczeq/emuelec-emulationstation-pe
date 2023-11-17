@@ -56,6 +56,12 @@ struct sScreenBorders
 
 #endif
 
+std::string macVendor(std::string mac)
+{
+	std::string _oui = Utils::String::toUpper(Utils::String::replace(mac, ":", "")).substr(0, 6);
+	return OUI_VENDOR(_oui);
+}
+
 struct MPserver {
 	MPserver() {}
 	MPserver(std::string raw) {
@@ -84,12 +90,33 @@ struct MPserver {
 	std::string gamename;
 };
 
-struct AP {
+struct AccessPoint {
+	AccessPoint() {}
+	AccessPoint(std::string raw) {
+		std::vector<std::string> tokens = Utils::String::split(raw, ';');
+		//c0:c9:e3:9e:dd:b7;-43;WRT_AP
+		if(tokens.size() == 3)
+			{
+				bssid 	= Utils::String::toUpper(tokens.at(0));
+				rssi 		= tokens.at(1);
+				ssid 		= Utils::String::trim(tokens.at(2));
+				vendor 	= macVendor(bssid);
+			}
+		//c0:c9:e3:9e:dd:b7;-43;4;WRT_AP
+		else if(tokens.size() == 4)
+			{
+				bssid 	= Utils::String::toUpper(tokens.at(0));
+				rssi 		= tokens.at(1);
+				ssid 		= Utils::String::trim(tokens.at(3));
+				vendor 	= macVendor(bssid);
+				channel = tokens.at(2)
+			}
+	}
 	std::string bssid;
-	int rssi;
+	std::string rssi;
 	std::string ssid;
 	std::string vendor;
-	uint8_t channel;
+	std::string channel;
 };
 
 //ac:67:84:2c:9e:92; 34:60:f9:e2:07:52; -68; 129
@@ -155,7 +182,7 @@ private:
 	void hacksSet(std::string cmd);
 	std::vector<std::string> hacksGet(std::string cmd);
 	std::string hacksGetString(std::string cmd, bool tty = true);
-	std::string macVendor(std::string mac);
+	//std::string macVendor(std::string mac);
 	// macnames
 	std::string macName(std::string mac);
 	void setMacName(std::string mac, std::string name);
