@@ -57,11 +57,57 @@ struct sScreenBorders
 #endif
 
 struct MPserver {
+	MPserver() {}
+	MPserver(std::string raw) {
+		//=;wlan0;IPv4;oga-mp-broadcast;_oga-mp._udp;local;OGAred.local;192.168.1.111;1234;"psx|Crash Bandicoot"
+		std::vector<std::string> tokens = Utils::String::split(raw, ';');
+		if(tokens.size() < 8){
+			return;
+		}
+		ip 				= tokens.at(7);
+		hostname 	= tokens.at(6);
+		if(tokens.size() == 10)
+			{
+				std::string _platformName = Utils::String::replace(tokens.at(9), "\"", "");
+				std::vector<std::string> ptokens = Utils::String::split(_platformName, '|');
+				if(ptokens.size() == 2)
+					{
+						platform = ptokens.at(0);
+						gamename = ptokens.at(1);
+					}
+			}
+	}
+
 	std::string ip;
 	std::string hostname;
 	std::string platform;
 	std::string gamename;
 };
+/*
+std::string _bssid 	= Utils::String::toUpper(tokens.at(0));
+std::string _rssi 	= tokens.at(1);
+std::string _ssid 	= Utils::String::trim(tokens.at(2));
+std::string _vendor = macVendor(_bssid);
+*/
+struct AP {
+	std::string bssid;
+	int rssi;
+	std::string ssid;
+	std::string vendor;
+	uint8_t channel;
+};
+
+//ac:67:84:2c:9e:92; 34:60:f9:e2:07:52; -68; 129
+//cc:db:a7:a2:0f:c4;-23;7;c0:c9:e3:9e:dd:b7;-38;4;WRT_AP
+struct STA {
+	std::string mac;
+	int pkts;
+	int rssi;
+	std::string vendor;
+	std::string name;
+	AP ap;
+};
+
 
 class GuiMenu : public GuiComponent
 {

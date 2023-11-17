@@ -497,7 +497,7 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 
 		for (auto server : servers)
 		{
-			MPserver _server = genMPserver(server);
+			MPserver _server(server);
 
 			std::string _subtitle	= _server.hostname + " (" + _server.ip + ")";
 
