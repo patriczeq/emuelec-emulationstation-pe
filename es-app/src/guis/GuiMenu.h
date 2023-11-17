@@ -126,24 +126,28 @@ struct WifiStation {
 					pkts			= tokens.at(3);
 					rssi			= tokens.at(2);
 					// name
+					// vendor
 					ap.bssid	= Utils::String::toUpper(tokens.at(1));
 					ap.ssid		= "UpdateESP!";//getSSID(_bssid);
 					ap.rssi 	= "UpdateESP!";//getRSSI(_bssid);
 					ap.channel= "";
+					// vendor
 				}
 
 				if(tokens.size() == 7) // simplePrint
 				{
-					//cc:db:a7:a2:0f:c4;-23;7;c0:c9:e3:9e:dd:b7;-38;4;WRT_AP
+					//cc:db:a7:a2:0f:c4;-23;7; c0:c9:e3:9e:dd:b7;-38;4;WRT_AP
 					// mac, rssi, packets, bssid, aprssi, channel, ssid
 					mac 			= Utils::String::toUpper(tokens.at(0));
 					pkts 			= tokens.at(2);
 					rssi 			= tokens.at(1);
-					//name
+					// name
+					// vendor
 					ap.bssid  = Utils::String::toUpper(tokens.at(3));
 					ap.ssid 	= tokens.at(6);
 					ap.rssi		= tokens.at(4);
 					ap.channel= tokens.at(5);
+					// vendor
 				}
 			}
 	}

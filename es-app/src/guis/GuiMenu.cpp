@@ -768,6 +768,8 @@ WifiStation GuiMenu::rawToSTA(std::string raw)
 	sta.vendor 	= macVendor(sta.mac);
 	sta.name 		= macName(sta.mac);
 	sta.ap.vendor = macVendor(sta.ap.bssid);
+
+	return sta;
 }
 std::vector<WifiStation> GuiMenu::StationsList(std::vector<std::string> stations)
 {
