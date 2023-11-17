@@ -1102,7 +1102,7 @@ void GuiMenu::openBSSIDSMenu(std::vector<std::string> bssids)
 
 		window->pushGui(s);
 	}
-void GuiMenu::openDEAUTHMenu(AccessPoint ap/*std::string bssid, std::string rssi, std::string ssid*/)
+void GuiMenu::openDEAUTHMenu(const AccessPoint ap/*std::string bssid, std::string rssi, std::string ssid*/)
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "AP: " + ap.ssid);

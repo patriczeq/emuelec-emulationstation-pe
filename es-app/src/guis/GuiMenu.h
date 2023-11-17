@@ -127,6 +127,38 @@ struct WifiStation {
 	WifiStation() {}
 	WifiStation(std::string raw) {
 		std::vector<std::string> tokens = Utils::String::split(raw, ';');
+			if(tokens.size() >= 4) // simplePrint
+			{
+				if(tokens.size() == 4) // simplePrint
+				{
+					//ac:67:84:2c:9e:92; 34:60:f9:e2:07:52; -68; 129
+					// mac; bssid; rssi; packets
+					mac 			= Utils::String::toUpper(tokens.at(0));
+					ap.bssid	= Utils::String::toUpper(tokens.at(1));
+					pkts			= tokens.at(3);
+					rssi			= tokens.at(2);
+					vendor 		= macVendor(_mac);
+					ap.ssid		= "UpdateESP!";//getSSID(_bssid);
+					ap.rssi 	= "UpdateESP!";//getRSSI(_bssid);
+					ap.vendor	= macVendor(ap.bssid);
+				}
+
+				if(tokens.size() == 7) // simplePrint
+				{
+					//cc:db:a7:a2:0f:c4;-23;7;c0:c9:e3:9e:dd:b7;-38;4;WRT_AP
+					// mac, rssi, packets, bssid, aprssi, channel, ssid
+					mac 			= Utils::String::toUpper(tokens.at(0));
+					pkts 			= tokens.at(2);
+					rssi 			= tokens.at(1);
+					vendor 		= macVendor(mac);
+					//name
+					ap.bssid  = Utils::String::toUpper(tokens.at(3));
+					ap.ssid 	= tokens.at(6);
+					ap.rssi		= tokens.at(4);
+					ap.channel= tokens.at(5);
+					ap.vendor = macVendor(ap.bssid);
+				}
+			}
 	}
 
 	std::string mac;
@@ -200,7 +232,7 @@ private:
 	void openESP01Settings();
 	void scanBSSIDS();
 	void openBSSIDSMenu(std::vector<std::string> bssids);
-	void openDEAUTHMenu(AccessPoint ap/*std::string bssid, std::string rssi, std::string ssid*/);
+	void openDEAUTHMenu(const AccessPoint ap/*std::string bssid, std::string rssi, std::string ssid*/);
 
 	// bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_t ch)
 	// void saveSTA(std::string mac, std::string bssid, std::string ch);
