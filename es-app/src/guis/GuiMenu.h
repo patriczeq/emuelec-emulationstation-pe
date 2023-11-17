@@ -58,11 +58,14 @@ struct sScreenBorders
 
 #endif
 
+#ifndef _MACVENDOR_FUNCTION
+#define _MACVENDOR_FUNCTION
 std::string macVendor(std::string mac)
 {
 	std::string _oui = Utils::String::toUpper(Utils::String::replace(mac, ":", "")).substr(0, 6);
 	return OUI_VENDOR(_oui);
 }
+#endif
 
 struct MPserver {
 	MPserver() {}
@@ -121,8 +124,6 @@ struct AccessPoint {
 	std::string channel;
 };
 
-//ac:67:84:2c:9e:92; 34:60:f9:e2:07:52; -68; 129
-//cc:db:a7:a2:0f:c4;-23;7;c0:c9:e3:9e:dd:b7;-38;4;WRT_AP
 struct WifiStation {
 	WifiStation() {}
 	WifiStation(std::string raw) {
