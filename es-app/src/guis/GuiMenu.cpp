@@ -942,8 +942,8 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations)
 			{
 				for (auto sta : stations)
 					{
-						std::string _title 	=  (sta.name.empty() ? sta.mac : sta.name) + " -> " + sta.ap.ssid;
-						std::string _subtitle 	= sta.vendor + " -> " + sta.ap.bssid + (sta.ap.channel.empty() ? "" : (" (CH" + sta.ap.channel + ")"));
+						std::string _title 	=  (sta.name.empty() ? sta.mac : sta.name) + (sta.ap.ssid.empty() ? "" : (" -> " + sta.ap.ssid));
+						std::string _subtitle 	= sta.vendor + " -> " + sta.ap.bssid;
 
 						s->addWithDescription(_title, _subtitle,
 							std::make_shared<TextComponent>(window, sta.rssi + "dBm", 	font, color),
@@ -959,8 +959,7 @@ void GuiMenu::openSTADetail(WifiStation sta)
 	{
 		Window* window = mWindow;
 		std::string windowName = _("STA") + ": ";
-								windowName = windowName + (sta.name.empty() ? sta.mac : sta.mac);
-								windowName = windowName + (sta.ap.channel.empty() ? "" : (" (CH" + sta.ap.channel + ")") );
+								windowName = windowName + (sta.name.empty() ? sta.mac : sta.name);
 
 		auto s = new GuiSettings(window, windowName);
 		auto theme = ThemeData::getMenuTheme();
@@ -991,10 +990,11 @@ void GuiMenu::openSTADetail(WifiStation sta)
 			});
 
 		s->addGroup(_("AP INFO"));
-			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, sta.ap.rssi + "dBm", 	font, color));
+			if(!sta.ap.rssi.empty()){s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, sta.ap.rssi + "dBm", 	font, color));}
 			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, sta.ap.bssid, 	font, color));
 			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, sta.ap.vendor, 	font, color));
-			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, sta.ap.ssid, 	font, color));
+			if(!sta.ap.ssid.empty()){s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, sta.ap.ssid, 	font, color));}
+			if(!sta.ap.channel.empty()){s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, sta.ap.channel, 	font, color));}
 		// -------------------------------------------------------------------------------------
 
 		s->addGroup(_("STATION HACKS"));
@@ -1032,33 +1032,15 @@ void GuiMenu::openBSSIDSMenu(std::vector<AccessPoint> bssids)
 							openDEAUTHMenu(ap);
 						}, "iconNetwork");
 					}
-				/*std::vector<std::string> tokens = Utils::String::split(bssid, ';');
-				if(tokens.size() == 3)
-					{
-						std::string _bssid 	= Utils::String::toUpper(tokens.at(0));
-						std::string _rssi 	= tokens.at(1);
-						std::string _ssid 	= Utils::String::trim(tokens.at(2));
-						std::string _vendor = macVendor(_bssid);
-
-						std::string _title 	=  _ssid;
-						std::string _subtitle 	=  _bssid + " -> " + _vendor;
-
-						s->addWithDescription(_title, _subtitle,
-							std::make_shared<TextComponent>(window, _rssi + "dBm", 	font, color),
-							[this, _bssid, _rssi, _ssid]
-						{
-							openDEAUTHMenu(_bssid, _rssi, _ssid);
-						}, "iconNetwork");
-					}*/
 			}
 		}
 
 		window->pushGui(s);
 	}
-void GuiMenu::openDEAUTHMenu(AccessPoint ap/*std::string bssid, std::string rssi, std::string ssid*/)
+void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, "AP: " + ap.ssid);
+		auto s = new GuiSettings(window, "AP: " + (ap.ssid.empty() ? ap.bssid : ap.ssid));
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -1066,36 +1048,45 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap/*std::string bssid, std::string rssi
 		//std::string vendor = macVendor(bssid);
 		s->addGroup(_("AP INFO"));
 		// -------------------------------------------------------------------------------------
-			s->addWithLabel(_("RSSI"), 		std::make_shared<TextComponent>(window, ap.rssi + _("dBm"), 	font, color));
+			if(!ap.rssi.empty()){s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, ap.rssi + "dBm", 	font, color));}
 			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, ap.bssid, 	font, color));
 			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, ap.vendor, 	font, color));
-			s->addWithLabel(_("SSID"), 		std::make_shared<TextComponent>(window, ap.ssid, 	font, color));
+			if(!ap.ssid.empty()){s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ap.ssid, 	font, color));}
+			if(!ap.channel.empty()){s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, ap.channel, 	font, color));}
 		// -------------------------------------------------------------------------------------
 		s->addGroup(_("AP HACKS"));
 		// -------------------------------------------------------------------------------------
-			s->addEntry(_("DEAUTH"), true, [this, window, ap/*bssid, ssid*/]() {
-					std::string msg = _("DEAUTH") +"\n" + ap.ssid + "\n"+ ap.bssid + "\n";
+			s->addEntry(_("DEAUTH"), true, [this, window, ap]() {
+					std::string msg = _("DEAUTH") +"\n";
+											msg+= ap.ssid.empty() ? "" : (ap.ssid + "\n");
+											msg+= ap.bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("YES"), [this, window, ap/*bssid*/] {
+						_("YES"), [this, window, ap] {
 							hacksSend("deauthap " + ap.bssid);
 						}, _("CANCEL"),nullptr));
 				},"iconHack");
 
-			s->addEntry(_("CLONE BSSID, DEAUTH"), true, [this, window, ap/*bssid, ssid*/]() {
-					std::string msg = _("CLONE BSSID, DEAUTH") +"\n" + ap.ssid + "\n"+ ap.bssid + "\n";
+			s->addEntry(_("CLONE BSSID, DEAUTH"), true, [this, window, ap]() {
+					std::string msg = _("CLONE BSSID, DEAUTH") +"\n";
+											msg+= ap.ssid.empty() ? "" : (ap.ssid + "\n");
+											msg+= ap.bssid + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("YES"), [this, window, ap/*bssid*/] {
+						_("YES"), [this, window, ap] {
 							hacksSend("deauthapclone " + ap.bssid);
 						}, _("CANCEL"),nullptr));
 				},"iconHack");
-
-			s->addEntry(_("FAKE AP, DEAUTH"), true, [this, window, ap/*bssid, ssid*/]() {
-					std::string msg = _("FAKE AP, DEAUTH") +"\n" + ap.ssid + "\n"+ ap.bssid + "\n";
-					window->pushGui(new GuiMsgBox(window, msg,
-						_("YES"), [this, window, ap/*bssid*/] {
-							hacksSend("deauthapcaptive " + ap.bssid);
-						}, _("CANCEL"),nullptr));
-				},"iconHack");
+			if(!ap.ssid.empty())
+			{
+				s->addEntry(_("FAKE AP, DEAUTH"), true, [this, window, ap]() {
+						std::string msg = _("FAKE AP, DEAUTH") +"\n";
+												msg+= ap.ssid.empty() ? "" : (ap.ssid + "\n");
+												msg+= ap.bssid + "\n";
+						window->pushGui(new GuiMsgBox(window, msg,
+							_("YES"), [this, window, ap] {
+								hacksSend("deauthapcaptive " + ap.bssid);
+							}, _("CANCEL"),nullptr));
+					},"iconHack");
+			}
 		// -------------------------------------------------------------------------------------
 			s->addEntry(_("STOP ALL JOBS"), false, [this, window]() {
 				hacksSend("stop");

@@ -93,16 +93,26 @@ struct AccessPoint {
 		if(tokens.size() == 3)
 			{
 				bssid 	= Utils::String::toUpper(tokens.at(0));
-				rssi 		= tokens.at(1);
-				ssid 		= Utils::String::trim(tokens.at(2));
+				if(tokens.at(1) != "-200"){
+					rssi 	= tokens.at(1);
+				}
+				if(tokens.at(2) != "*"){
+					ap.ssid 	= Utils::String::trim(tokens.at(2));
+				}
 			}
 		//c0:c9:e3:9e:dd:b7;-43;4;WRT_AP
 		else if(tokens.size() == 4)
 			{
 				bssid 	= Utils::String::toUpper(tokens.at(0));
-				rssi 		= tokens.at(1);
-				ssid 		= Utils::String::trim(tokens.at(3));
-				channel = tokens.at(2);
+				if(tokens.at(1) != "-200"){
+					rssi 	= tokens.at(1);
+				}
+				if(tokens.at(2) != "0"){
+					channel = tokens.at(2);
+				}
+				if(tokens.at(3) != "*"){
+					ssid 	= tokens.at(3);
+				}
 			}
 	}
 	std::string bssid;
@@ -128,9 +138,9 @@ struct WifiStation {
 					// name
 					// vendor
 					ap.bssid	= Utils::String::toUpper(tokens.at(1));
-					ap.ssid		= "UpdateESP!";//getSSID(_bssid);
-					ap.rssi 	= "UpdateESP!";//getRSSI(_bssid);
-					ap.channel= "";
+					/*ap.ssid		= "UpdateESP!";
+					ap.rssi 	= "UpdateESP!";
+					ap.channel= "";*/
 					// vendor
 				}
 
@@ -144,9 +154,15 @@ struct WifiStation {
 					// name
 					// vendor
 					ap.bssid  = Utils::String::toUpper(tokens.at(3));
-					ap.ssid 	= tokens.at(6);
-					ap.rssi		= tokens.at(4);
-					ap.channel= tokens.at(5);
+					if(tokens.at(6) != "*"){
+						ap.ssid 	= tokens.at(6);
+					}
+					if(tokens.at(4) != "-200"){
+						ap.rssi 	= tokens.at(4);
+					}
+					if(tokens.at(5) != "0"){
+						ap.channel 	= tokens.at(5);
+					}
 					// vendor
 				}
 			}

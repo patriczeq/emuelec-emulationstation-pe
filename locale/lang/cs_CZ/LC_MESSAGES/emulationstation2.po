@@ -173,7 +173,8 @@ msgstr "ODESLAT POWER-OFF KÓDY"
 msgid "IR POWER-OFF (LOOP)"
 msgstr "ODESÍLAT POWER-OFF KÓDY VE SMYČCE"
 
-
+msgid "CHANNEL"
+msgstr "KANÁL"
 
 
 
