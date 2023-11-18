@@ -97,7 +97,7 @@ struct AccessPoint {
 					rssi 	= tokens.at(1);
 				}
 				if(tokens.at(2) != "*"){
-					ap.ssid 	= Utils::String::trim(tokens.at(2));
+					ssid 	= Utils::String::trim(tokens.at(2));
 				}
 			}
 		//c0:c9:e3:9e:dd:b7;-43;4;WRT_AP
