@@ -462,13 +462,11 @@ void GuiMenu::scanMPServers()
 						MPserver _server(servers.at(0));
 						if(!_server.ip.empty())
 							{
-								std::string msg = _("LAUNCH");
-														msg+= !_server.gamename.empty() ? "\n" + _server.gamename : "";
+								std::string msg = !_server.gamename.empty() ? "\n" + _server.gamename : "";
 														msg+= !_server.platform.empty() ? " (" + _server.platform : ")";
 														msg+= !_server.hostname.empty() ? "\nSERVER:" + _server.hostname : "";
-														msg+= "\n?";
 								window->pushGui(new GuiMsgBox(window, msg,
-									_("YES"),[this, _server] {
+									_("LAUNCH"),[this, _server] {
 											appLauncher("playertoo " + _server.ip);
 									},_("CANCEL"), nullptr));
 							}
@@ -2552,7 +2550,7 @@ void GuiMenu::openUpdatesSettings()
 		});
 	}
 
-	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::UPGRADE))
+	if (true == false/*ApiSystem::getInstance()->isScriptingSupported(ApiSystem::UPGRADE)*/)
 	{
 		updateGui->addGroup(_("SOFTWARE UPDATES"));
 
