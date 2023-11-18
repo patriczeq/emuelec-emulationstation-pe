@@ -535,7 +535,6 @@ std::string FileData::getlaunchCommand(LaunchGameOptions& options, bool includeC
 
 	if(options.hostMP)
 		{
-			command = command + " --gamename=%GAMENAME%";
 			command = command + " -hostMP";
 		}
 
@@ -712,6 +711,10 @@ bool FileData::launchGame(Window* window, LaunchGameOptions options)
 		Utils::FileSystem::removeFile(p2kConv);
 
 	Scripting::fireEvent("game-end");
+
+	// in case of hostMP
+	runSystemCommand("killall gamestream_encoder_server &", "", nullptr);
+	runSystemCommand("killall avahi-publish &", "", nullptr);
 
 	if (!hideWindow && Settings::getInstance()->getBool("HideWindowFullReinit"))
 	{
