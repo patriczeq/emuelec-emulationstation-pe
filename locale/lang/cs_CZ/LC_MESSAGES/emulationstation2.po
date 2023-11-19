@@ -216,9 +216,6 @@ msgstr "HESLO K SÍTI"
 msgid "DHCP LEASES"
 msgstr "KLIENTI DHCP"
 
-msgid "HOSTNAME"
-msgstr "NÁZEV ZAŘÍZENÍ"
-
 msgid "DEAUTHENTICATE CLIENT"
 msgstr "DEAUTORIZOVAT KLIENTA"
 
