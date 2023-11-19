@@ -203,7 +203,7 @@ struct DHCPClient {
 	std::string hostname;
 	std::string vendor;
 	std::string leasetime;
-}
+};
 
 class GuiMenu : public GuiComponent
 {
