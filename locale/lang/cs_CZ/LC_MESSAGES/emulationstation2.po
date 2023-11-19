@@ -179,7 +179,7 @@ msgstr "KANÁL"
 msgid "RELOAD"
 msgstr "OBNOVIT"
 
-msgid "STOP WEB FILE BROWSER"
+msgid "START WEB FILE BROWSER"
 msgstr "SPUSTIT WEB. SOUBOROVÝ MANAŽER"
 
 msgid "STOP WEB FILE BROWSER"
