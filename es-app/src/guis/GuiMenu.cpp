@@ -474,7 +474,7 @@ void GuiMenu::scanMPServers()
 				else
 					{
 						window->pushGui(new GuiMsgBox(window, _("SERVER(s) NOT FOUND!"),
-							_("OK"),nullptr,_("CFG. NETWORK"), [this] {
+							_("OK"),nullptr,_("NETWORK SETTINGS"), [this] {
 								openNetworkSettings();
 							}));
 					}
@@ -765,9 +765,19 @@ std::vector<AccessPoint> GuiMenu::AccessPointList(std::vector<std::string> bssid
 WifiStation GuiMenu::rawToSTA(std::string raw)
 {
 	WifiStation sta(raw);
+
 	sta.vendor 	= macVendor(sta.mac);
 	sta.name 		= macName(sta.mac);
 	sta.ap.vendor = macVendor(sta.ap.bssid);
+
+	if(sta.ap.ssid.empty() || sta.ap.rssi.empty() || sta.ap.channel.empty())
+		{
+			AccessPoint ap = getAP(sta.ap.bssid);
+
+			sta.ap.ssid = sta.ap.ssid.empty() ? ap.ssid : sta.ap.ssid;
+			sta.ap.rssi = sta.ap.rssi.empty() ? ap.rssi : sta.ap.rssi;
+			sta.ap.channel = sta.ap.channel.empty() ? ap.channel : sta.ap.channel;
+		}
 
 	return sta;
 }
@@ -5207,7 +5217,24 @@ std::string GuiMenu::apInlineInfo(std::string cmd)
 		return getShOutput("ap.sh " + cmd);
 	}
 
-void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::string ipaddr, std::string hostname)
+DHCPClient GuiMenu::rawToDHCPCli(std::string raw)
+	{
+		DHCPClient cli(raw);
+		cli.vendor = macVendor(cli.mac);
+		return cli;
+	}
+std::vector<DHCPClient> GuiMenu::DHCPClientList(std::vector<std::string> clients)
+	{
+		std::vector<DHCPClient> list;
+		for(auto cli : clients)
+			{
+				DHCPClient _cli(cli);
+				list.push_back(_cli);
+			}
+		return list;
+	}
+
+void GuiMenu::openDHCPclient(DHCPClient lease)
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, ipaddr);
@@ -5215,59 +5242,35 @@ void GuiMenu::openDHCPclient(std::string leasetime, std::string macaddr, std::st
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		std::string vendor = macVendor(macaddr);/*"?";
-		const std::string cmd = "hacks.sh vendor " + macaddr;
-		std::vector<std::string> vendorRes = ApiSystem::getInstance()->getScriptResults(cmd);
-		if(vendorRes.size() > 0)
-			{
-				vendor = vendorRes.at(0);
-			}
-			*/
-		auto leaseLabel 	= std::make_shared<TextComponent>(mWindow, leasetime, font, color);
-		auto macaddrLabel 	= std::make_shared<TextComponent>(mWindow, macaddr, font, color);
-		auto ipaddrLabel 	= std::make_shared<TextComponent>(mWindow, ipaddr, font, color);
-		auto hostnameLabel 	= std::make_shared<TextComponent>(mWindow, hostname, font, color);
-		auto vendorLabel 	= std::make_shared<TextComponent>(mWindow, vendor, font, color);
-
 		s->addGroup(_("INFO"));
 
-		s->addWithLabel("HOSTNAME", 	hostnameLabel);
-		s->addWithLabel("MAC ADDR",		macaddrLabel);
-		s->addWithLabel("VENDOR", 		vendorLabel);
-		s->addWithLabel("LEASETIME", 	leaseLabel);
+		s->addWithLabel(_("HOSTNAME"), 	std::make_shared<TextComponent>(mWindow, lease.hostname, font, color));
+		s->addWithLabel(_("MAC"),				std::make_shared<TextComponent>(mWindow, lease.mac, font, color));
+		s->addWithLabel(_("VENDOR"), 		std::make_shared<TextComponent>(mWindow, lease.vendor, font, color));
+		s->addWithLabel(_("LEASETIME"), std::make_shared<TextComponent>(mWindow, lease.leasetime, font, color));
 
 		s->addGroup(_("TOOLS"));
-		s->addEntry("PING", true, [this, window, ipaddr] {
-			//ping 192.168.1.1 -c 1
-			const std::string cmd = "ping " + ipaddr + " -c 1";
-			std::vector<std::string> results = ApiSystem::getInstance()->getScriptResults(cmd);
-			std::string result = "";
+			s->addEntry("PING", true, [this, window, lease] {
+				//ping 192.168.1.1 -c 1
+				const std::string cmd = "ping " + lease.ip + " -c 1";
+				std::vector<std::string> results = ApiSystem::getInstance()->getScriptResults(cmd);
+				std::string result = "";
 
-			for (auto line : results)
-				{
-					result = result + line + "\n";
-				}
-			window->pushGui(new GuiMsgBox(window, result,_("OK"), nullptr));
+				for (auto line : results)
+					{
+						result = result + line + "\n";
+					}
+				window->pushGui(new GuiMsgBox(window, result,_("OK"), nullptr));
 
-		}, "iconSystem");
-
-		s->addEntry(_("DEAUTHENTICATE CLIENT"), false, [window, macaddr, s, this] {
-			window->pushGui(new GuiMsgBox(window, _("REALLY DEAUTH CLIENT?"),
-				_("YES"), [this, macaddr, s] {
-					runSystemCommand("ap.sh deauth " + macaddr, "", nullptr);
-					delete s;
-				},_("NO"), nullptr));
 			}, "iconSystem");
-		/*
-		s->addEntry(_("DEAUTHENTICATE!"), false, [s, this, window, macaddr]() {
-				window->pushGui(new GuiMsgBox(window, _("DEAUTH CLIENT?");,
-					 _("YES"),[s, this, macaddr]{
-					 	runSystemCommand("ap.sh deauth " + macaddr, "", nullptr);
-					 	delete s;
-						openAPleases();
-					 },
-					 _("NO"), nullptr));
-			}, "iconQuit");*/
+
+			s->addEntry(_("DEAUTHENTICATE CLIENT"), false, [this, window, s, lease] {
+				window->pushGui(new GuiMsgBox(window, _("DEAUTHENTICATE CLIENT") + "?",
+					_("YES"), [this, s, lease] {
+						runSystemCommand("ap.sh deauth " + lease.mac, "", nullptr);
+						delete s;
+					},_("NO"), nullptr));
+				}, "iconSystem");
 
 		window->pushGui(s);
 	}
@@ -5282,34 +5285,21 @@ void GuiMenu::openAPleases()
 		auto s = new GuiSettings(window, _("DHCP LEASES").c_str());
 
 		const std::string cmd = "ap.sh leases";
-		std::vector<std::string> leases = ApiSystem::getInstance()->getScriptResults(cmd);
-
-		/*s->addEntry(_("RELOAD"), false, [s, this]() {
-			delete s;
-			openAPleases();
-		}, "iconRestart");
-
-		s->addGroup(_("CLIENTS"));*/
+		std::vector<DHCPClient> leases = DHCPClientList(ApiSystem::getInstance()->getScriptResults(cmd));
 
 		if(leases.size() > 0)
 		{
 			for (auto lease : leases)
 				{
-					std::vector<std::string> tokens = Utils::String::split(lease, ' ');
 
-					std::string leasetime 	= tokens.at(0);
-					std::string macaddr 	= Utils::String::toUpper(tokens.at(1));
-					std::string ipaddr 		= tokens.at(2);
-					std::string hostname 	= tokens.at(3);
+					std::string title = lease.ip + " " + lease.hostname;
 
-					std::string title = ipaddr + " " + hostname;
-					auto macaddrLabel = std::make_shared<TextComponent>(mWindow, macaddr, font, color);
-					//s->addWithLabel(title, macaddrLabel);
-
-					s->addEntry(title, true, [this, leasetime, macaddr, ipaddr, hostname] {
-						openDHCPclient(leasetime, macaddr, ipaddr, hostname);
+					s->addWithDescription(title, lease.vendor,
+						std::make_shared<TextComponent>(window,lease.mac, font, color),
+						[this, lease]
+					{
+						openDHCPclient(lease);
 					}, "iconNetwork");
-
 				}
 		}
 
@@ -5350,7 +5340,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	}, "iconAdvanced");
 
 	s->addEntry(_("RECONNECT TO SAVED NETWORK"), false, [s, this, window]() {
-			std::string msg = _("RECONNECT TO SYSTEM DEFINED NETWORK?");
+			std::string msg = _("RECONNECT TO SAVED NETWORK") + "?";
 			window->pushGui(new GuiMsgBox(window, msg,
 				 _("YES"),[s, this]{
 					 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");
@@ -5420,7 +5410,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 		s->addGroup(_("GAME AP"));
 
 		s->addEntry(_("DISABLE GAME AP"), false, [s, this, window]() {
-				std::string msg = _("REALLY START STA MODE?");
+				std::string msg = _("REALLY STOP AP MODE?");
 				window->pushGui(new GuiMsgBox(window, msg,
 					 _("YES"),[s, this]{
 					 	runSystemCommand("ap.sh stop", "", nullptr);
@@ -5458,7 +5448,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 		s->addWithLabel(_("AP SSID"), apSSID);
 		s->addWithLabel(_("AP KEY"), apPWD);
 
-		s->addEntry(_("DHCP LEASES (") + apInlineInfo("clients") + _(")"), true, [this]() {
+		s->addEntry(_("DHCP LEASES") + " (" +apInlineInfo("clients") + ")", true, [this, window]() {
 			openAPleases();
 		});
 	}

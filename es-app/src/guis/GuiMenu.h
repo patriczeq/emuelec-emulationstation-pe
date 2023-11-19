@@ -122,6 +122,7 @@ struct AccessPoint {
 	std::string channel;
 };
 
+
 struct WifiStation {
 	WifiStation() {}
 	WifiStation(std::string raw) {
@@ -176,6 +177,33 @@ struct WifiStation {
 	AccessPoint ap;
 };
 
+/*
+std::vector<std::string> tokens = Utils::String::split(lease, ' ');
+
+std::string leasetime 	= tokens.at(0);
+std::string macaddr 	= Utils::String::toUpper(tokens.at(1));
+std::string ipaddr 		= tokens.at(2);
+std::string hostname 	= tokens.at(3);
+*/
+struct DHCPClient {
+	DHCPClient(){}
+	DHCPClient(std::string raw){
+		std::vector<std::string> tokens = Utils::String::split(raw, ' ');
+		if(tokens.size() >= 4)
+			{
+				mac = Utils::String::toUpper(tokens.at(1));
+				ip = tokens.at(2);
+				hostname 	= tokens.at(3);
+				leasetime 	= tokens.at(0);
+			}
+	}
+
+	std::string mac;
+	std::string ip;
+	std::string hostname;
+	std::string vendor;
+	std::string leasetime;
+}
 
 class GuiMenu : public GuiComponent
 {
@@ -258,8 +286,10 @@ private:
 
 	// wifi ap helper
 	std::string apInlineInfo(std::string cmd);
+	DHCPClient rawToDHCPCli(std::string raw);
+	std::vector<DHCPClient> DHCPClientList(std::vector<std::string> clients);
 	void openAPleases();
-	void openDHCPclient(std::string leasetime, std::string macaddr, std::string ipaddr, std::string hostname);
+	void openDHCPclient(DHCPClient lease);
 	// AP conn
 	void searchGameAP();
 	// music player

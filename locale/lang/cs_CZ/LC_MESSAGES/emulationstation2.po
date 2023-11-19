@@ -176,6 +176,52 @@ msgstr "ODESÍLAT POWER-OFF KÓDY VE SMYČCE"
 msgid "CHANNEL"
 msgstr "KANÁL"
 
+msgid "RELOAD"
+msgstr "OBNOVIT"
+
+msgid "STOP WEB FILE BROWSER"
+msgstr "SPUSTIT WEB. SOUBOROVÝ MANAŽER"
+
+msgid "STOP WEB FILE BROWSER"
+msgstr "ZASTAVIT WEB. SOUBOROVÝ MANAŽER"
+
+msgid "RECONNECT TO SAVED NETWORK"
+msgstr "PŘIPOJIT SE K ULOŽENÉ SÍTI"
+
+
+msgid "GAME AP"
+msgstr "HERNÍ PŘÍSTUPOVÝ BOD"
+
+msgid "CREATE GAME AP"
+msgstr "VYTVOŘIT HERNÍ AP"
+
+msgid "CONNECT TO GAME AP"
+msgstr "PŘIPOJIT SE K HERNÍMU AP"
+
+msgid "DISABLE GAME AP"
+msgstr "VYPNOUT HERNÍ AP"
+
+msgid "REALLY START AP MODE?"
+msgstr "OPRAVDU CHCETE VYTVOŘIT PŘÍSTUPOVÝ BOD?"
+
+msgid "REALLY STOP AP MODE?"
+msgstr "OPRAVDU CHCETE VYPNOUT PŘÍSTUPOVÝ BOD?"
+
+msgid "AP SSID"
+msgstr "NÁZEV SÍTĚ"
+
+msgid "AP KEY"
+msgstr "HESLO K SÍTI"
+
+msgid "DHCP LEASES"
+msgstr "KLIENTI DHCP"
+
+msgid "HOSTNAME"
+msgstr "NÁZEV ZAŘÍZENÍ"
+
+msgid "DEAUTHENTICATE CLIENT"
+msgstr "DEAUTORIZOVAT KLIENTA"
+
 
 
 msgid "UPDATE AVAILABLE"
