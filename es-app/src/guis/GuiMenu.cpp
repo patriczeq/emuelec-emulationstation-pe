@@ -5237,7 +5237,7 @@ std::vector<DHCPClient> GuiMenu::DHCPClientList(std::vector<std::string> clients
 void GuiMenu::openDHCPclient(DHCPClient lease)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, ipaddr);
+		auto s = new GuiSettings(window, lease.ip);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
