@@ -5388,7 +5388,8 @@ void GuiMenu::openARPlist(std::vector<ARPcli> list)
 					[this, window, cli](auto gui)
 					{
 						mWaitingLoad = true;
-						cli.hostname = getShOutput("avahi-resolve -a " + cli.ip + " | awk '{print $2}'");
+						const std::string cmd = "avahi-resolve -a " + cli.ip + " | awk '{print $2}'";
+						cli.hostname = getShOutput(cmd);
 						return cli;
 					},
 					[this, window](ARPcli cli)
