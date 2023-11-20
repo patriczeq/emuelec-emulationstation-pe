@@ -5641,7 +5641,7 @@ void GuiMenu::traceroute(std::string addr)
 				mWaitingLoad = true;
 
 				Traceroute hops(ApiSystem::getInstance()->getScriptResults("traceroute -w 1 -q 1 " + addr + " | awk '{print $1";"$2";"$3";"$4}'");
-				return scanBSSIDSlist();
+				return hops.hops;
 			},
 			[this, window, addr](std::vector<TraceRouteHop> hops)
 			{

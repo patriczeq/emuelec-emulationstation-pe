@@ -474,7 +474,7 @@ struct Traceroute {
 				}
 		}
 	std::vector<TraceRouteHop> hops;
-}
+};
 
 class GuiMenu : public GuiComponent
 {
