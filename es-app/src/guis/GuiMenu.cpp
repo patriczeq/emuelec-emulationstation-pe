@@ -5321,7 +5321,7 @@ std::vector<ARPcli> GuiMenu::getARPclients()
 			{
 				ARPcli cli(_cli);
 				cli.vendor = macVendor(cli.mac);
-				// hostname?
+				cli.hostname = getShOutput("avahi-resolve -a " + cli.ip + " | awk '{print $2}'");
 				list.push_back(cli);
 			}
 		return list;
@@ -5334,11 +5334,11 @@ void GuiMenu::openARPlist(std::vector<ARPcli> list)
 	std::shared_ptr<Font> font = theme->Text.font;
 	unsigned int color = theme->Text.color;
 
-	auto s = new GuiSettings(mWindow, _("ARP list").c_str());
+	auto s = new GuiSettings(mWindow, (_("ARP LIST") + " ("+std::to_string(list.size())+")").c_str());
 
 	for(auto cli : list)
 		{
-			s->addWithDescription(cli.mac, cli.vendor,
+			s->addWithDescription(cli.hostname.empty() ? cli.mac : cli.hostname, cli.vendor,
 				std::make_shared<TextComponent>(window, cli.ip, font, color),
 				[window]
 			{

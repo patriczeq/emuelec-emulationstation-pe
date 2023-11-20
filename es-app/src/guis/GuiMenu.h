@@ -190,6 +190,7 @@ struct ARPcli {
 		}
 	std::string mac;
 	std::string ip;
+	std::string hostname;
 	std::string vendor;
 };
 
