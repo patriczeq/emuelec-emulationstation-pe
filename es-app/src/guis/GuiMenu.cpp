@@ -5622,7 +5622,7 @@ void GuiMenu::openNetworkTools()
 				mWindow->pushGui(new GuiTextEditPopup(window, "ENTER LOOKUP ADDRESS", "", [this](const std::string& value) { const std::string cmd = "nslookup " + value; msgExec(cmd); }, false));
 		});
 
-		s->addEntry(_("TRACEROUTE"), false, [this]() {
+		s->addEntry(_("TRACEROUTE"), false, [this, window]() {
 			if (Settings::getInstance()->getBool("UseOSK"))
 				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "ENTER ADDRESS", "8.8.8.8", [this](const std::string& value) { traceroute(value); }, false));
 			else
@@ -5639,8 +5639,8 @@ void GuiMenu::traceroute(std::string addr)
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
-
-				Traceroute hops(ApiSystem::getInstance()->getScriptResults("traceroute -w 1 -q 1 " + addr + " | awk '{print $1";"$2";"$3";"$4}'");
+				const std::string cmd = "traceroute -w 1 -q 1 " + addr + " | awk '{print $1";"$2";"$3";"$4}'";
+				Traceroute hops(ApiSystem::getInstance()->getScriptResults(cmd);
 				return hops.hops;
 			},
 			[this, window, addr](std::vector<TraceRouteHop> hops)
