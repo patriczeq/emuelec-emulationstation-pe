@@ -5369,8 +5369,8 @@ std::vector<AVAHIservice> GuiMenu::getAvahiServices()
 			std::vector<AVAHIservice> list;
 			for(auto s : rawServices)
 				{
-					AVAHIservice AVAHIservice(s);
-					list.push_back(cli);
+					AVAHIservice service(s);
+					list.push_back(service);
 				}
 			return AVAHIservice;
 		}
