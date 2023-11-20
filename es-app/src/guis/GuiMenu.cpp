@@ -5641,7 +5641,7 @@ void GuiMenu::traceroute(std::string addr)
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
-				const std::string cmd = "traceroute -w 1 -q 1 " + addr + " | awk '{print $1";"$2";"$3";"$4}'";
+				const std::string cmd = "traceroute -w 1 -q 1 " + addr + " | awk '{print $1\";\"$2\";\"$3\";\"$4}'";
 				Traceroute hops(ApiSystem::getInstance()->getScriptResults(cmd));
 				return hops.hops;
 			},
