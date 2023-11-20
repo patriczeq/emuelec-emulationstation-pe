@@ -5240,7 +5240,7 @@ void GuiMenu::msgExec(const std::string cmd){
 		[this, window](std::string result)
 		{
 			mWaitingLoad = false;
-			window->pushGui(new GuiMsgBox(window, _result,_("OK"),nullptr));
+			window->pushGui(new GuiMsgBox(window, result,_("OK"),nullptr));
 		}
 	));
 }
