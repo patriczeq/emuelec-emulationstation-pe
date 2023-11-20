@@ -5378,7 +5378,8 @@ std::vector<AVAHIserviceDetail> GuiMenu::getAvahiService(std::string service)
 		{
 			bool v4 = SystemConf::getInstance()->get("pe_scanv4.enabled") == "1";
 
-			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults("avahi-browse -d local " + service + " -t -r -p -l | grep -a '=;'" + (v4 ? " | grep -a 'IPv4'" : ""));
+			const std::string cmd = "avahi-browse -d local " + service + " -t -r -p -l | grep -a '=;'" + (v4 ? " | grep -a 'IPv4'" : "");
+			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults(cmd);
 			std::vector<AVAHIserviceDetail> list;
 			for(auto s : rawServices)
 				{
@@ -5392,7 +5393,8 @@ std::vector<AVAHIservice> GuiMenu::getAvahiServices()
 		{
 			bool v4 = SystemConf::getInstance()->get("pe_scanv4.enabled") == "1";
 
-			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults("avahi-browse -a -t -p -l" + (v4 ? " | grep -a 'IPv4'" : ""));
+			const std::string cmd = "avahi-browse -a -t -p -l" + (v4 ? " | grep -a 'IPv4'" : "");
+			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults(cmd);
 			std::vector<AVAHIservice> list;
 			for(auto s : rawServices)
 				{
