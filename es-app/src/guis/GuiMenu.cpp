@@ -5327,13 +5327,13 @@ std::vector<ARPcli> GuiMenu::getARPclients()
 		return list;
 	}
 
-void openARPlist(std::vector<ARPcli> list)
+void GuiMenu::openARPlist(std::vector<ARPcli> list)
 {
 	Window *window = mWindow;
 	auto theme = ThemeData::getMenuTheme();
 	std::shared_ptr<Font> font = theme->Text.font;
 	unsigned int color = theme->Text.color;
-	
+
 	auto s = new GuiSettings(mWindow, _("ARP list").c_str());
 
 	for(auto cli : list)
