@@ -224,7 +224,7 @@ struct AVAHIservice {
 	AVAHIservice(std::string raw){
 		std::vector<std::string> tokens = Utils::String::split(raw, ';');
 	}
-}
+};
 
 class GuiMenu : public GuiComponent
 {
