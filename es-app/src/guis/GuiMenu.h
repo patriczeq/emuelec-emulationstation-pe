@@ -214,16 +214,33 @@ struct DHCPClient {
 	std::string leasetime;
 };
 /*
-+;wlan0;IPv4;A85E45B6F1E6\064iMac\194\160Pro;_raop._tcp;local
++;wlan0;	IPv6;
+					A85E45B6F1E6\064iMac\194\160Pro;
+					_raop._tcp;
+					local
++;wlan0;	IPv4;
+					A85E45B6F1E6\064iMac\194\160Pro;
+					_raop._tcp;
+					local
++;wlan0;	IPv6;
+					iMac\194\160Pro;
+					_airplay._tcp;
+					local
 
-
-=;wlan0;IPv4;Xerox\032Phaser\0323020\032\040XRX9C934ED5FA5F\041;_printer._tcp;local;XEROX.local;192.168.1.10;515;"Staple=F" "Sort=F" "Fax=F" "Scan=F" "Punch=0" "PaperMax=legal-A4" "PaperCustom=T" "Duplex=F" "Copies=T" "Color=F" "Collate=F" "Bind=F" "kind=document,envelope,label" "MDL=Phaser 3020" "MFG=Xerox" "usb_CMD=MFG:Xerox;CMD:SPL,URF,FWV,EXT;MDL:Phaser 3020;CLS:PRINTER;CID:XR_GDI3_Class01_Mono;MODE:SPL3,R000105;" "usb_MDL=Phaser 3020" "usb_MFG=Xerox" "adminurl=http://XEROX.local./sws/index.html?link=/sws/app/settings/network/AirPrint/AirPrint.html" "pdl=application/octet-stream,application/x-QPDL,image/urf" "product=(Xerox Phaser 3020)" "ty=Xerox Phaser 3020" "priority=49" "qtotal=1" "note=Doma" "rp=auto" "txtvers=1"
 */
 struct AVAHIservice {
 	AVAHIservice(){}
 	AVAHIservice(std::string raw){
 		std::vector<std::string> tokens = Utils::String::split(raw, ';');
+		ipv 			= tokens.at(2);
+		service 	= tokens.at(3);
+		serviceID = tokens.at(4);
+		domain 		= tokens.at(5);
 	}
+	std::string ipv;
+	std::string service;
+	std::string serviceID;
+	std::string domain;
 };
 
 class GuiMenu : public GuiComponent
@@ -267,6 +284,9 @@ private:
 	std::vector<ARPcli> getARPclients();
 	void openARPlist(std::vector<ARPcli> list);
 	void openARPrecord(ARPcli cli);
+
+	std::vector<AVAHIservice> getAvahiServices();
+	void openAvahiList(std::vector<AVAHIservice> list);
 
 	/*net tools*/
 	void pingIP(std::string ip);

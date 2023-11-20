@@ -5343,15 +5343,17 @@ void GuiMenu::openARPrecord(ARPcli cli)
 		unsigned int color = theme->Text.color;
 
 		auto s = new GuiSettings(mWindow, cli.ip.c_str());
-		cli.hostname = getShOutput("avahi-resolve -a " + cli.ip + " | awk '{print $2}'");
 		s->addGroup(_("INFO"));
 			s->addWithLabel(_("IP"), std::make_shared<TextComponent>(mWindow, cli.ip, font, color));
-			s->addWithLabel(_("HOSTNAME"), std::make_shared<TextComponent>(mWindow, cli.hostname, font, color));
 			s->addWithLabel(_("MAC"), std::make_shared<TextComponent>(mWindow, cli.mac, font, color));
 			s->addWithLabel(_("VENDOR"), std::make_shared<TextComponent>(mWindow, cli.vendor, font, color));
 			s->addGroup(_("TOOLS"));
 				s->addEntry("PING", true, [this, window, cli] {
 					pingIP(cli.ip);
+				}, "iconSystem");
+				s->addEntry("HOSTNAME", true, [this, window, cli] {
+					const std::string cmd = "avahi-resolve -a " + cli.ip + " | awk '{print $2}'";
+					msgExec(cmd);
 				}, "iconSystem");
 				s->addEntry("NMAP", true, [this, window, cli] {
 					const std::string cmd = "nmap " + cli.ip;
@@ -5360,6 +5362,19 @@ void GuiMenu::openARPrecord(ARPcli cli)
 
 		mWindow->pushGui(s);
 	}
+
+std::vector<AVAHIservice> GuiMenu::getAvahiServices()
+		{
+			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults("avahi-browse -a -t -p -l");
+			std::vector<AVAHIservice> list;
+			for(auto s : rawServices)
+				{
+					AVAHIservice AVAHIservice(s);
+					list.push_back(cli);
+				}
+			return AVAHIservice;
+		}
+
 std::vector<ARPcli> GuiMenu::getARPclients()
 	{
 		std::vector<std::string> rawClients = ApiSystem::getInstance()->getScriptResults("arp-scan -l -x -q -F '${mac};${ip}'");
@@ -5394,6 +5409,28 @@ void GuiMenu::openARPlist(std::vector<ARPcli> list)
 
 	mWindow->pushGui(s);
 }
+
+void GuiMenu::openAvahiList(std::vector<AVAHIservice> list)
+	{
+		Window *window = mWindow;
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		auto s = new GuiSettings(mWindow, (_("AVAHI SERVICES LIST") + " ("+std::to_string(list.size())+")").c_str());
+
+		for(auto service : list)
+			{
+				s->addWithDescription(service.serviceID, service.service,
+					std::make_shared<TextComponent>(window, service.ipv, font, color),
+					[this, window, service]
+				{
+					window->pushGui(new GuiMsgBox(mWindow, "SERVICE LOADER...", _("OK"), nullptr));
+				});
+			}
+
+		mWindow->pushGui(s);
+	}
 
 void GuiMenu::openNetworkTools()
 	{
@@ -5441,6 +5478,28 @@ void GuiMenu::openNetworkTools()
 					if(list.size() > 0)
 					{
 						openARPlist(list);
+					}
+					else
+					{
+						window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
+					}
+				}
+			));
+		});
+
+		s->addEntry(_("AVAHI-BROWSE"), false, [this, window]() {
+			window->pushGui(new GuiLoading<std::vector<AVAHIservice>>(window, _("Loading..."),
+				[this, window](auto gui)
+				{
+					mWaitingLoad = true;
+					return getAvahiServices();
+				},
+				[this, window](std::vector<AVAHIservice> list)
+				{
+					mWaitingLoad = false;
+					if(list.size() > 0)
+					{
+						openAvahiList(list);
 					}
 					else
 					{
