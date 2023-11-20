@@ -5365,7 +5365,7 @@ void GuiMenu::openARPrecord(ARPcli cli)
 
 std::vector<AVAHIserviceDetail> GuiMenu::getAvahiService(std::string service)
 		{
-			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults("avahi-browse -d local " + service + " -t -r -p -l");
+			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults("avahi-browse -d local " + service + " -t -r -p -l | grep =;");
 			std::vector<AVAHIserviceDetail> list;
 			for(auto s : rawServices)
 				{
