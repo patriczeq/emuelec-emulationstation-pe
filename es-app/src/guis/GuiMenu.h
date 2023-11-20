@@ -214,54 +214,143 @@ struct DHCPClient {
 	std::string leasetime;
 };
 
+std::string replaceASCII(std::string input)
+	{
+		input = Utils::String::replace(input, "\\032", " ");
+		input = Utils::String::replace(input, "\\033", "!");
+		input = Utils::String::replace(input, "\\034", "\"");
+		input = Utils::String::replace(input, "\\035", "#");
+		input = Utils::String::replace(input, "\\036", "$");
+		input = Utils::String::replace(input, "\\037", "%");
+		input = Utils::String::replace(input, "\\038", "&");
+		input = Utils::String::replace(input, "\\039", "'");
+		input = Utils::String::replace(input, "\\040", "(");
+		input = Utils::String::replace(input, "\\041", ")");
+		input = Utils::String::replace(input, "\\042", "*");
+		input = Utils::String::replace(input, "\\043", "+");
+		input = Utils::String::replace(input, "\\044", ",");
+		input = Utils::String::replace(input, "\\045", "-");
+		input = Utils::String::replace(input, "\\046", ".");
+		input = Utils::String::replace(input, "\\047", "/");
+		input = Utils::String::replace(input, "\\058", ":");
+		input = Utils::String::replace(input, "\\059", ";");
+		input = Utils::String::replace(input, "\\060", "<");
+		input = Utils::String::replace(input, "\\061", "=");
+		input = Utils::String::replace(input, "\\062", ">");
+		input = Utils::String::replace(input, "\\063", "?");
+		input = Utils::String::replace(input, "\\064", "@");
+		input = Utils::String::replace(input, "\\091", "[");
+		input = Utils::String::replace(input, "\\092", "\\");
+		input = Utils::String::replace(input, "\\093", "]");
+		input = Utils::String::replace(input, "\\094", "^");
+		input = Utils::String::replace(input, "\\095", "_");
+		input = Utils::String::replace(input, "\\096", "`");
+		input = Utils::String::replace(input, "\\123", "{");
+		input = Utils::String::replace(input, "\\124", "|");
+		input = Utils::String::replace(input, "\\125", "}");
+		input = Utils::String::replace(input, "\\126", "~");
+		input = Utils::String::replace(input, "\\194\\128", " ");
+		input = Utils::String::replace(input, "\\194\\129", " ");
+		input = Utils::String::replace(input, "\\194\\130", " ");
+		input = Utils::String::replace(input, "\\194\\131", " ");
+		input = Utils::String::replace(input, "\\194\\132", " ");
+		input = Utils::String::replace(input, "\\194\\133", " ");
+		input = Utils::String::replace(input, "\\194\\134", " ");
+		input = Utils::String::replace(input, "\\194\\135", " ");
+		input = Utils::String::replace(input, "\\194\\136", " ");
+		input = Utils::String::replace(input, "\\194\\137", " ");
+		input = Utils::String::replace(input, "\\194\\138", " ");
+		input = Utils::String::replace(input, "\\194\\139", " ");
+		input = Utils::String::replace(input, "\\194\\140", " ");
+		input = Utils::String::replace(input, "\\194\\141", " ");
+		input = Utils::String::replace(input, "\\194\\142", " ");
+		input = Utils::String::replace(input, "\\194\\143", " ");
+		input = Utils::String::replace(input, "\\194\\144", " ");
+		input = Utils::String::replace(input, "\\194\\145", " ");
+		input = Utils::String::replace(input, "\\194\\146", " ");
+		input = Utils::String::replace(input, "\\194\\147", " ");
+		input = Utils::String::replace(input, "\\194\\148", " ");
+		input = Utils::String::replace(input, "\\194\\149", " ");
+		input = Utils::String::replace(input, "\\194\\150", " ");
+		input = Utils::String::replace(input, "\\194\\151", " ");
+		input = Utils::String::replace(input, "\\194\\152", " ");
+		input = Utils::String::replace(input, "\\194\\153", " ");
+		input = Utils::String::replace(input, "\\194\\154", " ");
+		input = Utils::String::replace(input, "\\194\\155", " ");
+		input = Utils::String::replace(input, "\\194\\156", " ");
+		input = Utils::String::replace(input, "\\194\\157", " ");
+		input = Utils::String::replace(input, "\\194\\158", " ");
+		input = Utils::String::replace(input, "\\194\\159", " ");
+		input = Utils::String::replace(input, "\\194\\160", " ");
+		return input;
+	}
+
 struct AVAHIservice {
 	AVAHIservice(){}
 	AVAHIservice(std::string raw){
 		std::vector<std::string> tokens = Utils::String::split(raw, ';');
 		ipv 			= tokens.at(2);
-		service 	= tokens.at(3);
+		service 	= replaceASCII(tokens.at(3));
 		serviceID = tokens.at(4);
 		domain 		= tokens.at(5);
-
-		service = Utils::String::replace(service, "\\032", " ");
-		service = Utils::String::replace(service, "\\033", "!");
-		service = Utils::String::replace(service, "\\034", "\"");
-		service = Utils::String::replace(service, "\\035", "#");
-		service = Utils::String::replace(service, "\\036", "$");
-		service = Utils::String::replace(service, "\\037", "%");
-		service = Utils::String::replace(service, "\\038", "&");
-		service = Utils::String::replace(service, "\\039", "'");
-		service = Utils::String::replace(service, "\\040", "(");
-		service = Utils::String::replace(service, "\\041", ")");
-		service = Utils::String::replace(service, "\\042", "*");
-		service = Utils::String::replace(service, "\\043", "+");
-		service = Utils::String::replace(service, "\\044", ",");
-		service = Utils::String::replace(service, "\\045", "-");
-		service = Utils::String::replace(service, "\\046", ".");
-		service = Utils::String::replace(service, "\\047", "/");
-		service = Utils::String::replace(service, "\\058", ":");
-		service = Utils::String::replace(service, "\\059", ";");
-		service = Utils::String::replace(service, "\\060", "<");
-		service = Utils::String::replace(service, "\\061", "=");
-		service = Utils::String::replace(service, "\\062", ">");
-		service = Utils::String::replace(service, "\\063", "?");
-		service = Utils::String::replace(service, "\\064", "@");
-		service = Utils::String::replace(service, "\\091", "[");
-		service = Utils::String::replace(service, "\\092", "\\");
-		service = Utils::String::replace(service, "\\093", "]");
-		service = Utils::String::replace(service, "\\094", "^");
-		service = Utils::String::replace(service, "\\095", "_");
-		service = Utils::String::replace(service, "\\096", "`");
-		service = Utils::String::replace(service, "\\123", "{");
-		service = Utils::String::replace(service, "\\124", "|");
-		service = Utils::String::replace(service, "\\125", "}");
-		service = Utils::String::replace(service, "\\126", "~");
-
 	}
 	std::string ipv;
 	std::string service;
 	std::string serviceID;
 	std::string domain;
+};
+
+struct AVAHIServiceDetails {
+	AVAHIServiceDetails(){}
+	AVAHIServiceDetails(std::string k, std::string v)
+		{
+			key = k;
+			value = v;
+		}
+	std::string key;
+	std::string value;
+};
+
+/*
+=;wlan0;	IPv4;
+					google-nest-hub-be389c40cbbba1ee717820a6b45c1b0b;
+					_googlecast._tcp;
+					local;
+					fuchsia-ac67-842d-398d.local;
+					192.168.1.105;
+					8009;
+					"rs=" "nf=1" "bs=FA8FCA90B8AA" "st=0" "ca=231941" "fn=Kuchyně Display" "ic=/setup/icon.png" "md=Google Nest Hub" "ve=05" "rm=" "cd=453032A8D16F03D52948EC835528CE4F" "id=be389c40cbbba1ee717820a6b45c1b0b"
+*/
+struct AVAHIserviceDetail {
+	AVAHIserviceDetail(){}
+	AVAHIserviceDetail(std::string raw)
+		{
+			std::vector<std::string> tokens = Utils::String::split(raw, ';');
+			ipv 			= tokens.at(2);
+			service 	= replaceASCII(tokens.at(3));
+			serviceID = tokens.at(4);
+			domain 		= tokens.at(5);
+			hostname	= tokens.at(6);
+			ip				= tokens.at(7);
+			port 			= tokens.at(8);
+
+			// parse service details
+			std::vector<std::string> dTokens = Utils::String::split(Utils::String::replace(tokens.at(9), "\" \"", "\";\""), ';');
+			for(auto item : dTokens)
+				{
+					std::vector<std::string> dItem = Utils::String::split(Utils::String::replace(item, "\"", ""), '=');
+					AVAHIServiceDetails sItem(dItem.at(0), dItem.at(1));
+					details.push_back(sItem);
+				}
+		}
+	std::string ipv;
+	std::string service;
+	std::string serviceID;
+	std::string domain;
+	std::string hostname;
+	std::string ip;
+	std::string port;
+	std::vector<AVAHIServiceDetails> details;
 };
 
 class GuiMenu : public GuiComponent
@@ -308,6 +397,10 @@ private:
 
 	std::vector<AVAHIservice> getAvahiServices();
 	void openAvahiList(std::vector<AVAHIservice> list);
+
+	std::vector<AVAHIserviceDetail> getAvahiService(std::string service);
+	void openAvahiDetailList(std::vector<AVAHIserviceDetail> list);
+	void openAvahiDetail(AVAHIserviceDetail service);
 
 	/*net tools*/
 	void pingIP(std::string ip);

@@ -5363,6 +5363,18 @@ void GuiMenu::openARPrecord(ARPcli cli)
 		mWindow->pushGui(s);
 	}
 
+std::vector<AVAHIserviceDetail> GuiMenu::getAvahiService(std::string service)
+		{
+			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults("avahi-browse -d local " + service + " -t -r -p -l");
+			std::vector<AVAHIserviceDetail> list;
+			for(auto s : rawServices)
+				{
+					AVAHIserviceDetail service(s);
+					list.push_back(service);
+				}
+			return list;
+		}
+
 std::vector<AVAHIservice> GuiMenu::getAvahiServices()
 		{
 			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults("avahi-browse -a -t -p -l");
@@ -5425,10 +5437,79 @@ void GuiMenu::openAvahiList(std::vector<AVAHIservice> list)
 					std::make_shared<TextComponent>(window, service.ipv, font, color),
 					[this, window, service]
 				{
-					window->pushGui(new GuiMsgBox(mWindow, "SERVICE LOADER...", _("OK"), nullptr));
+						window->pushGui(new GuiLoading<std::vector<AVAHIserviceDetail>>(window, _("Loading..."),
+							[this, window, service](auto gui)
+							{
+								mWaitingLoad = true;
+								return getAvahiService(service.serviceID);
+							},
+							[this, window](std::vector<AVAHIserviceDetail> list)
+							{
+								mWaitingLoad = false;
+								if(list.size() > 0)
+								{
+									openAvahiDetailList(list);
+								}
+								else
+								{
+									window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
+								}
+							}
+						));
 				});
 			}
 
+		mWindow->pushGui(s);
+	}
+
+void GuiMenu::openAvahiDetailList(std::vector<AVAHIserviceDetail> list)
+	{
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+		Window *window = mWindow;
+
+		auto s = new GuiSettings(mWindow, ( service.serviceID + " ("+std::to_string(list.size())+")").c_str());
+
+		for(auto service : list)
+			{
+				s->addWithDescription("(" + service.ipv + ") " + service.ip, service.hostname + ": " + service.service,
+					std::make_shared<TextComponent>(window, service.port, font, color),
+					[this, window, service]
+					{
+						openAvahiDetail(service);
+					});
+			}
+
+		mWindow->pushGui(s);
+	}
+
+void GuiMenu::openAvahiDetail(AVAHIserviceDetail service)
+	{
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+		Window *window = mWindow;
+
+		auto s = new GuiSettings(mWindow, service.service.c_str());
+		/*
+
+		std::string service;
+		std::string serviceID;
+		std::string domain;
+		std::string hostname;
+
+		std::vector<AVAHIServiceDetails> details;
+		*/
+		s->addGroup(_("INFORMATION"));
+			s->addWithLabel(_("HOSTNAME"), std::make_shared<TextComponent>(window, service.hostname, font, color));
+			s->addWithLabel(_("IP, PORT"), std::make_shared<TextComponent>(window, service.ip + ": " + service.port, font, color));
+			s->addWithLabel(_("ID"), std::make_shared<TextComponent>(window, service.serviceID, font, color));
+		s->addGroup(_("SERVICE DETAILS"));
+		for(auto detail : service.details)
+			{
+				s->addWithLabel(detail.key, std::make_shared<TextComponent>(window, detail.value, font, color));
+			}
 		mWindow->pushGui(s);
 	}
 
