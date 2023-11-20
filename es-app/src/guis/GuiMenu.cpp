@@ -5567,78 +5567,80 @@ void GuiMenu::openNetworkTools()
 
 		auto s = new GuiSettings(mWindow, _("NETWORK TOOLS").c_str());
 
+		s->addGroup(_("SERVICES"));
 		//Start WebFileBrowser
-		bool webfilesStatus = apInlineInfo("webfiles") == "1";
-		s->addEntry(webfilesStatus ? _("STOP WEB FILE BROWSER") : _("START WEB FILE BROWSER"), false, [window, s, this, webfilesStatus]() {
-			if(webfilesStatus)
-			{
-				runSystemCommand("ap.sh stopwebfiles", "", nullptr);
-			}
-			else
-			{
-				runSystemCommand("ap.sh startwebfiles", "", nullptr);
-			}
-			delete s;
-			openNetworkSettings();
-		}, "iconAdvanced");
-
-		s->addEntry(_("ARP-SCAN"), false, [this, window]() {
-			window->pushGui(new GuiLoading<std::vector<ARPcli>>(window, _("Loading..."),
-				[this, window](auto gui)
+			bool webfilesStatus = apInlineInfo("webfiles") == "1";
+			s->addEntry(webfilesStatus ? _("STOP WEB FILE BROWSER") : _("START WEB FILE BROWSER"), false, [window, s, this, webfilesStatus]() {
+				if(webfilesStatus)
 				{
-					mWaitingLoad = true;
-					return getARPclients();
-				},
-				[this, window](std::vector<ARPcli> list)
-				{
-					mWaitingLoad = false;
-					if(list.size() > 0)
-					{
-						openARPlist(list);
-					}
-					else
-					{
-						window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
-					}
+					runSystemCommand("ap.sh stopwebfiles", "", nullptr);
 				}
-			));
-		});
-
-		s->addEntry(_("AVAHI-BROWSE"), false, [this, window]() {
-			window->pushGui(new GuiLoading<std::vector<AVAHIservice>>(window, _("Loading..."),
-				[this, window](auto gui)
+				else
 				{
-					mWaitingLoad = true;
-					return getAvahiServices();
-				},
-				[this, window](std::vector<AVAHIservice> list)
-				{
-					mWaitingLoad = false;
-					if(list.size() > 0)
-					{
-						openAvahiList(list);
-					}
-					else
-					{
-						window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
-					}
+					runSystemCommand("ap.sh startwebfiles", "", nullptr);
 				}
-			));
-		});
+				delete s;
+				openNetworkSettings();
+			}, "iconAdvanced");
 
-		s->addEntry(_("NSLOOKUP"), false, [this, window]() {
-			if (Settings::getInstance()->getBool("UseOSK"))
-				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "ENTER LOOKUP ADDRESS", "", [this](const std::string& value) { const std::string cmd = "nslookup " + value; msgExec(cmd); }, false));
-			else
-				mWindow->pushGui(new GuiTextEditPopup(window, "ENTER LOOKUP ADDRESS", "", [this](const std::string& value) { const std::string cmd = "nslookup " + value; msgExec(cmd); }, false));
-		});
+		s->addGroup(_("DIAGNOSTICS"));
+			s->addEntry(_("ARP-SCAN"), false, [this, window]() {
+				window->pushGui(new GuiLoading<std::vector<ARPcli>>(window, _("Loading..."),
+					[this, window](auto gui)
+					{
+						mWaitingLoad = true;
+						return getARPclients();
+					},
+					[this, window](std::vector<ARPcli> list)
+					{
+						mWaitingLoad = false;
+						if(list.size() > 0)
+						{
+							openARPlist(list);
+						}
+						else
+						{
+							window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
+						}
+					}
+				));
+			});
 
-		s->addEntry(_("TRACEROUTE"), false, [this, window]() {
-			if (Settings::getInstance()->getBool("UseOSK"))
-				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "ENTER ADDRESS", "8.8.8.8", [this](const std::string& value) { traceroute(value); }, false));
-			else
-				mWindow->pushGui(new GuiTextEditPopup(window, "ENTER ADDRESS", "8.8.8.8", [this](const std::string& value) { traceroute(value); }, false));
-		});
+			s->addEntry(_("AVAHI-BROWSE"), false, [this, window]() {
+				window->pushGui(new GuiLoading<std::vector<AVAHIservice>>(window, _("Loading..."),
+					[this, window](auto gui)
+					{
+						mWaitingLoad = true;
+						return getAvahiServices();
+					},
+					[this, window](std::vector<AVAHIservice> list)
+					{
+						mWaitingLoad = false;
+						if(list.size() > 0)
+						{
+							openAvahiList(list);
+						}
+						else
+						{
+							window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
+						}
+					}
+				));
+			});
+
+			s->addEntry(_("NSLOOKUP"), false, [this, window]() {
+				if (Settings::getInstance()->getBool("UseOSK"))
+					mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "ENTER LOOKUP ADDRESS", "", [this](const std::string& value) { const std::string cmd = "nslookup " + value; msgExec(cmd); }, false));
+				else
+					mWindow->pushGui(new GuiTextEditPopup(window, "ENTER LOOKUP ADDRESS", "", [this](const std::string& value) { const std::string cmd = "nslookup " + value; msgExec(cmd); }, false));
+			});
+
+			s->addEntry(_("TRACEROUTE"), false, [this, window]() {
+				if (Settings::getInstance()->getBool("UseOSK"))
+					mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "ENTER ADDRESS", "8.8.8.8", [this](const std::string& value) { traceroute(value); }, false));
+				else
+					mWindow->pushGui(new GuiTextEditPopup(window, "ENTER ADDRESS", "8.8.8.8", [this](const std::string& value) { traceroute(value); }, false));
+			});
 
 		mWindow->pushGui(s);
 	}
@@ -5674,15 +5676,18 @@ void GuiMenu::openTraceroute(std::string addr, std::vector<TraceRouteHop> hops)
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 		Window *window = mWindow;
-		auto s = new GuiSettings(mWindow, (_("TRACEROUTE RESULT") + " " + addr).c_str());
+		auto s = new GuiSettings(mWindow, (_("TRACEROUTE RESULT") + " " + addr + " (" + std::to_string(hops.size()) + "hops)").c_str());
 		for(auto hop : hops)
 			{
-				s->addWithDescription(hop.hop + ": " + hop.ip, hop.host,
-					std::make_shared<TextComponent>(window, hop.timeout ? "TIMEOUT!" : hop.dur + "ms", font, color),
-					[this,window]
-				{
-						window->pushGui(new GuiMsgBox(window, _("ok"),_("OK"),nullptr));
-				});
+				if(hop.isValid)
+					{
+						s->addWithDescription(hop.hop + ": " + hop.ip + (hop.host != hop.ip ? " (" + hop.host + ")" : ""), "",
+							std::make_shared<TextComponent>(window, hop.timeout ? "TIMEOUT!" : hop.dur + "ms", font, color),
+							[this, hop]
+						{
+								pingIP(hop.ip);
+						});
+					}
 			}
 		mWindow->pushGui(s);
 	}
