@@ -5640,7 +5640,7 @@ void GuiMenu::traceroute(std::string addr)
 			{
 				mWaitingLoad = true;
 				const std::string cmd = "traceroute -w 1 -q 1 " + addr + " | awk '{print $1";"$2";"$3";"$4}'";
-				Traceroute hops(ApiSystem::getInstance()->getScriptResults(cmd);
+				Traceroute hops(ApiSystem::getInstance()->getScriptResults(cmd));
 				return hops.hops;
 			},
 			[this, window, addr](std::vector<TraceRouteHop> hops)
