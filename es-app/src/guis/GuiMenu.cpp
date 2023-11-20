@@ -5376,9 +5376,14 @@ void GuiMenu::openARPrecord(ARPcli cli)
 
 std::vector<AVAHIserviceDetail> GuiMenu::getAvahiService(std::string service)
 		{
-			bool v4 = SystemConf::getInstance()->get("pe_scanv4.enabled") == "1";
 
-			std::string cmd = "avahi-browse -d local " + service + " -t -r -p -l | grep -a '=;'" + (v4 ? " | grep -a 'IPv4'" : "");
+			std::string cmd = "avahi-browse -d local ";
+									cmd+= service;
+									cmd+= " -t -r -p -l | grep -a '=;'";
+			if(SystemConf::getInstance()->get("pe_scanv4.enabled") == "1")
+				{
+					cmd+= " | grep -a 'IPv4'";
+				}
 			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults(cmd);
 			std::vector<AVAHIserviceDetail> list;
 			for(auto s : rawServices)
@@ -5393,7 +5398,11 @@ std::vector<AVAHIservice> GuiMenu::getAvahiServices()
 		{
 			bool v4 = SystemConf::getInstance()->get("pe_scanv4.enabled") == "1";
 
-			std::string cmd = "avahi-browse -a -t -p -l" + (v4 ? " | grep -a 'IPv4'" : "");
+			std::string cmd = "avahi-browse -a -t -p -l";
+			if(SystemConf::getInstance()->get("pe_scanv4.enabled") == "1")
+				{
+					cmd+= " | grep -a 'IPv4'";
+				}
 			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults(cmd);
 			std::vector<AVAHIservice> list;
 			for(auto s : rawServices)
@@ -5638,11 +5647,11 @@ void GuiMenu::traceroute(std::string addr)
 	{
 		Window* window = mWindow;
 		mWindow->pushGui(new GuiLoading<std::vector<TraceRouteHop>>(window, _("TRACING") + " " + addr,
-			[this, window](auto gui)
+			[this, window, addr](auto gui)
 			{
 				mWaitingLoad = true;
-				std::string cmd = "traceroute -w 1 -q 1 " + addr + " | awk '{print $1\";\"$2\";\"$3\";\"$4}'";
-				Traceroute hops(ApiSystem::getInstance()->getScriptResults(cmd));
+				//std::string cmd = "traceroute -w 1 -q 1 " + addr + " | awk '{print $1\";\"$2\";\"$3\";\"$4}'";
+				Traceroute hops(ApiSystem::getInstance()->getScriptResults("traceroute -w 1 -q 1 " + addr + " | awk '{print $1\";\"$2\";\"$3\";\"$4}'"));
 				return hops.hops;
 			},
 			[this, window, addr](std::vector<TraceRouteHop> hops)
