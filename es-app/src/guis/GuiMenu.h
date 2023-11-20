@@ -399,7 +399,7 @@ struct AVAHIserviceDetail {
 			service = Utils::String::replace(service, "\\194\\160", " ");
 
 			// parse service details
-			std::vector<std::string> dTokens = Utils::String::split(Utils::String::replace(tokens.at(9), "\" \"", "\";\""), ';');
+			std::vector<std::string> dTokens = Utils::String::split(Utils::String::replace(Utils::String::replace(tokens.at(9), ";", "."), "\" \"", "\";\""), ';');
 			for(auto item : dTokens)
 				{
 					std::vector<std::string> dItem = Utils::String::split(Utils::String::replace(item, "\"", ""), '=');
@@ -424,6 +424,57 @@ struct AVAHIserviceDetail {
 	std::string port;
 	std::vector<AVAHIServiceDetails> details;
 };
+
+struct TraceRouteHop {
+	TraceRouteHop(){};
+	TraceRouteHop(std::string raw)
+		{
+			std::vector<std::string> tokens = Utils::String::split(raw, ';');
+			if(tokens.size() == 4)
+				{
+					isValid = true;
+					//11;142.251.224.127;(142.251.224.127);3.123
+					//4;*;;
+					hop 	= tokens.at(0);
+					if(tokens.at(1) == "*")
+						{
+							timeout = true;
+						}
+					else
+						{
+							host 	= tokens.at(1);
+							ip	 	= tokens.at(2);
+							dur 	= tokens.at(3);
+						}
+				}
+			else
+				{
+					isValid = false;
+				}
+		}
+	bool isValid;
+	bool timeout;
+	std::string hop;
+	std::string host;
+	std::string ip;
+	std::string dur;
+};
+
+struct Traceroute {
+	Traceroute(){};
+	Traceroute(std::vector<std::string> raw)
+		{
+			for(auto h : raw)
+				{
+					TraceRouteHop hop(h);
+					if(hop.isValid)
+						{
+							hops.push_back(hop);
+						}
+				}
+		}
+	std::vector<TraceRouteHop> hops;
+}
 
 class GuiMenu : public GuiComponent
 {
@@ -477,6 +528,9 @@ private:
 	/*net tools*/
 	void pingIP(std::string ip);
 	void msgExec(const std::string cmd);
+
+	void traceroute(std::string addr);
+	void openTraceroute(std::string addr, std::vector<TraceRouteHop> hops);
 
 	std::vector<AccessPoint> scanlist;
 	std::vector<WifiStation> stalist;

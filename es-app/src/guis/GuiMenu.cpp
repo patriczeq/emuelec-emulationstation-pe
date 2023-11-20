@@ -1295,6 +1295,17 @@ s->addGroup(_("PE MOD SETTINGS"));
 			SystemConf::getInstance()->saveSystemConf();
 		}
 	});
+
+	auto scanv4 = std::make_shared<SwitchComponent>(mWindow);
+	scanv4->setState(SystemConf::getInstance()->get("pe_scanv4.enabled") == "1");
+	s->addWithLabel(_("SCAN ONLY IPv4 SERVICES"), scanv4);
+	s->addSaveFunc([scanv4] {
+		if (scanv4->changed()) {
+			bool enabled = scanv4->getState();
+			SystemConf::getInstance()->set("pe_scanv4.enabled", enabled ? "1" : "0");
+			SystemConf::getInstance()->saveSystemConf();
+		}
+	});
 	// internal music player - opens audiofiles in FRONTEND
 	auto intMusicPlayer = std::make_shared<SwitchComponent>(mWindow);
 	//bool baseintMusicPlayer = SystemConf::getInstance()->get("pe_femusic.enabled") == "1";
@@ -5365,7 +5376,9 @@ void GuiMenu::openARPrecord(ARPcli cli)
 
 std::vector<AVAHIserviceDetail> GuiMenu::getAvahiService(std::string service)
 		{
-			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults("avahi-browse -d local " + service + " -t -r -p -l | grep =;");
+			bool v4 = SystemConf::getInstance()->get("pe_scanv4.enabled") == "1";
+
+			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults("avahi-browse -d local " + service + " -t -r -p -l | grep -a '=;'" + (v4 ? " | grep -a 'IPv4'" : ""));
 			std::vector<AVAHIserviceDetail> list;
 			for(auto s : rawServices)
 				{
@@ -5377,7 +5390,9 @@ std::vector<AVAHIserviceDetail> GuiMenu::getAvahiService(std::string service)
 
 std::vector<AVAHIservice> GuiMenu::getAvahiServices()
 		{
-			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults("avahi-browse -a -t -p -l");
+			bool v4 = SystemConf::getInstance()->get("pe_scanv4.enabled") == "1";
+
+			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults("avahi-browse -a -t -p -l" + (v4 ? " | grep -a 'IPv4'" : ""));
 			std::vector<AVAHIservice> list;
 			for(auto s : rawServices)
 				{
@@ -5505,16 +5520,19 @@ void GuiMenu::openAvahiDetail(AVAHIserviceDetail service)
 			s->addWithLabel(_("HOSTNAME"), std::make_shared<TextComponent>(window, service.hostname, font, color));
 			s->addWithLabel(_("IP, PORT"), std::make_shared<TextComponent>(window, service.ip + ": " + service.port, font, color));
 			s->addWithLabel(_("ID"), std::make_shared<TextComponent>(window, service.serviceID, font, color));
-		s->addGroup(_("SERVICE DETAILS"));
-		for(auto detail : service.details)
+		if(service.details.size() > 0)
 			{
-				if(detail.value.empty())
+				s->addGroup(_("SERVICE DETAILS"));
+				for(auto detail : service.details)
 					{
-						s->addEntry(detail.key, false, nullptr);
-					}
-				else
-					{
-						s->addWithLabel(detail.key, std::make_shared<TextComponent>(window, detail.value, font, color));
+						if(detail.value.empty())
+							{
+								s->addEntry(detail.key, false, nullptr);
+							}
+						else
+							{
+								s->addWithLabel(detail.key, std::make_shared<TextComponent>(window, detail.value, font, color));
+							}
 					}
 			}
 		mWindow->pushGui(s);
@@ -5597,6 +5615,64 @@ void GuiMenu::openNetworkTools()
 			));
 		});
 
+		s->addEntry(_("NSLOOKUP"), false, [this, window]() {
+			if (Settings::getInstance()->getBool("UseOSK"))
+				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "ENTER LOOKUP ADDRESS", "", [this](const std::string& value) { const std::string cmd = "nslookup " + value; msgExec(cmd); }, false));
+			else
+				mWindow->pushGui(new GuiTextEditPopup(window, "ENTER LOOKUP ADDRESS", "", [this](const std::string& value) { const std::string cmd = "nslookup " + value; msgExec(cmd); }, false));
+		});
+
+		s->addEntry(_("TRACEROUTE"), false, [this]() {
+			if (Settings::getInstance()->getBool("UseOSK"))
+				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "ENTER ADDRESS", "8.8.8.8", [this](const std::string& value) { traceroute(value); }, false));
+			else
+				mWindow->pushGui(new GuiTextEditPopup(window, "ENTER ADDRESS", "8.8.8.8", [this](const std::string& value) { traceroute(value); }, false));
+		});
+
+		mWindow->pushGui(s);
+	}
+
+void GuiMenu::traceroute(std::string addr)
+	{
+		Window* window = mWindow;
+		mWindow->pushGui(new GuiLoading<std::vector<TraceRouteHop>>(window, _("TRACING") + " " + addr,
+			[this, window](auto gui)
+			{
+				mWaitingLoad = true;
+
+				Traceroute hops(ApiSystem::getInstance()->getScriptResults("traceroute -w 1 -q 1 " + addr + " | awk '{print $1";"$2";"$3";"$4}'");
+				return scanBSSIDSlist();
+			},
+			[this, window, addr](std::vector<TraceRouteHop> hops)
+			{
+				mWaitingLoad = false;
+				if(hops.size() > 0)
+				{
+					openTraceroute(addr, hops);
+				}
+				else
+				{
+					window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
+				}
+			}
+		));
+	}
+void GuiMenu::openTraceroute(std::string addr, std::vector<TraceRouteHop> hops)
+	{
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+		Window *window = mWindow;
+		auto s = new GuiSettings(mWindow, (_("TRACEROUTE RESULT") + " " + addr).c_str());
+		for(auto hop : hops)
+			{
+				s->addWithDescription(hop.hop + ": " + hop.ip, hop.host,
+					std::make_shared<TextComponent>(window, hop.timeout ? "TIMEOUT!" : hop.dur + "ms", font, color),
+					[this,window]
+				{
+						window->pushGui(new GuiMsgBox(window, _("ok"),_("OK"),nullptr));
+				});
+			}
 		mWindow->pushGui(s);
 	}
 
