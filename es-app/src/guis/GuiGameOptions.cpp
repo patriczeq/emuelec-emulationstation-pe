@@ -124,6 +124,12 @@ if (game->getType() == GAME)
 			// PLAYERTOO
 			mMenu.addEntry(_("LAUNCH MULTIPLAYER HOST"), false, [window, game, this]
 				{
+					if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
+						{
+							mWindow->pushGui(new GuiMsgBox(mWindow, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));
+							return;
+						}
+						
 					mWindow->pushGui(new GuiLoading<bool>(window, _("STARTING GAME SERVER"),
 						[this, game](auto gui)
 						{

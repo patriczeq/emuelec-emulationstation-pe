@@ -265,6 +265,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::WIFI))
 			addEntry(_("NETWORK SETTINGS").c_str(), true, [this] { openNetworkSettings(); }, "iconNetwork");
 #endif
+			addEntry(_("NETWORK TOOLS").c_str(), true, [this] { openNetworkTools(); }, "iconNetwork");
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::RETROACHIVEMENTS) &&
 		SystemConf::getInstance()->getBool("global.retroachievements") &&
 		Settings::getInstance()->getBool("RetroachievementsMenuitem") &&
@@ -442,6 +443,12 @@ void GuiMenu::searchGameAP()
 void GuiMenu::scanMPServers()
 	{
 		Window* window = mWindow;
+
+		if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
+			{
+				mWindow->pushGui(new GuiMsgBox(mWindow, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));
+				return;
+			}
 
 		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING GAME SERVERS..."),
 			[this, window](auto gui)
@@ -5306,6 +5313,97 @@ void GuiMenu::openAPleases()
 		window->pushGui(s);
 
 	}
+std::vector<ARPcli> GuiMenu::getARPclients()
+	{
+		std::vector<std::string> rawClients = ApiSystem::getInstance()->getScriptResults("arp-scan -l -x -q -F '${mac};${ip}'");
+		std::vector<ARPcli> list;
+		for(auto _cli : rawClients)
+			{
+				ARPcli cli(_cli);
+				cli.vendor = macVendor(cli.mac);
+				// hostname?
+				list.push_back(cli);
+			}
+		return list;
+	}
+void openARPlist(std::vector<ARPcli> list)
+{
+	Window *window = mWindow;
+	auto theme = ThemeData::getMenuTheme();
+	std::shared_ptr<Font> font = theme->Text.font;
+	unsigned int color = theme->Text.color;
+	auto s = new GuiSettings(mWindow, _("ARP list").c_str());
+
+	for(auto cli : list)
+		{
+			s->addWithDescription(cli.mac, cli.vendor,
+				std::make_shared<TextComponent>(window, cli.ip, 	font, color),
+				[this, cli]
+			{
+				
+			});
+		}
+
+	mWindow->pushGui(s);
+}
+
+void GuiMenu::openNetworkTools()
+	{
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		Window *window = mWindow;
+
+		if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
+			{
+				mWindow->pushGui(new GuiMsgBox(mWindow, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));
+				return;
+			}
+
+		std::string gameApMode = apInlineInfo("gameapmode");
+
+		auto s = new GuiSettings(mWindow, _("NETWORK TOOLS").c_str());
+
+		//Start WebFileBrowser
+		bool webfilesStatus = apInlineInfo("webfiles") == "1";
+		s->addEntry(webfilesStatus ? _("STOP WEB FILE BROWSER") : _("START WEB FILE BROWSER"), false, [window, s, this, webfilesStatus]() {
+			if(webfilesStatus)
+			{
+				runSystemCommand("ap.sh stopwebfiles", "", nullptr);
+			}
+			else
+			{
+				runSystemCommand("ap.sh startwebfiles", "", nullptr);
+			}
+			delete s;
+			openNetworkSettings();
+		}, "iconAdvanced");
+
+		s->addEntry(_("ARP-SCAN"), false, [this, window]() {
+			mWindow->pushGui(new GuiLoading<std::vector<ARPcli>>(window, _("Loading..."),
+				[this, window](auto gui)
+				{
+					mWaitingLoad = true;
+					return getARPclients();
+				},
+				[this, window](std::vector<ARPcli> list)
+				{
+					mWaitingLoad = false;
+					if(list.size() > 0)
+					{
+						openARPlist(list);
+					}
+					else
+					{
+						window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
+					}
+				}
+			));
+		});
+
+		mWindow->pushGui(s);
+	}
 
 void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 {
@@ -5324,20 +5422,6 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 		openNetworkSettings();
 	}, "iconRestart");
 
-	//Start WebFileBrowser
-	bool webfilesStatus = apInlineInfo("webfiles") == "1";
-	s->addEntry(webfilesStatus ? _("STOP WEB FILE BROWSER") : _("START WEB FILE BROWSER"), false, [window, s, this, webfilesStatus]() {
-		if(webfilesStatus)
-		{
-			runSystemCommand("ap.sh stopwebfiles", "", nullptr);
-		}
-		else
-		{
-			runSystemCommand("ap.sh startwebfiles", "", nullptr);
-		}
-		delete s;
-		openNetworkSettings();
-	}, "iconAdvanced");
 
 	s->addEntry(_("RECONNECT TO SAVED NETWORK"), false, [s, this, window]() {
 			std::string msg = _("RECONNECT TO SAVED NETWORK") + "?";

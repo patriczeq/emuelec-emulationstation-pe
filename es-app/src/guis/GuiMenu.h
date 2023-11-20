@@ -177,6 +177,21 @@ struct WifiStation {
 	AccessPoint ap;
 };
 
+struct ARPcli {
+	ARPcli(){}
+	ARPcli(std::string raw)
+		{
+			std::vector<std::string> tokens = Utils::String::split(raw, ';');
+			if(tokens.size() >= 2)
+				{
+					mac = Utils::String::toUpper(tokens.at(0));
+					ip 	= tokens.at(1);
+				}
+		}
+	std::string mac;
+	std::string ip;
+	std::string vendor;
+}
 /*
 std::vector<std::string> tokens = Utils::String::split(lease, ' ');
 
@@ -240,6 +255,10 @@ private:
 	void openAllSettings();
 	void openAppsMenu();
 
+	void openNetworkTools();
+	std::vector<ARPcli> getARPclients();
+	void openARPlist(std::vector<ARPcli> list);
+
 	std::vector<AccessPoint> scanlist;
 	std::vector<WifiStation> stalist;
 	std::vector<AccessPoint> scanBSSIDSlist();
@@ -250,9 +269,6 @@ private:
 	std::vector<AccessPoint> AccessPointList(std::vector<std::string> bssids);
 	WifiStation rawToSTA(std::string raw);
 	std::vector<WifiStation> StationsList(std::vector<std::string> stations);
-
-	/*float rssiToPerc(std::string rssi);
-	float rssiToPerc(int rssi);*/
 
 	void appLauncher(std::string cmd);
 	// Deauther
@@ -308,8 +324,8 @@ private:
 	void openSystemSettings();
 	void openGamesSettings();
 	void openControllersSettings(int autoSel = 0);
-  	void openControllersSpecificSettings_sindengun();
-    	void openControllersSpecificSettings_wiigun();
+	void openControllersSpecificSettings_sindengun();
+	void openControllersSpecificSettings_wiigun();
 	void openNetworkSettings(bool selectWifiEnable = false);
 	void openQuitMenu();
 	void openSystemInformations();
