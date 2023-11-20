@@ -191,15 +191,8 @@ struct ARPcli {
 	std::string mac;
 	std::string ip;
 	std::string vendor;
-}
-/*
-std::vector<std::string> tokens = Utils::String::split(lease, ' ');
+};
 
-std::string leasetime 	= tokens.at(0);
-std::string macaddr 	= Utils::String::toUpper(tokens.at(1));
-std::string ipaddr 		= tokens.at(2);
-std::string hostname 	= tokens.at(3);
-*/
 struct DHCPClient {
 	DHCPClient(){}
 	DHCPClient(std::string raw){
