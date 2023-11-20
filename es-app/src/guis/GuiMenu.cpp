@@ -5338,9 +5338,9 @@ void openARPlist(std::vector<ARPcli> list)
 		{
 			s->addWithDescription(cli.mac, cli.vendor,
 				std::make_shared<TextComponent>(window, cli.ip, font, color),
-				[this, cli]
+				[this, window, cli]
 			{
-				window->pushGui(new GuiMsgBox(mWindow, _("test"), _("OK"), nullptr));
+				window->pushGui(new GuiMsgBox(window, _("test"), _("OK"), nullptr));
 			});
 		}
 
@@ -5381,7 +5381,7 @@ void GuiMenu::openNetworkTools()
 		}, "iconAdvanced");
 
 		s->addEntry(_("ARP-SCAN"), false, [this, window]() {
-			mWindow->pushGui(new GuiLoading<std::vector<ARPcli>>(window, _("Loading..."),
+			window->pushGui(new GuiLoading<std::vector<ARPcli>>(window, _("Loading..."),
 				[this, window](auto gui)
 				{
 					mWaitingLoad = true;
