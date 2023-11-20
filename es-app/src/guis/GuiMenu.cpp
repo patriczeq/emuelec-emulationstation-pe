@@ -5372,7 +5372,7 @@ std::vector<AVAHIservice> GuiMenu::getAvahiServices()
 					AVAHIservice service(s);
 					list.push_back(service);
 				}
-			return AVAHIservice;
+			return list;
 		}
 
 std::vector<ARPcli> GuiMenu::getARPclients()
