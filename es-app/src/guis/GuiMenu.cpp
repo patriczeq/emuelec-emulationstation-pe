@@ -876,6 +876,11 @@ std::vector<std::string> GuiMenu::hacksGet(std::string cmd)
 	return ApiSystem::getInstance()->getScriptResults(cmds);
 };
 
+std::string GuiMenu::getShO(const std::string cmd)
+	{
+		return getShOutput(cmd);
+	}
+
 std::string GuiMenu::hacksGetString(std::string cmd, bool tty)
 {
 	if(tty)
@@ -5389,7 +5394,7 @@ void GuiMenu::openARPlist(std::vector<ARPcli> list)
 					{
 						mWaitingLoad = true;
 						const std::string cmd = "avahi-resolve -a " + cli.ip + " | awk '{print $2}'";
-						cli.hostname = getShOutput(cmd);
+						cli.hostname = getShO(cmd);
 						return cli;
 					},
 					[this, window](ARPcli cli)
