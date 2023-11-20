@@ -5218,6 +5218,33 @@ void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data,
 	win->pushGui(new GuiWifi(win, title, data, onsave));
 }
 
+void GuiMenu::pingIP(std::string ip)
+	{
+		const std::string cmd = "ping " + ip + " -c 1";
+		msgExec(cmd);
+	}
+void GuiMenu::msgExec(const std::string cmd){
+	Window* window = mWindow;
+	window->pushGui(new GuiLoading<std::string>(window, _("Loading..."),
+		[this, window, cmd](auto gui)
+		{
+			mWaitingLoad = true;
+			std::vector<std::string> results = ApiSystem::getInstance()->getScriptResults(cmd);
+			std::string result = "";
+			for (auto line : results)
+				{
+					result = result + line + "\n";
+				}
+			return result;
+		},
+		[this, window](std::string result)
+		{
+			mWaitingLoad = false;
+			window->pushGui(new GuiMsgBox(window, _result,_("OK"),nullptr));
+		}
+	));
+}
+
 std::string GuiMenu::apInlineInfo(std::string cmd)
 	{
 		//std::vector<std::string> result = ApiSystem::getInstance()->getScriptResults("ap.sh " + cmd);
@@ -5250,25 +5277,15 @@ void GuiMenu::openDHCPclient(DHCPClient lease)
 		unsigned int color = theme->Text.color;
 
 		s->addGroup(_("INFO"));
-
-		s->addWithLabel(_("HOSTNAME"), 	std::make_shared<TextComponent>(mWindow, lease.hostname, font, color));
-		s->addWithLabel(_("MAC"),				std::make_shared<TextComponent>(mWindow, lease.mac, font, color));
-		s->addWithLabel(_("VENDOR"), 		std::make_shared<TextComponent>(mWindow, lease.vendor, font, color));
-		s->addWithLabel(_("LEASETIME"), std::make_shared<TextComponent>(mWindow, lease.leasetime, font, color));
+			s->addWithLabel(_("IP"), 	std::make_shared<TextComponent>(mWindow, lease.ip, font, color));
+			s->addWithLabel(_("HOSTNAME"), 	std::make_shared<TextComponent>(mWindow, lease.hostname, font, color));
+			s->addWithLabel(_("MAC"),				std::make_shared<TextComponent>(mWindow, lease.mac, font, color));
+			s->addWithLabel(_("VENDOR"), 		std::make_shared<TextComponent>(mWindow, lease.vendor, font, color));
+			s->addWithLabel(_("LEASETIME"), std::make_shared<TextComponent>(mWindow, lease.leasetime, font, color));
 
 		s->addGroup(_("TOOLS"));
 			s->addEntry("PING", true, [this, window, lease] {
-				//ping 192.168.1.1 -c 1
-				const std::string cmd = "ping " + lease.ip + " -c 1";
-				std::vector<std::string> results = ApiSystem::getInstance()->getScriptResults(cmd);
-				std::string result = "";
-
-				for (auto line : results)
-					{
-						result = result + line + "\n";
-					}
-				window->pushGui(new GuiMsgBox(window, result,_("OK"), nullptr));
-
+				pingIP(lease.ip);
 			}, "iconSystem");
 
 			s->addEntry(_("DEAUTHENTICATE CLIENT"), false, [this, window, s, lease] {
@@ -5313,6 +5330,31 @@ void GuiMenu::openAPleases()
 		window->pushGui(s);
 
 	}
+void GuiMenu::openARPrecord(ARPcli cli)
+	{
+		Window *window = mWindow;
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		auto s = new GuiSettings(mWindow, cli.ip.c_str());
+
+		s->addGroup(_("INFO"));
+			s->addWithLabel(_("IP"), std::make_shared<TextComponent>(mWindow, cli.ip, font, color));
+			s->addWithLabel(_("HOSTNAME"), std::make_shared<TextComponent>(mWindow, cli.hostname, font, color));
+			s->addWithLabel(_("MAC"), std::make_shared<TextComponent>(mWindow, cli.mac, font, color));
+			s->addWithLabel(_("VENDOR"), std::make_shared<TextComponent>(mWindow, cli.vendor, font, color));
+			s->addGroup(_("TOOLS"));
+				s->addEntry("PING", true, [this, window, cli] {
+					pingIP(cli.ip);
+				}, "iconSystem");
+				s->addEntry("NMAP", true, [this, window, cli] {
+					const std::string cmd = "nmap " + cli.ip;
+					msgExec(cmd);
+				}, "iconSystem");
+
+		mWindow->pushGui(s);
+	}
 std::vector<ARPcli> GuiMenu::getARPclients()
 	{
 		std::vector<std::string> rawClients = ApiSystem::getInstance()->getScriptResults("arp-scan -l -x -q -F '${mac};${ip}'");
@@ -5321,7 +5363,6 @@ std::vector<ARPcli> GuiMenu::getARPclients()
 			{
 				ARPcli cli(_cli);
 				cli.vendor = macVendor(cli.mac);
-				cli.hostname = getShOutput("avahi-resolve -a " + cli.ip + " | awk '{print $2}'");
 				list.push_back(cli);
 			}
 		return list;
@@ -5338,11 +5379,24 @@ void GuiMenu::openARPlist(std::vector<ARPcli> list)
 
 	for(auto cli : list)
 		{
-			s->addWithDescription(cli.hostname.empty() ? cli.mac : cli.hostname, cli.vendor,
+			s->addWithDescription(cli.mac, cli.vendor,
 				std::make_shared<TextComponent>(window, cli.ip, font, color),
-				[window]
+				[this, window, cli]
 			{
-				window->pushGui(new GuiMsgBox(window, _("test"), _("OK"), nullptr));
+				//cli.hostname = getShOutput("avahi-resolve -a " + cli.ip + " | awk '{print $2}'");
+				window->pushGui(new GuiLoading<ARPcli>(window, _("Loading..."),
+					[this, window, cli](auto gui)
+					{
+						mWaitingLoad = true;
+						cli.hostname = getShOutput("avahi-resolve -a " + cli.ip + " | awk '{print $2}'");
+						return cli;
+					},
+					[this, window](ARPcli cli)
+					{
+						mWaitingLoad = false;
+						openARPrecord(cli);
+					}
+				));
 			});
 		}
 
