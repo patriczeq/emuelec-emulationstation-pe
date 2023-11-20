@@ -5508,7 +5508,14 @@ void GuiMenu::openAvahiDetail(AVAHIserviceDetail service)
 		s->addGroup(_("SERVICE DETAILS"));
 		for(auto detail : service.details)
 			{
-				s->addWithLabel(detail.key, std::make_shared<TextComponent>(window, detail.value, font, color));
+				if(detail.value.empty())
+					{
+						s->addEntry(detail.key, false, nullptr);
+					}
+				else
+					{
+						s->addWithLabel(detail.key, std::make_shared<TextComponent>(window, detail.value, font, color));
+					}
 			}
 		mWindow->pushGui(s);
 	}

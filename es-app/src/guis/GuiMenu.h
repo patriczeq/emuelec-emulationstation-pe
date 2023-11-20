@@ -403,8 +403,16 @@ struct AVAHIserviceDetail {
 			for(auto item : dTokens)
 				{
 					std::vector<std::string> dItem = Utils::String::split(Utils::String::replace(item, "\"", ""), '=');
-					AVAHIServiceDetails sItem(dItem.at(0), dItem.at(1));
-					details.push_back(sItem);
+					if(dItem.size() == 2)
+						{
+							AVAHIServiceDetails sItem(dItem.at(0), dItem.at(1));
+							details.push_back(sItem);
+						}
+					else if(dItem.size() == 1)
+						{
+							AVAHIServiceDetails sItem(dItem.at(0), "");
+							details.push_back(sItem);
+						}
 				}
 		}
 	std::string ipv;
