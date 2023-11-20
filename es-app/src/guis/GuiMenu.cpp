@@ -5363,11 +5363,11 @@ void GuiMenu::openARPrecord(ARPcli cli)
 					pingIP(cli.ip);
 				}, "iconSystem");
 				s->addEntry("HOSTNAME", true, [this, window, cli] {
-					const std::string cmd = "avahi-resolve -a " + cli.ip + " | awk '{print $2}'";
+					std::string cmd = "avahi-resolve -a " + cli.ip + " | awk '{print $2}'";
 					msgExec(cmd);
 				}, "iconSystem");
 				s->addEntry("NMAP", true, [this, window, cli] {
-					const std::string cmd = "nmap " + cli.ip;
+					std::string cmd = "nmap " + cli.ip;
 					msgExec(cmd);
 				}, "iconSystem");
 
@@ -5378,7 +5378,7 @@ std::vector<AVAHIserviceDetail> GuiMenu::getAvahiService(std::string service)
 		{
 			bool v4 = SystemConf::getInstance()->get("pe_scanv4.enabled") == "1";
 
-			const std::string cmd = "avahi-browse -d local " + service + " -t -r -p -l | grep -a '=;'" + (v4 ? " | grep -a 'IPv4'" : "");
+			std::string cmd = "avahi-browse -d local " + service + " -t -r -p -l | grep -a '=;'" + (v4 ? " | grep -a 'IPv4'" : "");
 			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults(cmd);
 			std::vector<AVAHIserviceDetail> list;
 			for(auto s : rawServices)
@@ -5393,7 +5393,7 @@ std::vector<AVAHIservice> GuiMenu::getAvahiServices()
 		{
 			bool v4 = SystemConf::getInstance()->get("pe_scanv4.enabled") == "1";
 
-			const std::string cmd = "avahi-browse -a -t -p -l" + (v4 ? " | grep -a 'IPv4'" : "");
+			std::string cmd = "avahi-browse -a -t -p -l" + (v4 ? " | grep -a 'IPv4'" : "");
 			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults(cmd);
 			std::vector<AVAHIservice> list;
 			for(auto s : rawServices)
@@ -5641,7 +5641,7 @@ void GuiMenu::traceroute(std::string addr)
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
-				const std::string cmd = "traceroute -w 1 -q 1 " + addr + " | awk '{print $1\";\"$2\";\"$3\";\"$4}'";
+				std::string cmd = "traceroute -w 1 -q 1 " + addr + " | awk '{print $1\";\"$2\";\"$3\";\"$4}'";
 				Traceroute hops(ApiSystem::getInstance()->getScriptResults(cmd));
 				return hops.hops;
 			},
