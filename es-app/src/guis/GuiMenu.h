@@ -261,7 +261,7 @@ private:
 	void openAllSettings();
 	void openAppsMenu();
 
-	std::string getShO(const std::string cmd)
+	std::string getShO(const std::string cmd);
 
 	void openNetworkTools();
 	std::vector<ARPcli> getARPclients();
