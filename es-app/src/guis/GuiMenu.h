@@ -213,21 +213,7 @@ struct DHCPClient {
 	std::string vendor;
 	std::string leasetime;
 };
-/*
-+;wlan0;	IPv6;
-					A85E45B6F1E6\064iMac\194\160Pro;
-					_raop._tcp;
-					local
-+;wlan0;	IPv4;
-					A85E45B6F1E6\064iMac\194\160Pro;
-					_raop._tcp;
-					local
-+;wlan0;	IPv6;
-					iMac\194\160Pro;
-					_airplay._tcp;
-					local
 
-*/
 struct AVAHIservice {
 	AVAHIservice(){}
 	AVAHIservice(std::string raw){
@@ -236,6 +222,41 @@ struct AVAHIservice {
 		service 	= tokens.at(3);
 		serviceID = tokens.at(4);
 		domain 		= tokens.at(5);
+
+		service = Utils::String::replace(service, "\\032", " ");
+		service = Utils::String::replace(service, "\\033", "!");
+		service = Utils::String::replace(service, "\\034", "\"");
+		service = Utils::String::replace(service, "\\035", "#");
+		service = Utils::String::replace(service, "\\036", "$");
+		service = Utils::String::replace(service, "\\037", "%");
+		service = Utils::String::replace(service, "\\038", "&");
+		service = Utils::String::replace(service, "\\039", "'");
+		service = Utils::String::replace(service, "\\040", "(");
+		service = Utils::String::replace(service, "\\041", ")");
+		service = Utils::String::replace(service, "\\042", "*");
+		service = Utils::String::replace(service, "\\043", "+");
+		service = Utils::String::replace(service, "\\044", ",");
+		service = Utils::String::replace(service, "\\045", "-");
+		service = Utils::String::replace(service, "\\046", ".");
+		service = Utils::String::replace(service, "\\047", "/");
+		service = Utils::String::replace(service, "\\058", ":");
+		service = Utils::String::replace(service, "\\059", ";");
+		service = Utils::String::replace(service, "\\060", "<");
+		service = Utils::String::replace(service, "\\061", "=");
+		service = Utils::String::replace(service, "\\062", ">");
+		service = Utils::String::replace(service, "\\063", "?");
+		service = Utils::String::replace(service, "\\064", "@");
+		service = Utils::String::replace(service, "\\091", "[");
+		service = Utils::String::replace(service, "\\092", "\\");
+		service = Utils::String::replace(service, "\\093", "]");
+		service = Utils::String::replace(service, "\\094", "^");
+		service = Utils::String::replace(service, "\\095", "_");
+		service = Utils::String::replace(service, "\\096", "`");
+		service = Utils::String::replace(service, "\\123", "{");
+		service = Utils::String::replace(service, "\\124", "|");
+		service = Utils::String::replace(service, "\\125", "}");
+		service = Utils::String::replace(service, "\\126", "~");
+
 	}
 	std::string ipv;
 	std::string service;
