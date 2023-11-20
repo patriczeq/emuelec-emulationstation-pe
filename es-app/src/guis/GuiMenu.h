@@ -430,7 +430,7 @@ struct TraceRouteHop {
 	TraceRouteHop(std::string raw)
 		{
 			std::vector<std::string> tokens = Utils::String::split(raw, ';');
-			if(tokens.size() == 4 && tokens.at(0) !== "traceroute")
+			if(tokens.size() == 4 && tokens.at(0) != "traceroute")
 				{
 					isValid = true;
 					//11;142.251.224.127;(142.251.224.127);3.123
