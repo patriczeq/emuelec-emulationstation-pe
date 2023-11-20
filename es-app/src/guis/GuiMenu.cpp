@@ -5343,7 +5343,7 @@ void GuiMenu::openARPrecord(ARPcli cli)
 		unsigned int color = theme->Text.color;
 
 		auto s = new GuiSettings(mWindow, cli.ip.c_str());
-
+		cli.hostname = getShOutput("avahi-resolve -a " + cli.ip + " | awk '{print $2}'");
 		s->addGroup(_("INFO"));
 			s->addWithLabel(_("IP"), std::make_shared<TextComponent>(mWindow, cli.ip, font, color));
 			s->addWithLabel(_("HOSTNAME"), std::make_shared<TextComponent>(mWindow, cli.hostname, font, color));
@@ -5388,21 +5388,7 @@ void GuiMenu::openARPlist(std::vector<ARPcli> list)
 				std::make_shared<TextComponent>(window, cli.ip, font, color),
 				[this, window, cli]
 			{
-				//cli.hostname = getShOutput("avahi-resolve -a " + cli.ip + " | awk '{print $2}'");
-				window->pushGui(new GuiLoading<ARPcli>(window, _("Loading..."),
-					[this, window, cli](auto gui)
-					{
-						mWaitingLoad = true;
-						const std::string cmd = "avahi-resolve -a " + cli.ip + " | awk '{print $2}'";
-						cli.hostname = getShO(cmd);
-						return cli;
-					},
-					[this, window](ARPcli cli)
-					{
-						mWaitingLoad = false;
-						openARPrecord(cli);
-					}
-				));
+				openARPrecord(cli);
 			});
 		}
 
