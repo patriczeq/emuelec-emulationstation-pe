@@ -5337,10 +5337,10 @@ void openARPlist(std::vector<ARPcli> list)
 	for(auto cli : list)
 		{
 			s->addWithDescription(cli.mac, cli.vendor,
-				std::make_shared<TextComponent>(window, cli.ip, 	font, color),
+				std::make_shared<TextComponent>(window, cli.ip, font, color),
 				[this, cli]
 			{
-				
+				window->pushGui(new GuiMsgBox(mWindow, _("test"), _("OK"), nullptr));
 			});
 		}
 
