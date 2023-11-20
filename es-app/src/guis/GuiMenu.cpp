@@ -5469,7 +5469,7 @@ void GuiMenu::openAvahiDetailList(std::vector<AVAHIserviceDetail> list)
 		unsigned int color = theme->Text.color;
 		Window *window = mWindow;
 
-		auto s = new GuiSettings(mWindow, ( service.serviceID + " ("+std::to_string(list.size())+")").c_str());
+		auto s = new GuiSettings(mWindow, ( list.at(0).serviceID + " ("+std::to_string(list.size())+")").c_str());
 
 		for(auto service : list)
 			{
