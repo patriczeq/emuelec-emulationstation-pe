@@ -5297,8 +5297,8 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 			{
 				Chromecast device(dev);
 
-				s->addWithDescription(device.name + (device.player.empty() ? "" : " (" + device.player +")"), device.oname + " (" + device.id + ")",
-					std::make_shared<TextComponent>(window, device.ip, font, color),
+				s->addWithDescription(device.name , "Playing: " + (device.player.empty() ? "/" : device.player),
+					std::make_shared<TextComponent>(window, device.oname, font, color),
 					[window, device, file]
 				{
 					LOG(LogInfo) << "Chromecast device:" << device.name;
@@ -5321,9 +5321,22 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 				s->addEntry("CAST FILE", true, [window, device, file] {
 					LOG(LogInfo) << "Chromecast cast:" << file;
 					//go-chromecast -a 192.168.1.105 load /storage/roms/mplayer/deadpool.mp4 &
-					runSystemCommand("go-chromecast -a " + device.ip + " load " + file + " &", "", nullptr);
+					runSystemCommand("killall go-chromecast &");
+					runSystemCommand("go-chromecast -u " + device.id + " load \"" + file + "\" &", "", nullptr);
 				});
 			}
+
+			s->addEntry("STOP", true, [window, device] {
+				runSystemCommand("go-chromecast -u " + device.id + " stop &", "", nullptr);
+			});
+
+			auto volumeSlider = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 5.f, "%");
+			volumeSlider->setValue(0);
+			volumeSlider->setOnValueChanged([device](const float &newVal) {
+				float vol = newVal / 100;
+				runSystemCommand("go-chromecast -u " + device.id + " volume " + vol, "", nullptr);
+			});
+			s->addWithLabel(_("VOLUME"), volumeSlider);
 
 		window->pushGui(s);
 	}
