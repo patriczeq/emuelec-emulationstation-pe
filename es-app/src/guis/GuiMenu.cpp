@@ -5333,8 +5333,7 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 			auto volumeSlider = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 5.f, "%");
 			volumeSlider->setValue(0);
 			volumeSlider->setOnValueChanged([device](const float &newVal) {
-				float vol = newVal / 100;
-				runSystemCommand("go-chromecast -u " + device.id + " volume " + vol, "", nullptr);
+				runSystemCommand("go-chromecast -u " + device.id + " volume " + std::to_string(newVal / 100), "", nullptr);
 			});
 			s->addWithLabel(_("VOLUME"), volumeSlider);
 
