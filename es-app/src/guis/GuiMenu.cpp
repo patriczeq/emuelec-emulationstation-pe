@@ -5277,8 +5277,8 @@ std::vector<NetInterface> GuiMenu::networkInterfaces()
 				int i = 0;
 				std::vector<std::string> tokens = Utils::String::split(row, ' ');
 				std::string interface;
-				if(tokens.at(3) == 'dev'){interface = tokens.at(4);}
-				if(tokens.at(1) == 'dev'){interface = tokens.at(2);}
+				if(tokens.at(3) == "dev"){interface = tokens.at(4);}
+				if(tokens.at(1) == "dev"){interface = tokens.at(2);}
 
 				for(auto intf : interfaces)
 					{
