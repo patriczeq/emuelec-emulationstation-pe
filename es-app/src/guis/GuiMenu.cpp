@@ -275,7 +275,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 					return;
 				GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
-	addEntry(_("CHROMECAST").c_str(), true, [window] { loadChromecast(window); }, "iconChromecast");
+	addEntry(_("CHROMECAST").c_str(), true, [this] { loadChromecast(mWindow); }, "iconChromecast");
 	addEntry(_("FILE MANAGER").c_str(), false, [this] { appLauncher("file_manager.sh"); }, "iconFileManager");
 	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "iconApps");
 
