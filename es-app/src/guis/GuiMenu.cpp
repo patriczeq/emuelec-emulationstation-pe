@@ -5265,6 +5265,7 @@ void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data,
 void GuiMenu::loadChromecast(Window* mWindow, std::string file)
 	{
 		Window* window = mWindow;
+		LOG(LogInfo) << "Chromecast:" << file;
 		mWindow->pushGui(new GuiLoading<std::vector<AVAHIserviceDetail>>(mWindow, _("Loading..."),
 			[window, file](auto gui)
 			{
@@ -5300,6 +5301,7 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 					std::make_shared<TextComponent>(window, device.ip, font, color),
 					[window, device, file]
 				{
+					LOG(LogInfo) << "Chromecast device:" << device.name;
 					loadChromecastDevice(window, device, file);
 				}, "iconChromecast");
 			}
@@ -5317,6 +5319,7 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 		if(!file.empty())
 			{
 				s->addEntry("CAST FILE", true, [window, device, file] {
+					LOG(LogInfo) << "Chromecast cast:" << file;
 					//go-chromecast -a 192.168.1.105 load /storage/roms/mplayer/deadpool.mp4 &
 					runSystemCommand("go-chromecast -a " + device.ip + " load " + file + " &", "", nullptr);
 				});
