@@ -518,6 +518,9 @@ public:
 	static void updateGameLists(Window* window, bool confirm = true);
 	static void editKeyboardMappings(Window *window, IKeyboardMapContainer* mapping, bool editable);
 
+	void loadChromecast(Window* mWindow, std::string file);
+	void loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDetail> casts, std::string file);
+	void loadChromecastDevice(Window* mWindow, Chromecast device, std::string file);
 
 private:
 	void addEntry(std::string name, bool add_arrow, const std::function<void()>& func, const std::string iconName = "");
@@ -551,9 +554,6 @@ private:
 	/*net tools*/
 	void pingIP(std::string ip);
 	void msgExec(const std::string cmd);
-	void loadChromecast(std::string file);
-	void loadChromecastDevices(std::vector<AVAHIserviceDetail> casts, std::string file);
-	void loadChromecastDevice(Chromecast device, std::string file);
 
 	void traceroute(std::string addr);
 	void openTraceroute(std::string addr, std::vector<TraceRouteHop> hops);

@@ -5262,7 +5262,7 @@ void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data,
 	win->pushGui(new GuiWifi(win, title, data, onsave));
 }
 
-void GuiMenu::loadChromecast(std::string file)
+void GuiMenu::loadChromecast(Window* mWindow, std::string file)
 	{
 		Window* window = mWindow;
 		window->pushGui(new GuiLoading<std::vector<AVAHIserviceDetail>>(window, _("Loading..."),
@@ -5280,12 +5280,12 @@ void GuiMenu::loadChromecast(std::string file)
 					}
 				else
 					{
-						loadChromecastDevices(casts, file);
+						loadChromecastDevices(mWindow, casts, file);
 					}
 			}
 		));
 	}
-void GuiMenu::loadChromecastDevices(std::vector<AVAHIserviceDetail> casts, std::string file)
+void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDetail> casts, std::string file)
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, _("CHROMECAST"));
@@ -5306,7 +5306,7 @@ void GuiMenu::loadChromecastDevices(std::vector<AVAHIserviceDetail> casts, std::
 		window->pushGui(s);
 	}
 
-void GuiMenu::loadChromecastDevice(Chromecast device, std::string file)
+void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::string file)
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, device.name;

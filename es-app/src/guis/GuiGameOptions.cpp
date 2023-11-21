@@ -101,7 +101,7 @@ if( isVideo && SystemConf::getInstance()->get("pe_fevideo.enabled") == "1")
 
 		mMenu.addEntry(_("CAST TO DEVICE"), false, [_path, this]
 			{
-				GuiMenu::loadChromecast(_path);
+				GuiMenu::loadChromecast(mWindow, _path);
 				this->close();
 			}, "iconChromecast");
 
