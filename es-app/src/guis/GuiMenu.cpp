@@ -5266,12 +5266,12 @@ void GuiMenu::loadChromecast(Window* mWindow, std::string file)
 	{
 		Window* window = mWindow;
 		window->pushGui(new GuiLoading<std::vector<AVAHIserviceDetail>>(window, _("Loading..."),
-			[this, window, file](auto gui)
+			[window, file](auto gui)
 			{
 				mWaitingLoad = true;
-				return getAvahiService("_googlecast._tcp");
+				return GuiMenu::getAvahiService("_googlecast._tcp");
 			},
-			[this, window, file](std::vector<AVAHIserviceDetail> casts)
+			[window, file](std::vector<AVAHIserviceDetail> casts)
 			{
 				mWaitingLoad = false;
 				if(casts.count() == 0)
@@ -5280,7 +5280,7 @@ void GuiMenu::loadChromecast(Window* mWindow, std::string file)
 					}
 				else
 					{
-						loadChromecastDevices(mWindow, casts, file);
+						GuiMenu::loadChromecastDevices(mWindow, casts, file);
 					}
 			}
 		));
@@ -5298,9 +5298,9 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 
 				s->addWithDescription(device.name + (device.player.empty() ? "" : " (" + device.player +")"), device.oname + " (" + device.id + ")",
 					std::make_shared<TextComponent>(window, device.ip, font, color),
-					[this, device, file]
+					[device, file]
 				{
-					loadChromecastDevice(device, file);
+					GuiMenu::loadChromecastDevice(device, file);
 				}, "iconChromecast");
 			}
 		window->pushGui(s);
@@ -5316,7 +5316,7 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 
 		if(!file.empty())
 			{
-				s->addEntry("CAST FILE", true, [this, window, device, file] {
+				s->addEntry("CAST FILE", true, [window, device, file] {
 					//go-chromecast -a 192.168.1.105 load /storage/roms/mplayer/deadpool.mp4 &
 					runSystemCommand("go-chromecast -a " + device.ip + " load " + file + " &", "", nullptr);
 				});
