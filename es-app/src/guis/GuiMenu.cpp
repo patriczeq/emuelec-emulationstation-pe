@@ -275,7 +275,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 					return;
 				GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
-	addEntry(_("CHROMECAST").c_str(), true, [this] { loadChromecast(mWindow); }, "iconChromecast");
+	addEntry(_("CHROMECAST").c_str(), true, [window] { loadChromecast(window); }, "iconChromecast");
 	addEntry(_("FILE MANAGER").c_str(), false, [this] { appLauncher("file_manager.sh"); }, "iconFileManager");
 	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "iconApps");
 
@@ -5265,11 +5265,11 @@ void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data,
 void GuiMenu::loadChromecast(Window* mWindow, std::string file)
 	{
 		Window* window = mWindow;
-		window->pushGui(new GuiLoading<std::vector<AVAHIserviceDetail>>(window, _("Loading..."),
+		mWindow->pushGui(new GuiLoading<std::vector<AVAHIserviceDetail>>(window, _("Loading..."),
 			[window, file](auto gui)
 			{
 				//mWaitingLoad = true;
-				return GuiMenu::getAvahiService("_googlecast._tcp");
+				return getAvahiService("_googlecast._tcp");
 			},
 			[window, file](std::vector<AVAHIserviceDetail> casts)
 			{
