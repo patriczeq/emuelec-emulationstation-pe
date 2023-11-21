@@ -527,8 +527,8 @@ void GuiMenu::openMPServers(std::vector<AVAHIserviceDetail> servers)
 				icon->setColorShift(theme->Text.color);
 				icon->setPadding(8);
 
-			s->addWithDescription(gamename.empty() ? "Unknown game" : gamename, _subtitle,
-				std::make_shared<TextComponent>(window, platform.empty() ? "?" : platform, font, color),
+			s->addWithDescription((platform.empty() ? "" : "["+platform+"] ") + (gamename.empty() ? "Unknown game" : gamename), _subtitle,
+				icon,//std::make_shared<TextComponent>(window, platform.empty() ? "?" : platform, font, color),
 				[this, window, server]
 			{
 					ApiSystem::getInstance()->launchApp(window, "playertoo " + server.ip);
