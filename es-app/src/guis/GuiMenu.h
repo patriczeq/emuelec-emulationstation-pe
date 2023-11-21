@@ -484,7 +484,7 @@ struct NetInterface {
 	std::string network;
 	std::string gw;
 	std::vector<std::string> dns;
-}
+};
 
 class GuiMenu : public GuiComponent
 {
