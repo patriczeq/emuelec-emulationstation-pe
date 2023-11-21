@@ -5297,7 +5297,7 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 			{
 				Chromecast device(dev);
 
-				s->addWithDescription(device.name , "Playing: " + (device.player.empty() ? "/" : device.player),
+				s->addWithDescription(device.name , device.player,
 					std::make_shared<TextComponent>(window, device.oname, font, color),
 					[window, device, file]
 				{
@@ -5322,7 +5322,7 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 					LOG(LogInfo) << "Chromecast cast:" << file;
 					//go-chromecast -a 192.168.1.105 load /storage/roms/mplayer/deadpool.mp4 &
 					runSystemCommand("killall go-chromecast &", "", nullptr);
-					runSystemCommand("go-chromecast -u " + device.id + " load \"" + file + "\" &", "", nullptr);
+					runSystemCommand("go-chromecast -u " + device.id + " load '" + file + "' &", "", nullptr);
 				});
 			}
 
