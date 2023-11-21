@@ -5268,12 +5268,12 @@ void GuiMenu::loadChromecast(Window* mWindow, std::string file)
 		window->pushGui(new GuiLoading<std::vector<AVAHIserviceDetail>>(window, _("Loading..."),
 			[window, file](auto gui)
 			{
-				mWaitingLoad = true;
+				//mWaitingLoad = true;
 				return GuiMenu::getAvahiService("_googlecast._tcp");
 			},
 			[window, file](std::vector<AVAHIserviceDetail> casts)
 			{
-				mWaitingLoad = false;
+				//mWaitingLoad = false;
 				if(casts.size() == 0)
 					{
 						window->pushGui(new GuiMsgBox(window, _("NO CHROMECAST DEVICES FOUND"),_("OK"),nullptr));
@@ -5309,7 +5309,7 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::string file)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, device.name;
+		auto s = new GuiSettings(window, device.name);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
