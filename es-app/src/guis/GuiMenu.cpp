@@ -5294,10 +5294,10 @@ std::vector<NetInterface> GuiMenu::networkInterfaces()
 						interfaces.at(i).dns.push_back(tokens.at(0));
 						interfaces.at(i).gw = tokens.at(2);
 					}
-				if(tokens.size() == 8) // 192.168.1.0/24 dev wlan0 scope link  src 192.168.1.111
+				if(tokens.size() == 7) // 192.168.1.0/24 dev wlan0 scope link  src 192.168.1.111
 					{
 						interfaces.at(i).network = tokens.at(0);
-						interfaces.at(i).ip = tokens.at(7);
+						interfaces.at(i).ip = tokens.at(6);
 					}
 
 				/*
@@ -5321,28 +5321,6 @@ std::vector<NetInterface> GuiMenu::networkInterfaces()
 		return interfaces;
 	}
 
-void GuiMenu::openNetworkInterfaces()
-	{
-		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("NETWORK INTERFACES"));
-		auto theme = ThemeData::getMenuTheme();
-		std::shared_ptr<Font> font = theme->Text.font;
-		unsigned int color = theme->Text.color;
-
-		std::vector<NetInterface> interfaces = networkInterfaces();
-
-		for(auto interface : interfaces)
-			{
-				s->addWithDescription(interface.name, interface.network,
-					std::make_shared<TextComponent>(window, interface.ip, font, color),
-					[this, interface]
-				{
-					pingIP(interface.ip);
-				}, "iconNetwork");// eth/wifi...
-			}
-
-		window->pushGui(s);
-	}
 
 std::string GuiMenu::apInlineInfo(std::string cmd)
 	{
@@ -5657,9 +5635,6 @@ void GuiMenu::openNetworkTools()
 				openNetworkSettings();
 			}, "iconAdvanced");
 
-			s->addEntry(_("INTERFACES"), false, [this]() {
-				openNetworkInterfaces();
-			});
 
 		s->addGroup(_("DIAGNOSTICS"));
 			s->addEntry(_("ARP-SCAN"), false, [this, window]() {
@@ -5721,7 +5696,17 @@ void GuiMenu::openNetworkTools()
 			});
 		s->addGroup(_("INTERFACES"));
 
+		std::vector<NetInterface> interfaces = networkInterfaces();
 
+		for(auto interface : interfaces)
+			{
+				s->addWithDescription(interface.name, interface.network,
+					std::make_shared<TextComponent>(window, interface.ip, font, color),
+					[this, interface]
+				{
+					pingIP(interface.ip);
+				}, "iconNetwork");// eth/wifi...
+			}
 
 		mWindow->pushGui(s);
 	}

@@ -537,7 +537,6 @@ private:
 
 	/*net tools*/
 	std::vector<NetInterface> networkInterfaces();
-	void openNetworkInterfaces();
 	void pingIP(std::string ip);
 	void msgExec(const std::string cmd);
 
