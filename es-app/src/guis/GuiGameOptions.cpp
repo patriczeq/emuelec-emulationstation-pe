@@ -89,6 +89,18 @@ if(isAudio && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 			this->close();
 		}, "iconSound");
 
+	mMenu.addEntry(_("CAST"), false, [_path, this]
+		{
+			GuiMenu::loadChromecast(mWindow, _path);
+			this->close();
+		}, "iconChromecast");
+
+		mMenu.addEntry(_("CAST DIRECTORY"), false, [_path, this]
+			{
+				GuiMenu::loadChromecast(mWindow, _path + "/*");
+				this->close();
+			}, "iconChromecast");
+
 }
 
 if( isVideo && SystemConf::getInstance()->get("pe_fevideo.enabled") == "1")
@@ -99,7 +111,7 @@ if( isVideo && SystemConf::getInstance()->get("pe_fevideo.enabled") == "1")
 			this->close();
 		}, "iconScraper");
 
-		mMenu.addEntry(_("CAST TO DEVICE"), false, [_path, this]
+		mMenu.addEntry(_("CAST"), false, [_path, this]
 			{
 				GuiMenu::loadChromecast(mWindow, _path);
 				this->close();
