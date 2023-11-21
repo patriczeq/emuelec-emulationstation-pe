@@ -5261,6 +5261,89 @@ void GuiMenu::msgExec(const std::string cmd){
 	));
 }
 
+std::vector<NetInterface> GuiMenu::networkInterfaces()
+	{
+		std::vector<NetInterface> interfaces;
+		// IF list
+		for(auto intf : ApiSystem::getInstance()->getScriptResults("ls /sys/class/net | awk '{print $1}'"))
+			{
+				NetInterface f;
+				f.name = intf;
+				interfaces.push_back(f);
+			}
+		// ip route at first
+		for(auto row : ApiSystem::getInstance()->getScriptResults("ip r"))
+			{
+				int i = 0;
+				std::vector<std::string> tokens = Utils::String::split(row, ' ');
+				std::string interface;
+				if(tokens.at(3) == 'dev'){interface = tokens.at(4);}
+				if(tokens.at(1) == 'dev'){interface = tokens.at(2);}
+
+				for(auto intf : interfaces)
+					{
+						if(intf.name == interface)
+							{
+								break;
+							}
+						i++;
+					}
+				// víme index, name
+				if(tokens.at(1) == "via")
+					{
+						interfaces.at(i).dns.push_back(tokens.at(0));
+						interfaces.at(i).gw = tokens.at(2);
+					}
+				if(tokens.size() == 8) // 192.168.1.0/24 dev wlan0 scope link  src 192.168.1.111
+					{
+						interfaces.at(i).network = tokens.at(0);
+						interfaces.at(i).ip = tokens.at(7);
+					}
+
+				/*
+				struct NetInterface {
+					std::string name;
+					std::string ip;
+					std::string network;
+					std::string gw;
+					std::vector<std::string> dns;
+				}
+				*/
+				/*
+					default via 192.168.1.1 dev wlan0
+					1.1.1.1 via 192.168.1.1 dev wlan0
+					8.8.8.8 via 192.168.1.1 dev wlan0
+					82.165.8.211 via 192.168.1.1 dev wlan0
+					192.168.1.0/24 dev wlan0 scope link  src 192.168.1.111
+					192.168.1.1 dev wlan0 scope link
+				*/
+			}
+		return interfaces;
+	}
+
+void GuiMenu::openNetworkInterfaces()
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, _("NETWORK INTERFACES"));
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		std::vector<NetInterface> interfaces = networkInterfaces();
+
+		for(auto interface : interfaces)
+			{
+				s->addWithDescription(interface.name, interface.network,
+					std::make_shared<TextComponent>(window, interface.ip, font, color),
+					[this, interface]
+				{
+					pingIP(interface.ip);
+				}, "iconNetwork");// eth/wifi...
+			}
+
+		window->pushGui(s);
+	}
+
 std::string GuiMenu::apInlineInfo(std::string cmd)
 	{
 		//std::vector<std::string> result = ApiSystem::getInstance()->getScriptResults("ap.sh " + cmd);
@@ -5293,7 +5376,7 @@ void GuiMenu::openDHCPclient(DHCPClient lease)
 		unsigned int color = theme->Text.color;
 
 		s->addGroup(_("INFO"));
-			s->addWithLabel(_("IP"), 	std::make_shared<TextComponent>(mWindow, lease.ip, font, color));
+			s->addWithLabel(_("IP"), 				std::make_shared<TextComponent>(mWindow, lease.ip, font, color));
 			s->addWithLabel(_("HOSTNAME"), 	std::make_shared<TextComponent>(mWindow, lease.hostname, font, color));
 			s->addWithLabel(_("MAC"),				std::make_shared<TextComponent>(mWindow, lease.mac, font, color));
 			s->addWithLabel(_("VENDOR"), 		std::make_shared<TextComponent>(mWindow, lease.vendor, font, color));
@@ -5518,15 +5601,6 @@ void GuiMenu::openAvahiDetail(AVAHIserviceDetail service)
 		Window *window = mWindow;
 
 		auto s = new GuiSettings(mWindow, service.service.c_str());
-		/*
-
-		std::string service;
-		std::string serviceID;
-		std::string domain;
-		std::string hostname;
-
-		std::vector<AVAHIServiceDetails> details;
-		*/
 		s->addGroup(_("INFORMATION"));
 			s->addWithLabel(_("HOSTNAME"), std::make_shared<TextComponent>(window, service.hostname, font, color));
 			s->addWithLabel(_("IP, PORT"), std::make_shared<TextComponent>(window, service.ip + ": " + service.port, font, color));
@@ -5567,7 +5641,7 @@ void GuiMenu::openNetworkTools()
 
 		auto s = new GuiSettings(mWindow, _("NETWORK TOOLS").c_str());
 
-		s->addGroup(_("SERVICES"));
+		s->addGroup(_("SYSTEM"));
 		//Start WebFileBrowser
 			bool webfilesStatus = apInlineInfo("webfiles") == "1";
 			s->addEntry(webfilesStatus ? _("STOP WEB FILE BROWSER") : _("START WEB FILE BROWSER"), false, [window, s, this, webfilesStatus]() {
@@ -5582,6 +5656,10 @@ void GuiMenu::openNetworkTools()
 				delete s;
 				openNetworkSettings();
 			}, "iconAdvanced");
+
+			s->addEntry(_("INTERFACES"), false, [this]() {
+				openNetworkInterfaces();
+			});
 
 		s->addGroup(_("DIAGNOSTICS"));
 			s->addEntry(_("ARP-SCAN"), false, [this, window]() {
@@ -5641,6 +5719,9 @@ void GuiMenu::openNetworkTools()
 				else
 					mWindow->pushGui(new GuiTextEditPopup(window, "ENTER ADDRESS", "8.8.8.8", [this](const std::string& value) { traceroute(value); }, false));
 			});
+		s->addGroup(_("INTERFACES"));
+
+
 
 		mWindow->pushGui(s);
 	}

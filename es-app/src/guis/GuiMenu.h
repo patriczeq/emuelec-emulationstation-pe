@@ -478,6 +478,14 @@ struct Traceroute {
 	std::vector<TraceRouteHop> hops;
 };
 
+struct NetInterface {
+	std::string name;
+	std::string ip;
+	std::string network;
+	std::string gw;
+	std::vector<std::string> dns;
+}
+
 class GuiMenu : public GuiComponent
 {
 public:
@@ -528,6 +536,8 @@ private:
 	void openAvahiDetail(AVAHIserviceDetail service);
 
 	/*net tools*/
+	std::vector<NetInterface> networkInterfaces();
+	void openNetworkInterfaces();
 	void pingIP(std::string ip);
 	void msgExec(const std::string cmd);
 
