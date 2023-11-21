@@ -518,9 +518,9 @@ public:
 	static void updateGameLists(Window* window, bool confirm = true);
 	static void editKeyboardMappings(Window *window, IKeyboardMapContainer* mapping, bool editable);
 
-	void loadChromecast(Window* mWindow, std::string file);
-	void loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDetail> casts, std::string file);
-	void loadChromecastDevice(Window* mWindow, Chromecast device, std::string file);
+	static void loadChromecast(Window* mWindow, std::string file);
+	static void loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDetail> casts, std::string file);
+	static void loadChromecastDevice(Window* mWindow, Chromecast device, std::string file);
 
 private:
 	void addEntry(std::string name, bool add_arrow, const std::function<void()>& func, const std::string iconName = "");
