@@ -5274,13 +5274,13 @@ void GuiMenu::loadChromecast(Window* mWindow, std::string file)
 			[window, file](std::vector<AVAHIserviceDetail> casts)
 			{
 				mWaitingLoad = false;
-				if(casts.count() == 0)
+				if(casts.size() == 0)
 					{
 						window->pushGui(new GuiMsgBox(window, _("NO CHROMECAST DEVICES FOUND"),_("OK"),nullptr));
 					}
 				else
 					{
-						loadChromecastDevices(mWindow, casts, file);
+						loadChromecastDevices(window, casts, file);
 					}
 			}
 		));
@@ -5298,9 +5298,9 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 
 				s->addWithDescription(device.name + (device.player.empty() ? "" : " (" + device.player +")"), device.oname + " (" + device.id + ")",
 					std::make_shared<TextComponent>(window, device.ip, font, color),
-					[device, file]
+					[window, device, file]
 				{
-					loadChromecastDevice(device, file);
+					loadChromecastDevice(window, device, file);
 				}, "iconChromecast");
 			}
 		window->pushGui(s);
