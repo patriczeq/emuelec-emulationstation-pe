@@ -519,6 +519,7 @@ public:
 	static void editKeyboardMappings(Window *window, IKeyboardMapContainer* mapping, bool editable);
 
 	static void loadChromecast(Window* mWindow, std::string file);
+
 	static void loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDetail> casts, std::string file);
 	static void loadChromecastDevice(Window* mWindow, Chromecast device, std::string file);
 	static std::vector<AVAHIserviceDetail> getAvahiService(std::string service);
