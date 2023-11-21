@@ -5321,7 +5321,7 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 				s->addEntry("CAST FILE", true, [window, device, file] {
 					LOG(LogInfo) << "Chromecast cast:" << file;
 					//go-chromecast -a 192.168.1.105 load /storage/roms/mplayer/deadpool.mp4 &
-					runSystemCommand("killall go-chromecast &");
+					runSystemCommand("killall go-chromecast &", "", nullptr);
 					runSystemCommand("go-chromecast -u " + device.id + " load \"" + file + "\" &", "", nullptr);
 				});
 			}
