@@ -521,11 +521,11 @@ void GuiMenu::openMPServers(std::vector<AVAHIserviceDetail> servers)
 					}
 				}
 				auto icon = std::make_shared<ImageComponent>(window);
-				Vector2f maxSize(48, 48);
+				Vector2f maxSize(64, 64);
 				icon->setImage(image, false, maxSize);
 				icon->setMaxSize(maxSize);
-				icon->setColorShift(theme->Text.color);
-				icon->setPadding(8);
+				//icon->setColorShift(theme->Text.color);
+				icon->setPadding(4);
 
 			s->addWithDescription((platform.empty() ? "" : "["+platform+"] ") + (gamename.empty() ? "Unknown game" : gamename), _subtitle,
 				icon,//std::make_shared<TextComponent>(window, platform.empty() ? "?" : platform, font, color),
