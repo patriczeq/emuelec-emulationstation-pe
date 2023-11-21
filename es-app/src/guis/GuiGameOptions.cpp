@@ -129,7 +129,7 @@ if (game->getType() == GAME)
 							mWindow->pushGui(new GuiMsgBox(mWindow, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));
 							return;
 						}
-						
+
 					mWindow->pushGui(new GuiLoading<bool>(window, _("STARTING GAME SERVER"),
 						[this, game](auto gui)
 						{
@@ -137,11 +137,17 @@ if (game->getType() == GAME)
 							SystemData* system 		= game->getSystem();
 							std::string platform 	= system->getName();
 							std::string name 			= game->getName();
+							std::string image			= game->getImagePath();
+
+							/*
+								myGame DATA
+								"platform=platform" "name=my game string" "image=path to"
+							*/
 
 							runSystemCommand("killall gamestream_encoder_server &", "", nullptr);
 							runSystemCommand("killall avahi-publish &", "", nullptr);
 							runSystemCommand("gamestream_encoder_server &", "", nullptr);
-							runSystemCommand("avahi-publish -s --domain=local --subtype=\"_ann._sub._oga-mp._udp\" \"oga-mp-broadcast\" \"_oga-mp._udp\" 1234 \"" + platform + "|" + name + "\" &", "", nullptr);
+							runSystemCommand("avahi-publish -s --domain=local --subtype=\"_ann._sub._oga-mp._udp\" \"oga-mp-broadcast\" \"_oga-mp._udp\" 1234 '\"platform="+platform+"\" \"name="+name+"\" \"image="+image+"\"' &", "", nullptr);
 
 							return false;
 						},

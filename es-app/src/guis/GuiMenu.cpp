@@ -450,21 +450,23 @@ void GuiMenu::scanMPServers()
 				return;
 			}
 
-		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING GAME SERVERS..."),
+		mWindow->pushGui(new GuiLoading<std::vector<AVAHIserviceDetail>>(window, _("SEARCHING GAME SERVERS..."),
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
-				const std::string cmd = "avahi-browse -d local _oga-mp._udp -t -r -p -l | grep IPv4 | grep =;";
-				return ApiSystem::getInstance()->getScriptResults(cmd);
+				/*const std::string cmd = "avahi-browse -d local _oga-mp._udp -t -r -p -l | grep IPv4 | grep =;";
+				return ApiSystem::getInstance()->getScriptResults(cmd);*/
+				return getAvahiService("_oga-mp._udp");
 			},
-			[this, window](std::vector<std::string> servers)
+			[this, window](std::vector<AVAHIserviceDetail> servers)
 			{
 				mWaitingLoad = false;
-				if(servers.size() > 1)
+
+				if(servers.size() > 0)
 					{
 						openMPServers(servers);
 					}
-				else if(servers.size() == 1)
+				/*else if(servers.size() == 1)
 					{
 						MPserver _server(servers.at(0));
 						if(!_server.ip.empty())
@@ -477,7 +479,7 @@ void GuiMenu::scanMPServers()
 											appLauncher("playertoo " + _server.ip);
 									},_("CANCEL"), nullptr));
 							}
-					}
+					}*/
 				else
 					{
 						window->pushGui(new GuiMsgBox(window, _("SERVER(s) NOT FOUND!"),
@@ -488,7 +490,7 @@ void GuiMenu::scanMPServers()
 			}
 		));
 	}
-void GuiMenu::openMPServers(std::vector<std::string> servers)
+void GuiMenu::openMPServers(std::vector<AVAHIserviceDetail> servers)
 	{
 		Window* window = mWindow;
 		auto theme = ThemeData::getMenuTheme();
@@ -499,15 +501,31 @@ void GuiMenu::openMPServers(std::vector<std::string> servers)
 
 		for (auto server : servers)
 		{
-			MPserver _server(server);
+			//MPserver _server(server);
 
-			std::string _subtitle	= _server.hostname + " (" + _server.ip + ")";
+			std::string _subtitle	= server.hostname + " (" + server.ip + ")";
 
-			s->addWithDescription(_server.gamename.empty() ? "Unknown game" : _server.gamename, _subtitle,
-				std::make_shared<TextComponent>(window, _server.platform.empty() ? "?" : _server.platform, font, color),
-				[this, window, _server]
+			std::string gamename;
+			std::string platform;
+			std::string image;
+			for(auto detail : server.details)
+				{
+					if(detail.key == "name"){
+						gamename = detail.value;
+					}
+					if(detail.key == "platform"){
+						platform = detail.value;
+					}
+					if(detail.key == "image"){
+						image = detail.value;
+					}
+				}
+
+			s->addWithDescription(gamename.empty() ? "Unknown game" : gamename, _subtitle,
+				std::make_shared<TextComponent>(window, platform.empty() ? "?" : platform, font, color),
+				[this, window, server]
 			{
-					ApiSystem::getInstance()->launchApp(window, "playertoo " + _server.ip);
+					ApiSystem::getInstance()->launchApp(window, "playertoo " + server.ip);
 			}, "iconControllers");
 
 		}
@@ -5261,67 +5279,6 @@ void GuiMenu::msgExec(const std::string cmd){
 	));
 }
 
-std::vector<NetInterface> GuiMenu::networkInterfaces()
-	{
-		std::vector<NetInterface> interfaces;
-		// IF list
-		for(auto intf : ApiSystem::getInstance()->getScriptResults("ls /sys/class/net | awk '{print $1}'"))
-			{
-				NetInterface f;
-				f.name = intf;
-				interfaces.push_back(f);
-			}
-		// ip route at first
-		for(auto row : ApiSystem::getInstance()->getScriptResults("ip r"))
-			{
-				int i = 0;
-				std::vector<std::string> tokens = Utils::String::split(row, ' ');
-				std::string interface;
-				if(tokens.at(3) == "dev"){interface = tokens.at(4);}
-				if(tokens.at(1) == "dev"){interface = tokens.at(2);}
-
-				for(auto intf : interfaces)
-					{
-						if(intf.name == interface)
-							{
-								break;
-							}
-						i++;
-					}
-				// víme index, name
-				if(tokens.at(1) == "via")
-					{
-						interfaces.at(i).dns.push_back(tokens.at(0));
-						interfaces.at(i).gw = tokens.at(2);
-					}
-				if(tokens.size() == 7) // 192.168.1.0/24 dev wlan0 scope link  src 192.168.1.111
-					{
-						interfaces.at(i).network = tokens.at(0);
-						interfaces.at(i).ip = tokens.at(6);
-					}
-
-				/*
-				struct NetInterface {
-					std::string name;
-					std::string ip;
-					std::string network;
-					std::string gw;
-					std::vector<std::string> dns;
-				}
-				*/
-				/*
-					default via 192.168.1.1 dev wlan0
-					1.1.1.1 via 192.168.1.1 dev wlan0
-					8.8.8.8 via 192.168.1.1 dev wlan0
-					82.165.8.211 via 192.168.1.1 dev wlan0
-					192.168.1.0/24 dev wlan0 scope link  src 192.168.1.111
-					192.168.1.1 dev wlan0 scope link
-				*/
-			}
-		return interfaces;
-	}
-
-
 std::string GuiMenu::apInlineInfo(std::string cmd)
 	{
 		//std::vector<std::string> result = ApiSystem::getInstance()->getScriptResults("ap.sh " + cmd);
@@ -5466,6 +5423,7 @@ std::vector<AVAHIservice> GuiMenu::getAvahiServices()
 				}
 			std::vector<std::string> rawServices = ApiSystem::getInstance()->getScriptResults(cmd);
 			std::vector<AVAHIservice> list;
+
 			for(auto s : rawServices)
 				{
 					AVAHIservice service(s);
@@ -5694,19 +5652,6 @@ void GuiMenu::openNetworkTools()
 				else
 					mWindow->pushGui(new GuiTextEditPopup(window, "ENTER ADDRESS", "8.8.8.8", [this](const std::string& value) { traceroute(value); }, false));
 			});
-		s->addGroup(_("INTERFACES"));
-
-		std::vector<NetInterface> interfaces = networkInterfaces();
-
-		for(auto interface : interfaces)
-			{
-				s->addWithDescription(interface.name, interface.network,
-					std::make_shared<TextComponent>(window, interface.ip, font, color),
-					[this, interface]
-				{
-					pingIP(interface.ip);
-				}, "iconNetwork");// eth/wifi...
-			}
 
 		mWindow->pushGui(s);
 	}
