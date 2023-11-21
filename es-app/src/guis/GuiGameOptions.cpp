@@ -98,6 +98,13 @@ if( isVideo && SystemConf::getInstance()->get("pe_fevideo.enabled") == "1")
 			GuiVideoViewer::playVideo(mWindow, _path, true);
 			this->close();
 		}, "iconScraper");
+
+		mMenu.addEntry(_("CAST TO DEVICE"), false, [_path, this]
+			{
+				GuiMenu::loadChromecast(_path);
+				this->close();
+			}, "iconChromecast");
+
 }
 
 if (game->getType() == GAME)

@@ -207,6 +207,10 @@ msgstr "OPRAVDU CHCETE VYTVOŘIT PŘÍSTUPOVÝ BOD?"
 msgid "REALLY STOP AP MODE?"
 msgstr "OPRAVDU CHCETE VYPNOUT PŘÍSTUPOVÝ BOD?"
 
+msgid "GAME AP IS NOT FOUND"
+msgstr "HERNÍ AP NALEZEN"
+
+
 msgid "AP SSID"
 msgstr "NÁZEV SÍTĚ"
 

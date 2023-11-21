@@ -275,6 +275,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 					return;
 				GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
+	addEntry(_("CHROMECAST").c_str(), true, [this] { loadChromecast(); }, "iconChromecast");
 	addEntry(_("FILE MANAGER").c_str(), false, [this] { appLauncher("file_manager.sh"); }, "iconFileManager");
 	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "iconApps");
 
@@ -426,10 +427,8 @@ void GuiMenu::searchGameAP()
 				}
 			else
 				{
-					window->pushGui(new GuiMsgBox(window, _("FOUND GAME AP!"),
-						_("CONNECT"), [window] {
-							runSystemCommand("ap.sh connectgameap", "", nullptr);
-						}, _("CANCEL"),nullptr));
+					runSystemCommand("ap.sh connectgameap", "", nullptr);
+					//window->pushGui(new GuiMsgBox(window, _("CONNECTING TO GAME AP..."),	_("OK"),nullptr));
 
 				}
 		}
@@ -5263,6 +5262,69 @@ void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data,
 	win->pushGui(new GuiWifi(win, title, data, onsave));
 }
 
+void GuiMenu::loadChromecast(std::string file)
+	{
+		Window* window = mWindow;
+		window->pushGui(new GuiLoading<std::vector<AVAHIserviceDetail>>(window, _("Loading..."),
+			[this, window, file](auto gui)
+			{
+				mWaitingLoad = true;
+				return getAvahiService("_googlecast._tcp");
+			},
+			[this, window, file](std::vector<AVAHIserviceDetail> casts)
+			{
+				mWaitingLoad = false;
+				if(casts.count() == 0)
+					{
+						window->pushGui(new GuiMsgBox(window, _("NO CHROMECAST DEVICES FOUND"),_("OK"),nullptr));
+					}
+				else
+					{
+						loadChromecastDevices(casts, file);
+					}
+			}
+		));
+	}
+void GuiMenu::loadChromecastDevices(std::vector<AVAHIserviceDetail> casts, std::string file)
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, _("CHROMECAST"));
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+		for(auto dev : casts)
+			{
+				Chromecast device(dev);
+
+				s->addWithDescription(device.name + (device.player.empty() ? "" : " (" + device.player +")"), device.oname + " (" + device.id + ")",
+					std::make_shared<TextComponent>(window, device.ip, font, color),
+					[this, device, file]
+				{
+					loadChromecastDevice(device, file);
+				}, "iconChromecast");
+			}
+		window->pushGui(s);
+	}
+
+void GuiMenu::loadChromecastDevice(Chromecast device, std::string file)
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, device.name;
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		if(!file.empty())
+			{
+				s->addEntry("CAST FILE", true, [this, window, device, file] {
+					//go-chromecast -a 192.168.1.105 load /storage/roms/mplayer/deadpool.mp4 &
+					runSystemCommand("go-chromecast -a " + device.ip + " load " + file + " &", "", nullptr);
+				});
+			}
+
+		window->pushGui(s);
+	}
+
 void GuiMenu::pingIP(std::string ip)
 	{
 		const std::string cmd = "ping " + ip + " -c 1";
@@ -5308,6 +5370,7 @@ std::vector<DHCPClient> GuiMenu::DHCPClientList(std::vector<std::string> clients
 		for(auto cli : clients)
 			{
 				DHCPClient _cli(cli);
+				_cli.vendor = macVendor(_cli.mac);
 				list.push_back(_cli);
 			}
 		return list;
@@ -5329,7 +5392,7 @@ void GuiMenu::openDHCPclient(DHCPClient lease)
 			s->addWithLabel(_("LEASETIME"), std::make_shared<TextComponent>(mWindow, lease.leasetime, font, color));
 
 		s->addGroup(_("TOOLS"));
-			s->addEntry("PING", true, [this, window, lease] {
+			s->addEntry(_("PING"), true, [this, window, lease] {
 				pingIP(lease.ip);
 			}, "iconSystem");
 
@@ -5822,8 +5885,10 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	}
 
 
-
-	s->addGroup(_("SETTINGS"));
+	if(gameApMode != "cli")
+		{
+			s->addGroup(_("SETTINGS"));
+		}
 
 	// window, title, settingstring,
 	const std::string baseSSID = SystemConf::getInstance()->get("wifi.ssid");

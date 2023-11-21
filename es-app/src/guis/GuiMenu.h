@@ -478,6 +478,26 @@ struct Traceroute {
 	std::vector<TraceRouteHop> hops;
 };
 
+struct Chromecast {
+	Chromecast(){};
+	Chromecast(AVAHIserviceDetail service){
+		ip = service.ip;
+		for(auto d : service.details)
+			{
+				if(d.key == "rs"){player 	= d.value;}
+				if(d.key == "fn"){name 		= d.value;}
+				if(d.key == "md"){oname 	= d.value;}
+				if(d.key == "id"){id 	= d.value;}
+			}
+	};
+
+	std::string player;
+	std::string name;
+	std::string oname;
+	std::string ip;
+	std::string id;
+};
+
 
 class GuiMenu : public GuiComponent
 {
@@ -531,6 +551,9 @@ private:
 	/*net tools*/
 	void pingIP(std::string ip);
 	void msgExec(const std::string cmd);
+	void loadChromecast(std::string file);
+	void loadChromecastDevices(std::vector<AVAHIserviceDetail> casts, std::string file);
+	void loadChromecastDevice(Chromecast device, std::string file);
 
 	void traceroute(std::string addr);
 	void openTraceroute(std::string addr, std::vector<TraceRouteHop> hops);
