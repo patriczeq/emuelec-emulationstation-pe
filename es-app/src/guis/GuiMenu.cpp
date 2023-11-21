@@ -5280,7 +5280,7 @@ void GuiMenu::loadChromecast(Window* mWindow, std::string file)
 					}
 				else
 					{
-						GuiMenu::loadChromecastDevices(mWindow, casts, file);
+						loadChromecastDevices(mWindow, casts, file);
 					}
 			}
 		));
@@ -5300,7 +5300,7 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 					std::make_shared<TextComponent>(window, device.ip, font, color),
 					[device, file]
 				{
-					GuiMenu::loadChromecastDevice(device, file);
+					loadChromecastDevice(device, file);
 				}, "iconChromecast");
 			}
 		window->pushGui(s);
