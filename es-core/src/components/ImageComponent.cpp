@@ -39,7 +39,7 @@ ImageComponent::ImageComponent(Window* window, bool forceLoad, bool dynamic) : G
 	mReflectOnBorders = false;
 	mAllowFading = true;
 	mRoundCorners = 0.0f;
-	
+
 	mPlaylistTimer = 0;
 	updateColors();
 }
@@ -68,7 +68,7 @@ void ImageComponent::resize()
 	{
 		// SVG rasterization is determined by height (see SVGResource.cpp), and rasterization is done in terms of pixels
 		// if rounding is off enough in the rasterization step (for images with extreme aspect ratios), it can cause cutoff when the aspect ratio breaks
-		// so, we always make sure the resultant height is an integer to make sure cutoff doesn't happen, and scale width from that 
+		// so, we always make sure the resultant height is an integer to make sure cutoff doesn't happen, and scale width from that
 		// (you'll see this scattered throughout the function)
 		// this is probably not the best way, so if you're familiar with this problem and have a better solution, please make a pull request!
 
@@ -86,7 +86,7 @@ void ImageComponent::resize()
 				mSize[1] = Math::min(Math::round(mSize[1] *= resizeScale.x()), mTargetSize.y());
 			}else{
 				mSize[1] = Math::round(mSize[1] * resizeScale.y()); // this will be mTargetSize.y(). We can't exceed it.
-				
+
 				// for SVG rasterization, always calculate width from rounded height (see comment above)
 				// we need to make sure we're not creating an image larger than max size
 				mSize[0] = Math::min((mSize[1] / textureSize.y()) * textureSize.x(), mTargetSize.x());
@@ -164,7 +164,7 @@ void ImageComponent::setImage(const std::string&  path, bool tile, MaxSizeInfo m
 	std::string canonicalPath = (path[0] == '{' ? "" : Utils::FileSystem::getCanonicalPath(path));
 	if (!mPath.empty() && mPath == canonicalPath)
 		return;
-	
+
 	if (allowMultiImagePlaylist && !canonicalPath.empty())
 	{
 		auto ext = Utils::String::toLower(Utils::FileSystem::getExtension(canonicalPath));
@@ -209,7 +209,7 @@ void ImageComponent::setImage(const std::string&  path, bool tile, MaxSizeInfo m
 			mTexture.reset();
 		else
 			mTexture = TextureResource::get(mDefaultPath, tile, mLinear, mForceLoad, mDynamic, true, maxSize.empty() ? nullptr : &maxSize);
-	} 
+	}
 	else
 	{
 		if (mPlaylist != nullptr && mPlaylistCache.find(mPath) != mPlaylistCache.cend())
@@ -281,7 +281,7 @@ void ImageComponent::setMaxSize(float width, float height)
 {
 	if (mSize.x() != 0 && mSize.y() != 0 && mTargetIsMax && !mTargetIsMin && mTargetSize.x() == width && mTargetSize.y() == height)
 		return;
-	
+
 	mTargetSize = Vector2f(width, height);
 	mSize = mTargetSize;
 	mTargetIsMax = true;
@@ -403,17 +403,17 @@ void ImageComponent::setOpacity(unsigned char opacity)
 	if (mOpacity == opacity)
 		return;
 
-	mOpacity = opacity;	
+	mOpacity = opacity;
 	updateColors();
 }
 
-void ImageComponent::setPadding(const Vector4f padding) 
-{ 
+void ImageComponent::setPadding(const Vector4f padding)
+{
 	if (mPadding == padding)
 		return;
 
-	mPadding = padding; 
-	updateVertices(); 
+	mPadding = padding;
+	updateVertices();
 }
 
 void ImageComponent::updateVertices()
@@ -429,17 +429,17 @@ void ImageComponent::updateVertices()
 	const float        py          = mTexture->isTiled() ? mSize.y() / getTextureSize().y() : 1.0f;
 	const unsigned int color       = Renderer::convertColor(mColorShift);
 	const unsigned int colorEnd    = Renderer::convertColor(mColorShiftEnd);
-	
+
 	mVertices[0] = { { topLeft.x() + mPadding.x(),     topLeft.y() + mPadding.y()     },
 		{ mTopLeftCrop.x(),          py   - mTopLeftCrop.y()     }, color };
 
-	mVertices[1] = { { topLeft.x() + mPadding.x(),     bottomRight.y() - mPadding.w() }, 
+	mVertices[1] = { { topLeft.x() + mPadding.x(),     bottomRight.y() - mPadding.w() },
 		{ mTopLeftCrop.x(),          1.0f - mBottomRightCrop.y() }, mColorGradientHorizontal ? colorEnd : color };
 
 	mVertices[2] = { { bottomRight.x() - mPadding.z(), topLeft.y() + mPadding.y()	},
 		{ mBottomRightCrop.x() * px, py   - mTopLeftCrop.y()     }, mColorGradientHorizontal ? color : colorEnd };
 
-	mVertices[3] = { { bottomRight.x() - mPadding.z(), bottomRight.y() - mPadding.w() }, 
+	mVertices[3] = { { bottomRight.x() - mPadding.z(), bottomRight.y() - mPadding.w() },
 	{ mBottomRightCrop.x() * px, 1.0f - mBottomRightCrop.y() }, color };
 
 	// round vertices
@@ -464,11 +464,14 @@ void ImageComponent::updateVertices()
 
 void ImageComponent::updateColors()
 {
+	if(!mUpdateColors){
+		return;
+	}
 	float opacity = (mOpacity * (mFading ? mFadeOpacity / 255.0 : 1.0)) / 255.0;
 
 	const unsigned int color = Renderer::convertColor(mColorShift & 0xFFFFFF00 | (unsigned char)((mColorShift & 0xFF) * opacity));
 	const unsigned int colorEnd = Renderer::convertColor(mColorShiftEnd & 0xFFFFFF00 | (unsigned char)((mColorShiftEnd & 0xFF) * opacity));
-	
+
 	mVertices[0].col = color;
 	mVertices[1].col = mColorGradientHorizontal ? colorEnd : color;
 	mVertices[2].col = mColorGradientHorizontal ? color : colorEnd;
@@ -482,12 +485,12 @@ void ImageComponent::updateRoundCorners()
 		mRoundCornerStencil.clear();
 		return;
 	}
-	
+
 	float x = 0;
 	float y = 0;
 	float size_x = mSize.x();
 	float size_y = mSize.y();
-	
+
 	if (mTargetIsMin)
 	{
 		Vector2f targetSizePos = (mTargetSize - mSize) * mOrigin * -1;
@@ -523,7 +526,7 @@ void ImageComponent::render(const Transform4x4f& parentTrans)
 	}
 
 	Transform4x4f trans = parentTrans * getTransform();
-	
+
 	// Don't use soft clip if rotation applied : let renderer do the work
 	if (mCheckClipping && mRotation == 0)
 	{
@@ -654,7 +657,7 @@ void ImageComponent::fadeIn(bool textureLoaded)
 				// Start with a zero opacity and flag it as fading
 				mFadeOpacity = 0;
 				mFading = true;
-				
+
 				updateColors();
 			}
 		}
@@ -675,7 +678,7 @@ void ImageComponent::fadeIn(bool textureLoaded)
 				mFadeOpacity = (unsigned char)opacity;
 			}
 
-			// Apply the combination of the target opacity and current fade			
+			// Apply the combination of the target opacity and current fade
 			updateColors();
 		}
 	}
@@ -711,7 +714,7 @@ void ImageComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const s
 		float denormalized = elem->get<float>("x") * scale.x();
 		setPosition(Vector3f(denormalized, mPosition.y(), 0));
 	}
-	
+
 	if (properties & POSITION && elem->has("y"))
 	{
 		float denormalized = elem->get<float>("y") * scale.y();
@@ -764,7 +767,7 @@ void ImageComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const s
 
 		if (elem->has("gradientType"))
 			setColorGradientHorizontal(elem->get<std::string>("gradientType").compare("horizontal"));
-		
+
 		if (elem->has("reflexion"))
 			mReflection = elem->get<Vector2f>("reflexion");
 		else
@@ -776,16 +779,16 @@ void ImageComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const s
 			mReflectOnBorders = false;
 
 		if (elem->has("opacity"))
-			setOpacity((unsigned char) (elem->get<float>("opacity") * 255.0));		
+			setOpacity((unsigned char) (elem->get<float>("opacity") * 255.0));
 
 		if (elem->has("saturation"))
 			mSaturation = Math::clamp(elem->get<float>("saturation"), 0.0f, 1.0f);
 
 		if (elem->has("shader"))
-			mCustomShader = elem->get<std::string>("shader");		
-	}	
+			mCustomShader = elem->get<std::string>("shader");
+	}
 
-	if(properties & ThemeFlags::ROTATION) 
+	if(properties & ThemeFlags::ROTATION)
 	{
 		if(elem->has("rotation"))
 			setRotationDegrees(elem->get<float>("rotation"));
@@ -814,7 +817,7 @@ void ImageComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const s
 		else if (str == "right")
 			setHorizontalAlignment(ALIGN_RIGHT);
 		else
-			setHorizontalAlignment(ALIGN_CENTER);		
+			setHorizontalAlignment(ALIGN_CENTER);
 	}
 
 	if (properties & ALIGNMENT && elem->has("verticalAlignment"))
@@ -848,9 +851,9 @@ void ImageComponent::applyTheme(const std::shared_ptr<ThemeData>& theme, const s
 		mSourceThemePath = path;
 
 		if (!path.empty())
-		{			
+		{
 			mPath = "";
-			
+
 			if (mPlaylist == nullptr)
 			{
 				bool tile = (elem->has("tile") && elem->get<bool>("tile"));
@@ -906,7 +909,7 @@ void ImageComponent::onShow()
 			setImage(item, false, getMaxSizeInfo(), true, false);
 	}
 
-	GuiComponent::onShow();	
+	GuiComponent::onShow();
 
 	if (mTexture != nullptr)
 		mTexture->setRequired(true);
@@ -917,7 +920,7 @@ void ImageComponent::onHide()
 	GuiComponent::onHide();
 
 	if (mTexture != nullptr)
-		mTexture->setRequired(false);	
+		mTexture->setRequired(false);
 }
 
 void ImageComponent::update(int deltaTime)
@@ -943,8 +946,8 @@ void ImageComponent::update(int deltaTime)
 }
 
 bool ImageComponent::isTiled()
-{ 
-	return mTexture != nullptr && mTexture->isTiled(); 
+{
+	return mTexture != nullptr && mTexture->isTiled();
 }
 
 ThemeData::ThemeElement::Property ImageComponent::getProperty(const std::string name)
@@ -972,7 +975,7 @@ ThemeData::ThemeElement::Property ImageComponent::getProperty(const std::string 
 }
 
 void ImageComponent::setProperty(const std::string name, const ThemeData::ThemeElement::Property& value)
-{	
+{
 	Vector2f scale = getParent() ? getParent()->getSize() : Vector2f((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
 
 	if ((name == "maxSize" || name == "minSize") && value.type == ThemeData::ThemeElement::Property::PropertyType::Pair)
@@ -986,7 +989,7 @@ void ImageComponent::setProperty(const std::string name, const ThemeData::ThemeE
 			setColorShift(value.i);
 		else
 		{
-			mColorShift = value.i;			
+			mColorShift = value.i;
 			updateColors();
 		}
 	}
@@ -1010,12 +1013,12 @@ void ImageComponent::setProperty(const std::string name, const ThemeData::ThemeE
 		GuiComponent::setProperty(name, value);
 }
 
-void ImageComponent::setRoundCorners(float value) 
-{ 
+void ImageComponent::setRoundCorners(float value)
+{
 	if (mRoundCorners == value)
 		return;
-		
-	mRoundCorners = value; 
+
+	mRoundCorners = value;
 	updateRoundCorners();
 }
 

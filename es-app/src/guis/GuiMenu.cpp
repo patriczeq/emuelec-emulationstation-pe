@@ -526,7 +526,7 @@ void GuiMenu::openMPServers(std::vector<AVAHIserviceDetail> servers)
 					}
 				auto icon = std::make_shared<ImageComponent>(window);
 				Vector2f maxSize(64, 64);
-				icon->setColor(theme->Text.color);
+				icon->setUpdateColors(false);
 				icon->setImage(image, false, maxSize);
 				icon->setMaxSize(maxSize);
 				icon->setIsLinear(true);

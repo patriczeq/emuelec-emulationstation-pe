@@ -133,7 +133,10 @@ public:
 	void setCustomShader(const std::string& customShader) { mCustomShader = customShader; }
 
 	std::string getOriginalThemePath() { return mSourceThemePath; }
-
+	void setUpdateColors(bool s)
+		{
+			mUpdateColors = s;
+		}
 protected:
 	std::shared_ptr<TextureResource> mTexture;
 	std::shared_ptr<TextureResource> mLoadingTexture;
@@ -163,6 +166,7 @@ private:
 	std::string mDefaultPath;
 
 	unsigned char			mFadeOpacity;
+	bool mUpdateColors = true;
 	bool					mFading;
 	bool					mForceLoad;
 	bool					mDynamic;
