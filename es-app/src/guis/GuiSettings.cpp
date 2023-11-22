@@ -12,11 +12,11 @@
 #include "components/SwitchComponent.h"
 #include "components/OptionListComponent.h"
 
-GuiSettings::GuiSettings(Window* window, 
+GuiSettings::GuiSettings(Window* window,
 	const std::string title,
 	const std::string customButton,
 	const std::function<void(GuiSettings*)>& func,
-	bool animate) : GuiComponent(window), mMenu(window, title)
+	bool animate, float size[2]) : GuiComponent(window), mMenu(window, title)
 {
 	addChild(&mMenu);
 
@@ -27,9 +27,15 @@ GuiSettings::GuiSettings(Window* window,
 
 	if (customButton != "-----")
 		mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });
+	if(size[0] == 0 || size[1] == 0)
+		{
+			setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
+		}
+	else
+		{
+			setSize((float)size[0], (float)size[1]);
+		}
 
-	setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
-	
 	if (animate)
 	{
 		if (Renderer::isSmallScreen())
@@ -45,12 +51,12 @@ GuiSettings::GuiSettings(Window* window,
 			mMenu.setPosition((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, (Renderer::getScreenHeight() - mMenu.getSize().y()) / 2);
 		else
 			mMenu.setPosition((mSize.x() - mMenu.getSize().x()) / 2, Renderer::getScreenHeight() * 0.15f);
-	}	
+	}
 }
 
 GuiSettings::~GuiSettings()
 {
-	
+
 }
 
 void GuiSettings::close()
@@ -94,7 +100,7 @@ bool GuiSettings::input(InputConfig* config, Input input)
 			delete window->peekGui();
 		return true;
 	}
-	
+
 	return GuiComponent::input(config, input);
 }
 
@@ -113,18 +119,18 @@ std::vector<HelpPrompt> GuiSettings::getHelpPrompts()
 	std::vector<HelpPrompt> prompts = mMenu.getHelpPrompts();
 
 	prompts.push_back(HelpPrompt(BUTTON_BACK, _("BACK"), [&] { close(); }));
-	prompts.push_back(HelpPrompt(mCloseButton, _("CLOSE"), [&] 
-	{ 
+	prompts.push_back(HelpPrompt(mCloseButton, _("CLOSE"), [&]
+	{
 		// close everything
 		Window* window = mWindow;
 		while (window->peekGui() && window->peekGui() != ViewController::get())
-			delete window->peekGui(); 
+			delete window->peekGui();
 	}));
 
 	return prompts;
 }
 
-void GuiSettings::addSubMenu(const std::string& label, const std::function<void()>& func) 
+void GuiSettings::addSubMenu(const std::string& label, const std::function<void()>& func)
 {
 	ComponentListRow row;
 	row.makeAcceptInputHandler(func);
@@ -170,9 +176,9 @@ void GuiSettings::addInputTextRow(const std::string& title, const std::string& s
 	std::shared_ptr<TextComponent> ed = std::make_shared<TextComponent>(window, text, font, color, ALIGN_RIGHT);
 	if (EsLocale::isRTL())
 		ed->setHorizontalAlignment(Alignment::ALIGN_LEFT);
-		
+
 	// ed->setRenderBackground(true); ed->setBackgroundColor(0xFFFF00FF); // Debug only
-	
+
 	ed->setSize(font->sizeText(text+"  ").x(), 0);
 	row.addElement(ed, false);
 
@@ -261,7 +267,7 @@ void GuiSettings::addFileBrowser(const std::string& title, const std::string& se
 
 	auto updateVal = [this, ed, localSettingsID, localStoreInSettings](const std::string &newVal)
 	{
-		ed->setValue(newVal);			
+		ed->setValue(newVal);
 		mMenu.updateSize();
 
 		if (localStoreInSettings)
@@ -293,7 +299,7 @@ std::shared_ptr<SwitchComponent> GuiSettings::addSwitch(const std::string& title
 
 	if (!description.empty())
 		addWithDescription(title, description, comp);
-	else 
+	else
 		addWithLabel(title, comp);
 
 	std::string localSettingsID = settingsID;
@@ -320,7 +326,7 @@ std::shared_ptr<OptionListComponent<std::string>> GuiSettings::addOptionList(con
 
 	if (!description.empty())
 		addWithDescription(title, description, comp);
-	else 
+	else
 		addWithLabel(title, comp);
 
 	std::string localSettingsID = settingsID;

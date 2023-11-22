@@ -5293,8 +5293,17 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
+		/*
+		float width = Renderer::getScreenWidth() * 0.6f; // max width
+		float height = Renderer::getScreenHeight() * 0.75f; // minimum width
+		const std::string title,
+		const std::string customButton = "",
+		const std::function<void(GuiSettings*)>& func = nullptr,
+		bool animate = false, float size[2] = {0,0}
+		*/
+		float size[2] = {(float)Renderer::getScreenWidth() * 0.6f, (float)Renderer::getScreenHeight() * 0.75f};
 
-		auto s = new GuiSettings(window, _("CHROMECAST"));
+		auto s = new GuiSettings(window, _("CHROMECAST"), "", nullptr, true, size);
 
 
 		for(auto dev : casts)
@@ -5350,10 +5359,6 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 			});
 			s->addWithLabel(_("VOLUME"), volumeSlider);
 
-			float width = Renderer::getScreenWidth() * 0.6f; // max width
-			float height = Renderer::getScreenHeight() * 0.75f; // minimum width
-
-			s->setSize(width, height);
 
 		window->pushGui(s);
 	}
