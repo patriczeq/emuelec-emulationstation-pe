@@ -239,7 +239,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 					for(auto dev : gs)
 						{
 							Chromecast device(dev);
-							if(device.id == ChromecastP.id)
+							if(device.id == ChromecastP.castID)
 								{
 									loadChromecastDevice(window, device);
 									break;
