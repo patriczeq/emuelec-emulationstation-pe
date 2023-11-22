@@ -5301,9 +5301,9 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 		const std::function<void(GuiSettings*)>& func = nullptr,
 		bool animate = false, float size[2] = {0,0}
 		*/
-		float size[2] = {(float)Renderer::getScreenWidth() * 0.6f, (float)Renderer::getScreenHeight() * 0.75f};
+		//float size[2] = {(float)Renderer::getScreenWidth() * 0.6f, (float)Renderer::getScreenHeight() * 0.75f};
 
-		auto s = new GuiSettings(window, _("CHROMECAST"), "", nullptr, true, size);
+		auto s = new GuiSettings(window, _("CHROMECAST"), "", nullptr, true, (float)Renderer::getScreenWidth() * 0.6f, (float)Renderer::getScreenHeight() * 0.75f);
 
 
 		for(auto dev : casts)
