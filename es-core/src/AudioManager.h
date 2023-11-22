@@ -130,8 +130,6 @@ private:
 	int VideoShow_OSD;
 
 	ChromecastPlayer chromecast;
-
-	bool
 };
 
 #endif // ES_CORE_AUDIO_MANAGER_H

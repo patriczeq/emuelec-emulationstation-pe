@@ -151,6 +151,7 @@ void AudioManager::setChromecast(bool playing, std::string file, std::string id)
 		chromecast.filename = file;
 		chromecast.castID = id;
 	}
+
 std::string AudioManager::ChromecastCurrID()
 	{
 		return chromecast.castID;
