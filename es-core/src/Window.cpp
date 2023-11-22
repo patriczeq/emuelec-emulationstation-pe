@@ -145,6 +145,8 @@ bool Window::init(bool initRenderer, bool initInputManager)
 		mClock->setColor(0x777777FF);
 	}
 
+  //TODO: tady dalsi indikatory
+
 	if (mControllerActivity == nullptr)
 		mControllerActivity = std::make_shared<ControllerActivityComponent>(this);
 
@@ -458,7 +460,7 @@ void Window::update(int deltaTime)
 
 	if (mVolumeInfo)
 		mVolumeInfo->update(deltaTime);
-	
+
 	if (mOSD)
 		mOSD->update(deltaTime);
 
@@ -928,7 +930,7 @@ void Window::startScreenSaver()
 		{
 			return;
 		}
-		
+
 	if (mScreenSaver && !mRenderScreenSaver)
 	{
 		for (auto extra : mScreenExtras)

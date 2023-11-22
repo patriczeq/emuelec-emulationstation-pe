@@ -5289,10 +5289,18 @@ void GuiMenu::loadChromecast(Window* mWindow, std::string file)
 void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDetail> casts, std::string file)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("CHROMECAST"));
+
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
+
+		auto s = new GuiSettings(window, _("CHROMECAST"));
+
+		float width = Renderer::getScreenWidth() * 0.6f; // max width
+		float height = Renderer::getScreenHeight() * 0.75f; // minimum width
+
+		s->setSize(width, height);
+
 		for(auto dev : casts)
 			{
 				Chromecast device(dev);
@@ -5307,6 +5315,13 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 			}
 		window->pushGui(s);
 	}
+void GuiMenu::castFile(Chromecast device, std::string file)
+	{
+		LOG(LogInfo) << "Chromecast cast:" << file;
+		//go-chromecast -a 192.168.1.105 load /storage/roms/mplayer/deadpool.mp4 &
+		runSystemCommand("killall go-chromecast &", "", nullptr);
+		runSystemCommand("go-chromecast -u " + device.id + " load '" + file + "' &", "", nullptr);
+	}
 
 void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::string file)
 	{
@@ -5318,20 +5333,16 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 
 		if(!file.empty())
 			{
-				s->addEntry("CAST FILE", true, [window, device, file] {
-					LOG(LogInfo) << "Chromecast cast:" << file;
-					//go-chromecast -a 192.168.1.105 load /storage/roms/mplayer/deadpool.mp4 &
-					runSystemCommand("killall go-chromecast &", "", nullptr);
-					runSystemCommand("go-chromecast -u " + device.id + " load '" + file + "' &", "", nullptr);
-				});
+				castFile(device, file);
 			}
 
-			s->addEntry("STOP", true, [window, device] {
+			s->addEntry("STOP CASTING", true, [window, device] {
 				runSystemCommand("go-chromecast -u " + device.id + " stop &", "", nullptr);
 			});
 
-			auto volumeSlider = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 5.f, "%");
-			volumeSlider->setValue(0);
+			auto volumeSlider = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 1.f, "%");
+			float currVolume = std::stof(getShOutput("go-chromecast -u " + device.id + " volume"));
+			volumeSlider->setValue(currVolume * 100);
 			volumeSlider->setOnValueChanged([device](const float &newVal) {
 				runSystemCommand("go-chromecast -u " + device.id + " volume " + std::to_string(newVal / 100), "", nullptr);
 			});
@@ -5679,7 +5690,7 @@ void GuiMenu::openNetworkTools()
 					runSystemCommand("ap.sh startwebfiles", "", nullptr);
 				}
 				delete s;
-				openNetworkSettings();
+				//openNetworkSettings();
 			}, "iconAdvanced");
 
 
