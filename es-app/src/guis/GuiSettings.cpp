@@ -16,7 +16,7 @@ GuiSettings::GuiSettings(Window* window,
 	const std::string title,
 	const std::string customButton,
 	const std::function<void(GuiSettings*)>& func,
-	bool animate, float size[2]) : GuiComponent(window), mMenu(window, title)
+	bool animate, float sizex, float sizey) : GuiComponent(window), mMenu(window, title)
 {
 	addChild(&mMenu);
 
@@ -27,13 +27,13 @@ GuiSettings::GuiSettings(Window* window,
 
 	if (customButton != "-----")
 		mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });
-	if(size[0] == 0 || size[1] == 0)
+	if(sizex == 0.0 || sizey == 0.0)
 		{
 			setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
 		}
 	else
 		{
-			setSize((float)size[0], (float)size[1]);
+			setSize(sizex, sizey);
 		}
 
 	if (animate)
