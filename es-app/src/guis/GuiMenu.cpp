@@ -5296,10 +5296,6 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 
 		auto s = new GuiSettings(window, _("CHROMECAST"));
 
-		float width = Renderer::getScreenWidth() * 0.6f; // max width
-		float height = Renderer::getScreenHeight() * 0.75f; // minimum width
-
-		s->setSize(width, height);
 
 		for(auto dev : casts)
 			{
@@ -5313,6 +5309,12 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 					loadChromecastDevice(window, device, file);
 				}, "iconChromecast");
 			}
+
+			float width = Renderer::getScreenWidth() * 0.6f; // max width
+			float height = Renderer::getScreenHeight() * 0.75f; // minimum width
+
+			s->setSize(width, height);
+
 		window->pushGui(s);
 	}
 void GuiMenu::castFile(Chromecast device, std::string file)
@@ -5347,6 +5349,11 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 				runSystemCommand("go-chromecast -u " + device.id + " volume " + std::to_string(newVal / 100), "", nullptr);
 			});
 			s->addWithLabel(_("VOLUME"), volumeSlider);
+
+			float width = Renderer::getScreenWidth() * 0.6f; // max width
+			float height = Renderer::getScreenHeight() * 0.75f; // minimum width
+
+			s->setSize(width, height);
 
 		window->pushGui(s);
 	}
