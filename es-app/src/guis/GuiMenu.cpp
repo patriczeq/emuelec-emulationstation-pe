@@ -5355,7 +5355,10 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 		if(!file.empty())
 			{
 				castFile(device, file);
-				s->addEntry("CAST " + file, false, [this, device, file] {
+				std::string basename = file;
+				std::vector<std::string> bstr = Utils::String::split(file, '/');
+				basename = bstr[bstr.size() - 1];
+				s->addEntry("CAST " + basename, false, [device, file] {
 					castFile(device, file);
 				});
 			}
