@@ -15,6 +15,12 @@
 class Sound;
 class ThemeData;
 
+struct ChromecastPlayer {
+	bool playing;
+	std::string filename;
+	std::string castID;
+};
+
 class AudioManager
 {
 private:
@@ -74,6 +80,8 @@ public:
 	int VideoShowOSD();
 	void VideoReset();
 
+	ChromecastPlayer ChromecastData();
+	void setChromecast(bool playing, std::string file = "", std::string id = "");
 
 
 	//std::vector<std::string> getID3(std::string song);
@@ -116,11 +124,14 @@ private:
 	bool mSongNameChanged;
 	bool VideoPlay;
 	bool VideoMoviePlay;
-
 	int VideoCurrTime;
 	int VideoTotalTime;
 	bool VideoIsPaused;
 	int VideoShow_OSD;
+
+	ChromecastPlayer chromecast;
+
+	bool
 };
 
 #endif // ES_CORE_AUDIO_MANAGER_H

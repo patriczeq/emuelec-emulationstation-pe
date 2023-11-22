@@ -74,6 +74,11 @@ if(game->getType() == FOLDER && SystemConf::getInstance()->get("pe_femusic.enabl
 			AudioManager::getInstance()->playDir(_path);
 			this->close();
 		}, "iconSound");
+	mMenu.addEntry(_("CAST DIRECTORY"), false, [_path, this]
+		{
+			GuiMenu::loadChromecast(mWindow, _path + "/*");
+			this->close();
+		}, "iconChromecast");
 }
 
 if(isAudio && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
@@ -95,11 +100,6 @@ if(isAudio && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 			this->close();
 		}, "iconChromecast");
 
-		mMenu.addEntry(_("CAST DIRECTORY"), false, [_path, this]
-			{
-				GuiMenu::loadChromecast(mWindow, _path + "/*");
-				this->close();
-			}, "iconChromecast");
 
 }
 

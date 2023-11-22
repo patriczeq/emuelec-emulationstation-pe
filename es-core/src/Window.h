@@ -51,7 +51,7 @@ public:
 	~Window();
 
 	void pushGui(GuiComponent* gui);
-	void displayNotificationMessage(std::string message, int duration = -1); 
+	void displayNotificationMessage(std::string message, int duration = -1);
 	void removeGui(GuiComponent* gui);
 	GuiComponent* peekGui();
 	inline int getGuiStackSize() { return (int)mGuiStack.size(); }
@@ -69,7 +69,7 @@ public:
 	inline bool isSleeping() const { return mSleeping; }
 	bool getAllowSleep();
 	void setAllowSleep(bool sleep);
-	
+
 	// Splash screen
 	std::string getCustomSplashScreenImage();
 	void setCustomSplashScreen(std::string imagePath, std::string customText);
@@ -103,7 +103,7 @@ public:
 
 	// Mouse management
 	void processMouseMove(int x, int y, bool touchScreen);
-	void processMouseWheel(int delta);	
+	void processMouseWheel(int delta);
 	bool processMouseButton(int button, bool down, int x, int y);
 	void releaseMouseCapture() { mMouseCapture = nullptr; }
 	void setMouseCapture(GuiComponent* mouseCapture) { mMouseCapture = mouseCapture; }
@@ -119,7 +119,7 @@ private:
 	std::vector<AsyncNotificationComponent*> mAsyncNotificationComponent;
 	void updateAsyncNotifications(int deltaTime);
 	void renderAsyncNotifications(const Transform4x4f& trans);
-	
+
 	struct PostedFunction
 	{
 		std::function<void()> func;
@@ -140,14 +140,14 @@ private:
 
 	HelpComponent*	mHelp;
 	ImageComponent* mBackgroundOverlay;
-	ScreenSaver*	mScreenSaver;	
+	ScreenSaver*	mScreenSaver;
 	bool			mRenderScreenSaver;
 
 	std::vector<GuiComponent*> mScreenExtras;
 	std::vector<GuiComponent*> mGuiStack;
 
 	typedef std::pair<std::string, int> NotificationMessage;
-	std::vector<NotificationMessage> mNotificationMessages; 
+	std::vector<NotificationMessage> mNotificationMessages;
 
 	std::vector< std::shared_ptr<Font> > mDefaultFonts;
 	std::shared_ptr<Splash> mSplash;
@@ -164,7 +164,7 @@ private:
 	std::shared_ptr<VolumeInfoComponent> mVolumeInfo;
 	std::shared_ptr<OSDComponent> mOSD;
 
-	std::shared_ptr<BatteryIndicatorComponent>	mBatteryIndicator;	
+	std::shared_ptr<BatteryIndicatorComponent>	mBatteryIndicator;
 
 	bool mNormalizeNextUpdate;
 

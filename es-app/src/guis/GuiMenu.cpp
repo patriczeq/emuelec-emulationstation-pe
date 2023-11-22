@@ -230,6 +230,24 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 #endif
 
 		// pe-emulationstation
+		auto ChromecastP = AudioManager::getInstance()->ChromecastData();
+		if(ChromecastP.playing)
+			{
+				addWithDescription(_("CHROMECAST"), _("NOW PLAYING") + ": " + ChromecastP.file, nullptr, [this, window, ChromecastP]
+				{
+					std::vector<AVAHIserviceDetail> gs = getAvahiService("_googlecast._tcp");
+					for(auto dev : gs)
+						{
+							Chromecast device(dev);
+							if(device.id == ChromecastP.id)
+								{
+									loadChromecastDevice(window, device);
+									break;
+								}
+						}
+
+				}, "iconChromecast");
+			}
 		// pe-player
 		if(SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 		{
@@ -275,7 +293,6 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 					return;
 				GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
-	addEntry(_("CHROMECAST").c_str(), true, [this] { loadChromecast(mWindow); }, "iconChromecast");
 	addEntry(_("FILE MANAGER").c_str(), false, [this] { appLauncher("file_manager.sh"); }, "iconFileManager");
 	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "iconApps");
 
@@ -5293,17 +5310,8 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
-		/*
-		float width = Renderer::getScreenWidth() * 0.6f; // max width
-		float height = Renderer::getScreenHeight() * 0.75f; // minimum width
-		const std::string title,
-		const std::string customButton = "",
-		const std::function<void(GuiSettings*)>& func = nullptr,
-		bool animate = false, float size[2] = {0,0}
-		*/
-		//float size[2] = {(float)Renderer::getScreenWidth() * 0.6f, (float)Renderer::getScreenHeight() * 0.75f};
 
-		auto s = new GuiSettings(window, _("CHROMECAST"), "", nullptr, true, (float)Renderer::getScreenWidth() * 0.6f, (float)Renderer::getScreenHeight() * 0.75f);
+		auto s = new GuiSettings(window, _("CHROMECAST"));
 
 
 		for(auto dev : casts)
@@ -5319,19 +5327,21 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 				}, "iconChromecast");
 			}
 
-			float width = Renderer::getScreenWidth() * 0.6f; // max width
-			float height = Renderer::getScreenHeight() * 0.75f; // minimum width
-
-			s->setSize(width, height);
-
 		window->pushGui(s);
 	}
+
 void GuiMenu::castFile(Chromecast device, std::string file)
 	{
+		if(AudioManager::getInstance()->ChromecastCurrID() != device.id)
+			{
+				runSystemCommand("killall go-chromecast", "", nullptr);
+			}
+
 		LOG(LogInfo) << "Chromecast cast:" << file;
-		//go-chromecast -a 192.168.1.105 load /storage/roms/mplayer/deadpool.mp4 &
-		runSystemCommand("killall go-chromecast &", "", nullptr);
-		runSystemCommand("go-chromecast -u " + device.id + " load '" + file + "' &", "", nullptr);
+
+		runSystemCommand("go-chromecast -u " + device.id + " load '" + file + "'", "", nullptr);
+
+		AudioManager::getInstance()->setChromecast(true, file, device.id);
 	}
 
 void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::string file)
@@ -5345,10 +5355,21 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 		if(!file.empty())
 			{
 				castFile(device, file);
+				s->addEntry("CAST " + file, false, [this, device, file] {
+					castFile(device, file);
+				});
 			}
 
-			s->addEntry("STOP CASTING", true, [window, device] {
-				runSystemCommand("go-chromecast -u " + device.id + " stop &", "", nullptr);
+			s->addEntry("STOP CASTING", false, [window, device] {
+				runSystemCommand("go-chromecast -u " + device.id + " stop", "", nullptr);
+				AudioManager::getInstance()->setChromecast(false);
+			});
+
+			s->addEntry("PAUSE", false, [window, device] {
+				runSystemCommand("go-chromecast -u " + device.id + " pause", "", nullptr);
+			});
+			s->addEntry("UNPAUSE", false, [window, device] {
+				runSystemCommand("go-chromecast -u " + device.id + " unpause", "", nullptr);
 			});
 
 			auto volumeSlider = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 1.f, "%");
@@ -5358,7 +5379,12 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 				runSystemCommand("go-chromecast -u " + device.id + " volume " + std::to_string(newVal / 100), "", nullptr);
 			});
 			s->addWithLabel(_("VOLUME"), volumeSlider);
-
+			s->addEntry("MUTE", false, [window, device] {
+				runSystemCommand("go-chromecast -u " + device.id + " mute", "", nullptr);
+			});
+			s->addEntry("UNMUTE", false, [window, device] {
+				runSystemCommand("go-chromecast -u " + device.id + " unmute", "", nullptr);
+			});
 
 		window->pushGui(s);
 	}
@@ -5705,6 +5731,7 @@ void GuiMenu::openNetworkTools()
 				//openNetworkSettings();
 			}, "iconAdvanced");
 
+		s->addEntry(_("CHROMECAST").c_str(), true, [this] { loadChromecast(mWindow); }, "iconChromecast");
 
 		s->addGroup(_("DIAGNOSTICS"));
 			s->addEntry(_("ARP-SCAN"), false, [this, window]() {

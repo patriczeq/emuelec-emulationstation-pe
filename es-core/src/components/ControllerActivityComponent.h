@@ -36,10 +36,10 @@ public:
 
 	void setSpacing(float spacing) { mSpacing = spacing; }
 	void setHorizontalAlignment(Alignment align) { mHorizontalAlignment = align; }
-	
+
 	void setActivityColor(unsigned int color) { mActivityColor = color; }
 	void setHotkeyColor(unsigned int color) { mHotkeyColor = color; }
-	
+
 	bool hasBattery() { return mBatteryInfo.hasBattery; }
 
 protected:
@@ -60,7 +60,7 @@ protected:
 
 protected:
 	// Pads
-	std::shared_ptr<TextureResource> mPadTexture;	
+	std::shared_ptr<TextureResource> mPadTexture;
 	std::shared_ptr<TextureResource> mGunTexture;
 
 	class PlayerPad
@@ -70,7 +70,7 @@ protected:
 		{
 			reset();
 		}
-	
+
 		int  index;
 		int  batteryLevel;
 		int  keyState;
@@ -111,7 +111,7 @@ protected:
 	std::shared_ptr<TextCache>		 mBatteryText;
 
 	std::string mCurrentBatteryTexture;
-	
+
 	void updateBatteryInfo();
 
 	std::string mIncharge;

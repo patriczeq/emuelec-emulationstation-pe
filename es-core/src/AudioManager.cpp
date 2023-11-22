@@ -141,6 +141,21 @@ void AudioManager::unregisterSound(std::shared_ptr<Sound> & sound)
 	LOG(LogWarning) << "AudioManager Error - tried to unregister a sound that wasn't registered!";
 }
 
+ChromecastPlayer AudioManager::ChromecastData()
+	{
+		return chromecast;
+	}
+void AudioManager::setChromecast(bool playing, std::string file, std::string id)
+	{
+		chromecast.playing = playing;
+		chromecast.filename = file;
+		chromecast.castID = id;
+	}
+std::string AudioManager::ChromecastCurrID()
+	{
+		return chromecast.castID;
+	}
+
 void AudioManager::play()
 {
 	getInstance();
