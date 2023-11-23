@@ -829,8 +829,7 @@ void GuiMenu::sendIRcode(int code)
 		Window* window = mWindow;
 		window->pushGui(new GuiMsgBox(window, "SENT CODE #" + strCode + "\nSEND NEXT?",
 		_("YES"), [this, code] {
-			code+=1;
-			sendIRCode(code);
+			sendIRCode(code + 1);
 		}, _("NO"), nullptr));
 
 	}
