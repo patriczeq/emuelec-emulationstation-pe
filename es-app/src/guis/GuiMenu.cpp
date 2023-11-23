@@ -5332,7 +5332,7 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 
 void GuiMenu::castFile(Chromecast device, std::string file)
 	{
-		if(AudioManager::getInstance()->ChromecastCurrID() != device.id)
+		if(AudioManager::getInstance()->ChromecastData().castID != device.id)
 			{
 				runSystemCommand("killall go-chromecast", "", nullptr);
 			}
