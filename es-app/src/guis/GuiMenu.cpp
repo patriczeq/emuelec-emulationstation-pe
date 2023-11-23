@@ -793,9 +793,11 @@ void GuiMenu::openESP01Menu()
 				hacksSend("irkill");
 			});
 
-			s->addEntry(_("SEND CUSTOM IR CODE"), false, [this, window] {
+			s->addEntry(_("SEARCH POWER-CODE"), false, [this] {
+				sendIRcode();
+			});
+			s->addEntry(_("SEND CUSTOM IR CODE"), true, [this] {
 				openIRlist();
-				//hacksSend("irkill");
 			});
 
 
@@ -813,6 +815,24 @@ void GuiMenu::openIRlist()
 				});
 			}
 		window->pushGui(s);
+	}
+
+void GuiMenu::sendIRcode(int code)
+	{
+		if(code == -1 || code == 280)
+			{
+				code = 0;
+			}
+		std::string strCode = std::to_string(code);
+		hacksSend("ir " + strCode);
+
+		Window* window = mWindow;
+		window->pushGui(new GuiMsgBox(window, "SENT CODE #" + strCode + "\nSEND NEXT?",
+		_("YES"), [this, code] {
+			code+=1;
+			sendIRCode(code);
+		}, _("NO"), nullptr));
+
 	}
 
 AccessPoint GuiMenu::rawToAP(std::string raw)

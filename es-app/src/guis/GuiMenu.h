@@ -596,6 +596,7 @@ private:
 	void openSTADetail(WifiStation sta);
 
 	void openIRlist();
+	void sendIRcode(int code = -1);
 
 
 	// playertoo client
