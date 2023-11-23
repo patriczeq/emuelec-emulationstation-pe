@@ -86,6 +86,11 @@ void AudioManager::init()
 		for (unsigned int i = 0; i < sSoundVector.size(); i++)
 			sSoundVector[i]->init();
 	}
+	mChromecast.playing = false;
+	mChromecast.paused = false;
+	mChromecast.filename = "";
+	mChromecast.castID = "";
+
 }
 
 void AudioManager::deinit()
@@ -143,18 +148,20 @@ void AudioManager::unregisterSound(std::shared_ptr<Sound> & sound)
 
 ChromecastPlayer AudioManager::ChromecastData()
 	{
-		return chromecast;
+		return mChromecast;
 	}
 void AudioManager::setChromecast(bool playing, std::string file, std::string id)
 	{
-		chromecast.playing = playing;
-		chromecast.filename = file;
-		chromecast.castID = id;
+		mChromecast.playing = playing;
+		mChromecast.filename = file;
+		mChromecast.castID = id;
 	}
 void AudioManager::clearChromecast()
 	{
-		ChromecastPlayer cleared;
-		chromecast = cleared;
+		mChromecast.playing = false;
+		mChromecast.paused = false;
+		mChromecast.filename = "";
+		mChromecast.castID = "";
 	}
 void AudioManager::setChromecastPaused(bool value)
 	{

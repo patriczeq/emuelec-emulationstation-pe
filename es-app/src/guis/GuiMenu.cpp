@@ -233,7 +233,10 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		auto ChromecastP = AudioManager::getInstance()->ChromecastData();
 		if(ChromecastP.playing)
 			{
-				addWithDescription(_("CHROMECAST"), _("NOW PLAYING") + ": " + ChromecastP.filename, nullptr, [this, window, ChromecastP]
+				std::string basename = ChromecastP.filename;
+				std::vector<std::string> bstr = Utils::String::split(file, '/');
+				basename = bstr[bstr.size() - 1];
+				addWithDescription(_("CHROMECAST"), _("NOW PLAYING") + ": " + basename, nullptr, [this, window, ChromecastP]
 				{
 					std::vector<AVAHIserviceDetail> gs = getAvahiService("_googlecast._tcp");
 					for(auto dev : gs)
@@ -258,9 +261,6 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 				{
 					openMusicPlayer();
 				}, "iconSound");
-			}
-			else{
-				addEntry(_("MUSIC PLAYER").c_str(), true, [this] { openMusicPlayer(); }, "iconSound");
 			}
 		}
 
@@ -602,14 +602,14 @@ void GuiMenu::openMusicPlayer()
 				}, AudioManager::getInstance()->isPlaying(song) ? "iconSound" : "");
 			}
 		}
-		else
+		/*else
 		{
 			s->addGroup(_("OPTIONS"));
 			s->addEntry(_("LOAD ALL MUSIC"), false, [s] {
 					AudioManager::getInstance()->playDir("/roms/mplayer/");
 					delete s;
 				});
-		}
+		}*/
 
 		window->pushGui(s);
 	}
@@ -5384,8 +5384,9 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 				});
 			}
 
-			s->addEntry("STOP CASTING", false, [window, device] {
+			s->addEntry("STOP", false, [s, window, device] {
 				ChromecastControl(device.id, "stop");
+				delete s;
 			});
 
 			s->addEntry("PAUSE / RESUME", false, [window, device] {

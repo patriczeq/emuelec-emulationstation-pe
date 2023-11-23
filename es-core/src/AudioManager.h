@@ -132,7 +132,7 @@ private:
 	bool VideoIsPaused;
 	int VideoShow_OSD;
 
-	ChromecastPlayer chromecast;
+	ChromecastPlayer mChromecast;
 };
 
 #endif // ES_CORE_AUDIO_MANAGER_H
