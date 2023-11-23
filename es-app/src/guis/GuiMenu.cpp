@@ -5730,7 +5730,7 @@ void GuiMenu::openNetworkTools()
 		std::string gameApMode = apInlineInfo("gameapmode");
 
 		auto s = new GuiSettings(mWindow, _("NETWORK TOOLS").c_str());
-
+		//ffmpeg -f fbdev -re -i /dev/fb0 -framerate 20 -listen 1 -f mp4 -preset veryfast -b:v 320k -maxrate 320k -bufsize 1280k -movflags frag_keyframe+empty_moov -vf "transpose=1,mpdecimate,setpts=N/FRAME_RATE/TB" http://127.0.0.1:8080
 		s->addGroup(_("SYSTEM"));
 		//Start WebFileBrowser
 			bool webfilesStatus = apInlineInfo("webfiles") == "1";
