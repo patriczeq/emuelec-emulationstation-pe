@@ -233,7 +233,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		auto ChromecastP = AudioManager::getInstance()->ChromecastData();
 		if(ChromecastP.playing)
 			{
-				addWithDescription(_("CHROMECAST"), _("NOW PLAYING") + ": " + ChromecastP.file, nullptr, [this, window, ChromecastP]
+				addWithDescription(_("CHROMECAST"), _("NOW PLAYING") + ": " + ChromecastP.filename, nullptr, [this, window, ChromecastP]
 				{
 					std::vector<AVAHIserviceDetail> gs = getAvahiService("_googlecast._tcp");
 					for(auto dev : gs)
