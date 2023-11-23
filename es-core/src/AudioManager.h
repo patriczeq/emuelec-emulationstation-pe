@@ -17,6 +17,10 @@ class ThemeData;
 
 struct ChromecastPlayer {
 	bool playing;
+	bool paused;
+	float volume;
+	int totaltime;
+	int currtime;
 	std::string filename;
 	std::string castID;
 };
@@ -81,7 +85,9 @@ public:
 	void VideoReset();
 
 	ChromecastPlayer ChromecastData();
+	void clearChromecast();
 	void setChromecast(bool playing, std::string file = "", std::string id = "");
+
 
 
 	//std::vector<std::string> getID3(std::string song);

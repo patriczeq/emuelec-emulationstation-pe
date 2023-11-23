@@ -5330,19 +5330,26 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 		window->pushGui(s);
 	}
 
-void GuiMenu::castFile(Chromecast device, std::string file)
+void GuiMenu::ChromecastControl(std::string id, std::string action, std::string file)
 	{
-		if(AudioManager::getInstance()->ChromecastData().castID != device.id)
+		LOG(LogInfo) << "Chromecast action:" << action;
+		runSystemCommand("go-chromecast -u " + id + " " + action + (file.empty() ? " &" : " '" + file + "' &"), "", nullptr);
+		if(action == "load")
 			{
-				runSystemCommand("killall go-chromecast", "", nullptr);
+				if(AudioManager::getInstance()->ChromecastData().castID != device.id)
+					{
+						runSystemCommand("killall go-chromecast &", "", nullptr);
+					}
+
+				AudioManager::getInstance()->setChromecast(true, file, id);
 			}
-
-		LOG(LogInfo) << "Chromecast cast:" << file;
-
-		runSystemCommand("go-chromecast -u " + device.id + " load '" + file + "'", "", nullptr);
-
-		AudioManager::getInstance()->setChromecast(true, file, device.id);
+		if(action == "stop")
+			{
+				AudioManager::getInstance()->clearChromecast();
+				runSystemCommand("killall go-chromecast &", "", nullptr);
+			}
 	}
+
 
 void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::string file)
 	{
@@ -5352,6 +5359,7 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
+
 		if(!file.empty())
 			{
 				castFile(device, file);
@@ -5359,20 +5367,26 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 				std::vector<std::string> bstr = Utils::String::split(file, '/');
 				basename = bstr[bstr.size() - 1];
 				s->addEntry("CAST " + basename, false, [device, file] {
-					castFile(device, file);
+					ChromecastControl(device.id, "load", file);
 				});
 			}
 
 			s->addEntry("STOP CASTING", false, [window, device] {
-				runSystemCommand("go-chromecast -u " + device.id + " stop", "", nullptr);
-				AudioManager::getInstance()->setChromecast(false);
+				ChromecastControl(device.id, "stop");
 			});
 
-			s->addEntry("PAUSE", false, [window, device] {
-				runSystemCommand("go-chromecast -u " + device.id + " pause", "", nullptr);
-			});
-			s->addEntry("UNPAUSE", false, [window, device] {
-				runSystemCommand("go-chromecast -u " + device.id + " unpause", "", nullptr);
+			s->addEntry("PAUSE / RESUME", false, [window, device] {
+				if(AudioManager::getInstance()->ChromecastData().paused)
+					{
+						ChromecastControl(device.id, "unpause");
+						AudioManager::getInstance()->ChromecastData().paused = false;
+					}
+				else
+					{
+						ChromecastControl(device.id, "pause");
+						AudioManager::getInstance()->ChromecastData().paused = true;
+					}
+
 			});
 
 			auto volumeSlider = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 1.f, "%");
@@ -5382,12 +5396,7 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 				runSystemCommand("go-chromecast -u " + device.id + " volume " + std::to_string(newVal / 100), "", nullptr);
 			});
 			s->addWithLabel(_("VOLUME"), volumeSlider);
-			s->addEntry("MUTE", false, [window, device] {
-				runSystemCommand("go-chromecast -u " + device.id + " mute", "", nullptr);
-			});
-			s->addEntry("UNMUTE", false, [window, device] {
-				runSystemCommand("go-chromecast -u " + device.id + " unmute", "", nullptr);
-			});
+
 
 		window->pushGui(s);
 	}

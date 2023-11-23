@@ -150,7 +150,12 @@ void AudioManager::setChromecast(bool playing, std::string file, std::string id)
 		chromecast.playing = playing;
 		chromecast.filename = file;
 		chromecast.castID = id;
-	} 
+	}
+void AudioManager::clearChromecast()
+	{
+		ChromecastPlayer cleared;
+		chromecast = cleared;
+	}
 
 void AudioManager::play()
 {
