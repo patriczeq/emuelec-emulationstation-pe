@@ -234,7 +234,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		if(ChromecastP.playing)
 			{
 				std::string basename = ChromecastP.filename;
-				std::vector<std::string> bstr = Utils::String::split(file, '/');
+				std::vector<std::string> bstr = Utils::String::split(basename, '/');
 				basename = bstr[bstr.size() - 1];
 				addWithDescription(_("CHROMECAST"), _("NOW PLAYING") + ": " + basename, nullptr, [this, window, ChromecastP]
 				{
