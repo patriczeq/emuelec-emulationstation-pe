@@ -595,6 +595,8 @@ private:
 	void openSTAmenu(std::vector<WifiStation> stations);
 	void openSTADetail(WifiStation sta);
 
+	void openIRlist();
+
 
 	// playertoo client
 	void scanMPServers();

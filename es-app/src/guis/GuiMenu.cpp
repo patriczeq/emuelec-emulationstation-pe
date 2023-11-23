@@ -706,7 +706,7 @@ void GuiMenu::openESP01Settings()
 
 void GuiMenu::openESP01Menu()
 	{
-	  	Window* window = mWindow;
+  	Window* window = mWindow;
 		auto s = new GuiSettings(window, "H4CK TH3 FK1N W0RLD!");
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
@@ -793,7 +793,25 @@ void GuiMenu::openESP01Menu()
 				hacksSend("irkill");
 			});
 
+			s->addEntry(_("SEND CUSTOM IR CODE"), false, [this, window] {
+				openIRlist();
+				//hacksSend("irkill");
+			});
 
+
+		window->pushGui(s);
+	}
+void GuiMenu::openIRlist()
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, "SELECT IR CODE");
+		for(int i = 0; i < 280; i++)
+			{
+				std::string code = std::to_string(i);
+				s->addEntry("# " + code, false, [this, code] {
+					hacksSend("ir " + code);
+				});
+			}
 		window->pushGui(s);
 	}
 
@@ -5313,12 +5331,11 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 		std::string basename;
 		if(!file.empty())
 			{
-				std::string basename = file;
 				std::vector<std::string> bstr = Utils::String::split(file, '/');
 				basename = bstr[bstr.size() - 1];
 			}
 
-		auto s = new GuiSettings(window, _("CHROMECAST") + (!file.empty() ? ": "+basename : ""));
+		auto s = new GuiSettings(window, _("CHROMECAST") + (!file.empty() ? (": "+basename) : ""));
 
 
 		for(auto dev : casts)
@@ -5374,7 +5391,6 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 		std::string basename;
 		if(!file.empty())
 			{
-				std::string basename = file;
 				std::vector<std::string> bstr = Utils::String::split(file, '/');
 				basename = bstr[bstr.size() - 1];
 			}
