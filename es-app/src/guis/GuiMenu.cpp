@@ -5343,9 +5343,17 @@ void GuiMenu::ChromecastControl(std::string id, std::string action, std::string 
 
 				AudioManager::getInstance()->setChromecast(true, file, id);
 			}
-		if(action == "stop")
+		else if(action == "stop")
 			{
 				AudioManager::getInstance()->clearChromecast();
+			}
+	  else if(action == "pause")
+			{
+				AudioManager::getInstance()->setChromecastPaused(true);
+			}
+		else if(action == "unpause")
+			{
+				AudioManager::getInstance()->setChromecastPaused(false);
 			}
 
 		runSystemCommand("go-chromecast -u " + id + " " + action + (file.empty() ? " &" : " '" + file + "' &"), "", nullptr);
@@ -5381,17 +5389,7 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 			});
 
 			s->addEntry("PAUSE / RESUME", false, [window, device] {
-				if(AudioManager::getInstance()->ChromecastData().paused)
-					{
-						ChromecastControl(device.id, "unpause");
-						AudioManager::getInstance()->ChromecastData().paused = false;
-					}
-				else
-					{
-						ChromecastControl(device.id, "pause");
-						AudioManager::getInstance()->ChromecastData().paused = true;
-					}
-
+				ChromecastControl(device.id, AudioManager::getInstance()->ChromecastData().paused ? "unpause" : "pause");
 			});
 
 			auto volumeSlider = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 1.f, "%");

@@ -156,7 +156,10 @@ void AudioManager::clearChromecast()
 		ChromecastPlayer cleared;
 		chromecast = cleared;
 	}
-
+void AudioManager::setChromecastPaused(bool value)
+	{
+		chromecast.paused = value;
+	}
 void AudioManager::play()
 {
 	getInstance();
