@@ -5310,8 +5310,15 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
+		std::string basename;
+		if(!file.empty())
+			{
+				std::string basename = file;
+				std::vector<std::string> bstr = Utils::String::split(file, '/');
+				basename = bstr[bstr.size() - 1];
+			}
 
-		auto s = new GuiSettings(window, _("CHROMECAST"));
+		auto s = new GuiSettings(window, _("CHROMECAST") + (!file.empty() ? ": "+basename : ""));
 
 
 		for(auto dev : casts)
@@ -5357,17 +5364,22 @@ void GuiMenu::ChromecastControl(std::string id, std::string action, std::string 
 			}
 
 		runSystemCommand("go-chromecast -u " + id + " " + action + (file.empty() ? " &" : " '" + file + "' &"), "", nullptr);
-		if(action == "stop")
-			{
-				runSystemCommand("killall go-chromecast", "", nullptr);
-			}
+
 	}
 
 
 void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::string file)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, device.name);
+		std::string basename;
+		if(!file.empty())
+			{
+				std::string basename = file;
+				std::vector<std::string> bstr = Utils::String::split(file, '/');
+				basename = bstr[bstr.size() - 1];
+			}
+
+		auto s = new GuiSettings(window, device.name + (!file.empty() ? ": "+basename : ""));
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -5386,7 +5398,6 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 
 			s->addEntry("STOP", false, [s, window, device] {
 				ChromecastControl(device.id, "stop");
-				delete s;
 			});
 
 			s->addEntry("PAUSE / RESUME", false, [window, device] {
