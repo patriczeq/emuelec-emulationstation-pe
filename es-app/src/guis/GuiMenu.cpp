@@ -1365,6 +1365,25 @@ void GuiMenu::openEmuELECSettings()
             });
 #endif
 s->addGroup(_("PE MOD SETTINGS"));
+	// uboot theme
+	// PORT
+	auto uboot_theme = std::make_shared< OptionListComponent<std::string> >(mWindow, "U-BOOT THEME", false);
+	std::vector<std::string> themes = ApiSystem::getInstance()->getScriptResults("ubt.sh -list");
+
+	auto utheme = Settings::getInstance()->getString("pe_hack.uboot_theme");
+	if (utheme.empty())
+		utheme = "mario";
+
+	for (auto it = themes.cbegin(); it != themes.cend(); it++)
+		uboot_theme->add(_(it->c_str()), *it, utheme == *it);
+
+	s->addWithLabel(_("U-BOOT THEME"), uboot_theme);
+	s->addSaveFunc([this, uboot_theme]
+	{
+		runSystemCommand("ubt.sh -install " + uboot_theme->getSelected(), "", nullptr);
+		Settings::getInstance()->setString("pe_hack.uboot_theme", uboot_theme->getSelected());
+	});
+
 	// hack the world MENU
 	auto hack_enabled = std::make_shared<SwitchComponent>(mWindow);
 	//bool basehack_enabled = SystemConf::getInstance()->get("pe_hack.enabled") == "1";
