@@ -5422,11 +5422,15 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 
 		if(!file.empty())
 			{
-				ChromecastControl(device.id, "load", file);
+				if(file != AudioManager::getInstance()->ChromecastData().filename)
+					{
+						ChromecastControl(device.id, "load", file);
+					}
+
 				std::string basename = file;
 				std::vector<std::string> bstr = Utils::String::split(file, '/');
 				basename = bstr[bstr.size() - 1];
-				s->addEntry("CAST " + basename, false, [device, file] {
+				s->addEntry("LOAD " + basename, false, [device, file] {
 					ChromecastControl(device.id, "load", file);
 				});
 			}
