@@ -141,7 +141,7 @@ if (game->getType() == GAME)
 		if(!isAudio && !isVideo && !isImageViewer){
 
 			// PLAYERTOO
-			mMenu.addEntry(_("LAUNCH MULTIPLAYER HOST"), false, [window, game, this]
+			mMenu.addEntry(_("LAUNCH 2 PLAYERS SESSION"), false, [window, game, this]
 				{
 					if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
 						{
@@ -149,7 +149,7 @@ if (game->getType() == GAME)
 							return;
 						}
 
-					mWindow->pushGui(new GuiLoading<bool>(window, _("STARTING GAME SERVER"),
+					mWindow->pushGui(new GuiLoading<bool>(window, _("STARTING 1ST PLAYER SERVER"),
 						[this, game](auto gui)
 						{
 

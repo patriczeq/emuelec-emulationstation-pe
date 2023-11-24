@@ -277,7 +277,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 				}, "iconHack");
 			}
 
-		addEntry(_("MULTIPLAYER CLIENT").c_str(), true, [this] { scanMPServers(); }, "iconMultiplayer");
+		addEntry(_("2ND PLAYER").c_str(), true, [this] { scanMPServers(); }, "iconMultiplayer");
 
 #ifdef _ENABLEEMUELEC
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::WIFI))
@@ -466,7 +466,7 @@ void GuiMenu::scanMPServers()
 				return;
 			}
 
-		mWindow->pushGui(new GuiLoading<std::vector<AVAHIserviceDetail>>(window, _("SEARCHING GAME SERVERS..."),
+		mWindow->pushGui(new GuiLoading<std::vector<AVAHIserviceDetail>>(window, _("SEARCHING 1ST PLAYER..."),
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
@@ -482,23 +482,9 @@ void GuiMenu::scanMPServers()
 					{
 						openMPServers(servers);
 					}
-				/*else if(servers.size() == 1)
-					{
-						MPserver _server(servers.at(0));
-						if(!_server.ip.empty())
-							{
-								std::string msg = !_server.gamename.empty() ? "\n" + _server.gamename : "";
-														msg+= !_server.platform.empty() ? " (" + _server.platform : ")";
-														msg+= !_server.hostname.empty() ? "\nSERVER:" + _server.hostname : "";
-								window->pushGui(new GuiMsgBox(window, msg,
-									_("LAUNCH"),[this, _server] {
-											appLauncher("playertoo " + _server.ip);
-									},_("CANCEL"), nullptr));
-							}
-					}*/
 				else
 					{
-						window->pushGui(new GuiMsgBox(window, _("SERVER(s) NOT FOUND!"),
+						window->pushGui(new GuiMsgBox(window, _("PLAYER 1 NOT FOUND!"),
 							_("OK"),nullptr,_("NETWORK SETTINGS"), [this] {
 								openNetworkSettings();
 							}));
@@ -513,7 +499,7 @@ void GuiMenu::openMPServers(std::vector<AVAHIserviceDetail> servers)
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		auto s = new GuiSettings(window, _("SELECT GAME SERVER").c_str());
+		auto s = new GuiSettings(window, _("SELECT GAME TO JOIN").c_str());
 
 		for (auto server : servers)
 		{
