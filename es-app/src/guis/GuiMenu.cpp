@@ -868,17 +868,26 @@ void GuiMenu::openWPSpwned(std::string raw)
 			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, ap.rssi + "dBm", 	font, color));
 			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, ap.bssid, 	font, color));
 			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, ap.vendor, 	font, color));
-			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ap.ssid, 	font, color));
 			s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, ap.channel, 	font, color));
-			s->addWithDescription("PASSWORD", "",
-				std::make_shared<TextComponent>(window, ap.password, 	font, color),
-				[this, window, ap]
-			{
-				window->pushGui(new GuiMsgBox(window, ap.ssid + "\n" + ap.password,_("OK"),nullptr,_("CONNECT"),[this, ap]{
-					return;
-				}));
+		s->addGroup(_("AP ACCESS DATA"));
+			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ap.ssid, 	font, color));
+			s->addWithLabel(_("PASSWORD"), 	std::make_shared<TextComponent>(window, ap.password, 	font, color));
+		s->addGroup(_("AP HACKS"));
+			s->addEntry(_("CLONE BSSID, DEAUTH"), false, [this, window, ap]() {
+				std::string msg = _("CLONE BSSID, DEAUTH") +"\n";
+										msg+= ap.ssid.empty() ? "" : (ap.ssid + "\n");
+										msg+= ap.bssid + "\n";
+				window->pushGui(new GuiMsgBox(window, msg,
+					_("YES"), [this, window, ap] {
+						hacksSend("deauthapclone " + ap.bssid);
+					}, _("CANCEL"),nullptr));
 			}, "iconHack");
-
+			s->addEntry(_("CONNECT TO NETWORK"), false, [this, window, ap]() {
+				const std::string baseSSID 	= ap.ssid;
+				const std::string baseKEY 	= ap.password;
+				runSystemCommand("ap.sh stop \"" + baseSSID + "\" \"" + baseKEY + "\"", "", nullptr);
+				window->pushGui(new GuiMsgBox(window, _("CONNECTING TO") + "\n" + ap.ssid,_("OK"),nullptr));
+			}, "iconNetwork");
 		window->pushGui(s);
 	}
 
