@@ -870,7 +870,7 @@ void GuiMenu::openWPSpwned(std::string raw)
 			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, ap.vendor, 	font, color));
 			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ap.ssid, 	font, color));
 			s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, ap.channel, 	font, color));
-			s->addWithDescription("PASSWORD", _subtitle,
+			s->addWithDescription("PASSWORD", "",
 				std::make_shared<TextComponent>(window, ap.password, 	font, color),
 				[this, window, ap]
 			{
