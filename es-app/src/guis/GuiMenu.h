@@ -89,19 +89,9 @@ struct AccessPoint {
 	AccessPoint() {}
 	AccessPoint(std::string raw) {
 		std::vector<std::string> tokens = Utils::String::split(raw, ';');
-		//c0:c9:e3:9e:dd:b7;-43;WRT_AP
-		if(tokens.size() == 3)
-			{
-				bssid 	= Utils::String::toUpper(tokens.at(0));
-				if(tokens.at(1) != "-200"){
-					rssi 	= tokens.at(1);
-				}
-				if(tokens.at(2) != "*"){
-					ssid 	= Utils::String::trim(tokens.at(2));
-				}
-			}
-		//c0:c9:e3:9e:dd:b7;-43;4;WRT_AP
-		else if(tokens.size() == 4)
+		//36:60:f9:e2:07:52;-52;4;8;*HIDDEN*
+
+		else if(tokens.size() == 5)
 			{
 				bssid 	= Utils::String::toUpper(tokens.at(0));
 				if(tokens.at(1) != "-200"){
@@ -110,7 +100,10 @@ struct AccessPoint {
 				if(tokens.at(2) != "0"){
 					channel = tokens.at(2);
 				}
-				if(tokens.at(3) != "*"){
+				if(tokens.at(3) != "-1"){
+					enc 	= tokens.at(3);
+				}
+				if(tokens.at(4) != "*"){
 					ssid 	= tokens.at(3);
 				}
 			}
@@ -120,51 +113,31 @@ struct AccessPoint {
 	std::string ssid;
 	std::string vendor;
 	std::string channel;
+	std::string enc;
 };
-
 
 struct WifiStation {
 	WifiStation() {}
 	WifiStation(std::string raw) {
 		std::vector<std::string> tokens = Utils::String::split(raw, ';');
-			if(tokens.size() >= 4) // simplePrint
+			//18:fe:34:34:5a:da;-40;2;34:60:f9:e2:07:52;-54;4;4;WRT_AP
+			if(tokens.size() == 8) // simplePrint
 			{
-				if(tokens.size() == 4) // simplePrint
-				{
-					//ac:67:84:2c:9e:92; 34:60:f9:e2:07:52; -68; 129
-					// mac; bssid; rssi; packets
-					mac 			= Utils::String::toUpper(tokens.at(0));
-					pkts			= tokens.at(3);
-					rssi			= tokens.at(2);
-					// name
-					// vendor
-					ap.bssid	= Utils::String::toUpper(tokens.at(1));
-					/*ap.ssid		= "UpdateESP!";
-					ap.rssi 	= "UpdateESP!";
-					ap.channel= "";*/
-					// vendor
+				mac 			= Utils::String::toUpper(tokens.at(0));
+				rssi 			= tokens.at(1);
+				pkts 			= tokens.at(2);
+				ap.bssid  = Utils::String::toUpper(tokens.at(3));
+				if(tokens.at(4) != "-200"){
+					ap.rssi 	= tokens.at(4);
 				}
-
-				if(tokens.size() == 7) // simplePrint
-				{
-					//cc:db:a7:a2:0f:c4;-23;7; c0:c9:e3:9e:dd:b7;-38;4;WRT_AP
-					// mac, rssi, packets, bssid, aprssi, channel, ssid
-					mac 			= Utils::String::toUpper(tokens.at(0));
-					pkts 			= tokens.at(2);
-					rssi 			= tokens.at(1);
-					// name
-					// vendor
-					ap.bssid  = Utils::String::toUpper(tokens.at(3));
-					if(tokens.at(6) != "*"){
-						ap.ssid 	= tokens.at(6);
-					}
-					if(tokens.at(4) != "-200"){
-						ap.rssi 	= tokens.at(4);
-					}
-					if(tokens.at(5) != "0"){
-						ap.channel 	= tokens.at(5);
-					}
-					// vendor
+				if(tokens.at(5) != "0"){
+					ap.channel 	= tokens.at(5);
+				}
+				if(tokens.at(6) != "-1"){
+					ap.enc 	= tokens.at(6);
+				}
+				if(tokens.at(7) != "*"){
+					ap.ssid 	= tokens.at(7);
 				}
 			}
 	}
@@ -308,16 +281,6 @@ struct AVAHIServiceDetails {
 	std::string value;
 };
 
-/*
-=;wlan0;	IPv4;
-					google-nest-hub-be389c40cbbba1ee717820a6b45c1b0b;
-					_googlecast._tcp;
-					local;
-					fuchsia-ac67-842d-398d.local;
-					192.168.1.105;
-					8009;
-					"rs=" "nf=1" "bs=FA8FCA90B8AA" "st=0" "ca=231941" "fn=Kuchyně Display" "ic=/setup/icon.png" "md=Google Nest Hub" "ve=05" "rm=" "cd=453032A8D16F03D52948EC835528CE4F" "id=be389c40cbbba1ee717820a6b45c1b0b"
-*/
 struct AVAHIserviceDetail {
 	AVAHIserviceDetail(){}
 	AVAHIserviceDetail(std::string raw)
@@ -577,6 +540,7 @@ private:
 	std::vector<std::string> hacksGet(std::string cmd);
 	std::string hacksGetString(std::string cmd, bool tty = true);
 	std::string macVendor(std::string mac);
+	std::string encString(std::string id);
 	// macnames
 	std::string macName(std::string mac);
 	void setMacName(std::string mac, std::string name);

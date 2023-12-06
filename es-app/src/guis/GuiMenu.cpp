@@ -298,6 +298,12 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 
 	if (isFullUI)
 	{
+		s->addEntry(_("SCRAPER").c_str(), true, [this] { openScraperSettings(); }, "iconScraper");
+
+		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::BATOCERASTORE) || ApiSystem::getInstance()->isScriptingSupported(ApiSystem::THEMESDOWNLOADER) ||
+			(ApiSystem::getInstance()->isScriptingSupported(ApiSystem::THEBEZELPROJECT) && ApiSystem::getInstance()->isScriptingSupported(ApiSystem::DECORATIONS)) ||
+			ApiSystem::getInstance()->isScriptingSupported(ApiSystem::UPGRADE))
+			s->addEntry(_("UPDATES & DOWNLOADS"), true, [this] { openUpdatesSettings(); }, "iconUpdates");
 		addEntry(_("SETTINGS").c_str(), true, [this] { openAllSettings(); }, "iconSystem");
 	}
 	else
@@ -400,12 +406,6 @@ void GuiMenu::openAllSettings()
 			}
 	#endif
 
-			s->addEntry(_("SCRAPER").c_str(), true, [this] { openScraperSettings(); }, "iconScraper");
-
-			if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::BATOCERASTORE) || ApiSystem::getInstance()->isScriptingSupported(ApiSystem::THEMESDOWNLOADER) ||
-				(ApiSystem::getInstance()->isScriptingSupported(ApiSystem::THEBEZELPROJECT) && ApiSystem::getInstance()->isScriptingSupported(ApiSystem::DECORATIONS)) ||
-				ApiSystem::getInstance()->isScriptingSupported(ApiSystem::UPGRADE))
-				s->addEntry(_("UPDATES & DOWNLOADS"), true, [this] { openUpdatesSettings(); }, "iconUpdates");
 
 			s->addEntry(_("SYSTEM SETTINGS").c_str(), true, [this] { openSystemSettings(); }, "iconSystem");
 			s->addEntry(_("CUSTOM SYSTEM SETTINGS").c_str(), true, [this] { openEmuELECSettings(); }, "iconSystem");
@@ -824,6 +824,7 @@ AccessPoint GuiMenu::rawToAP(std::string raw)
 	{
 		AccessPoint ap(raw);
 		ap.vendor = macVendor(ap.bssid);
+		ap.enc    = encString(ap.enc);
 		return ap;
 	}
 
@@ -844,6 +845,7 @@ WifiStation GuiMenu::rawToSTA(std::string raw)
 	sta.vendor 	= macVendor(sta.mac);
 	sta.name 		= macName(sta.mac);
 	sta.ap.vendor = macVendor(sta.ap.bssid);
+	sta.ap.enc    = encString(sta.ap.enc);
 
 	if(sta.ap.ssid.empty() || sta.ap.rssi.empty() || sta.ap.channel.empty())
 		{
@@ -923,10 +925,27 @@ AccessPoint GuiMenu::getAP(std::string bssid)
 	}
 
 std::string GuiMenu::macVendor(std::string mac)
-{
-	std::string _oui = Utils::String::toUpper(Utils::String::replace(mac, ":", "")).substr(0, 6);
-	return OUI_VENDOR(_oui);
-}
+	{
+		std::string _oui = Utils::String::toUpper(Utils::String::replace(mac, ":", "")).substr(0, 6);
+		return OUI_VENDOR(_oui);
+	}
+
+std::string GuiMenu::encString(std::string id)
+	{
+		/*
+		* 5 : ENC_TYPE_WEP - WEP
+		* 2 : ENC_TYPE_TKIP - WPA / PSK
+		* 4 : ENC_TYPE_CCMP - WPA2 / PSK
+		* 7 : ENC_TYPE_NONE - open network
+		* 8 : ENC_TYPE_AUTO - WPA / WPA2 / PSK
+		*/
+		if(id == "5"){return "WEP";}
+		if(id == "2"){return "WPA";}
+		if(id == "4"){return "WPA2";}
+		if(id == "7"){return "OPEN";}
+		if(id == "8"){return "WPA/WPA2";}
+		return "?";
+	}
 
 void GuiMenu::hacksSend(std::string cmd)
 {
