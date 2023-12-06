@@ -1084,7 +1084,50 @@ float GuiMenu::rssiToPerc(int rssi)
 		return 2* (rssi + 100)
 	}
 */
+/*
+const std::string cmd = "espscansta " + std::to_string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
+stalist = StationsList(hacksGet(cmd));
+return stalist;
+*/
+
 void GuiMenu::scanSTA()
+	{
+		Window* window = mWindow;
+
+		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING STATIONS..."),
+			[this, window](auto gui)
+			{
+				mWaitingLoad = true;
+				const std::string cmd = "espscansta " + std::to_string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
+				return hacksGet(cmd);
+			},
+			[this, window](std::vector<std::string> stations)
+			{
+				mWaitingLoad = false;
+					mWindow->pushGui(new GuiLoading<std::vector<WifiStation>>(window, _("PARSING STATIONS..."),
+						[this, window, stations](auto gui)
+						{
+							mWaitingLoad = true;
+							return StationsList(stations);
+						},
+						[this, window](std::vector<WifiStation> stations)
+						{
+							mWaitingLoad = false;
+
+							if(stations.size() > 0)
+							{
+								openSTAmenu(stations);
+							}
+							else
+							{
+								window->pushGui(new GuiMsgBox(window, _("NO STA FOUND!"),_("OK"),nullptr));
+							}
+						}
+					));
+			}
+		));
+	}
+/*void GuiMenu::scanSTA()
 	{
 		Window* window = mWindow;
 
@@ -1108,7 +1151,7 @@ void GuiMenu::scanSTA()
 			}
 		));
 	}
-
+*/
 void GuiMenu::openSTAmenu(std::vector<WifiStation> stations)
 	{
 		Window* window = mWindow;
