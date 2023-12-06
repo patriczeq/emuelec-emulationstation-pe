@@ -847,7 +847,7 @@ void GuiMenu::sniffWPS()
 			}
 		));
 	}
-void openWPSpwned(std::string raw)
+void GuiMenu::openWPSpwned(std::string raw)
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, _("WPS CRACKED NETWORK"));

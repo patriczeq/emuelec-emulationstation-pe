@@ -114,7 +114,7 @@ struct AccessPoint {
 	std::string vendor;
 	std::string channel;
 	std::string enc;
-	std::string pass;
+	std::string password;
 };
 
 struct WifiStation {
