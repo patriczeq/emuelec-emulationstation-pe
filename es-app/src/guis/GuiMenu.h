@@ -91,7 +91,7 @@ struct AccessPoint {
 		std::vector<std::string> tokens = Utils::String::split(raw, ';');
 		//36:60:f9:e2:07:52;-52;4;8;*HIDDEN*
 
-		else if(tokens.size() == 5)
+		if(tokens.size() == 5)
 			{
 				bssid 	= Utils::String::toUpper(tokens.at(0));
 				if(tokens.at(1) != "-200"){
