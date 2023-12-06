@@ -2,7 +2,7 @@
 #ifndef OUI_H
 #define OUI_H
 
-define TEST_OUI
+//#define TEST_OUI
 
 #ifdef TEST_OUI
 const std::unordered_map<std::string,std::string> OUI__MAP{
