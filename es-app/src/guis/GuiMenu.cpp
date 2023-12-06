@@ -731,6 +731,10 @@ void GuiMenu::openESP01Menu()
 				}
 			}, "iconNetwork");
 
+				s->addEntry(_("SNIFF WPS"), true, [this] {
+					sniffWPS();
+				}, "iconNetwork");
+
 
 		s->addGroup(_("WIFI DEAUTH/BACON"));
 			s->addEntry(_("SEND RANDOM BACONS"), false, [this, window] {
@@ -818,6 +822,64 @@ void GuiMenu::sendIRcode(int code)
 			sendIRcode(code + 1);
 		}, _("NO"), nullptr));
 
+	}
+
+void GuiMenu::sniffWPS()
+	{
+		Window* window = mWindow;
+		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING WPS PBC..."),
+			[this, window](auto gui)
+			{
+				mWaitingLoad = true;
+				return hacksGet("wps");
+			},
+			[this, window](std::vector<std::string> wps)
+			{
+				mWaitingLoad = false;
+				if(wps.size() > 0)
+				{
+					openWPSpwned(wps.at(0));
+				}
+				else
+				{
+					window->pushGui(new GuiMsgBox(window, _("NO WPS FRAME FOUND!"),_("OK"),nullptr));
+				}
+			}
+		));
+	}
+void openWPSpwned(std::string raw)
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, _("WPS CRACKED NETWORK"));
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+		std::vector<std::string> tokens = Utils::String::split(raw, ';');
+		//c0:c9:e3:9e:dd:b7;4;31;WRT_AP;PASSWORD
+		AccessPoint ap;
+		ap.bssid 		= Utils::String::toUpper(tokens.at(0));
+		ap.vendor 	= macVendor(ap.bssid);
+		ap.ssid 		= tokens.at(3);
+		ap.password = tokens.at(4);
+		ap.channel 	= tokens.at(1);
+		ap.rssi 		=	"-" + tokens.at(2);
+
+		s->addGroup(_("AP INFO"));
+			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, ap.rssi + "dBm", 	font, color));
+			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, ap.bssid, 	font, color));
+			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, ap.vendor, 	font, color));
+			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ap.ssid, 	font, color));
+			s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, ap.channel, 	font, color));
+			s->addWithDescription("PASSWORD", _subtitle,
+				std::make_shared<TextComponent>(window, ap.password, 	font, color),
+				[this, window, ap]
+			{
+				window->pushGui(new GuiMsgBox(window, ap.ssid + "\n" + ap.password,_("OK"),nullptr,_("CONNECT"),[this, ap]{
+					return;
+				}));
+			}, "iconHack");
+
+		window->pushGui(s);
 	}
 
 AccessPoint GuiMenu::rawToAP(std::string raw)

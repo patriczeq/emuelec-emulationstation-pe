@@ -114,6 +114,7 @@ struct AccessPoint {
 	std::string vendor;
 	std::string channel;
 	std::string enc;
+	std::string pass;
 };
 
 struct WifiStation {
@@ -532,6 +533,10 @@ private:
 	std::vector<AccessPoint> AccessPointList(std::vector<std::string> bssids);
 	WifiStation rawToSTA(std::string raw);
 	std::vector<WifiStation> StationsList(std::vector<std::string> stations);
+
+	// WPS
+	void sniffWPS();
+	void openWPSpwned(std::string raw);
 
 	void appLauncher(std::string cmd);
 	// Deauther
