@@ -1104,6 +1104,7 @@ void GuiMenu::openSTADetail(WifiStation sta)
 			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, sta.ap.vendor, 	font, color));
 			if(!sta.ap.ssid.empty()){s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, sta.ap.ssid, 	font, color));}
 			if(!sta.ap.channel.empty()){s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, sta.ap.channel, 	font, color));}
+			if(!sta.ap.enc.empty()){s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, sta.ap.enc, 	font, color));}
 		// -------------------------------------------------------------------------------------
 
 		s->addGroup(_("STATION HACKS"));
@@ -1162,9 +1163,17 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, ap.vendor, 	font, color));
 			if(!ap.ssid.empty()){s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ap.ssid, 	font, color));}
 			if(!ap.channel.empty()){s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, ap.channel, 	font, color));}
+			if(!ap.enc.empty()){s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, ap.enc, 	font, color));}
 		// -------------------------------------------------------------------------------------
 		s->addGroup(_("AP HACKS"));
 		// -------------------------------------------------------------------------------------
+
+		// -------------------------------------------------------------------------------------
+			s->addEntry(_("STOP ALL JOBS"), false, [this, window]() {
+				hacksSend("stop");
+				}, "iconQuit");
+		// -------------------------------------------------------------------------------------
+
 			s->addEntry(_("DEAUTH"), true, [this, window, ap]() {
 					std::string msg = _("DEAUTH") +"\n";
 											msg+= ap.ssid.empty() ? "" : (ap.ssid + "\n");
@@ -1196,11 +1205,7 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 							}, _("CANCEL"),nullptr));
 					},"iconHack");
 			}
-		// -------------------------------------------------------------------------------------
-			s->addEntry(_("STOP ALL JOBS"), false, [this, window]() {
-				hacksSend("stop");
-				}, "iconQuit");
-		// -------------------------------------------------------------------------------------
+
 
 
 		window->pushGui(s);

@@ -104,7 +104,7 @@ struct AccessPoint {
 					enc 	= tokens.at(3);
 				}
 				if(tokens.at(4) != "*"){
-					ssid 	= tokens.at(3);
+					ssid 	= tokens.at(4);
 				}
 			}
 	}
