@@ -962,7 +962,7 @@ void GuiMenu::openName(HackName name)
 					}, "iconNetwork");
 			}
 		// NAME
-		s->addGroup(_("OPTIONS"));
+		s->addGroup(_("OPTIONS"));	
 		s->addEntry(_("REMOVE NAME"), true, [this, window, s, name]() {
 				window->pushGui(new GuiMsgBox(window, _("REMOVE NAME") + "\n" + name.name + "\n?",
 					_("YES"), [this, window, s, name] {
