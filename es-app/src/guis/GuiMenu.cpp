@@ -986,9 +986,13 @@ void GuiMenu::openIRlist()
 				std::string name = getName("IR", code).name;
 				s->addWithDescription("# " + code, "",
 					std::make_shared<TextComponent>(window, name, font, color),
-					[this, window, code] {
+					[this, window, code, name] {
 						hacksSend("ir " + code);
-						if(name.empty())
+						if(!name.empty())
+							{
+								window->pushGui(new GuiMsgBox(window, _("SENT CODE #") + code + " (" + name + ")", _("OK"), nullptr));
+							}
+						else
 							{
 								window->pushGui(new GuiMsgBox(window, _("SENT CODE #") + code + "\n" + _("ADD NAME") + "?",
 								_("NO"), nullptr,
