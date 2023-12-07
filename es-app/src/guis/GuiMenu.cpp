@@ -1036,7 +1036,7 @@ void GuiMenu::sendIRcode(int code)
 		hacksSend("ir " + strCode);
 
 		Window* window = mWindow;
-		window->pushGui(new GuiMsgBox(window, _("SENT CODE #") + strCode + (name.empty() ? "" : (" (" + name + ")"))"\n" + _("SEND NEXT?"),
+		window->pushGui(new GuiMsgBox(window, _("SENT CODE #") + strCode + (name.empty() ? "" : (" (" + name + ")") ) + "\n" + _("SEND NEXT?"),
 		_("YES"), [this, code] {
 			sendIRcode(code + 1);
 		}, name.empty() ? _("SAVE") : _("RENAME"), [this,window,strCode, name]{
