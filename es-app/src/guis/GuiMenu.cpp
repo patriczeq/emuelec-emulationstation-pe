@@ -1249,23 +1249,22 @@ void GuiMenu::loadNames()
 void GuiMenu::addName(HackName n, bool reload)
 	{
 		// base
-		std::string raw = n.type;
-								raw+= ";" + Utils::String::toUpper(n.id);
-								raw+= ";" + n.name;
+		std::string raw = "";
+
 		// STA
 		if(n.type == "STA")
 			{
-								raw+= ";" + n.channel;
+								raw+= n.channel;
 								raw+= ";" + Utils::String::toUpper(n.bssid);
 			}
 		// NET
 		if(n.type == "NET")
 			{
-								raw+= ";" + n.channel;
+								raw+= n.channel;
 								raw+= ";" + n.password;
 			}
 
-		hacksSet("setname " + raw);
+		hacksSet("setname " + n.type + " " + n.name + " " + raw);
 		if(reload)
 			{
 				loadNames();
