@@ -462,6 +462,35 @@ struct Chromecast {
 	std::string id;
 };
 
+struct Name {
+	//STA;00:00:00:00:00:00;STANAME;CHANNEL;BSSID
+	//NET;00:00:00:00:00:00;SSID;CHANNEL;PASSWORD
+	//IR;9;IRNAME
+	Name(){}
+	Name(std::string raw){
+		std::vector<std::string> tokens = Utils::String::split(raw, ';');
+			type 	= tokens.at(0);
+			id 		= tokens.at(1);
+			name 	= tokens.at(2);
+			if(type == "NET" && tokens.size() == 5)
+				{
+					channel 	= tokens.at(3);
+					password 	= tokens.at(4);
+				}
+			if(type == "STA" && tokens.size() == 5)
+				{
+					channel = tokens.at(3);
+					bssid 	= tokens.at(4);
+				}
+	}
+	std::string type;
+	std::string id;
+	std::string name;
+	std::string password;
+	std::string bssid;
+	std::string channel;
+};
+
 
 class GuiMenu : public GuiComponent
 {
@@ -526,7 +555,6 @@ private:
 	std::vector<AccessPoint> scanlist;
 	std::vector<WifiStation> stalist;
 	std::vector<AccessPoint> scanBSSIDSlist();
-	std::vector<WifiStation> scanSTAlist();
 	AccessPoint getAP(std::string bssid);
 	WifiStation getSTA(std::string mac);
 	AccessPoint rawToAP(std::string raw);
@@ -534,6 +562,17 @@ private:
 	WifiStation rawToSTA(std::string raw);
 	std::vector<WifiStation> StationsList(std::vector<std::string> stations);
 
+	// Names
+	void loadNames();
+	//STA;00:00:00:00:00:00;STANAME;CHANNEL;BSSID
+	//NET;00:00:00:00:00:00;SSID;CHANNEL;PASSWORD
+	//IR;9;IRNAME
+	void addName(Name n, bool reload = true);
+	void remName(std::string type, std::string id, bool reload = true);
+	Name getName(std::string type, std::string id);
+	std::vector<Name> names;
+	void openNames();
+	void openName(Name name);
 	// WPS
 	void sniffWPS();
 	void openWPSpwned(std::string raw);
@@ -546,10 +585,7 @@ private:
 	std::string hacksGetString(std::string cmd, bool tty = true);
 	std::string macVendor(std::string mac);
 	std::string encString(std::string id);
-	// macnames
-	std::string macName(std::string mac);
-	void setMacName(std::string mac, std::string name);
-	void remMacName(std::string mac);
+
 
 
 	void openESP01Menu();

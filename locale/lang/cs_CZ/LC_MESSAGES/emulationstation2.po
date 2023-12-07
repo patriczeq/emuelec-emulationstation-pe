@@ -128,8 +128,20 @@ msgstr "NAKLONOVAT BSSID, DEAUTORIZOVAT"
 msgid "FAKE AP, DEAUTH"
 msgstr "FALEŠNÁ AP, DEAUTORIZOVAT"
 
+msgid "SNIFF WPS-PBC FRAME"
+msgstr "VYHLEDAT WPS-PBC PŘIPOJENÍ"
+
+msgid "REALLY START SNIFFING?\n(30sec timeout)"
+msgstr "OPRAVDU SPUSTIT VYHLEDÁVÁNÍ?\n(30sec timeout)"
+
+msgid "NO WPS-PBC FRAME FOUND!"
+msgstr "NEBYLO NALEZENO WPS-PBC PŘIPOJENÍ!"
+
 msgid "SEARCHING STATIONS..."
 msgstr "VYHLEDÁVÁM STANICE..."
+
+msgid "PARSING RESULTS..."
+msgstr "ZPRACOVÁVÁM VÝSLEDKY..."
 
 msgid "NO STA FOUND!"
 msgstr "NENALEZENA ŽÁDNÁ STANICE!"
@@ -152,11 +164,11 @@ msgstr "UPRAVIT NÁZEV"
 msgid "DEAUTH STATION"
 msgstr "DEAUTORIZOVAT STANICI"
 
-msgid "WIFI DEAUTH/BACON"
-msgstr "WIFI DEAUTORIZACE/BACON"
+msgid "WIFI DEAUTH/BEACON"
+msgstr "WIFI DEAUTORIZACE/BEACONY"
 
-msgid "SEND RANDOM BACONS"
-msgstr "ODESÍLAT NÁHODNÉ BACONY"
+msgid "SEND RANDOM BEACONS"
+msgstr "ODESÍLAT NÁHODNÉ BEACONY"
 
 msgid "CLONE APs"
 msgstr "NAKLONOVAT PŘÍSTUPOVÉ BODY"
@@ -173,8 +185,30 @@ msgstr "ODESLAT POWER-OFF KÓDY"
 msgid "IR POWER-OFF (LOOP)"
 msgstr "ODESÍLAT POWER-OFF KÓDY VE SMYČCE"
 
+msgid "SEARCH POWER-CODE"
+msgstr "VYHLEDAT POWER-KÓD"
+
+msgid "SELECT POWER-CODE"
+msgstr "VYBERTE POWER-KÓD"
+
+msgid "SENT CODE #"
+msgstr "ODESLÁN KÓD #"
+
+msgid "SEND NEXT?"
+msgstr "POSLAT DALŠÍ?"
+
+msgid "ADD NAME?"
+msgstr "PŘIŘADIT NÁZEV?"
+
+msgid "SEND CUSTOM POWER-CODE"
+msgstr "ODESLAT VYBRANÝ POWER-KÓD"
+
+
 msgid "CHANNEL"
 msgstr "KANÁL"
+
+msgid "ENCRYPTION"
+msgstr "ZABEZPEČENÍ"
 
 msgid "RELOAD"
 msgstr "OBNOVIT"
@@ -188,6 +222,8 @@ msgstr "ZASTAVIT WEB. SOUBOROVÝ MANAŽER"
 msgid "RECONNECT TO SAVED NETWORK"
 msgstr "PŘIPOJIT SE K ULOŽENÉ SÍTI"
 
+msgid "SAVED!"
+msgstr "ULOŽENO!"
 
 msgid "GAME AP"
 msgstr "HERNÍ PŘÍSTUPOVÝ BOD"

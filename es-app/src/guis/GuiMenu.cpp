@@ -709,6 +709,10 @@ void GuiMenu::openESP01Menu()
 				hacksSend("reboot");
 			}, "iconRestart");
 
+			s->addEntry(_("SAVED NAMES"), false, [this, window] {
+				openNames();
+			}, "iconHack");
+
 
 		s->addGroup(_("SCAN NETWORK"));
 			s->addEntry(_("SCAN AP"), true, [this] {
@@ -731,13 +735,16 @@ void GuiMenu::openESP01Menu()
 				}
 			}, "iconNetwork");
 
-				s->addEntry(_("SNIFF WPS"), true, [this] {
-					sniffWPS();
+				s->addEntry(_("SNIFF WPS-PBC FRAME"), true, [this] {
+					window->pushGui(new GuiMsgBox(window, _("REALLY START SNIFFING?\n(30sec timeout)"),
+					_("YES"), [this] {
+						sniffWPS();
+					}, _("NO"), nullptr));
 				}, "iconNetwork");
 
 
-		s->addGroup(_("WIFI DEAUTH/BACON"));
-			s->addEntry(_("SEND RANDOM BACONS"), false, [this, window] {
+		s->addGroup(_("WIFI DEAUTH/BEACONS"));
+			s->addEntry(_("SEND RANDOM BEACONS"), false, [this, window] {
 					hacksSend("beacon");
 				});
 			s->addEntry(_("CLONE APs"), false, [this, window] {
@@ -786,22 +793,162 @@ void GuiMenu::openESP01Menu()
 			s->addEntry(_("SEARCH POWER-CODE"), false, [this] {
 				sendIRcode();
 			});
-			s->addEntry(_("SEND CUSTOM IR CODE"), true, [this] {
+			s->addEntry(_("SEND CUSTOM POWER-CODE"), true, [this] {
 				openIRlist();
 			});
 
 
 		window->pushGui(s);
 	}
+void GuiMenu::openNames()
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, "SAVED NAMES");
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		for(auto name : names)
+			{
+				s->addWithDescription(name.name, name.id,
+					std::make_shared<TextComponent>(window, name.type, 	font, color),
+					[this, sta]
+				{
+					openName(name);
+				});
+			}
+
+		window->pushGui(s);
+	}
+void GuiMenu::openName(Name name)
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, name.type + ": " + name.name);
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+		// DATA info
+		if(name.type == "IR")
+			{
+				s->addGroup(_("DATA"));
+				s->addWithLabel(_("POWER-CODE"), 	std::make_shared<TextComponent>(window, "#" + name.id, 	font, color));
+			}
+		else if(name.type == "STA")
+			{
+				s->addGroup(_("STA INFO"));
+				s->addWithLabel(_("MAC"), 	std::make_shared<TextComponent>(window, name.id, 	font, color));
+				s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, macVendor(name.id), font, color));
+				s->addGroup(_("AP INFO"));
+				s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, name.bssid, 	font, color));
+				s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, macVendor(name.bssid), font, color));
+				s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, name.channel, font, color));
+			}
+		else if(name.type == "AP")
+			{
+				s->addGroup(_("AP INFO"));
+				s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, name.id, 	font, color));
+				s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, macVendor(name.id), font, color));
+				s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, name.channel, font, color));
+				s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, name.name, font, color));
+				s->addWithLabel(_("PASSWORD"), 	std::make_shared<TextComponent>(window, name.password, font, color));
+			}
+		// TOOLS/HACKS
+		if(name.type == "IR")
+			{
+				s->addGroup(_("ACTIONS"));
+					s->addEntry(_("SEND POWER-CODE"), false, [this, name]() {
+						hacksSend("ir " + name.id);
+					}, "iconHack");
+			}
+		else if(name.type == "STA")
+			{
+				s->addGroup(_("ACTIONS"));
+					s->addEntry(_("DEAUTH STATION"), false, [this, name]() {
+						// espconn deauth <BSSID> <MAC> [CHANNEL]
+						hacksSend("espconn deauth " + name.bssid + " " + name.id + " " + name.channel);
+					}, "iconHack");
+			}
+		else if(name.type == "AP")
+			{
+				s->addGroup(_("AP HACKS"));
+					s->addEntry(_("DEAUTH"), true, [this, window, name]() {
+							std::string msg = _("DEAUTH") +"\n";
+													msg+= name.name.empty() ? "" : (name.name + "\n");
+													msg+= name.bssid + "\n";
+							window->pushGui(new GuiMsgBox(window, msg,
+								_("YES"), [this, window, name] {
+									hacksSend("deauthap " + name.bssid);
+								}, _("CANCEL"),nullptr));
+						},"iconHack");
+
+					s->addEntry(_("CLONE BSSID, DEAUTH"), true, [this, window, name]() {
+							std::string msg = _("CLONE BSSID, DEAUTH") +"\n";
+													msg+= name.name.empty() ? "" : (name.name + "\n");
+													msg+= name.bssid + "\n";
+							window->pushGui(new GuiMsgBox(window, msg,
+								_("YES"), [this, window, name] {
+									hacksSend("deauthapclone " + name.bssid);
+								}, _("CANCEL"),nullptr));
+						},"iconHack");
+					s->addEntry(_("FAKE AP, DEAUTH"), true, [this, window, name]() {
+							std::string msg = _("FAKE AP, DEAUTH") +"\n";
+													msg+= name.name.empty() ? "" : (name.name + "\n");
+													msg+= name.bssid + "\n";
+							window->pushGui(new GuiMsgBox(window, msg,
+								_("YES"), [this, window, name] {
+									hacksSend("deauthapcaptive " + name.bssid);
+								}, _("CANCEL"),nullptr));
+						},"iconHack");
+
+				s->addGroup(_("TOOLS"));
+					s->addEntry(_("CONNECT TO NETWORK"), false, [this, window, name]() {
+						const std::string baseSSID 	= name.name;
+						const std::string baseKEY 	= name.password;
+						runSystemCommand("ap.sh stop \"" + baseSSID + "\" \"" + baseKEY + "\"", "", nullptr);
+						window->pushGui(new GuiMsgBox(window, _("CONNECTING TO") + "\n" + name.ssid,_("OK"),nullptr));
+					}, "iconNetwork");
+			}
+		// NAME
+		s->addGroup(_("OPTIONS"));
+		s->addEntry(_("REMOVE NAME"), true, [this, window, name]() {
+				window->pushGui(new GuiMsgBox(window, _("REMOVE NAME") + "\n" + name.name + "\n?",
+					_("YES"), [this, window, s, name] {
+						remName(name.type, name.id);
+						delete s;
+					}, _("CANCEL"),nullptr));
+			},"iconHack");
+		window->pushGui(s);
+	}
 void GuiMenu::openIRlist()
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, "SELECT IR CODE");
+		auto s = new GuiSettings(window, "SELECT POWER-CODE");
 		for(int i = 0; i < 280; i++)
 			{
 				std::string code = std::to_string(i);
-				s->addEntry("# " + code, false, [this, code] {
+				s->addEntry("# " + code, false, [this, window, code] {
 					hacksSend("ir " + code);
+					std::string strCode = std::to_string(code);
+					window->pushGui(new GuiMsgBox(window, _("SENT CODE #") + strCode + "\n" + _("ADD NAME") + "?",
+					_("NO"), nullptr,
+					_("YES"), [this, strCode] {
+						if (Settings::getInstance()->getBool("UseOSK"))
+							mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "IR NAME " + strCode, "", [this, strCode](const std::string& value) {
+								Name n;
+									n.type = "IR";
+									n.id = strCode;
+									n.name = value;
+								setName(n);
+							}, false));
+						else
+							mWindow->pushGui(new GuiTextEditPopup(mWindow, "IR NAME " + strCode, "", [this, strCode](const std::string& value) {
+								Name n;
+									n.type = "IR";
+									n.id = strCode;
+									n.name = value;
+								setName(n);
+							}, false));
+					});
 				});
 			}
 		window->pushGui(s);
@@ -817,7 +964,7 @@ void GuiMenu::sendIRcode(int code)
 		hacksSend("ir " + strCode);
 
 		Window* window = mWindow;
-		window->pushGui(new GuiMsgBox(window, "SENT CODE #" + strCode + "\nSEND NEXT?",
+		window->pushGui(new GuiMsgBox(window, _("SENT CODE #") + strCode + "\n" + _("SEND NEXT?"),
 		_("YES"), [this, code] {
 			sendIRcode(code + 1);
 		}, _("NO"), nullptr));
@@ -827,7 +974,7 @@ void GuiMenu::sendIRcode(int code)
 void GuiMenu::sniffWPS()
 	{
 		Window* window = mWindow;
-		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING WPS PBC..."),
+		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING WPS-PBC..."),
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
@@ -842,19 +989,13 @@ void GuiMenu::sniffWPS()
 				}
 				else
 				{
-					window->pushGui(new GuiMsgBox(window, _("NO WPS FRAME FOUND!"),_("OK"),nullptr));
+					window->pushGui(new GuiMsgBox(window, _("NO WPS-PBC FRAME FOUND!"),_("OK"),nullptr));
 				}
 			}
 		));
 	}
 void GuiMenu::openWPSpwned(std::string raw)
 	{
-		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("WPS CRACKED NETWORK"));
-		auto theme = ThemeData::getMenuTheme();
-		std::shared_ptr<Font> font = theme->Text.font;
-		unsigned int color = theme->Text.color;
-		std::vector<std::string> tokens = Utils::String::split(raw, ';');
 		//c0:c9:e3:9e:dd:b7;4;31;WRT_AP;PASSWORD
 		AccessPoint ap;
 		ap.bssid 		= Utils::String::toUpper(tokens.at(0));
@@ -863,6 +1004,14 @@ void GuiMenu::openWPSpwned(std::string raw)
 		ap.password = tokens.at(4);
 		ap.channel 	= tokens.at(1);
 		ap.rssi 		=	"-" + tokens.at(2);
+
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, _("WPS-PBC: ") + ap.ssid);
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+		std::vector<std::string> tokens = Utils::String::split(raw, ';');
+
 
 		s->addGroup(_("AP INFO"));
 			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, ap.rssi + "dBm", 	font, color));
@@ -873,15 +1022,49 @@ void GuiMenu::openWPSpwned(std::string raw)
 			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ap.ssid, 	font, color));
 			s->addWithLabel(_("PASSWORD"), 	std::make_shared<TextComponent>(window, ap.password, 	font, color));
 		s->addGroup(_("AP HACKS"));
-			s->addEntry(_("CLONE BSSID, DEAUTH"), false, [this, window, ap]() {
-				std::string msg = _("CLONE BSSID, DEAUTH") +"\n";
-										msg+= ap.ssid.empty() ? "" : (ap.ssid + "\n");
-										msg+= ap.bssid + "\n";
-				window->pushGui(new GuiMsgBox(window, msg,
-					_("YES"), [this, window, ap] {
-						hacksSend("deauthapclone " + ap.bssid);
-					}, _("CANCEL"),nullptr));
-			}, "iconHack");
+			s->addEntry(_("DEAUTH"), true, [this, window, ap]() {
+					std::string msg = _("DEAUTH") +"\n";
+											msg+= ap.ssid.empty() ? "" : (ap.ssid + "\n");
+											msg+= ap.bssid + "\n";
+					window->pushGui(new GuiMsgBox(window, msg,
+						_("YES"), [this, window, ap] {
+							hacksSend("deauthap " + ap.bssid);
+						}, _("CANCEL"),nullptr));
+				},"iconHack");
+
+			s->addEntry(_("CLONE BSSID, DEAUTH"), true, [this, window, ap]() {
+					std::string msg = _("CLONE BSSID, DEAUTH") +"\n";
+											msg+= ap.ssid.empty() ? "" : (ap.ssid + "\n");
+											msg+= ap.bssid + "\n";
+					window->pushGui(new GuiMsgBox(window, msg,
+						_("YES"), [this, window, ap] {
+							hacksSend("deauthapclone " + ap.bssid);
+						}, _("CANCEL"),nullptr));
+				},"iconHack");
+			if(!ap.ssid.empty())
+			{
+				s->addEntry(_("FAKE AP, DEAUTH"), true, [this, window, ap]() {
+						std::string msg = _("FAKE AP, DEAUTH") +"\n";
+												msg+= ap.ssid.empty() ? "" : (ap.ssid + "\n");
+												msg+= ap.bssid + "\n";
+						window->pushGui(new GuiMsgBox(window, msg,
+							_("YES"), [this, window, ap] {
+								hacksSend("deauthapcaptive " + ap.bssid);
+							}, _("CANCEL"),nullptr));
+					},"iconHack");
+			}
+		s->addGroup(_("TOOLS"));
+			s->addEntry(_("SAVE NETWORK"), false, [this, window, ap]() {
+				Name n;
+					n.type = "AP";
+					n.id = ap.bssid;
+					n.name = ap.ssid;
+					n.channel = ap.channel;
+					n.password = ap.password;
+				setName(n);
+				window->pushGui(new GuiMsgBox(window, _("SAVED!"),
+					_("ok"),nullptr));
+			}, "iconSettings");
 			s->addEntry(_("CONNECT TO NETWORK"), false, [this, window, ap]() {
 				const std::string baseSSID 	= ap.ssid;
 				const std::string baseKEY 	= ap.password;
@@ -914,7 +1097,7 @@ WifiStation GuiMenu::rawToSTA(std::string raw)
 	WifiStation sta(raw);
 
 	sta.vendor 	= macVendor(sta.mac);
-	sta.name 		= macName(sta.mac);
+	sta.name 		= getName("STA", sta.mac);//macName(sta.mac);
 	sta.ap.vendor = macVendor(sta.ap.bssid);
 	sta.ap.enc    = encString(sta.ap.enc);
 
@@ -946,17 +1129,11 @@ std::vector<AccessPoint> GuiMenu::scanBSSIDSlist()
 		scanlist = AccessPointList(hacksGet("espscan"));
 		return scanlist;
 	}
-std::vector<WifiStation> GuiMenu::scanSTAlist()
-	{
-		const std::string cmd = "espscansta " + std::to_string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
-		stalist = StationsList(hacksGet(cmd));
-		return stalist;
-	}
+
 
 void GuiMenu::scanBSSIDS()
 	{
 		Window* window = mWindow;
-//std::vector<AccessPoint> GuiMenu::AccessPointList(std::vector<std::string> bssids)
 		mWindow->pushGui(new GuiLoading<std::vector<AccessPoint>>(window, _("SEARCHING APs..."),
 			[this, window](auto gui)
 			{
@@ -1054,18 +1231,66 @@ std::string GuiMenu::hacksGetString(std::string cmd, bool tty)
 	}
 };
 
-std::string GuiMenu::macName(std::string mac)
+void GuiMenu::loadNames()
 	{
-		return hacksGetString("getname " + mac, false);
+		names.clear();
+		std::vector<std::string> raw = hacksGet("names");
+		for(auto line : raw)
+			{
+				names.push_back(Name(line));
+			}
 	}
-void GuiMenu::setMacName(std::string mac, std::string name)
+	//STA;00:00:00:00:00:00;STANAME;CHANNEL;BSSID
+	//NET;00:00:00:00:00:00;SSID;CHANNEL;PASSWORD
+	//IR;9;IRNAME
+void GuiMenu::addName(Name n, bool reload)
 	{
-		hacksSet("setname " + mac + " \"" + name + "\"");
+		// base
+		std::string raw = n.type;
+								raw+= ";" + Utils::String::toUpper(n.id);
+								raw+= ";" + n.name;
+		// STA
+		if(n.type == "STA")
+			{
+								raw+= ";" + n.channel;
+								raw+= ";" + Utils::String::toUpper(n.bssid);
+			}
+		// NET
+		if(n.type == "NET")
+			{
+								raw+= ";" + n.channel;
+								raw+= ";" + n.password;
+			}
+
+		hacksSet("setname " + raw);
+		if(reload)
+			{
+				loadNames();
+			}
 	}
-void GuiMenu::remMacName(std::string mac)
+void GuiMenu::remName(std::string type, std::string id, bool reload)
 	{
-		hacksSet("remname " + mac);
+		hacksSet("remname " + type + " " + id);
+		if(reload)
+			{
+				loadNames();
+			}
 	}
+
+Name GuiMenu::getName(std::string type, std::string id)
+	{
+		Name g;
+		for(auto n : names)
+			{
+				if(n.type == type && n.id == id)
+					{
+						return n;
+					}
+			}
+		return g;
+	}
+
+
 /*
 float GuiMenu::rssiToPerc(std::string rssi)
 	{
@@ -1104,11 +1329,12 @@ void GuiMenu::scanSTA()
 			[this, window](std::vector<std::string> stations)
 			{
 				mWaitingLoad = false;
-					mWindow->pushGui(new GuiLoading<std::vector<WifiStation>>(window, _("PARSING STATIONS..."),
+					mWindow->pushGui(new GuiLoading<std::vector<WifiStation>>(window, _("PARSING RESULTS..."),
 						[this, window, stations](auto gui)
 						{
 							mWaitingLoad = true;
-							return StationsList(stations);
+							stalist = StationsList(hacksGet(cmd));
+							return stalist;
 						},
 						[this, window](std::vector<WifiStation> stations)
 						{
@@ -1127,31 +1353,8 @@ void GuiMenu::scanSTA()
 			}
 		));
 	}
-/*void GuiMenu::scanSTA()
-	{
-		Window* window = mWindow;
 
-		mWindow->pushGui(new GuiLoading<std::vector<WifiStation>>(window, _("SEARCHING STATIONS..."),
-			[this, window](auto gui)
-			{
-				mWaitingLoad = true;
-				return scanSTAlist();
-			},
-			[this, window](std::vector<WifiStation> stations)
-			{
-				mWaitingLoad = false;
-				if(stations.size() > 0)
-				{
-					openSTAmenu(stations);
-				}
-				else
-				{
-					window->pushGui(new GuiMsgBox(window, _("NO STA FOUND!"),_("OK"),nullptr));
-				}
-			}
-		));
-	}
-*/
+
 void GuiMenu::openSTAmenu(std::vector<WifiStation> stations)
 	{
 		Window* window = mWindow;
@@ -1200,16 +1403,32 @@ void GuiMenu::openSTADetail(WifiStation sta)
 				s->addEntry(_("REMOVE NAME"), true, [this, window, sta]() {
 					window->pushGui(new GuiMsgBox(window, _("REMOVE NAME") + "?\n" + sta.name,
 						_("YES"), [this, sta] {
-							remMacName(sta.mac);
+							remName("STA", sta.mac);
 						}, _("NO"),nullptr));
 				}, "iconRemove");
 			}
 
 			s->addEntry(sta.name.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, sta]() {
 				if (Settings::getInstance()->getBool("UseOSK"))
-					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "NAME " + sta.mac, sta.name, [this, sta](const std::string& value) { setMacName(sta.mac, value); }, false));
+					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "NAME " + sta.mac, sta.name, [this, sta](const std::string& value) {
+						Name n;
+							n.type = "STA";
+							n.id = sta.mac;
+							n.name = value;
+							n.channel = sta.ap.channel;
+							n.bssid = sta.ap.bssid;
+						setName(n);
+					}, false));
 				else
-					mWindow->pushGui(new GuiTextEditPopup(mWindow, "NAME " + sta.mac, sta.name, [this, sta](const std::string& value) { setMacName(sta.mac, value); }, false));
+					mWindow->pushGui(new GuiTextEditPopup(mWindow, "NAME " + sta.mac, sta.name, [this, sta](const std::string& value) {
+						Name n;
+							n.type = "STA";
+							n.id = sta.mac;
+							n.name = value;
+							n.channel = sta.ap.channel;
+							n.bssid = sta.ap.bssid;
+						setName(n);
+					}, false));
 			});
 
 		s->addGroup(_("AP INFO"));
