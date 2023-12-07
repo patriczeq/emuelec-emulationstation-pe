@@ -865,7 +865,7 @@ void GuiMenu::openName(HackName name)
 				s->addGroup(_("ACTIONS"));
 					s->addEntry(_("DEAUTH STATION"), false, [this, name]() {
 						// espconn deauth <BSSID> <MAC> [CHANNEL]
-						hacksSend("espconn deauth " + name.bssid + " " + name.id + " " + name.channel);
+						hacksSend("deauth " + name.bssid + " " + name.id + " " + name.channel);
 					}, "iconHack");
 			}
 		else if(name.type == "AP")
@@ -916,7 +916,7 @@ void GuiMenu::openName(HackName name)
 						remName(name.type, name.id);
 						delete s;
 					}, _("CANCEL"),nullptr));
-			},"iconHack");
+			},"iconRemove");
 		window->pushGui(s);
 	}
 void GuiMenu::openIRlist()
