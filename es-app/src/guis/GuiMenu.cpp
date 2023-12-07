@@ -1249,7 +1249,7 @@ void GuiMenu::loadNames()
 void GuiMenu::addName(HackName n, bool reload)
 	{
 		// base
-		std::string raw = n.name;
+		std::string raw = Utils::String::replace(n.name, " ", "\ ");
 
 		// STA
 		if(n.type == "STA")
@@ -1261,10 +1261,10 @@ void GuiMenu::addName(HackName n, bool reload)
 		if(n.type == "NET")
 			{
 								raw+= ";" + n.channel;
-								raw+= ";" + n.password;
+								raw+= ";" + Utils::String::replace(n.password, " ", "\ ");
 			}
 
-		hacksSet("setname '" + n.type + "' '" + n.id + "' '" + raw + "'");
+		hacksSet("setname " + n.type + " " + n.id + " " + raw);
 		if(reload)
 			{
 				loadNames();
