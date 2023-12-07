@@ -152,6 +152,9 @@ msgstr "SEZNAM STANIC"
 msgid "PACKETS SNIFFED"
 msgstr "ZACHYCENO PAKETŮ"
 
+msgid "SAVED NAMES"
+msgstr "ULOŽENÉ NÁZVY"
+
 msgid "REMOVE NAME"
 msgstr "ODEBRAT NÁZEV"
 

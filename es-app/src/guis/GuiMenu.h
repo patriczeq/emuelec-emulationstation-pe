@@ -491,6 +491,11 @@ struct HackName {
 	std::string channel;
 };
 
+struct HackNameCounter {
+	int IR;
+	int STA;
+	int AP;
+};
 
 class GuiMenu : public GuiComponent
 {
@@ -571,7 +576,9 @@ private:
 	void remName(std::string type, std::string id, bool reload = true);
 	HackName getName(std::string type, std::string id);
 	std::vector<HackName> names;
-	void openNames();
+	HackNameCounter namesCounter;
+	void openNamesCat();
+	void openNames(std::string category);
 	void openName(HackName name);
 	// WPS
 	void sniffWPS();

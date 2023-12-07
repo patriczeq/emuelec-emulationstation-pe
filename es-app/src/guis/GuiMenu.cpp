@@ -709,10 +709,19 @@ void GuiMenu::openESP01Menu()
 				hacksSend("reboot");
 			}, "iconRestart");
 
-			s->addEntry(_("SAVED NAMES"), false, [this, window] {
-				openNames();
+			s->addWithDescription(_("SAVED NAMES"), "",
+				std::make_shared<TextComponent>(window, std::to_string(names.count()), font, color),
+				[this, window]
+			{
+				if(names.count() > 0)
+					{
+						openNamesCat();
+					}
+				else
+					{
+						window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
+					}
 			}, "iconHack");
-
 
 		s->addGroup(_("SCAN NETWORK"));
 			s->addEntry(_("SCAN AP"), true, [this] {
@@ -800,22 +809,62 @@ void GuiMenu::openESP01Menu()
 
 		window->pushGui(s);
 	}
-void GuiMenu::openNames()
+void GuiMenu::openNamesCat()
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, "SAVED NAMES");
+		auto s = new GuiSettings(window, _("SAVED NAMES") + "(" + std::to_string(names.size()) + ")");
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+		if(namesCounter.STA > 0)
+			{
+				s->addWithDescription(_("STATIONS LIST"), "",
+					std::make_shared<TextComponent>(window, std::to_string(namesCounter.STA), font, color),
+					[this]
+				{
+					openNames("STA");
+				});
+			}
+			if(namesCounter.AP > 0)
+				{
+					s->addWithDescription(_("ACCESSPOINTS LIST"), "",
+						std::make_shared<TextComponent>(window, std::to_string(namesCounter.AP), font, color),
+						[this]
+					{
+						openNames("AP");
+					});
+				}
+			if(namesCounter.IR > 0)
+				{
+					s->addWithDescription("IR POWER-CODES", "",
+						std::make_shared<TextComponent>(window, std::to_string(namesCounter.IR), font, color),
+						[this]
+					{
+						openNames("IR");
+					});
+				}
+
+		window->pushGui(s);
+	}
+void GuiMenu::openNames(std::string category)
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, _("SAVED NAMES") + " " + category);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
 		for(auto name : names)
 			{
-				s->addWithDescription(name.name, name.id,
-					std::make_shared<TextComponent>(window, name.type, 	font, color),
-					[this, name]
-				{
-					openName(name);
-				});
+				if(name.type == category)
+					{
+						s->addWithDescription(name.name, name.id,
+								std::make_shared<TextComponent>(window, name.type, 	font, color),
+								[this, name]
+							{
+								openName(name);
+							});
+					}
 			}
 
 		window->pushGui(s);
@@ -1241,11 +1290,27 @@ std::string GuiMenu::hacksGetString(std::string cmd, bool tty)
 
 void GuiMenu::loadNames()
 	{
+		namesCounter.IR 	= 0;
+		namesCounter.STA 	= 0;
+		namesCounter.AP		= 0;
 		names.clear();
 		std::vector<std::string> raw = hacksGet("names");
 		for(auto line : raw)
 			{
-				names.push_back(HackName(line));
+				HackName n(line);
+				if(n.type == "IR")
+					{
+						namesCounter.IR++;
+					}
+				else if(n.type == "STA")
+					{
+						namesCounter.STA++;
+					}
+				else if(n.type == "AP")
+					{
+						namesCounter.AP++;
+					}
+				names.push_back(n);
 			}
 	}
 	//STA;00:00:00:00:00:00;STANAME;CHANNEL;BSSID
