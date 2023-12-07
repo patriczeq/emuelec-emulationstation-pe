@@ -462,12 +462,12 @@ struct Chromecast {
 	std::string id;
 };
 
-struct Name {
+struct HackName {
 	//STA;00:00:00:00:00:00;STANAME;CHANNEL;BSSID
 	//NET;00:00:00:00:00:00;SSID;CHANNEL;PASSWORD
 	//IR;9;IRNAME
-	Name(){}
-	Name(std::string raw){
+	HackName(){}
+	HackName(std::string raw){
 		std::vector<std::string> tokens = Utils::String::split(raw, ';');
 			type 	= tokens.at(0);
 			id 		= tokens.at(1);
@@ -567,12 +567,12 @@ private:
 	//STA;00:00:00:00:00:00;STANAME;CHANNEL;BSSID
 	//NET;00:00:00:00:00:00;SSID;CHANNEL;PASSWORD
 	//IR;9;IRNAME
-	void addName(Name n, bool reload = true);
+	void addName(HackName n, bool reload = true);
 	void remName(std::string type, std::string id, bool reload = true);
-	Name getName(std::string type, std::string id);
-	std::vector<Name> names;
+	HackName getName(std::string type, std::string id);
+	std::vector<HackName> names;
 	void openNames();
-	void openName(Name name);
+	void openName(HackName name);
 	// WPS
 	void sniffWPS();
 	void openWPSpwned(std::string raw);

@@ -820,7 +820,7 @@ void GuiMenu::openNames()
 
 		window->pushGui(s);
 	}
-void GuiMenu::openName(Name name)
+void GuiMenu::openName(HackName name)
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, name.type + ": " + name.name);
@@ -934,7 +934,7 @@ void GuiMenu::openIRlist()
 					_("YES"), [this, strCode] {
 						if (Settings::getInstance()->getBool("UseOSK"))
 							mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "IR NAME " + strCode, "", [this, strCode](const std::string& value) {
-								Name n;
+								HackName n;
 									n.type = "IR";
 									n.id = strCode;
 									n.name = value;
@@ -942,7 +942,7 @@ void GuiMenu::openIRlist()
 							}, false));
 						else
 							mWindow->pushGui(new GuiTextEditPopup(mWindow, "IR NAME " + strCode, "", [this, strCode](const std::string& value) {
-								Name n;
+								HackName n;
 									n.type = "IR";
 									n.id = strCode;
 									n.name = value;
@@ -1055,7 +1055,7 @@ void GuiMenu::openWPSpwned(std::string raw)
 			}
 		s->addGroup(_("TOOLS"));
 			s->addEntry(_("SAVE NETWORK"), false, [this, window, ap]() {
-				Name n;
+				HackName n;
 					n.type = "AP";
 					n.id = ap.bssid;
 					n.name = ap.ssid;
@@ -1237,7 +1237,7 @@ void GuiMenu::loadNames()
 		std::vector<std::string> raw = hacksGet("names");
 		for(auto line : raw)
 			{
-				names.push_back(Name(line));
+				names.push_back(HackName(line));
 			}
 	}
 	//STA;00:00:00:00:00:00;STANAME;CHANNEL;BSSID
@@ -1277,9 +1277,9 @@ void GuiMenu::remName(std::string type, std::string id, bool reload)
 			}
 	}
 
-Name GuiMenu::getName(std::string type, std::string id)
+HackName GuiMenu::getName(std::string type, std::string id)
 	{
-		Name g;
+		HackName g;
 		for(auto n : names)
 			{
 				if(n.type == type && n.id == id)
@@ -1411,7 +1411,7 @@ void GuiMenu::openSTADetail(WifiStation sta)
 			s->addEntry(sta.name.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, sta]() {
 				if (Settings::getInstance()->getBool("UseOSK"))
 					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "NAME " + sta.mac, sta.name, [this, sta](const std::string& value) {
-						Name n;
+						HackName n;
 							n.type = "STA";
 							n.id = sta.mac;
 							n.name = value;
@@ -1421,7 +1421,7 @@ void GuiMenu::openSTADetail(WifiStation sta)
 					}, false));
 				else
 					mWindow->pushGui(new GuiTextEditPopup(mWindow, "NAME " + sta.mac, sta.name, [this, sta](const std::string& value) {
-						Name n;
+						HackName n;
 							n.type = "STA";
 							n.id = sta.mac;
 							n.name = value;
