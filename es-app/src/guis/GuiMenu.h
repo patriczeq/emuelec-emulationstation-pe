@@ -471,11 +471,11 @@ struct HackName {
 		std::vector<std::string> tokens = Utils::String::split(raw, ';');
 			type 	= tokens.at(0);
 			id 		= tokens.at(1);
-			name 	= tokens.at(2);
+			name 	= Utils::String::replace(tokens.at(2), "_!SPC!_", " ");
 			if(type == "NET" && tokens.size() == 5)
 				{
 					channel 	= tokens.at(3);
-					password 	= tokens.at(4);
+					password 	= Utils::String::replace(tokens.at(4), "_!SPC!_", " ");
 				}
 			if(type == "STA" && tokens.size() == 5)
 				{

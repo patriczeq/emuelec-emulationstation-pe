@@ -697,7 +697,7 @@ void GuiMenu::openESP01Menu()
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
-
+		loadNames();
 		s->addGroup(_("SYSTEM"));
 			s->addEntry(_("SETTINGS"), true, [this] {
 				openESP01Settings();
@@ -1249,7 +1249,7 @@ void GuiMenu::loadNames()
 void GuiMenu::addName(HackName n, bool reload)
 	{
 		// base
-		std::string raw = Utils::String::replace(n.name, " ", "\ ");
+		std::string raw = Utils::String::replace(n.name, " ", "_!SPC!_");
 
 		// STA
 		if(n.type == "STA")
@@ -1261,10 +1261,10 @@ void GuiMenu::addName(HackName n, bool reload)
 		if(n.type == "NET")
 			{
 								raw+= ";" + n.channel;
-								raw+= ";" + Utils::String::replace(n.password, " ", "\ ");
+								raw+= ";" + Utils::String::replace(n.password, " ", "_!SPC!_");
 			}
 
-		hacksSet("setname " + n.type + " " + n.id + " " + raw);
+		hacksSet("setname '" + n.type + "' '" + n.id + "' '" + raw + "'");
 		if(reload)
 			{
 				loadNames();
