@@ -699,6 +699,23 @@ void GuiMenu::openESP01Menu()
 		unsigned int color = theme->Text.color;
 		loadNames();
 		s->addGroup(_("SYSTEM"));
+		if(names.size() > 0)
+			{
+				s->addWithDescription(_("SAVED NAMES"), "",
+					std::make_shared<TextComponent>(window, std::to_string(names.size()), font, color),
+					[this, window]
+				{
+					if(names.size() > 0)
+						{
+							openNamesCat();
+						}
+					else
+						{
+							window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
+						}
+				}, "iconHack");
+			}
+
 			s->addEntry(_("SETTINGS"), true, [this] {
 				openESP01Settings();
 			}, "iconSystem");
@@ -709,19 +726,6 @@ void GuiMenu::openESP01Menu()
 				hacksSend("reboot");
 			}, "iconRestart");
 
-			s->addWithDescription(_("SAVED NAMES"), "",
-				std::make_shared<TextComponent>(window, std::to_string(names.size()), font, color),
-				[this, window]
-			{
-				if(names.size() > 0)
-					{
-						openNamesCat();
-					}
-				else
-					{
-						window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
-					}
-			}, "iconHack");
 
 		s->addGroup(_("SCAN NETWORK"));
 			s->addEntry(_("SCAN AP"), true, [this] {
@@ -923,29 +927,29 @@ void GuiMenu::openName(HackName name)
 					s->addEntry(_("DEAUTH"), true, [this, window, name]() {
 							std::string msg = _("DEAUTH") +"\n";
 													msg+= name.name.empty() ? "" : (name.name + "\n");
-													msg+= name.bssid + "\n";
+													msg+= name.id + "\n";
 							window->pushGui(new GuiMsgBox(window, msg,
 								_("YES"), [this, window, name] {
-									hacksSend("deauthap " + name.bssid);
+									hacksSend("deauthap " + name.id);
 								}, _("CANCEL"),nullptr));
 						},"iconHack");
 
 					s->addEntry(_("CLONE BSSID, DEAUTH"), true, [this, window, name]() {
 							std::string msg = _("CLONE BSSID, DEAUTH") +"\n";
 													msg+= name.name.empty() ? "" : (name.name + "\n");
-													msg+= name.bssid + "\n";
+													msg+= name.id + "\n";
 							window->pushGui(new GuiMsgBox(window, msg,
 								_("YES"), [this, window, name] {
-									hacksSend("deauthapclone " + name.bssid);
+									hacksSend("deauthapclone " + name.id);
 								}, _("CANCEL"),nullptr));
 						},"iconHack");
 					s->addEntry(_("FAKE AP, DEAUTH"), true, [this, window, name]() {
 							std::string msg = _("FAKE AP, DEAUTH") +"\n";
 													msg+= name.name.empty() ? "" : (name.name + "\n");
-													msg+= name.bssid + "\n";
+													msg+= name.id + "\n";
 							window->pushGui(new GuiMsgBox(window, msg,
 								_("YES"), [this, window, name] {
-									hacksSend("deauthapcaptive " + name.bssid);
+									hacksSend("deauthapcaptive " + name.id);
 								}, _("CANCEL"),nullptr));
 						},"iconHack");
 
@@ -979,35 +983,39 @@ void GuiMenu::openIRlist()
 		for(int i = 0; i < 280; i++)
 			{
 				std::string code = std::to_string(i);
+				std::string name = getName("IR", code).name;
 				s->addWithDescription("# " + code, "",
-					std::make_shared<TextComponent>(window, getName("IR", code).name, 	font, color),
+					std::make_shared<TextComponent>(window, name, font, color),
 					[this, window, code] {
 						hacksSend("ir " + code);
-						window->pushGui(new GuiMsgBox(window, _("SENT CODE #") + code + "\n" + _("ADD NAME") + "?",
-						_("NO"), nullptr,
-						_("YES"), [this, code] {
-							if (Settings::getInstance()->getBool("UseOSK"))
+						if(name.empty())
 							{
-								mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "IR NAME " + code, "", [this, code](const std::string& value) {
-									HackName n;
-										n.type = "IR";
-										n.id = code;
-										n.name = value;
-									addName(n);
-								}, false));
+								window->pushGui(new GuiMsgBox(window, _("SENT CODE #") + code + "\n" + _("ADD NAME") + "?",
+								_("NO"), nullptr,
+								_("YES"), [this, code] {
+									if (Settings::getInstance()->getBool("UseOSK"))
+									{
+										mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "IR NAME " + code, "", [this, code](const std::string& value) {
+											HackName n;
+												n.type = "IR";
+												n.id = code;
+												n.name = value;
+											addName(n);
+										}, false));
+									}
+									else
+									{
+										mWindow->pushGui(new GuiTextEditPopup(mWindow, "IR NAME " + code, "", [this, code](const std::string& value) {
+											HackName n;
+												n.type = "IR";
+												n.id = code;
+												n.name = value;
+											addName(n);
+										}, false));
+									}
+								})
+								);
 							}
-							else
-							{
-								mWindow->pushGui(new GuiTextEditPopup(mWindow, "IR NAME " + code, "", [this, code](const std::string& value) {
-									HackName n;
-										n.type = "IR";
-										n.id = code;
-										n.name = value;
-									addName(n);
-								}, false));
-							}
-						})
-						);
 					});
 			}
 		window->pushGui(s);
@@ -1020,13 +1028,35 @@ void GuiMenu::sendIRcode(int code)
 				code = 0;
 			}
 		std::string strCode = std::to_string(code);
+		std::string name = getName("IR", strCode).name;
 		hacksSend("ir " + strCode);
 
 		Window* window = mWindow;
-		window->pushGui(new GuiMsgBox(window, _("SENT CODE #") + strCode + "\n" + _("SEND NEXT?"),
+		window->pushGui(new GuiMsgBox(window, _("SENT CODE #") + strCode + (name.empty() ? "" : (" (" + name + ")"))"\n" + _("SEND NEXT?"),
 		_("YES"), [this, code] {
 			sendIRcode(code + 1);
-		}, _("NO"), nullptr));
+		}, name.empty() ? _("SAVE") : _("RENAME"), [this,window,strCode, name]{
+				if (Settings::getInstance()->getBool("UseOSK"))
+				{
+					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "IR NAME " + code, name, [this, code](const std::string& value) {
+						HackName n;
+							n.type = "IR";
+							n.id = code;
+							n.name = value;
+						addName(n);
+					}, false));
+				}
+				else
+				{
+					mWindow->pushGui(new GuiTextEditPopup(mWindow, "IR NAME " + code, name, [this, code](const std::string& value) {
+						HackName n;
+							n.type = "IR";
+							n.id = code;
+							n.name = value;
+						addName(n);
+					}, false));
+				}
+		}));
 
 	}
 
