@@ -951,7 +951,8 @@ void GuiMenu::openIRlist()
 								addName(n);
 							}, false));
 						}
-					});
+					})
+					);
 				});
 			}
 		window->pushGui(s);
@@ -1245,7 +1246,7 @@ void GuiMenu::loadNames()
 	//STA;00:00:00:00:00:00;STANAME;CHANNEL;BSSID
 	//NET;00:00:00:00:00:00;SSID;CHANNEL;PASSWORD
 	//IR;9;IRNAME
-void GuiMenu::addName(Name n, bool reload)
+void GuiMenu::addName(HackName n, bool reload)
 	{
 		// base
 		std::string raw = n.type;
