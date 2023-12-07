@@ -1336,7 +1336,7 @@ void GuiMenu::scanSTA()
 						[this, window, stations](auto gui)
 						{
 							mWaitingLoad = true;
-							stalist = StationsList(hacksGet(cmd));
+							stalist = StationsList(stations);
 							return stalist;
 						},
 						[this, window](std::vector<WifiStation> stations)
