@@ -1042,7 +1042,7 @@ void GuiMenu::sendIRcode(int code)
 		}, name.empty() ? _("SAVE") : _("RENAME"), [this,window,strCode, name]{
 				if (Settings::getInstance()->getBool("UseOSK"))
 				{
-					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "IR NAME " + code, name, [this, code](const std::string& value) {
+					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "IR NAME " + strCode, name, [this, code](const std::string& value) {
 						HackName n;
 							n.type = "IR";
 							n.id = code;
@@ -1052,7 +1052,7 @@ void GuiMenu::sendIRcode(int code)
 				}
 				else
 				{
-					mWindow->pushGui(new GuiTextEditPopup(mWindow, "IR NAME " + code, name, [this, code](const std::string& value) {
+					mWindow->pushGui(new GuiTextEditPopup(mWindow, "IR NAME " + strCode, name, [this, code](const std::string& value) {
 						HackName n;
 							n.type = "IR";
 							n.id = code;
