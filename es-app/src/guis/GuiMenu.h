@@ -472,7 +472,7 @@ struct HackName {
 			type 	= tokens.at(0);
 			id 		= tokens.at(1);
 			name 	= Utils::String::replace(tokens.at(2), "_!SPC!_", " ");
-			if(type == "NET" && tokens.size() == 5)
+			if(type == "AP" && tokens.size() == 5)
 				{
 					channel 	= tokens.at(3);
 					password 	= Utils::String::replace(tokens.at(4), "_!SPC!_", " ");

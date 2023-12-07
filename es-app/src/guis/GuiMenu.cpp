@@ -812,7 +812,7 @@ void GuiMenu::openESP01Menu()
 void GuiMenu::openNamesCat()
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("SAVED NAMES") + "(" + std::to_string(names.size()) + ")");
+		auto s = new GuiSettings(window, _("SAVED NAMES") + " (" + std::to_string(names.size()) + ")");
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -1314,7 +1314,7 @@ void GuiMenu::loadNames()
 			}
 	}
 	//STA;00:00:00:00:00:00;STANAME;CHANNEL;BSSID
-	//NET;00:00:00:00:00:00;SSID;CHANNEL;PASSWORD
+	//AP;00:00:00:00:00:00;SSID;CHANNEL;PASSWORD
 	//IR;9;IRNAME
 void GuiMenu::addName(HackName n, bool reload)
 	{
@@ -1328,7 +1328,7 @@ void GuiMenu::addName(HackName n, bool reload)
 								raw+= ";" + Utils::String::toUpper(n.bssid);
 			}
 		// NET
-		if(n.type == "NET")
+		if(n.type == "AP")
 			{
 								raw+= ";" + n.channel;
 								raw+= ";" + Utils::String::replace(n.password, " ", "_!SPC!_");
