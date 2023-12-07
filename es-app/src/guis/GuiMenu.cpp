@@ -710,10 +710,10 @@ void GuiMenu::openESP01Menu()
 			}, "iconRestart");
 
 			s->addWithDescription(_("SAVED NAMES"), "",
-				std::make_shared<TextComponent>(window, std::to_string(names.count()), font, color),
+				std::make_shared<TextComponent>(window, std::to_string(names.size()), font, color),
 				[this, window]
 			{
-				if(names.count() > 0)
+				if(names.size() > 0)
 					{
 						openNamesCat();
 					}
