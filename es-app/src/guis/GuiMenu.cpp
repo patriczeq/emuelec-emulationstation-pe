@@ -735,7 +735,7 @@ void GuiMenu::openESP01Menu()
 				}
 			}, "iconNetwork");
 
-				s->addEntry(_("SNIFF WPS-PBC FRAME"), true, [this] {
+				s->addEntry(_("SNIFF WPS-PBC FRAME"), true, [this, window] {
 					window->pushGui(new GuiMsgBox(window, _("REALLY START SNIFFING?\n(30sec timeout)"),
 					_("YES"), [this] {
 						sniffWPS();
@@ -812,7 +812,7 @@ void GuiMenu::openNames()
 			{
 				s->addWithDescription(name.name, name.id,
 					std::make_shared<TextComponent>(window, name.type, 	font, color),
-					[this, sta]
+					[this, name]
 				{
 					openName(name);
 				});
@@ -905,12 +905,12 @@ void GuiMenu::openName(HackName name)
 						const std::string baseSSID 	= name.name;
 						const std::string baseKEY 	= name.password;
 						runSystemCommand("ap.sh stop \"" + baseSSID + "\" \"" + baseKEY + "\"", "", nullptr);
-						window->pushGui(new GuiMsgBox(window, _("CONNECTING TO") + "\n" + name.ssid,_("OK"),nullptr));
+						window->pushGui(new GuiMsgBox(window, _("CONNECTING TO") + "\n" + baseSSID,_("OK"),nullptr));
 					}, "iconNetwork");
 			}
 		// NAME
 		s->addGroup(_("OPTIONS"));
-		s->addEntry(_("REMOVE NAME"), true, [this, window, name]() {
+		s->addEntry(_("REMOVE NAME"), true, [this, window, s, name]() {
 				window->pushGui(new GuiMsgBox(window, _("REMOVE NAME") + "\n" + name.name + "\n?",
 					_("YES"), [this, window, s, name] {
 						remName(name.type, name.id);
@@ -928,26 +928,29 @@ void GuiMenu::openIRlist()
 				std::string code = std::to_string(i);
 				s->addEntry("# " + code, false, [this, window, code] {
 					hacksSend("ir " + code);
-					std::string strCode = std::to_string(code);
-					window->pushGui(new GuiMsgBox(window, _("SENT CODE #") + strCode + "\n" + _("ADD NAME") + "?",
+					window->pushGui(new GuiMsgBox(window, _("SENT CODE #") + code + "\n" + _("ADD NAME") + "?",
 					_("NO"), nullptr,
-					_("YES"), [this, strCode] {
+					_("YES"), [this, code] {
 						if (Settings::getInstance()->getBool("UseOSK"))
-							mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "IR NAME " + strCode, "", [this, strCode](const std::string& value) {
+						{
+							mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "IR NAME " + code, "", [this, code](const std::string& value) {
 								HackName n;
 									n.type = "IR";
-									n.id = strCode;
+									n.id = code;
 									n.name = value;
-								setName(n);
+								addName(n);
 							}, false));
+						}
 						else
-							mWindow->pushGui(new GuiTextEditPopup(mWindow, "IR NAME " + strCode, "", [this, strCode](const std::string& value) {
+						{
+							mWindow->pushGui(new GuiTextEditPopup(mWindow, "IR NAME " + code, "", [this, code](const std::string& value) {
 								HackName n;
 									n.type = "IR";
-									n.id = strCode;
+									n.id = code;
 									n.name = value;
-								setName(n);
+								addName(n);
 							}, false));
+						}
 					});
 				});
 			}
@@ -996,6 +999,7 @@ void GuiMenu::sniffWPS()
 	}
 void GuiMenu::openWPSpwned(std::string raw)
 	{
+		std::vector<std::string> tokens = Utils::String::split(raw, ';');
 		//c0:c9:e3:9e:dd:b7;4;31;WRT_AP;PASSWORD
 		AccessPoint ap;
 		ap.bssid 		= Utils::String::toUpper(tokens.at(0));
@@ -1010,8 +1014,6 @@ void GuiMenu::openWPSpwned(std::string raw)
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
-		std::vector<std::string> tokens = Utils::String::split(raw, ';');
-
 
 		s->addGroup(_("AP INFO"));
 			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, ap.rssi + "dBm", 	font, color));
@@ -1061,7 +1063,7 @@ void GuiMenu::openWPSpwned(std::string raw)
 					n.name = ap.ssid;
 					n.channel = ap.channel;
 					n.password = ap.password;
-				setName(n);
+				addName(n);
 				window->pushGui(new GuiMsgBox(window, _("SAVED!"),
 					_("ok"),nullptr));
 			}, "iconSettings");
@@ -1097,7 +1099,7 @@ WifiStation GuiMenu::rawToSTA(std::string raw)
 	WifiStation sta(raw);
 
 	sta.vendor 	= macVendor(sta.mac);
-	sta.name 		= getName("STA", sta.mac);//macName(sta.mac);
+	sta.name 		= getName("STA", sta.mac).name;//macName(sta.mac);
 	sta.ap.vendor = macVendor(sta.ap.bssid);
 	sta.ap.enc    = encString(sta.ap.enc);
 
@@ -1417,7 +1419,7 @@ void GuiMenu::openSTADetail(WifiStation sta)
 							n.name = value;
 							n.channel = sta.ap.channel;
 							n.bssid = sta.ap.bssid;
-						setName(n);
+						addName(n);
 					}, false));
 				else
 					mWindow->pushGui(new GuiTextEditPopup(mWindow, "NAME " + sta.mac, sta.name, [this, sta](const std::string& value) {
@@ -1427,7 +1429,7 @@ void GuiMenu::openSTADetail(WifiStation sta)
 							n.name = value;
 							n.channel = sta.ap.channel;
 							n.bssid = sta.ap.bssid;
-						setName(n);
+						addName(n);
 					}, false));
 			});
 
