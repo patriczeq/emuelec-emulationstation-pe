@@ -1264,7 +1264,7 @@ void GuiMenu::addName(HackName n, bool reload)
 								raw+= ";" + n.password;
 			}
 
-		hacksSet("setname " + n.type + " " + n.id + " " + raw);
+		hacksSet("setname " + n.type + " " + n.id + " \"" + raw + "\"");
 		if(reload)
 			{
 				loadNames();
@@ -1272,7 +1272,7 @@ void GuiMenu::addName(HackName n, bool reload)
 	}
 void GuiMenu::remName(std::string type, std::string id, bool reload)
 	{
-		hacksSet("remname " + type + " " + id);
+		hacksSet("remname \"" + type + "\" \"" + id + "\"");
 		if(reload)
 			{
 				loadNames();
