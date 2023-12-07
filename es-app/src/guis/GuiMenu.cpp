@@ -923,37 +923,43 @@ void GuiMenu::openIRlist()
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "SELECT POWER-CODE");
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
 		for(int i = 0; i < 280; i++)
 			{
 				std::string code = std::to_string(i);
-				s->addEntry("# " + code, false, [this, window, code] {
-					hacksSend("ir " + code);
-					window->pushGui(new GuiMsgBox(window, _("SENT CODE #") + code + "\n" + _("ADD NAME") + "?",
-					_("NO"), nullptr,
-					_("YES"), [this, code] {
-						if (Settings::getInstance()->getBool("UseOSK"))
-						{
-							mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "IR NAME " + code, "", [this, code](const std::string& value) {
-								HackName n;
-									n.type = "IR";
-									n.id = code;
-									n.name = value;
-								addName(n);
-							}, false));
-						}
-						else
-						{
-							mWindow->pushGui(new GuiTextEditPopup(mWindow, "IR NAME " + code, "", [this, code](const std::string& value) {
-								HackName n;
-									n.type = "IR";
-									n.id = code;
-									n.name = value;
-								addName(n);
-							}, false));
-						}
-					})
-					);
-				});
+				s->addWithDescription("# " + code, "",
+					std::make_shared<TextComponent>(window, getName("IR", code).name, 	font, color),
+					[this, window, code] {
+						hacksSend("ir " + code);
+						window->pushGui(new GuiMsgBox(window, _("SENT CODE #") + code + "\n" + _("ADD NAME") + "?",
+						_("NO"), nullptr,
+						_("YES"), [this, code] {
+							if (Settings::getInstance()->getBool("UseOSK"))
+							{
+								mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "IR NAME " + code, "", [this, code](const std::string& value) {
+									HackName n;
+										n.type = "IR";
+										n.id = code;
+										n.name = value;
+									addName(n);
+								}, false));
+							}
+							else
+							{
+								mWindow->pushGui(new GuiTextEditPopup(mWindow, "IR NAME " + code, "", [this, code](const std::string& value) {
+									HackName n;
+										n.type = "IR";
+										n.id = code;
+										n.name = value;
+									addName(n);
+								}, false));
+							}
+						})
+						);
+					});
 			}
 		window->pushGui(s);
 	}
@@ -1100,7 +1106,6 @@ WifiStation GuiMenu::rawToSTA(std::string raw)
 	WifiStation sta(raw);
 
 	sta.vendor 	= macVendor(sta.mac);
-	sta.name 		= getName("STA", sta.mac).name;//macName(sta.mac);
 	sta.ap.vendor = macVendor(sta.ap.bssid);
 	sta.ap.enc    = encString(sta.ap.enc);
 
@@ -1370,6 +1375,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations)
 			{
 				for (auto sta : stations)
 					{
+						sta.name = getName("STA", sta.mac).name;
 						std::string _title 	=  (sta.name.empty() ? sta.mac : sta.name) + (sta.ap.ssid.empty() ? "" : (" -> " + sta.ap.ssid));
 						std::string _subtitle 	= sta.vendor + " -> " + sta.ap.bssid;
 
@@ -1385,6 +1391,8 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations)
 	}
 void GuiMenu::openSTADetail(WifiStation sta)
 	{
+		sta.name = getName("STA", sta.mac).name;
+
 		Window* window = mWindow;
 		std::string windowName = _("STA") + ": ";
 								windowName = windowName + (sta.name.empty() ? sta.mac : sta.name);
@@ -1402,17 +1410,19 @@ void GuiMenu::openSTADetail(WifiStation sta)
 
 			if(!sta.name.empty())
 			{
-				s->addEntry(_("REMOVE NAME"), true, [this, window, sta]() {
+				s->addEntry(_("REMOVE NAME"), true, [this, window, s, sta]() {
 					window->pushGui(new GuiMsgBox(window, _("REMOVE NAME") + "?\n" + sta.name,
-						_("YES"), [this, sta] {
+						_("YES"), [this, sta, s] {
 							remName("STA", sta.mac);
+							delete s;
+							openSTADetail(sta);
 						}, _("NO"),nullptr));
 				}, "iconRemove");
 			}
 
-			s->addEntry(sta.name.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, sta]() {
+			s->addEntry(sta.name.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, s, sta]() {
 				if (Settings::getInstance()->getBool("UseOSK"))
-					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "NAME " + sta.mac, sta.name, [this, sta](const std::string& value) {
+					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "NAME " + sta.mac, sta.name, [this, s, sta](const std::string& value) {
 						HackName n;
 							n.type = "STA";
 							n.id = sta.mac;
@@ -1420,9 +1430,11 @@ void GuiMenu::openSTADetail(WifiStation sta)
 							n.channel = sta.ap.channel;
 							n.bssid = sta.ap.bssid;
 						addName(n);
+						delete s;
+						openSTADetail(sta);
 					}, false));
 				else
-					mWindow->pushGui(new GuiTextEditPopup(mWindow, "NAME " + sta.mac, sta.name, [this, sta](const std::string& value) {
+					mWindow->pushGui(new GuiTextEditPopup(mWindow, "NAME " + sta.mac, sta.name, [this, s, sta](const std::string& value) {
 						HackName n;
 							n.type = "STA";
 							n.id = sta.mac;
@@ -1430,6 +1442,8 @@ void GuiMenu::openSTADetail(WifiStation sta)
 							n.channel = sta.ap.channel;
 							n.bssid = sta.ap.bssid;
 						addName(n);
+						delete s;
+						openSTADetail(sta);
 					}, false));
 			});
 
