@@ -94,6 +94,12 @@ if(isAudio && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 			this->close();
 		}, "iconSound");
 
+	mMenu.addEntry(_("VLC test"), false, [_path, this]
+		{
+			GuiVideoViewer::playVideo(mWindow, _path, true);
+			this->close();
+		}, "iconSound");
+
 	mMenu.addEntry(_("CAST"), false, [_path, this]
 		{
 			GuiMenu::loadChromecast(mWindow, _path);

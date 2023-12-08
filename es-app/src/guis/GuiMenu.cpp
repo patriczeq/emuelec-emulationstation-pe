@@ -674,7 +674,7 @@ void GuiMenu::openESP01Settings()
 			irSpace->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.irspace", (int)round(newVal)); });
 			s->addWithLabel(_("SPACE BETWEEN SENDS"), irSpace);
 		// invert LGIC
-			auto irInvert = std::make_shared<SwitchComponent>(mWindow);
+			/*auto irInvert = std::make_shared<SwitchComponent>(mWindow);
 			irInvert->setState(SystemConf::getInstance()->get("pe_hack.irinvert") == "1");
 			s->addWithLabel(_("INVERT GPIO2 OUTPUT"), irInvert);
 			s->addSaveFunc([this, irInvert] {
@@ -685,8 +685,17 @@ void GuiMenu::openESP01Settings()
 					hacksSend("reboot");
 					//runSystemCommand("hacks.sh espconn reboot", "", nullptr);
 				}
+			});*/
+		s->addGroup(_("NEOPIXEL SETTINGS"));
+			auto nBright = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 1.f, "%");
+			nBright->setValue(Settings::getInstance()->getInt("pe_hack.neobright"));
+			nBright->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.neobright", (int)round(newVal)); });
+			s->addWithLabel(_("BRIGHTNESS"), nBright);
+			s->addEntry(_("SAVE"), true, [this] {
+				int perc 				= Settings::getInstance()->getInt("pe_hack.neobright");
+				uint8_t value		= perc > 0 ? (255 * (perc / 100)) : 0;
+				hacksSend("bright " + std::to_string(value));
 			});
-
 		window->pushGui(s);
 	}
 
@@ -1054,7 +1063,7 @@ void GuiMenu::sendIRcode(int code)
 		window->pushGui(new GuiMsgBox(window, _("SENT CODE #") + strCode + (name.empty() ? "" : (" (" + name + ")") ) + "\n" + _("SEND NEXT?"),
 		_("YES"), [this, code] {
 			sendIRcode(code + 1);
-		}, name.empty() ? _("SAVE") : _("RENAME"), [this,window,strCode, name]{
+		}, _("NO"), nullptr, name.empty() ? _("SAVE") : _("EDIT NAME"), [this,window,strCode, name]{
 				if (Settings::getInstance()->getBool("UseOSK"))
 				{
 					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "IR NAME " + strCode, name, [this, strCode](const std::string& value) {
