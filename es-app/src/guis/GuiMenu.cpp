@@ -917,8 +917,8 @@ void GuiMenu::openName(HackName name)
 			{
 				s->addGroup(_("ACTIONS"));
 					s->addEntry(_("DEAUTH STATION"), false, [this, name]() {
-						// espconn deauth <BSSID> <MAC> [CHANNEL]
-						hacksSend("deauth " + name.bssid + " " + name.id + " " + name.channel);
+						std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+						runSystemCommand("hacks.sh " + port + " deauthsta " + name.id + " " + name.bssid + " " + name.channel, "", nullptr);
 					}, "iconHack");
 			}
 		else if(name.type == "AP")
@@ -962,7 +962,7 @@ void GuiMenu::openName(HackName name)
 					}, "iconNetwork");
 			}
 		// NAME
-		s->addGroup(_("OPTIONS"));	
+		s->addGroup(_("OPTIONS"));
 		s->addEntry(_("REMOVE NAME"), true, [this, window, s, name]() {
 				window->pushGui(new GuiMsgBox(window, _("REMOVE NAME") + "\n" + name.name + "\n?",
 					_("YES"), [this, window, s, name] {
