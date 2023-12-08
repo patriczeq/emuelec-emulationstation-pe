@@ -912,14 +912,26 @@ void GuiMenu::openName(HackName name)
 					s->addEntry(_("SEND POWER-CODE"), false, [this, name]() {
 						hacksSend("ir " + name.id);
 					}, "iconHack");
+					s->addEntry(_("SEND POWER-CODE") + " LOOP", false, [this, name]() {
+						hacksSend("irloop " + name.id);
+					}, "iconHack");
 			}
 		else if(name.type == "STA")
 			{
 				s->addGroup(_("ACTIONS"));
-					s->addEntry(_("DEAUTH STATION"), false, [this, name]() {
-						std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
-						runSystemCommand("hacks.sh " + port + " deauthsta " + name.id + " " + name.bssid + " " + name.channel, "", nullptr);
+					s->addEntry(_("DEAUTH STATION"), false, [this, window, name]() {
+						std::string msg = _("DEAUTH") +"\n";
+												msg+= name.name.empty() ? "" : (name.name + "\n");
+												msg+= name.id + "\n";
+						window->pushGui(new GuiMsgBox(window, msg,
+							_("YES"), [this, window, name] {
+								std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+								runSystemCommand("hacks.sh " + port + " deauthsta " + name.id + " " + name.bssid + " " + name.channel, "", nullptr);
+							}, _("CANCEL"),nullptr));
 					}, "iconHack");
+					s->addEntry(_("STOP ALL JOBS"), false, [this, window]() {
+						hacksSend("stop");
+						}, "iconQuit");
 			}
 		else if(name.type == "AP")
 			{
@@ -952,6 +964,9 @@ void GuiMenu::openName(HackName name)
 									hacksSend("deauthapcaptive " + name.id);
 								}, _("CANCEL"),nullptr));
 						},"iconHack");
+					s->addEntry(_("STOP ALL JOBS"), false, [this, window]() {
+						hacksSend("stop");
+						}, "iconQuit");
 
 				s->addGroup(_("TOOLS"));
 					s->addEntry(_("CONNECT TO NETWORK"), false, [this, window, name]() {
@@ -2529,7 +2544,7 @@ void GuiMenu::addVersionInfo()
 		else
 		{
 #ifdef _ENABLEEMUELEC
-		label = "PEmod v" + std::string("1.2") + " EMUELEC V" + ApiSystem::getInstance()->getVersion() + buildDate + " IP:" + getShOutput(R"(/usr/bin/emuelec-utils getip)");
+		label = "PEmod v" + std::string("1.3") + " EMUELEC V" + ApiSystem::getInstance()->getVersion() + buildDate + " IP:" + getShOutput(R"(/usr/bin/emuelec-utils getip)");
 #else
 			std::string aboutInfo = ApiSystem::getInstance()->getApplicationName() + " V" + ApiSystem::getInstance()->getVersion();
 			label = aboutInfo + buildDate;
