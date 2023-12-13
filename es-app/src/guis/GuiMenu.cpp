@@ -613,7 +613,7 @@ void GuiMenu::openESP01Settings()
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "DEAUTHER SETTINGS");
-		s->addEntry(_("START OTA AP"), false, [s] {
+		s->addEntry(_("START OTA AP"), false, [this] {
 			hacksSend("ota");
 		}, "iconUpdates");
 		// ----------------------------------------------------------- MAIN SETTINGS
