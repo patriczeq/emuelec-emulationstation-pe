@@ -6,6 +6,7 @@
 #include "GuiComponent.h"
 #include "platform.h"
 #include "renderers/Renderer.h"
+#include "Log.h"
 
 class ImageComponent;
 class Sound;
@@ -96,21 +97,28 @@ private:
 
 	std::string	selectGameMedia(FileData* game, bool video = false);
 
-	void dimBrightness(){
-		if(!dimmedBright)
+	void dimBrightness(bool dim){
+		if(dim)
 			{
-				currentBrightness = getShOutput("cat /sys/class/backlight/backlight/brightness");
-				runSystemCommand("echo 0 > /sys/class/backlight/backlight/brightness", "", nullptr);
-				dimmedBright = true;
+				if(!dimmedBright)
+					{
+						LOG(LogDebug) << "ScreenSaver: brightness " << 0;
+						currentBrightness = getShOutput("cat /sys/class/backlight/backlight/brightness");
+						runSystemCommand("echo 0 > /sys/class/backlight/backlight/brightness", "", nullptr);
+						dimmedBright = true;
+					}
+			}
+		else
+			{
+				if(dimmedBright)
+					{
+						LOG(LogDebug) << "ScreenSaver: brightness " << currentBrightness;
+						runSystemCommand("echo " + currentBrightness + " > /sys/class/backlight/backlight/brightness", "", nullptr);
+						dimmedBright = false;
+					}
 			}
 	}
-	void undimBrightness(){
-		if(dimmedBright)
-			{
-				runSystemCommand("echo " + currentBrightness + " > /sys/class/backlight/backlight/brightness", "", nullptr);
-				dimmedBright = false;
-			}
-	}
+
 
 	enum STATE {
 		STATE_INACTIVE,

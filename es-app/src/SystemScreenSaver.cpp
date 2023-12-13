@@ -9,7 +9,6 @@
 #include "views/ViewController.h"
 #include "FileData.h"
 #include "FileFilterIndex.h"
-#include "Log.h"
 #include "PowerSaver.h"
 #include "Scripting.h"
 #include "Sound.h"
@@ -242,7 +241,7 @@ void SystemScreenSaver::stopScreenSaver()
 		}
 	}
 
-	undimBrightness();
+	dimBrightness(false);
 }
 
 void SystemScreenSaver::renderScreenSaver()
@@ -292,6 +291,7 @@ void SystemScreenSaver::renderScreenSaver()
 		std::string screensaver_behavior = Settings::getInstance()->getString("ScreenSaverBehavior");
 
 		Renderer::setMatrix(Transform4x4f::Identity());
+		// slow dimm
 		unsigned char color = screensaver_behavior == "dim" ? 0x000000A0 : 0x000000FF;
 		Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), color, color);
 	}
@@ -493,7 +493,7 @@ void SystemScreenSaver::update(int deltaTime)
 
 		if(mTimer > dimAfter)
 			{
-				dimBrightness();
+				dimBrightness(true);
 			}
 	}
 
