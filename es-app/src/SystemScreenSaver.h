@@ -98,22 +98,16 @@ private:
 	std::string	selectGameMedia(FileData* game, bool video = false);
 
 	void dimBrightness(bool dim){
-		if(dim)
+		if(!dimmedBright && dim)
 			{
-				if(!dimmedBright)
-					{
-						ApiSystem::getInstance()->getBrightness(currentBrightness);
-						ApiSystem::getInstance()->setBrightness(0, true /*FORCE*/);
-						dimmedBright = true;
-					}
+				ApiSystem::getInstance()->getBrightness(currentBrightness);
+				ApiSystem::getInstance()->setBrightness(0, true /*FORCE*/);
+				dimmedBright = true;
 			}
-		else
+		else if(dimmedBright && !dim)
 			{
-				if(dimmedBright)
-					{
-						ApiSystem::getInstance()->setBrightness(currentBrightness);
-						dimmedBright = false;
-					}
+				ApiSystem::getInstance()->setBrightness(currentBrightness);
+				dimmedBright = false;
 			}
 	}
 
