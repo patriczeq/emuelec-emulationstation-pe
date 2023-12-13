@@ -99,11 +99,11 @@ private:
 
 	void dimBrightness(bool dim){
 		if(dim)
-			{//ApiSystem::getBrightness
+			{
 				if(!dimmedBright)
 					{
 						ApiSystem::getInstance()->getBrightness(currentBrightness);
-						ApiSystem::getInstance()->setBrightness(0);
+						ApiSystem::getInstance()->setBrightness(0, true /*FORCE*/);
 						dimmedBright = true;
 					}
 			}

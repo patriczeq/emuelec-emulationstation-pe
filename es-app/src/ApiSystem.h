@@ -228,7 +228,7 @@ public:
 	void callBatoceraPreGameListsHook();
 
 	bool	getBrightness(int& value);
-	void	setBrightness(int value);
+	void	setBrightness(int value, bool force = false);
 
 	std::vector<std::string> getWifiNetworks(bool scan = false);
 	std::vector<std::string> getWifiNetworksPE();
