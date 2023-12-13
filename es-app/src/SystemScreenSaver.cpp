@@ -292,8 +292,12 @@ void SystemScreenSaver::renderScreenSaver()
 
 		Renderer::setMatrix(Transform4x4f::Identity());
 		// slow dimm
-		unsigned char color = screensaver_behavior == "dim" ? 0x000000A0 : 0x000000FF;
+		unsigned char color = screensaver_behavior == "dim" ? 0x00000088 : 0x000000FF;
 		Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), color, color);
+		if(mTimer > dimAfter)
+			{
+				dimBrightness(true);
+			}
 	}
 }
 
@@ -489,11 +493,6 @@ void SystemScreenSaver::update(int deltaTime)
 		if (mTimer > mVideoChangeTime)
 			{
 				nextVideo();
-			}
-
-		if(mTimer > dimAfter)
-			{
-				dimBrightness(true);
 			}
 	}
 
