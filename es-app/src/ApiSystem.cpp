@@ -1411,16 +1411,25 @@ void ApiSystem::setBrightness(int value, bool force)
 	if (value < 1 && !force)
 		value = 1;
 
-	if (value > 100)
+	if (value > 100 && !force)
 		value = 100;
 
 	int max = Utils::String::toInteger(Utils::FileSystem::readAllText(BACKLIGHT_BRIGHTNESS_MAX_NAME));
 	if (max == 0)
 		return;
 
+	if(force && (value < 0 || value > max))
+		{
+			return;
+		}
+
 	float percent = (value / 100.0f * (float)max) + 0.5f;
 
 	std::string content = std::to_string((uint32_t) percent) + "\n";
+	if(force)
+		{
+			content = std::to_string((uint32_t) value) + "\n";
+		}
 	Utils::FileSystem::writeAllText(BACKLIGHT_BRIGHTNESS_NAME, content);
 }
 

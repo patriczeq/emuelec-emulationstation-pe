@@ -613,6 +613,9 @@ void GuiMenu::openESP01Settings()
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "DEAUTHER SETTINGS");
+		s->addEntry(_("START OTA AP"), false, [s] {
+			hacksSend("ota");
+		}, "iconUpdates");
 		// ----------------------------------------------------------- MAIN SETTINGS
 		s->addGroup(_("UART"));
 			// PORT
@@ -1878,7 +1881,7 @@ s->addGroup(_("PE MOD SETTINGS"));
 
 	auto utheme = Settings::getInstance()->getString("pe_hack.uboot_theme");
 	if (utheme.empty())
-		utheme = "mario";
+		utheme = "clear";
 
 	for (auto it = themes.cbegin(); it != themes.cend(); it++)
 		uboot_theme->add(_(it->c_str()), *it, utheme == *it);
