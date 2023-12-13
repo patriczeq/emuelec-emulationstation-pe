@@ -981,14 +981,17 @@ void GuiMenu::openName(HackName name)
 					s->addEntry(_("STOP ALL JOBS"), false, [this, window]() {
 						hacksSend("stop");
 						}, "iconQuit");
+			if(!name.password.empty())
+				{
+					s->addGroup(_("TOOLS"));
+						s->addEntry(_("CONNECT TO NETWORK"), false, [this, window, name]() {
+							const std::string baseSSID 	= name.name;
+							const std::string baseKEY 	= name.password;
+							runSystemCommand("ap.sh stop \"" + baseSSID + "\" \"" + baseKEY + "\"", "", nullptr);
+							window->pushGui(new GuiMsgBox(window, _("CONNECTING TO") + "\n" + baseSSID,_("OK"),nullptr));
+						}, "iconNetwork");
+				}
 
-				s->addGroup(_("TOOLS"));
-					s->addEntry(_("CONNECT TO NETWORK"), false, [this, window, name]() {
-						const std::string baseSSID 	= name.name;
-						const std::string baseKEY 	= name.password;
-						runSystemCommand("ap.sh stop \"" + baseSSID + "\" \"" + baseKEY + "\"", "", nullptr);
-						window->pushGui(new GuiMsgBox(window, _("CONNECTING TO") + "\n" + baseSSID,_("OK"),nullptr));
-					}, "iconNetwork");
 			}
 		// NAME
 		s->addGroup(_("OPTIONS"));
@@ -1642,6 +1645,22 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 			if(!ap.channel.empty()){s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, ap.channel, 	font, color));}
 			if(!ap.enc.empty()){s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, ap.enc, 	font, color));}
 		// -------------------------------------------------------------------------------------
+		std::string name = getName("AP", code).name;
+		if(name.empty())
+			{
+				s->addGroup(_("TOOLS"));
+					s->addEntry(_("SAVE NETWORK"), false, [this, window, ap]() {
+						HackName n;
+							n.type = "AP";
+							n.id = ap.bssid;
+							n.name = ap.ssid;
+							n.channel = ap.channel;
+						addName(n);
+						window->pushGui(new GuiMsgBox(window, _("SAVED!"),
+							_("ok"),nullptr));
+					}, "iconSettings");
+			}
+
 		s->addGroup(_("AP HACKS"));
 		// -------------------------------------------------------------------------------------
 
