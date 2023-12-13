@@ -99,14 +99,14 @@ private:
 		if(!dimmedBright)
 			{
 				currentBrightness = getShOutput("cat /sys/class/backlight/backlight/brightness");
-				runSystemCommand("echo 0 > /sys/class/backlight/backlight/brightness", nullptr);
+				runSystemCommand("echo 0 > /sys/class/backlight/backlight/brightness", "", nullptr);
 				dimmedBright = true;
 			}
 	}
 	void undimBrightness(){
 		if(dimmedBright)
 			{
-				runSystemCommand("echo " + currentBrightness + " > /sys/class/backlight/backlight/brightness", nullptr);
+				runSystemCommand("echo " + currentBrightness + " > /sys/class/backlight/backlight/brightness", "", nullptr);
 				dimmedBright = false;
 			}
 	}
