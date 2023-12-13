@@ -205,6 +205,8 @@ void SystemScreenSaver::startScreenSaver()
 
 void SystemScreenSaver::stopScreenSaver()
 {
+	dimBrightness(false);
+	
 	bool isExitingScreenSaver = !mLoadingNext;
 	bool isVideoScreenSaver = (mVideoScreensaver != nullptr);
 
@@ -241,7 +243,6 @@ void SystemScreenSaver::stopScreenSaver()
 		}
 	}
 
-	dimBrightness(false);
 }
 
 void SystemScreenSaver::renderScreenSaver()
@@ -294,7 +295,7 @@ void SystemScreenSaver::renderScreenSaver()
 		// slow dimm
 		unsigned char color = screensaver_behavior == "dim" ? 0x00000088 : 0x000000FF;
 		Renderer::drawRect(0.0f, 0.0f, Renderer::getScreenWidth(), Renderer::getScreenHeight(), color, color);
-		if(mTimer > dimAfter)
+		if(screensaver_behavior == "black")
 			{
 				dimBrightness(true);
 			}

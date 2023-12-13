@@ -693,14 +693,13 @@ void GuiMenu::openESP01Settings()
 				}
 			});*/
 		s->addGroup(_("NEOPIXEL SETTINGS"));
-			auto nBright = std::make_shared<SliderComponent>(mWindow, 0.f, 100.f, 1.f, "%");
+			auto nBright = std::make_shared<SliderComponent>(mWindow, 0.f, 255.f, 1.f, "b");
 			nBright->setValue(Settings::getInstance()->getInt("pe_hack.neobright"));
 			nBright->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.neobright", (int)round(newVal)); });
 			s->addWithLabel(_("BRIGHTNESS"), nBright);
 			s->addEntry(_("SAVE"), true, [this] {
-				int perc 				= Settings::getInstance()->getInt("pe_hack.neobright");
-				uint8_t value		= perc > 0 ? (255 * (perc / 100)) : 0;
-				hacksSend("bright " + std::to_string(value));// TODO !!!!
+				int value				= Settings::getInstance()->getInt("pe_hack.neobright");
+				hacksSend("bright " + std::to_string(value));
 			});
 		window->pushGui(s);
 	}

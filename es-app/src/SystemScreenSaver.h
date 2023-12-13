@@ -147,8 +147,6 @@ private:
 
 	int				 		currentBrightness;
 	bool 					dimmedBright;
-	int 					dimAfter = 5000;
-
 };
 
 #endif // ES_APP_SYSTEM_SCREEN_SAVER_H
