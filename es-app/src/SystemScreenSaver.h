@@ -4,6 +4,7 @@
 
 #include "Window.h"
 #include "GuiComponent.h"
+#include "platform.h"
 #include "renderers/Renderer.h"
 
 class ImageComponent;
