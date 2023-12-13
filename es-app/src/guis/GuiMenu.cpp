@@ -1645,7 +1645,7 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 			if(!ap.channel.empty()){s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, ap.channel, 	font, color));}
 			if(!ap.enc.empty()){s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, ap.enc, 	font, color));}
 		// -------------------------------------------------------------------------------------
-		std::string name = getName("AP", code).name;
+		std::string name = getName("AP", ap.bssid).name;
 		if(name.empty())
 			{
 				s->addGroup(_("TOOLS"));
