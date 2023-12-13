@@ -4,7 +4,7 @@
 
 #include "Window.h"
 #include "GuiComponent.h"
-#include "platform.h"
+#include "ApiSystem.h"
 #include "renderers/Renderer.h"
 #include "Log.h"
 
@@ -99,12 +99,11 @@ private:
 
 	void dimBrightness(bool dim){
 		if(dim)
-			{
+			{//ApiSystem::getBrightness
 				if(!dimmedBright)
 					{
-						LOG(LogDebug) << "ScreenSaver: brightness " << 0;
-						currentBrightness = getShOutput("cat /sys/class/backlight/backlight/brightness");
-						runSystemCommand("echo 0 > /sys/class/backlight/backlight/brightness", "", nullptr);
+						ApiSystem::getInstance()->getBrightness(currentBrightness);
+						ApiSystem::getInstance()->setBrightness(0);
 						dimmedBright = true;
 					}
 			}
@@ -112,8 +111,7 @@ private:
 			{
 				if(dimmedBright)
 					{
-						LOG(LogDebug) << "ScreenSaver: brightness " << currentBrightness;
-						runSystemCommand("echo " + currentBrightness + " > /sys/class/backlight/backlight/brightness", "", nullptr);
+						ApiSystem::getInstance()->setBrightness(currentBrightness);
 						dimmedBright = false;
 					}
 			}
