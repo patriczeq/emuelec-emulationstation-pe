@@ -491,7 +491,7 @@ void SystemScreenSaver::update(int deltaTime)
 				nextVideo();
 			}
 
-		if(mTime > dimAfter)
+		if(mTimer > dimAfter)
 			{
 				dimBrightness();
 			}
