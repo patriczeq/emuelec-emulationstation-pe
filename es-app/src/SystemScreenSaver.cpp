@@ -241,6 +241,8 @@ void SystemScreenSaver::stopScreenSaver()
 			AudioManager::getInstance()->pause(); // unpause
 		}
 	}
+
+	undimBrightness();
 }
 
 void SystemScreenSaver::renderScreenSaver()
@@ -485,7 +487,14 @@ void SystemScreenSaver::update(int deltaTime)
 		// Update the timer that swaps the videos
 		mTimer += deltaTime;
 		if (mTimer > mVideoChangeTime)
-			nextVideo();
+			{
+				nextVideo();
+			}
+
+		if(mTime > dimAfter)
+			{
+				dimBrightness();
+			}
 	}
 
 	// If we have a loaded video then update it

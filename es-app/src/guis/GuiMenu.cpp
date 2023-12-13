@@ -264,6 +264,12 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 			}
 		}
 
+		// NEW MUSIC PLAYER
+		/*addWithDescription(_("MUSIC GUI"), nullptr, [this]
+		{
+			openMusicPlayer();
+		}, "iconSound");*/
+
 		// pe-hacks
 		if(SystemConf::getInstance()->get("pe_hack.enabled") == "1")
 			{
@@ -694,7 +700,7 @@ void GuiMenu::openESP01Settings()
 			s->addEntry(_("SAVE"), true, [this] {
 				int perc 				= Settings::getInstance()->getInt("pe_hack.neobright");
 				uint8_t value		= perc > 0 ? (255 * (perc / 100)) : 0;
-				hacksSend("bright " + std::to_string(value));
+				hacksSend("bright " + std::to_string(value));// TODO !!!!
 			});
 		window->pushGui(s);
 	}

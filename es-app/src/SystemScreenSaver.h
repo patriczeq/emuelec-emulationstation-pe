@@ -42,10 +42,10 @@ public:
 	void setImage(const std::string path);
 	bool hasImage();
 
-	void render(const Transform4x4f& transform) override;	
+	void render(const Transform4x4f& transform) override;
 
 private:
-	ImageComponent*		mImage;	
+	ImageComponent*		mImage;
 };
 
 class SystemScreenSaver;
@@ -92,9 +92,25 @@ private:
 
 	std::string pickRandomGameMedia(bool video = false);
 	std::string pickRandomCustomImage(bool video = false);
-	
+
 	std::string	selectGameMedia(FileData* game, bool video = false);
-	
+
+	void dimBrightness(){
+		if(!dimmedBright)
+			{
+				currentBrightness = getShOutput("cat /sys/class/backlight/backlight/brightness");
+				runSystemCommand("echo 0 > /sys/class/backlight/backlight/brightness", nullptr);
+				dimmedBright = true;
+			}
+	}
+	void undimBrightness(){
+		if(dimmedBright)
+			{
+				runSystemCommand("echo " + currentBrightness + " > /sys/class/backlight/backlight/brightness", nullptr);
+				dimmedBright = false;
+			}
+	}
+
 	enum STATE {
 		STATE_INACTIVE,
 		STATE_FADE_OUT_WINDOW,
@@ -121,6 +137,10 @@ private:
 	std::string		mSystemName;
 	int 			mVideoChangeTime;
 	bool			mLoadingNext;
+
+	std::string 	currentBrightness;
+	bool 					dimmedBright;
+	int 					dimAfter = 5000;
 
 };
 
