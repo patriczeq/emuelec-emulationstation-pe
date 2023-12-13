@@ -145,7 +145,7 @@ private:
 	int 			mVideoChangeTime;
 	bool			mLoadingNext;
 
-	std::string 	currentBrightness;
+	int				 		currentBrightness;
 	bool 					dimmedBright;
 	int 					dimAfter = 5000;
 
