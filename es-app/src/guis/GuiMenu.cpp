@@ -720,7 +720,7 @@ void GuiMenu::openESP01Settings()
 		s->addGroup(_("NEOPIXEL SETTINGS"));
 			auto nBright = std::make_shared<SliderComponent>(mWindow, 0.f, 255.f, 1.f, "b");
 			nBright->setValue(Settings::getInstance()->getInt("pe_hack.neobright"));
-			nBright->setOnValueChanged([](const float &newVal) {
+			nBright->setOnValueChanged([this](const float &newVal) {
 				Settings::getInstance()->setInt("pe_hack.neobright", (int)round(newVal));
 				hacksSend("bright " + std::to_string((int)round(newVal)));
 			});
