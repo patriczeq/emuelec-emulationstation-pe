@@ -613,8 +613,7 @@ void GuiMenu::openESP01Settings()
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "DEAUTHER SETTINGS");
-		s->addEntry(_("START OTA AP"), false, [this] {
-			Window* window = mWindow;
+		s->addEntry(_("START OTA AP"), false, [this, window] {
 			mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("PREPARING OTA AP..."),
 				[this, window](auto gui)
 				{
