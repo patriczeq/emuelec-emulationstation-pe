@@ -722,7 +722,7 @@ void GuiMenu::openESP01Settings()
 			nBright->setValue(Settings::getInstance()->getInt("pe_hack.neobright"));
 			nBright->setOnValueChanged([](const float &newVal) {
 				Settings::getInstance()->setInt("pe_hack.neobright", (int)round(newVal));
-				hacksSend("bright " + std::to_string(value));
+				hacksSend("bright " + std::to_string((int)round(newVal)));
 			});
 			s->addWithLabel(_("BRIGHTNESS"), nBright);
 
