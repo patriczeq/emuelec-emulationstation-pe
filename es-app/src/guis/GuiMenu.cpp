@@ -624,7 +624,7 @@ void GuiMenu::openESP01Settings()
 				[this, window](std::vector<std::string> ota)
 				{
 					mWaitingLoad = false;
-					if(ota.count())
+					if(ota.size())
 						{
 							std::vector<std::string> tokens = Utils::String::split(ota.at(0), ';');
 							window->pushGui(new GuiMsgBox(window, "SSID: " + tokens.at(0) + "\nPASS: " + tokens.at(1) + "\n\n" + tokens.at(2),_("OK"),nullptr));
