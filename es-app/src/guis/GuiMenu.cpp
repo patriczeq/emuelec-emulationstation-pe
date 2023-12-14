@@ -764,16 +764,6 @@ void GuiMenu::openESP01Menu()
 			s->addEntry(_("REBOOT ESP01"), false, [this, window] {
 				hacksSend("reboot");
 			}, "iconRestart");
-			s->addEntry(_("DIM MODE"), false, [this, window] {
-				hacksSend("bright 0");
-				Window* w = window;
-				window->postToUiThread([w]()
-				{
-					w->startScreenSaver();
-					w->renderScreenSaver();
-				});
-			}, "iconSystem");
-
 
 		s->addGroup(_("SCAN NETWORK"));
 			s->addEntry(_("SCAN AP"), true, [this] {
