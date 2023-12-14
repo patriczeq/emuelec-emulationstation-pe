@@ -614,6 +614,28 @@ void GuiMenu::openESP01Settings()
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "DEAUTHER SETTINGS");
 		s->addEntry(_("START OTA AP"), false, [this] {
+			Window* window = mWindow;
+			mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("PREPARING OTA AP..."),
+				[this, window](auto gui)
+				{
+					mWaitingLoad = true;
+					return hacksGet("espota");
+				},
+				[this, window](std::vector<std::string> ota)
+				{
+					mWaitingLoad = false;
+					if(ota.count())
+						{
+							std::vector<std::string> tokens = Utils::String::split(ota.at(0), ';');
+							window->pushGui(new GuiMsgBox(window, "SSID: " + tokens.at(0) + "\nPASS: " + tokens.at(1) + "\n\n" + tokens.at(2),_("OK"),nullptr));
+						}
+					else
+						{
+							window->pushGui(new GuiMsgBox(window, _("FAILED TO START OTA AP!"),_("OK"),nullptr));
+						}
+					//ESP01_OTA_SERVER;OTA.8266;https://192.168.4.1/update
+				}
+			));
 			hacksSend("ota");
 		}, "iconUpdates");
 		// ----------------------------------------------------------- MAIN SETTINGS
@@ -698,12 +720,12 @@ void GuiMenu::openESP01Settings()
 		s->addGroup(_("NEOPIXEL SETTINGS"));
 			auto nBright = std::make_shared<SliderComponent>(mWindow, 0.f, 255.f, 1.f, "b");
 			nBright->setValue(Settings::getInstance()->getInt("pe_hack.neobright"));
-			nBright->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.neobright", (int)round(newVal)); });
-			s->addWithLabel(_("BRIGHTNESS"), nBright);
-			s->addEntry(_("SAVE"), true, [this] {
-				int value				= Settings::getInstance()->getInt("pe_hack.neobright");
+			nBright->setOnValueChanged([](const float &newVal) {
+				Settings::getInstance()->setInt("pe_hack.neobright", (int)round(newVal));
 				hacksSend("bright " + std::to_string(value));
 			});
+			s->addWithLabel(_("BRIGHTNESS"), nBright);
+
 		window->pushGui(s);
 	}
 
@@ -715,6 +737,7 @@ void GuiMenu::openESP01Menu()
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 		loadNames();
+		hacksSend("bright " + std::to_string(Settings::getInstance()->getInt("pe_hack.neobright")));
 		s->addGroup(_("SYSTEM"));
 		if(names.size() > 0)
 			{
