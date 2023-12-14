@@ -636,6 +636,7 @@ void GuiMenu::openESP01Settings()
 				}
 			));
 		}, "iconUpdates");
+		
 		// ----------------------------------------------------------- MAIN SETTINGS
 		s->addGroup(_("UART"));
 			// PORT
