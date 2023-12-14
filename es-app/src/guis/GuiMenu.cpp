@@ -623,7 +623,7 @@ void GuiMenu::openESP01Settings()
 				[this, window](std::vector<std::string> ota)
 				{
 					mWaitingLoad = false;
-					if(ota.size())
+					if(ota.size() == 1)
 						{
 							std::vector<std::string> tokens = Utils::String::split(ota.at(0), ';');
 							window->pushGui(new GuiMsgBox(window, "SSID: " + tokens.at(0) + "\nPASS: " + tokens.at(1) + "\n\n" + tokens.at(2),_("OK"),nullptr));
@@ -635,7 +635,6 @@ void GuiMenu::openESP01Settings()
 					//ESP01_OTA_SERVER;OTA.8266;https://192.168.4.1/update
 				}
 			));
-			hacksSend("ota");
 		}, "iconUpdates");
 		// ----------------------------------------------------------- MAIN SETTINGS
 		s->addGroup(_("UART"));
