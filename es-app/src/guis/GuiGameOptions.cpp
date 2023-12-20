@@ -120,7 +120,7 @@ if( isVideo && SystemConf::getInstance()->get("pe_fevideo.enabled") == "1")
 
 }
 
-if (game->getType() == GAME)
+if (game->getType() == GAME || game->getType() == FOLDER)
 	{
 		mMenu.addGroup(_("GAME"));
 
