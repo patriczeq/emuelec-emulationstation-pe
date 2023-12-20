@@ -83,6 +83,7 @@ if(game->getType() == FOLDER && SystemConf::getInstance()->get("pe_femusic.enabl
 
 if(isAudio && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 {
+
 	mMenu.addEntry(_("PLAY AUDIO FILE"), false, [_path, this]
 		{
 			AudioManager::getInstance()->playMySong(_path);
@@ -91,12 +92,6 @@ if(isAudio && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 	mMenu.addEntry(_("ADD TO PLAYLIST"), false, [_path, this]
 		{
 			AudioManager::getInstance()->addToPlaylist(_path);
-			this->close();
-		}, "iconSound");
-
-	mMenu.addEntry(_("VLC test"), false, [_path, this]
-		{
-			GuiVideoViewer::playVideo(mWindow, _path, true);
 			this->close();
 		}, "iconSound");
 
@@ -138,15 +133,29 @@ if (game->getType() == GAME)
 			oplaunch = _("OPEN");
 		}
 
-		mMenu.addEntry(oplaunch, false, [window, game, this]
+		if(isVideo)
 			{
-				ViewController::get()->launch(game);
-				this->close();
-			}, isImageViewer ? "iconScraper" : "iconController");
+				mMenu.addEntry(oplaunch, false, [window, _path, this]
+					{
+						std::string cmd = "fbterm.sh mplayer_video \"" + _path + "\" \"mpv\"";
+						ApiSystem::getInstance()->launchApp(window, cmd);
+						this->close();
+					}, isImageViewer ? "iconScraper" : "iconController");
+			}
+		else
+			{
+				mMenu.addEntry(oplaunch, false, [window, game, this]
+					{
+						ViewController::get()->launch(game);
+						this->close();
+					}, isImageViewer ? "iconScraper" : "iconController");
+			}
+
 
 		if(!isAudio && !isVideo && !isImageViewer){
 
 			// PLAYERTOO
+			// TODO: only if supported!
 			mMenu.addEntry(_("LAUNCH 2 PLAYERS SESSION"), false, [window, game, this]
 				{
 					if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
@@ -184,12 +193,6 @@ if (game->getType() == GAME)
 							this->close();
 						}
 					));
-
-					/*LaunchGameOptions options;
-					options.hostMP = true;
-					ViewController::get()->launch(game, options);
-					this->close();*/
-
 				}, "iconMultiplayer");
 
 			if (SaveStateRepository::isEnabled(game))

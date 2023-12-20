@@ -584,7 +584,7 @@ private:
 	void sniffWPS();
 	void openWPSpwned(std::string raw);
 
-	void appLauncher(std::string cmd);
+	void appLauncher(std::string cmd, bool gpkill = false);
 	// Deauther
 	void hacksSend(std::string cmd);
 	void hacksSet(std::string cmd);

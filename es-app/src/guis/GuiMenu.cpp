@@ -348,9 +348,14 @@ if (!isKidUI)
 	}
 }
 
-void GuiMenu::appLauncher(std::string cmd)
+void GuiMenu::appLauncher(std::string cmd, bool gpkill)
 {
 	Window* window = mWindow;
+	if(gpkill)
+		{
+			runSystemCommand("killall -9 gptokeyb", "", nullptr);
+			runSystemCommand("gptokeyb 1 " + cmd + " -killsignal 9 &", "", nullptr);
+		}
 	ApiSystem::getInstance()->launchApp(window, cmd);
 }
 
@@ -361,11 +366,11 @@ void GuiMenu::openAppsMenu()
 	s->addEntry(_("GMU MUSIC PLAYER").c_str(), false, [this] { appLauncher("gmu_player.sh"); });
 
 	s->addGroup(_("EMULATORS"));
-		s->addEntry(_("PPSSPP").c_str(), false, [this] { appLauncher("PPSSPPSDL"); });
-		s->addEntry(_("DUCKSTATION").c_str(), false, [this] { appLauncher("duckstation-nogui"); });
-		s->addEntry(_("FLYCAST").c_str(), false, [this] { appLauncher("flycast"); });
-		s->addEntry(_("RETROARCH").c_str(), false, [this] { appLauncher("retroarch"); });
-		s->addEntry(_("RETROARCH 32bit").c_str(), false, [this] { appLauncher("retroarch32"); });
+		s->addEntry(_("PPSSPP").c_str(), false, [this] { appLauncher("PPSSPPSDL", true); });
+		s->addEntry(_("DUCKSTATION").c_str(), false, [this] { appLauncher("duckstation-nogui", true); });
+		s->addEntry(_("FLYCAST").c_str(), false, [this] { appLauncher("flycast", true); });
+		s->addEntry(_("RETROARCH").c_str(), false, [this] { appLauncher("retroarch", true); });
+		s->addEntry(_("RETROARCH 32bit").c_str(), false, [this] { appLauncher("retroarch32", true); });
 
 	window->pushGui(s);
 }
@@ -724,6 +729,18 @@ void GuiMenu::openESP01Settings()
 				hacksSend("bright " + std::to_string((int)round(newVal)));
 			});
 			s->addWithLabel(_("BRIGHTNESS"), nBright);
+		s->addGroup(_("NAMES CATEGORIES"))
+
+			auto names_cat = std::make_shared<SwitchComponent>(mWindow);
+			names_cat->setState(SystemConf::getInstance()->get("pe_hack.names_cat") == "1");
+			s->addWithLabel(_("USE CATEGORIES"), names_cat);
+			s->addSaveFunc([names_cat] {
+				if (names_cat->changed()) {
+					bool enabled = names_cat->getState();
+					SystemConf::getInstance()->set("pe_hack.names_cat", enabled ? "1" : "0");
+					SystemConf::getInstance()->saveSystemConf();
+				}
+			});
 
 		window->pushGui(s);
 	}
@@ -746,7 +763,14 @@ void GuiMenu::openESP01Menu()
 				{
 					if(names.size() > 0)
 						{
-							openNamesCat();
+							if(SystemConf::getInstance()->get("pe_hack.names_cat") == "1")
+								{
+									openNamesCat();
+								}
+							else
+								{
+									openNames("ALL");
+								}
 						}
 					else
 						{
@@ -888,6 +912,8 @@ void GuiMenu::openNamesCat()
 
 		window->pushGui(s);
 	}
+
+
 void GuiMenu::openNames(std::string category)
 	{
 		Window* window = mWindow;
@@ -896,16 +922,31 @@ void GuiMenu::openNames(std::string category)
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		for(auto name : names)
+		if(category == "ALL")
 			{
-				if(name.type == category)
+				for(auto name : names)
 					{
-						s->addWithDescription(name.name, name.id,
-								std::make_shared<TextComponent>(window, name.type, 	font, color),
+						s->addWithDescription(name.type + ": " + name.name, "",
+								std::make_shared<TextComponent>(window, name.id, 	font, color),
 								[this, name]
 							{
 								openName(name);
 							});
+					}
+			}
+		else
+			{
+				for(auto name : names)
+					{
+						if(name.type == category)
+							{
+								s->addWithDescription(name.name, "",
+										std::make_shared<TextComponent>(window, name.id, 	font, color),
+										[this, name]
+									{
+										openName(name);
+									});
+							}
 					}
 			}
 
@@ -1026,6 +1067,26 @@ void GuiMenu::openName(HackName name)
 						delete s;
 					}, _("CANCEL"),nullptr));
 			},"iconRemove");
+		if(name.type != "AP")
+			{
+				s->addEntry(_("EDIT NAME"), true, [this, window, s, name]() {
+						if (Settings::getInstance()->getBool("UseOSK"))
+						{
+							mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "EDIT NAME ", name.name, [this, name](const std::string& value) {
+								name.name = value;
+								addName(n);
+							}, false));
+						}
+						else
+						{
+							mWindow->pushGui(new GuiTextEditPopup(mWindow, "EDIT NAME ", name.name, [this, strCode](const std::string& value) {
+								name.name = value;
+								addName(n);
+							}, false));
+						}
+					},"iconEdit");
+			}
+
 		window->pushGui(s);
 	}
 void GuiMenu::openIRlist()
