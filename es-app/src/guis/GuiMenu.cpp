@@ -1081,6 +1081,7 @@ void GuiMenu::openName(HackName name)
 						else
 						{
 							mWindow->pushGui(new GuiTextEditPopup(mWindow, "EDIT NAME ", name.name, [this, name](const std::string& value) {
+								name.name = value;
 								remName(name.type, name.id);
 								addName(name);
 							}, false));
