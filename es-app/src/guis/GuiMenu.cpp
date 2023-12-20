@@ -1073,7 +1073,7 @@ void GuiMenu::openName(HackName name)
 						if (Settings::getInstance()->getBool("UseOSK"))
 						{
 							mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "EDIT NAME ", name.name, [this, name](const std::string& value) {
-								Hackname nHackName n;
+								HackName n;
 									n.type 	= name.type;
 									n.id 		= name.id;
 									n.bssid = name.bssid;
@@ -1087,7 +1087,7 @@ void GuiMenu::openName(HackName name)
 						else
 						{
 							mWindow->pushGui(new GuiTextEditPopup(mWindow, "EDIT NAME ", name.name, [this, name](const std::string& value) {
-								Hackname nHackName n;
+								HackName n;
 									n.type 	= name.type;
 									n.id 		= name.id;
 									n.bssid = name.bssid;
