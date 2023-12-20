@@ -729,7 +729,7 @@ void GuiMenu::openESP01Settings()
 				hacksSend("bright " + std::to_string((int)round(newVal)));
 			});
 			s->addWithLabel(_("BRIGHTNESS"), nBright);
-		s->addGroup(_("NAMES CATEGORIES"))
+		s->addGroup(_("NAMES CATEGORIES"));
 
 			auto names_cat = std::make_shared<SwitchComponent>(mWindow);
 			names_cat->setState(SystemConf::getInstance()->get("pe_hack.names_cat") == "1");
@@ -1074,14 +1074,15 @@ void GuiMenu::openName(HackName name)
 						{
 							mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "EDIT NAME ", name.name, [this, name](const std::string& value) {
 								name.name = value;
-								addName(n);
+								remName(name.type, name.id);
+								addName(name);
 							}, false));
 						}
 						else
 						{
 							mWindow->pushGui(new GuiTextEditPopup(mWindow, "EDIT NAME ", name.name, [this, strCode](const std::string& value) {
-								name.name = value;
-								addName(n);
+								remName(name.type, name.id);
+								addName(name);
 							}, false));
 						}
 					},"iconEdit");
