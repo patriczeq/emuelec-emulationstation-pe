@@ -7,7 +7,6 @@
 #include "LocaleES.h"
 #include "Window.h"
 #include "platform.h"
-//#include "ApiSystem.h"
 #include "Log.h"
 
 #define PADDING_PX			(Renderer::getScreenWidth()*0.006)
@@ -39,7 +38,7 @@ PWRComponent::PWRComponent(Window* window)
 
 	fullSize.y() = fullSize.x() * 2.5f;
 
-	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
+	setSize(32, 32);
 
 	mFrame = new NinePatchComponent(window);
 	mFrame->setImagePath(theme->Background.path);
@@ -49,22 +48,11 @@ PWRComponent::PWRComponent(Window* window)
 	mFrame->fitTo(mSize, Vector3f::Zero(), Vector2f(-32, -32));
 	addChild(mFrame);
 
-
-	mPercent = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_CENTER);
-
-
-	int h = font->sizeText("200%").y();
-
-	mPercent->setPosition(16, 0);
-	mPercent->setSize((Renderer::getScreenWidth() / 2), h/2);
-	mPercent->setText("?");
-	addChild(mPercent);
-
 	// FCA TopLeft
 	//float posX = Renderer::getScreenWidth() * 0.02f;
 	//float posY = Renderer::getScreenHeight() * 0.875f;
 
-	setPosition(0, 0, 0);
+	setPosition(Renderer::getScreenWidth() - 36, 4, 0);
 	setOpacity(BASEOPACITY);
 }
 
@@ -109,6 +97,7 @@ void PWRComponent::update(int deltaTime)
 		if (!isVisible() && plugged)
 		{
 			setVisible(true);
+
 		}
 	}
 
@@ -128,18 +117,13 @@ void PWRComponent::render(const Transform4x4f& parentTrans)
 	Transform4x4f trans = parentTrans * getTransform();
 	Renderer::setMatrix(trans);
 
-	float x = 16;
-	float y = 20;
-	float w = Renderer::getScreenWidth() - 32;
-	float h = 12;
 
 	auto theme = ThemeData::getMenuTheme();
   // battery body
-  Renderer::drawRect(32, 32, 256, 120, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
+  Renderer::drawRect(4, 4, 24, 16, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
   // battery spicka
-  Renderer::drawRect(288, 30, 16, 60, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
+  Renderer::drawRect(28, 8, 4, 8, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
   //battery inner
-  float px = 240 * 1;
-	Renderer::drawRect(40, 40, px, 104, (theme->TextSmall.color & 0x00FF0000) | opacity);
+	Renderer::drawRect(6, 6, 20, 12, (theme->TextSmall.color & 0x00FF0000) | opacity);
 
 }
