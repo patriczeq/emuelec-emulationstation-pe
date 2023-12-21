@@ -22,10 +22,9 @@ PWRComponent::PWRComponent(Window* window)
 	: GuiComponent(window)
 {
 	mDisplayTime = -1;
-	totalTime = -1;
-	currTime = -1;
+	percent = 0;
 	mCheckTime = 0;
-	showme = -1;
+	plugged = false;
 
 	auto theme = ThemeData::getMenuTheme();
 
@@ -53,11 +52,11 @@ PWRComponent::PWRComponent(Window* window)
 	mPercent = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_LEFT);
 
 
-	int h = font->sizeText("100%").y();
+	int h = font->sizeText("200%").y();
 
 	mPercent->setPosition(16, 0);
 	mPercent->setSize((Renderer::getScreenWidth() / 2), h/2);
-	mPercent->setText("???%");
+	mPercent->setText("?");
 	addChild(mPercent);
 
 	// FCA TopLeft
