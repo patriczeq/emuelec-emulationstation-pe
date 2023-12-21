@@ -354,7 +354,7 @@ void GuiMenu::appLauncher(std::string cmd, bool gpkill)
 	if(gpkill)
 		{
 			runSystemCommand("killall -9 gptokeyb", "", nullptr);
-			runSystemCommand("gptokeyb 1 " + cmd + " -killsignal 9 &", "", nullptr);
+			runSystemCommand("gptokeyb 1 '" + cmd + "' -killsignal 9 &", "", nullptr);
 		}
 	ApiSystem::getInstance()->launchApp(window, cmd);
 }
