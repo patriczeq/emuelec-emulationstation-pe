@@ -17,7 +17,7 @@
 #define FADE_TIME			350
 
 #define BASEOPACITY			200
-#define CHECKVOLUMEDELAY	40
+#define CHECKPWRDELAY	500
 
 PWRComponent::PWRComponent(Window* window)
 	: GuiComponent(window)
@@ -62,9 +62,9 @@ PWRComponent::PWRComponent(Window* window)
 
 	// FCA TopLeft
 	//float posX = Renderer::getScreenWidth() * 0.02f;
-	float posY = Renderer::getScreenHeight() * 0.875f;
+	//float posY = Renderer::getScreenHeight() * 0.875f;
 
-	setPosition(0, posY, 0);
+	setPosition(0, 0, 0);
 	setOpacity(BASEOPACITY);
 }
 
@@ -78,8 +78,6 @@ void PWRComponent::update(int deltaTime)
 {
 	GuiComponent::update(deltaTime);
 
-
-	bool CurrStatus = getShOutput("cat /sys/class/power_supply/ac/online") == "1";;
 
 	if (mDisplayTime >= 0)
 	{
@@ -97,11 +95,12 @@ void PWRComponent::update(int deltaTime)
 	}
 
 	mCheckTime += deltaTime;
-	if (mCheckTime < CHECKVOLUMEDELAY)
+	if (mCheckTime < CHECKPWRDELAY)
 		return;
 
 	mCheckTime = 0;
 
+  bool CurrStatus = getShOutput("cat /sys/class/power_supply/ac/online") == "1";
 	if(plugged != CurrStatus && CurrStatus)
 	{
 		plugged = CurrStatus;
@@ -110,7 +109,6 @@ void PWRComponent::update(int deltaTime)
 		if (!isVisible())
 		{
 			setVisible(true);
-			//PowerSaver::pause();
 		}
 	}
 
