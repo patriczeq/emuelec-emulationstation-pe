@@ -39,7 +39,7 @@ PWRComponent::PWRComponent(Window* window)
 
 	fullSize.y() = fullSize.x() * 2.5f;
 
-	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight() / 8);
+	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
 
 	mFrame = new NinePatchComponent(window);
 	mFrame->setImagePath(theme->Background.path);
@@ -50,7 +50,7 @@ PWRComponent::PWRComponent(Window* window)
 	addChild(mFrame);
 
 
-	mPercent = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_LEFT);
+	mPercent = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_CENTER);
 
 
 	int h = font->sizeText("200%").y();
@@ -101,12 +101,12 @@ void PWRComponent::update(int deltaTime)
 	mCheckTime = 0;
 
   bool CurrStatus = getShOutput("cat /sys/class/power_supply/ac/online") == "1";
-	if(plugged != CurrStatus && CurrStatus)
+	if(plugged != CurrStatus)
 	{
 		plugged = CurrStatus;
 		mDisplayTime = 0;
 
-		if (!isVisible())
+		if (!isVisible() && plugged)
 		{
 			setVisible(true);
 		}
@@ -134,7 +134,12 @@ void PWRComponent::render(const Transform4x4f& parentTrans)
 	float h = 12;
 
 	auto theme = ThemeData::getMenuTheme();
-
-
+  // battery body
+  Renderer::drawRect(32, 32, 256, 120, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
+  // battery spicka
+  Renderer::drawRect(288, 30, 16, 60, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
+  //battery inner
+  float px = 240 * 1;
+	Renderer::drawRect(40, 40, px, 104, (theme->TextSmall.color & 0x00FF0000) | opacity);
 
 }
