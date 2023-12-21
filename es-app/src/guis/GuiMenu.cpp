@@ -359,7 +359,7 @@ void GuiMenu::openSysInfo()
 		auto s = new GuiSettings(window, _("SYSTEM INFORMATION").c_str());
 
 		s->addGroup(_("SPACE"));
-			s->addWithLabel(_("USER DISK USAGE"), std::make_shared<TextComponent>(window, ApiSystem::getInstance()->getFreeSpaceUserInfo(), font, warning ? 0xFF0000FF : color));
+			s->addWithLabel(_("USER DISK USAGE"), std::make_shared<TextComponent>(window, ApiSystem::getInstance()->getFreeSpaceUserInfo(), font, color));
 			s->addWithLabel(_("SYSTEM DISK USAGE"), std::make_shared<TextComponent>(window, ApiSystem::getInstance()->getFreeSpaceSystemInfo(), font, color));
 		s->addGroup(_("TEMPERATURE"));
 			s->addWithLabel(_("CPU"), std::make_shared<TextComponent>(window, hacksGetString("temp cpu", false), font, color));
