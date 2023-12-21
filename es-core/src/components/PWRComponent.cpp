@@ -6,7 +6,7 @@
 #include "components/TextComponent.h"
 #include "LocaleES.h"
 #include "Window.h"
-#include "ApiSystem.h"
+//#include "ApiSystem.h"
 #include "Log.h"
 
 #define PADDING_PX			(Renderer::getScreenWidth()*0.006)
@@ -79,7 +79,7 @@ void PWRComponent::update(int deltaTime)
 	GuiComponent::update(deltaTime);
 
 
-	bool CurrStatus = ApiSystem::getInstance()->isACplugged();
+	bool CurrStatus = getShOutput("cat /sys/class/power_supply/ac/online") == "1";;
 
 	if (mDisplayTime >= 0)
 	{
