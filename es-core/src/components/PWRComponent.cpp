@@ -6,6 +6,7 @@
 #include "components/TextComponent.h"
 #include "LocaleES.h"
 #include "Window.h"
+#include "platform.h"
 //#include "ApiSystem.h"
 #include "Log.h"
 
