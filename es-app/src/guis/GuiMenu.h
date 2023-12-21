@@ -626,6 +626,9 @@ private:
 	// music player
 	void openMusicPlayer();
 
+	// PE System Info
+	void openSysInfo();
+
 
 #ifdef _ENABLEEMUELEC
 
