@@ -27,7 +27,7 @@ class TextComponent;
 class ControllerActivityComponent;
 class VolumeInfoComponent;
 class OSDComponent;
-class PWRComponent;
+//class PWRComponent;
 class BatteryIndicatorComponent;
 class Splash;
 
@@ -164,7 +164,7 @@ private:
 	std::shared_ptr<ControllerActivityComponent>	mControllerActivity;
 	std::shared_ptr<VolumeInfoComponent> mVolumeInfo;
 	std::shared_ptr<OSDComponent> mOSD;
-	std::shared_ptr<PWRComponent> mPWR;
+	//std::shared_ptr<PWRComponent> mPWR;
 
 	std::shared_ptr<BatteryIndicatorComponent>	mBatteryIndicator;
 
