@@ -23,6 +23,7 @@
 #include "guis/GuiMsgBox.h"
 #include "components/VolumeInfoComponent.h"
 #include "components/OSDComponent.h"
+#include "components/PWRComponent.h"
 #include "Splash.h"
 #include "PowerSaver.h"
 #ifdef _ENABLEEMUELEC
@@ -162,6 +163,11 @@ bool Window::init(bool initRenderer, bool initInputManager)
 		mOSD = std::make_shared<OSDComponent>(this);
 	else
 		mOSD->reset();
+
+  if (mPWR == nullptr)
+		mPWR = std::make_shared<PWRComponent>(this);
+	else
+		mPWR->reset();
 
 
 	// update our help because font sizes probably changed
@@ -464,6 +470,9 @@ void Window::update(int deltaTime)
 	if (mOSD)
 		mOSD->update(deltaTime);
 
+  if(mPWR)
+    mPWR->update(deltaTime);
+
 
 	mFrameTimeElapsed += deltaTime;
 	mFrameCountElapsed++;
@@ -710,6 +719,9 @@ void Window::render()
 
 	if (mOSD)
 		mOSD->render(transform);
+
+  if(mPWR)
+    mPWR->render(transform);
 
 	if (mTimeSinceLastInput >= screensaverTime && screensaverTime != 0)
 	{
@@ -1168,6 +1180,7 @@ void Window::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 
 	mVolumeInfo = std::make_shared<VolumeInfoComponent>(this);
 	mOSD = std::make_shared<OSDComponent>(this);
+  mPWR = std::make_shared<PWRComponent>(this);
 }
 
 void Window::setGunCalibrationState(bool isCalibrating)

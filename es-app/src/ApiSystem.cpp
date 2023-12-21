@@ -485,6 +485,11 @@ bool ApiSystem::launchKodi(Window *window)
 	return exitCode == 0;
 }
 
+bool ApiSystem::isACplugged()
+	{
+		return getShOutput("cat /sys/class/power_supply/ac/online") == "1";
+	}
+
 bool ApiSystem::launchApp(Window *window, std::string command)
 {
 	LOG(LogDebug) << "ApiSystem::launchApp";

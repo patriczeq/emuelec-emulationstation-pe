@@ -151,6 +151,8 @@ public:
     bool launchFileManager(Window *window);
     bool launchErrorWindow(Window *window);
 
+    bool isACplugged();
+
     bool enableWifi(std::string ssid, std::string key);
     bool disableWifi();
 
