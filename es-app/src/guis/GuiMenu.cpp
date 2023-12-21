@@ -359,16 +359,16 @@ void GuiMenu::openSysInfo()
 		auto s = new GuiSettings(window, _("SYSTEM INFORMATION").c_str());
 
 		s->addGroup(_("SPACE"));
-			addWithLabel(_("USER DISK USAGE"), std::make_shared<TextComponent>(window, ApiSystem::getInstance()->getFreeSpaceUserInfo(), font, warning ? 0xFF0000FF : color));
-			addWithLabel(_("SYSTEM DISK USAGE"), std::make_shared<TextComponent>(window, ApiSystem::getInstance()->getFreeSpaceSystemInfo(), font, color));
+			s->addWithLabel(_("USER DISK USAGE"), std::make_shared<TextComponent>(window, ApiSystem::getInstance()->getFreeSpaceUserInfo(), font, warning ? 0xFF0000FF : color));
+			s->addWithLabel(_("SYSTEM DISK USAGE"), std::make_shared<TextComponent>(window, ApiSystem::getInstance()->getFreeSpaceSystemInfo(), font, color));
 		s->addGroup(_("TEMPERATURE"));
-			addWithLabel(_("CPU"), std::make_shared<TextComponent>(window, hacksGetString("temp cpu", false), font, color));
-			addWithLabel(_("GPU"), std::make_shared<TextComponent>(window, hacksGetString("temp gpu", false), font, color));
+			s->addWithLabel(_("CPU"), std::make_shared<TextComponent>(window, hacksGetString("temp cpu", false), font, color));
+			s->addWithLabel(_("GPU"), std::make_shared<TextComponent>(window, hacksGetString("temp gpu", false), font, color));
 		s->addGroup(_("POWER"));
-			addWithLabel(_("BATT. CURRENT"), std::make_shared<TextComponent>(window, hacksGetString("power current", false), font, color));
-			addWithLabel(_("BATT. VOLTAGE"), std::make_shared<TextComponent>(window, hacksGetString("power voltage", false), font, color));
-			addWithLabel(_("BATT. STATUS"), std::make_shared<TextComponent>(window, hacksGetString("power status", false), font, color));
-			addWithLabel(_("BATT. CAPACITY"), std::make_shared<TextComponent>(window, hacksGetString("power capacity", false), font, color));
+			s->addWithLabel(_("BATT. CURRENT"), std::make_shared<TextComponent>(window, hacksGetString("power current", false), font, color));
+			s->addWithLabel(_("BATT. VOLTAGE"), std::make_shared<TextComponent>(window, hacksGetString("power voltage", false), font, color));
+			s->addWithLabel(_("BATT. STATUS"), std::make_shared<TextComponent>(window, hacksGetString("power status", false), font, color));
+			s->addWithLabel(_("BATT. CAPACITY"), std::make_shared<TextComponent>(window, hacksGetString("power capacity", false), font, color));
 			auto ac_charger = std::make_shared<SwitchComponent>(mWindow);
 			ac_charger->setState(hacksGetString("power ac", false) == "1");
 			s->addWithLabel(_("CHARGER CONNECTED"), ac_charger);
