@@ -304,9 +304,9 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 	addEntry(_("FILE MANAGER").c_str(), false, [this] { appLauncher("file_manager.sh"); }, "iconFileManager");
 	addEntry(_("YouTube Search"), false, [this, window]() {
 		if (Settings::getInstance()->getBool("UseOSK"))
-			mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "YouTube Search", "", [this](const std::string& value) { YTSearch(value); }, false));
+			mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "YouTube Search", "bring me", [this](const std::string& value) { YTSearch(value); }, false));
 		else
-			mWindow->pushGui(new GuiTextEditPopup(window, "YouTube Search", "", [this](const std::string& value) { YTSearch(value); }, false));
+			mWindow->pushGui(new GuiTextEditPopup(window, "YouTube Search", "bring me", [this](const std::string& value) { YTSearch(value); }, false));
 	}, "iconYouTube");
 	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "iconApps");
 
@@ -6688,13 +6688,13 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 						[this, link](auto gui)
 						{
 							mWaitingLoad = true;
+							std::string cmd = "youtube.sh play " + link.link;
+							appLauncher(cmd);
 							return true;
 						},
 						[this, link](bool r)
 						{
 							mWaitingLoad = false;
-							std::string cmd = "youtube.sh play " + link.link;
-							appLauncher(cmd);
 						}
 					));
 				});
