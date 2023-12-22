@@ -6674,11 +6674,14 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 			{
 					auto icon = std::make_shared<WebImageComponent>(window, 600);
 					Vector2f maxSize(64, 64);
-					icon->setUpdateColors(false);
+					//icon->setUpdateColors(false);
 					icon->setImage(link.img, false, maxSize);
 					icon->setMaxSize(maxSize);
-					icon->setIsLinear(true);
+					//icon->setIsLinear(true);
 					icon->setPadding(4);
+
+					/*mPreviewImage->setImage(mEntry.image, false, maxSize);
+					mPreviewImage->setMaxSize(maxSize);*/
 
 				s->addWithDescription(link.title, link.link, icon,
 					[this, window, link]
