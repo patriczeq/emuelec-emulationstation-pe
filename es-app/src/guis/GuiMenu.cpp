@@ -399,7 +399,7 @@ void GuiMenu::openSysInfo()
 						std::vector<SysProccess> Proccesses;
 						for(auto raw : procs)
 							{
-								std::vector<std::string> tokens = Utils::String::split(raw ';');
+								std::vector<std::string> tokens = Utils::String::split(raw, ';');
 								if(tokens.size() == 4)
 									{
 										SysProccess p;
