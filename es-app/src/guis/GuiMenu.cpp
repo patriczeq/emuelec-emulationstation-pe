@@ -6688,12 +6688,13 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 						[this, link](auto gui)
 						{
 							mWaitingLoad = true;
-							std::string cmd = "youtube.sh play " + link.link;
-							appLauncher(cmd);
+							runSystemCommand("sleep .1", "", nullptr);
 							return true;
 						},
 						[this, link](bool r)
 						{
+							std::string cmd = "youtube.sh play " + link.link;
+							appLauncher(cmd);
 							mWaitingLoad = false;
 						}
 					));
