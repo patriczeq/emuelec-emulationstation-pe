@@ -6639,7 +6639,7 @@ void GuiMenu::YTSearch(std::string q)
 			[this, window, q](auto gui)
 			{
 				mWaitingLoad = true;
-				const std::string cmd = "yt_search.sh \"" + q + "\"";
+				const std::string cmd = "youtube.sh search \"" + q + "\"";
 				return ApiSystem::getInstance()->getScriptResults(cmd);
 			},
 			[this, window, q](std::vector<std::string> links)
@@ -6680,17 +6680,23 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 					icon->setIsLinear(true);
 					icon->setPadding(4);*/
 
-					
+
 				s->addWithDescription(link.title, link.link, nullptr /*icon*/,
 					[this, window, link]
 				{
-					runSystemCommand("gptokeyb 1 'mpv' -killsignal 9 &", "", nullptr);
-
-					std::string cmd = "yt-dlp -q --user-agent \"Mozilla/5.0 (X11; Linux x86_64; rv:52.9) Gecko/20100101 Firefox/52.9 (Pale Moon)\" -c \"";
-											cmd+= link.link;
-											// TODO: uložit part, poslat do libvlc!!!
-											cmd+= "\" --buffer-size 2048 -o - | mpv - & killall -9 gptokeyb";
-					appLauncher(cmd);
+					mWindow->pushGui(new GuiLoading<bool>(window, _("PREPARING..."),
+						[this](auto gui)
+						{
+							mWaitingLoad = true;
+							return true;
+						},
+						[this](bool r)
+						{
+							mWaitingLoad = false;
+							std::string cmd = "youtube.sh play " + link.link;
+							appLauncher(cmd);
+						}
+					));
 				});
 			}
 
