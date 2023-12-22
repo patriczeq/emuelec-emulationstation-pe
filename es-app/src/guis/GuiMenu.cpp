@@ -6672,24 +6672,26 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 
 		for(auto link : links)
 			{
-					auto icon = std::make_shared<WebImageComponent>(window, 600);
+					/*auto icon = std::make_shared<WebImageComponent>(window, 600);
 					Vector2f maxSize(64, 64);
-					//icon->setUpdateColors(false);
+					icon->setUpdateColors(false);
 					icon->setImage(link.img, false, maxSize);
 					icon->setMaxSize(maxSize);
-					//icon->setIsLinear(true);
-					icon->setPadding(4);
+					icon->setIsLinear(true);
+					icon->setPadding(4);*/
 
-					/*mPreviewImage->setImage(mEntry.image, false, maxSize);
-					mPreviewImage->setMaxSize(maxSize);*/
+					mPreviewImage->setImage(mEntry.image, false, maxSize);
+					mPreviewImage->setMaxSize(maxSize);
 
-				s->addWithDescription(link.title, link.link, icon,
+				s->addWithDescription(link.title, link.link, nullptr /*icon*/,
 					[this, window, link]
 				{
-					std::string cmd = "youtube-dl -q --user-agent \"Mozilla/5.0 (X11; Linux x86_64; rv:52.9) Gecko/20100101 Firefox/52.9 (Pale Moon)\" -c \"";
+					runSystemCommand("gptokeyb 1 'mpv' -killsignal 9 &", "", nullptr);
+
+					std::string cmd = "yt-dlp -q --user-agent \"Mozilla/5.0 (X11; Linux x86_64; rv:52.9) Gecko/20100101 Firefox/52.9 (Pale Moon)\" -c \"";
 											cmd+= link.link;
 											// TODO: uložit part, poslat do libvlc!!!
-											cmd+= "\" --buffer-size 2048 -o - | mpv -";
+											cmd+= "\" --buffer-size 2048 -o - | mpv - & killall -9 gptokeyb";
 					appLauncher(cmd);
 				});
 			}
