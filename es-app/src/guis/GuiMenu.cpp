@@ -6685,12 +6685,12 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 					[this, window, link]
 				{
 					mWindow->pushGui(new GuiLoading<bool>(window, _("PREPARING..."),
-						[this](auto gui)
+						[this, link](auto gui)
 						{
 							mWaitingLoad = true;
 							return true;
 						},
-						[this](bool r)
+						[this, link](bool r)
 						{
 							mWaitingLoad = false;
 							std::string cmd = "youtube.sh play " + link.link;
