@@ -6680,9 +6680,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 					icon->setIsLinear(true);
 					icon->setPadding(4);*/
 
-					mPreviewImage->setImage(mEntry.image, false, maxSize);
-					mPreviewImage->setMaxSize(maxSize);
-
+					
 				s->addWithDescription(link.title, link.link, nullptr /*icon*/,
 					[this, window, link]
 				{
