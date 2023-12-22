@@ -497,6 +497,14 @@ struct HackNameCounter {
 	int AP;
 };
 
+struct SysProccess {
+	std::string PID;
+	std::string CPU;
+	std::string MEM;
+	std::string PROC;
+	std::string CMD;
+};
+
 class GuiMenu : public GuiComponent
 {
 public:
@@ -628,6 +636,8 @@ private:
 
 	// PE System Info
 	void openSysInfo();
+
+	void openProccesses(std::vector<SysProccess> p);
 
 
 #ifdef _ENABLEEMUELEC

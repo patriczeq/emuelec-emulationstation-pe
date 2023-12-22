@@ -349,6 +349,34 @@ if (!isKidUI)
 	}
 }
 
+void GuiMenu::openProccesses(std::vector<SysProccess> p)
+	{
+		Window* window = mWindow;
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		auto s = new GuiSettings(window, _("PROCCESSES").c_str());
+
+		for(auto proc : p)
+			{
+				s->addWithDescription(proc.PID + ": " + proc.PROC, "",
+					std::make_shared<TextComponent>(window, proc.CPU + "%", font, color),
+					[this, window, proc]
+				{
+					std::string procCmd = getShOutput("cat /proc/" + proc.PID + "/cmdline");
+					std::string MSG = proc.PID + "\n";
+											MSG+= procCmd + "\n";
+											MSG+= "CPU: " + proc.CPU + "%, MEM: " + proc.MEM + "%";
+					window->pushGui(new GuiMsgBox(window, MSG,_("OK"),nullptr, _("KILL"),[this, proc]{
+						runSystemCommand("kill -9 " + proc.PID, "", nullptr);
+					}));
+				});
+			}
+
+		window->pushGui(s);
+	}
+
 void GuiMenu::openSysInfo()
 	{
 		Window* window = mWindow;
@@ -357,7 +385,36 @@ void GuiMenu::openSysInfo()
 		unsigned int color = theme->Text.color;
 
 		auto s = new GuiSettings(window, _("SYSTEM INFORMATION").c_str());
+			s->addEntry(_("TASK MANAGER"), true, [this, window]{
+				mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("LOADING..."),
+					[this, window](auto gui)
+					{
+						mWaitingLoad = true;
+						const std::string cmd = "hacks.sh top";
+						return ApiSystem::getInstance()->getScriptResults(cmd);
+					},
+					[this, window](std::vector<std::string> procs)
+					{
+						mWaitingLoad = false;
+						std::vector<SysProccess> Proccesses;
+						for(auto raw : procs)
+							{
+								std::vector<std::string> tokens = Utils::String::split(raw ';');
+								if(tokens.size() == 4)
+									{
+										SysProccess p;
+										p.PID = tokens.at(0);
+										p.CPU = tokens.at(1);
+										p.MEM = tokens.at(2);
+										p.PROC = tokens.at(3);
 
+										Proccesses.push_back(p);
+									}
+							}
+						openProccesses(Proccesses);
+					}
+				));
+			});
 		s->addGroup(_("SPACE"));
 			s->addWithLabel(_("USER DISK USAGE"), std::make_shared<TextComponent>(window, ApiSystem::getInstance()->getFreeSpaceUserInfo(), font, color));
 			s->addWithLabel(_("SYSTEM DISK USAGE"), std::make_shared<TextComponent>(window, ApiSystem::getInstance()->getFreeSpaceSystemInfo(), font, color));
