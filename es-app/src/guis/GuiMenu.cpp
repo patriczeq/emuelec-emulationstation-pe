@@ -6683,7 +6683,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 				{
 					std::string cmd = "youtube-dl -v --user-agent \"Mozilla/5.0 (X11; Linux x86_64; rv:52.9) Gecko/20100101 Firefox/52.9 (Pale Moon)\" -c \"";
 											cmd+= link.link;
-											cmd+= \" --buffer-size 2048 -o - | mpv -";
+											cmd+= "\" --buffer-size 2048 -o - | mpv -";
 					appLauncher(cmd);
 				});
 			}
