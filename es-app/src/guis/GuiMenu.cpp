@@ -62,6 +62,8 @@
 #include "TextToSpeech.h"
 #include "Paths.h"
 
+#include "components/WebImageComponent.h"
+
 #include "oui.h"
 
 #if WIN32
