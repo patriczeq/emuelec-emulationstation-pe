@@ -300,6 +300,12 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 				GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
 	addEntry(_("FILE MANAGER").c_str(), false, [this] { appLauncher("file_manager.sh"); }, "iconFileManager");
+	addEntry(_("YouTube Search"), false, [this, window]() {
+		if (Settings::getInstance()->getBool("UseOSK"))
+			mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "YouTube Search", "", [this](const std::string& value) { YTSearch(value); }, false));
+		else
+			mWindow->pushGui(new GuiTextEditPopup(window, "YouTube Search", "", [this](const std::string& value) { YTSearch(value); }, false));
+	}, "iconYouTube");
 	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "iconApps");
 
 	if (isFullUI)
@@ -6621,6 +6627,72 @@ void GuiMenu::openTraceroute(std::string addr, std::vector<TraceRouteHop> hops)
 			}
 		mWindow->pushGui(s);
 	}
+
+// YOUTUBE
+void GuiMenu::YTSearch(std::string q)
+	{
+		Window* window = mWindow;
+
+		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING..."),
+			[this, window, q](auto gui)
+			{
+				mWaitingLoad = true;
+				const std::string cmd = "yt_search.sh \"" + q + "\"";
+				return ApiSystem::getInstance()->getScriptResults(cmd);
+			},
+			[this, window, q](std::vector<std::string> links)
+			{
+				mWaitingLoad = false;
+				if(links.size() == 0)
+					{
+						window->pushGui(new GuiMsgBox(window, q + "\n" + _("NOT FOUND"),_("OK"),nullptr));
+					}
+				else
+					{
+						std::vector<YoutubeLink> Links;
+						for(auto link : links)
+							{
+								Links.push_back(YoutubeLink(link));
+							}
+							YTResults(Links);
+					}
+			}
+		));
+	}
+void GuiMenu::YTResults(std::vector<YoutubeLink> links)
+	{
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		Window *window = mWindow;
+		auto s = new GuiSettings(mWindow, _("YouTube").c_str());
+
+		for(auto link : links)
+			{
+					auto icon = std::make_shared<ImageComponent>(window);
+					Vector2f maxSize(64, 64);
+					icon->setUpdateColors(false);
+					icon->setImage(link.img, false, maxSize);
+					icon->setMaxSize(maxSize);
+					icon->setIsLinear(true);
+					icon->setPadding(4);
+
+				s->addWithDescription(link.title, link.link, icon,
+					[this, window, link]
+				{
+					std::string cmd = "youtube-dl -v --user-agent \"Mozilla/5.0 (X11; Linux x86_64; rv:52.9) Gecko/20100101 Firefox/52.9 (Pale Moon)\" -c \"";
+											cmd+= link.link;
+											cmd+= \" --buffer-size 2048 -o - | mpv -";
+					appLauncher(cmd);
+				});
+			}
+
+		mWindow->pushGui(s);
+	}
+
+// EOF YOUTUBE
+
 
 void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 {

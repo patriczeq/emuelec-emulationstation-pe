@@ -505,6 +505,20 @@ struct SysProccess {
 	std::string CMD;
 };
 
+struct YoutubeLink {
+	YoutubeLink(){}
+	YoutubeLink(std::string raw)
+		{
+			std::vector<std::string> tokens = Utils::String::split(raw, ';');
+			link 		= tokens.at(0);
+			img 		= tokens.at(1);
+			title 	= tokens.at(2);
+		}
+	std::string link;
+	std::string img;
+	std::string title;
+};
+
 class GuiMenu : public GuiComponent
 {
 public:
@@ -638,6 +652,10 @@ private:
 	void openSysInfo();
 
 	void openProccesses(std::vector<SysProccess> p);
+
+	void YTSearch(std::string q);
+	void YTResults(std::vector<YoutubeLink> links);
+
 
 
 #ifdef _ENABLEEMUELEC
