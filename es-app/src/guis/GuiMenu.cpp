@@ -6101,6 +6101,7 @@ void GuiMenu::ChromecastControl(std::string id, std::string action, std::string 
 
 		if(action == "load")
 			{
+				//curl -H "content-Type: application/json" http://192.168.1.105:8009/apps/YouTube -X POST -d 'v=Nz8BXRGRXc0'
 				if(AudioManager::getInstance()->ChromecastData().castID != id)
 					{
 						runSystemCommand("killall go-chromecast &", "", nullptr);
@@ -6672,34 +6673,41 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 
 		for(auto link : links)
 			{
-					/*auto icon = std::make_shared<WebImageComponent>(window, 600);
-					Vector2f maxSize(64, 64);
-					icon->setUpdateColors(false);
-					icon->setImage(link.img, false, maxSize);
-					icon->setMaxSize(maxSize);
-					icon->setIsLinear(true);
-					icon->setPadding(4);*/
-
 
 				s->addWithDescription(link.title, link.link, nullptr /*icon*/,
 					[this, window, link]
 				{
-					mWindow->pushGui(new GuiLoading<bool>(window, _("PREPARING..."),
-						[this, link](auto gui)
-						{
-							mWaitingLoad = true;
-							runSystemCommand("sleep .1", "", nullptr);
-							return true;
-						},
-						[this, link](bool r)
-						{
-							std::string cmd = "youtube.sh play " + link.link;
-							appLauncher(cmd);
-							mWaitingLoad = false;
-						}
-					));
+					YTResult(link);
 				});
 			}
+		mWindow->pushGui(s);
+	}
+
+void GuiMenu::YTResult(YoutubeLink link)
+	{
+		Window *window = mWindow;
+		auto s = new GuiSettings(mWindow, _("YouTube: ") + link.title;
+
+		s->addEntry(_("PLAY"), false, [this, window, link]() {
+				mWindow->pushGui(new GuiLoading<bool>(window, _("PREPARING..."),
+					[this, link](auto gui)
+					{
+						mWaitingLoad = true;
+						runSystemCommand("sleep .5", "", nullptr);
+						std::string cmd = "youtube.sh play " + link.link;
+						appLauncher(cmd);
+						return true;
+					},
+					[this, link](bool r)
+					{
+						mWaitingLoad = false;
+					}
+				));
+			});
+
+			s->addEntry(_("CAST TO"), false, [this, window, link]() {
+				loadChromecast(mWindow, link.link);
+			}, "iconChromecast");
 
 		mWindow->pushGui(s);
 	}

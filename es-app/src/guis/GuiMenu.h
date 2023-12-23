@@ -655,6 +655,7 @@ private:
 
 	void YTSearch(std::string q);
 	void YTResults(std::vector<YoutubeLink> links);
+	void YTResult(YoutubeLink link);
 
 
 
