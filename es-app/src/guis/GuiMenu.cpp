@@ -6679,7 +6679,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 				{
 					//YTResult(link);
 					window->pushGui(new GuiMsgBox(window, _("YouTube video: ") + "\n" + link.link + "\n?",
-						 _("PLAY"),[s, this]{
+						 _("PLAY"),[this, link]{
 							 std::string cmd = "youtube.sh play " + link.link;
 							 appLauncher(cmd);
 						 },
