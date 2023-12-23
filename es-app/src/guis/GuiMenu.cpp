@@ -6686,7 +6686,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 void GuiMenu::YTResult(YoutubeLink link)
 	{
 		Window *window = mWindow;
-		auto s = new GuiSettings(mWindow, _("YouTube: ") + link.title;
+		auto s = new GuiSettings(mWindow, _("YouTube: ") + link.title);
 
 		s->addEntry(_("PLAY"), false, [this, window, link]() {
 				mWindow->pushGui(new GuiLoading<bool>(window, _("PREPARING..."),
