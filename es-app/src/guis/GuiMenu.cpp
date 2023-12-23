@@ -6667,9 +6667,17 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
-
 		Window *window = mWindow;
 		auto s = new GuiSettings(mWindow, _("YouTube").c_str());
+		auto logo = "/emuelec/bin/ytlogo.png";
+		if (Utils::FileSystem::exists(logo))
+		{
+			auto image = std::make_shared<ImageComponent>(mWindow, true);  // image expire immediately
+			image->setIsLinear(true);
+			image->setImage(logo);
+			s->setSubTitle("fake");
+			s->setTitleImage(image, true);
+		}
 
 		for(auto link : links)
 			{
@@ -6677,8 +6685,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 				s->addWithDescription(link.title, link.link, nullptr /*icon*/,
 					[this, window, link]
 				{
-					//YTResult(link);
-					window->pushGui(new GuiMsgBox(window, _("YouTube video: ") + "\n" + link.link + "\n?",
+					window->pushGui(new GuiMsgBox(window, _("YouTube video: ") + "\n" + link.title + "\n?",
 						 _("PLAY"),[this, link]{
 							 std::string cmd = "youtube.sh play " + link.link;
 							 appLauncher(cmd);
@@ -6686,35 +6693,6 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 						 _("CANCEL"), nullptr));
 				});
 			}
-		mWindow->pushGui(s);
-	}
-
-void GuiMenu::YTResult(YoutubeLink link)
-	{
-		Window *window = mWindow;
-		auto s = new GuiSettings(mWindow, _("YouTube: ") + link.title);
-
-		s->addEntry(_("PLAY"), false, [this, window, link]() {
-				mWindow->pushGui(new GuiLoading<bool>(window, _("PREPARING..."),
-					[this, link](auto gui)
-					{
-						mWaitingLoad = true;
-						runSystemCommand("sleep .5", "", nullptr);
-						std::string cmd = "youtube.sh play " + link.link;
-						appLauncher(cmd);
-						return true;
-					},
-					[this, link](bool r)
-					{
-						mWaitingLoad = false;
-					}
-				));
-			});
-
-			s->addEntry(_("CAST TO"), false, [this, window, link]() {
-				loadChromecast(mWindow, link.link);
-			}, "iconChromecast");
-
 		mWindow->pushGui(s);
 	}
 
