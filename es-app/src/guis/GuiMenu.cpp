@@ -1794,7 +1794,7 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations)
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		std::vector<AccessPoint> aps = APSTAList(stations)
+		std::vector<AccessPoint> aps = APSTAList(stations);
 		for(auto ap : aps)
 			{
 				std::string _title 	=  ap.bssid + (ap.ssid.empty() ? "" : " " + ap.ssid);
