@@ -1801,7 +1801,7 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations)
 				std::string _subtitle 	= ap.vendor;
 
 				s->addWithDescription(_title, _subtitle,
-					std::make_shared<TextComponent>(window, ap.stations.toString(),	font, color),
+					std::make_shared<TextComponent>(window, std::to_string(ap.stations),	font, color),
 					[this, stations, ap]
 				{
 					openSTAmenu(stations, ap.bssid, ap.ssid);
