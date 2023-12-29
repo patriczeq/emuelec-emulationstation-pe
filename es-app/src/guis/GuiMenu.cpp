@@ -1786,7 +1786,7 @@ std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations)
 		return list;
 	}
 
-void GuiMenu::openAP_STAmenu(td::vector<WifiStation> stations)
+void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations)
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, _("AP STA LIST").c_str());
