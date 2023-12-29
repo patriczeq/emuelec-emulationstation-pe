@@ -115,6 +115,7 @@ struct AccessPoint {
 	std::string channel;
 	std::string enc;
 	std::string password;
+	std::vector<WifiStation> stations;
 };
 
 struct WifiStation {
@@ -519,6 +520,8 @@ struct YoutubeLink {
 	std::string title;
 };
 
+
+
 class GuiMenu : public GuiComponent
 {
 public:
@@ -600,7 +603,7 @@ private:
 	std::vector<HackName> names;
 	HackNameCounter namesCounter;
 	void openNamesCat();
-	void openNames(std::string category);
+	void openNames(std::string category = "");
 	void openName(HackName name);
 	// WPS
 	void sniffWPS();
@@ -626,7 +629,9 @@ private:
 
 
 	void scanSTA();
-	void openSTAmenu(std::vector<WifiStation> stations);
+	void openSTAmenu(std::vector<WifiStation> stations, std::string bssid = "");
+	void openAP_STAmenu(std::vector<AccessPoint> aps);
+	std::vector<AccessPoint> APSTAList(std::vector<WifiStation> stations);
 	void openSTADetail(WifiStation sta);
 
 	void openIRlist();

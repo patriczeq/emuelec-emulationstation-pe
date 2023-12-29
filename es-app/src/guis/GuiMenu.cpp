@@ -827,15 +827,26 @@ void GuiMenu::openESP01Settings()
 				hacksSend("bright " + std::to_string((int)round(newVal)));
 			});
 			s->addWithLabel(_("BRIGHTNESS"), nBright);
-		s->addGroup(_("NAMES CATEGORIES"));
+		s->addGroup(_("CATEGORIES"));
 
 			auto names_cat = std::make_shared<SwitchComponent>(mWindow);
 			names_cat->setState(SystemConf::getInstance()->get("pe_hack.names_cat") == "1");
-			s->addWithLabel(_("USE CATEGORIES"), names_cat);
+			s->addWithLabel(_("NAMES CATEGORIES"), names_cat);
 			s->addSaveFunc([names_cat] {
 				if (names_cat->changed()) {
 					bool enabled = names_cat->getState();
 					SystemConf::getInstance()->set("pe_hack.names_cat", enabled ? "1" : "0");
+					SystemConf::getInstance()->saveSystemConf();
+				}
+			});
+
+			auto sta_cat = std::make_shared<SwitchComponent>(mWindow);
+			sta_cat->setState(SystemConf::getInstance()->get("pe_hack.sta_cat") == "1");
+			s->addWithLabel(_("STA BY AP"), sta_cat);
+			s->addSaveFunc([sta_cat] {
+				if (sta_cat->changed()) {
+					bool enabled = sta_cat->getState();
+					SystemConf::getInstance()->set("pe_hack.sta_cat", enabled ? "1" : "0");
 					SystemConf::getInstance()->saveSystemConf();
 				}
 			});
@@ -867,7 +878,7 @@ void GuiMenu::openESP01Menu()
 								}
 							else
 								{
-									openNames("ALL");
+									openNames();
 								}
 						}
 					else
@@ -1020,9 +1031,9 @@ void GuiMenu::openNames(std::string category)
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		if(category == "ALL")
+		for(auto name : names)
 			{
-				for(auto name : names)
+				if(category == "")
 					{
 						s->addWithDescription(name.type + ": " + name.name, "",
 								std::make_shared<TextComponent>(window, name.id, 	font, color),
@@ -1031,20 +1042,14 @@ void GuiMenu::openNames(std::string category)
 								openName(name);
 							});
 					}
-			}
-		else
-			{
-				for(auto name : names)
+				else if(name.type == category)
 					{
-						if(name.type == category)
+						s->addWithDescription(name.name, "",
+								std::make_shared<TextComponent>(window, name.id, 	font, color),
+								[this, name]
 							{
-								s->addWithDescription(name.name, "",
-										std::make_shared<TextComponent>(window, name.id, 	font, color),
-										[this, name]
-									{
-										openName(name);
-									});
-							}
+								openName(name);
+							});
 					}
 			}
 
@@ -1677,7 +1682,14 @@ void GuiMenu::scanSTA()
 
 							if(stations.size() > 0)
 							{
-								openSTAmenu(stations);
+								if(SystemConf::getInstance()->get("pe_hack.sta_cat") == "1")
+									{
+										openAP_STAmenu(stations);
+									}
+								else
+									{
+										openSTAmenu(stations);
+									}
 							}
 							else
 							{
@@ -1690,10 +1702,10 @@ void GuiMenu::scanSTA()
 	}
 
 
-void GuiMenu::openSTAmenu(std::vector<WifiStation> stations)
+void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, (_("STATIONS LIST") + " ("+std::to_string(stations.size())+")").c_str());
+		auto s = new GuiSettings(window, (_("STATIONS LIST") + (bssid.empty() ? "" : " " + bssid) + " ("+std::to_string(stations.size())+")").c_str());
 
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
@@ -1717,6 +1729,68 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations)
 			}
 		window->pushGui(s);
 	}
+
+std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations)
+	{
+		// generate AP list
+		std::vector<AccessPoint> list;
+		for(auto station : stations)
+			{
+				bool found = false;
+				for(auto ap : list)
+					{
+						if(ap.bssid == station.ap.bssid)
+							{
+								found = true;
+								break;
+							}
+					}
+				if(!found)
+					{
+						list.push_back(station.ap);
+					}
+			}
+		// push STAs to APs
+		int n = 0;
+		for(auto ap : list)
+			{
+				for(auto station : stations)
+					{
+						if(station.ap.bssid == ap.bssid)
+							{
+								list.at(n).stations.push_back(station);
+							}
+					}
+				n++;
+			}
+		return list;
+	}
+
+void GuiMenu::openAP_STAmenu(std::vector<AccessPoint> aps)
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, _("AP STA LIST").c_str());
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		for(auto ap : aps)
+			{
+				std::string _title 	=  ap.bssid + (ap.ssid.empty() ? "" : " " + ap.ssid);
+				std::string _subtitle 	= ap.vendor;
+
+				s->addWithDescription(_title, _subtitle,
+					std::make_shared<TextComponent>(window, ap.stations.size(),	font, color),
+					[this, ap]
+				{
+					openSTAmenu(ap.stations, ap.bssid);
+				}, "iconNetwork");
+			}
+
+
+		window->pushGui(s);
+	}
+
 void GuiMenu::openSTADetail(WifiStation sta)
 	{
 		sta.name = getName("STA", sta.mac).name;
@@ -6669,7 +6743,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 		unsigned int color = theme->Text.color;
 		Window *window = mWindow;
 		auto s = new GuiSettings(mWindow, _("YouTube").c_str());
-		auto logo = "/emuelec/bin/ytlogo.png";
+		/*auto logo = "/emuelec/bin/ytlogo.png";
 		if (Utils::FileSystem::exists(logo))
 		{
 			auto image = std::make_shared<ImageComponent>(mWindow, true);  // image expire immediately
@@ -6677,7 +6751,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 			image->setImage(logo);
 			s->setSubTitle("fake");
 			s->setTitleImage(image, true);
-		}
+		}*/
 
 		for(auto link : links)
 			{
