@@ -1702,7 +1702,7 @@ void GuiMenu::scanSTA()
 	}
 
 
-void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, std::string bssid)
+void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, std::string ssid)
 	{
 		Window* window = mWindow;
 		std::string wTitle = _("STATIONS LIST") + " ("+std::to_string(stations.size())+ ")";
