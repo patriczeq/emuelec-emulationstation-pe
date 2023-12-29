@@ -115,7 +115,7 @@ struct AccessPoint {
 	std::string channel;
 	std::string enc;
 	std::string password;
-	std::vector<WifiStation> stations;
+	int stations;
 };
 
 struct WifiStation {
@@ -629,8 +629,8 @@ private:
 
 
 	void scanSTA();
-	void openSTAmenu(std::vector<WifiStation> stations, std::string bssid = "");
-	void openAP_STAmenu(std::vector<AccessPoint> aps);
+	void openSTAmenu(std::vector<WifiStation> stations, std::string bssid = "", std::string bssid = "");
+	void openAP_STAmenu(std::vector<WifiStation> stations);
 	std::vector<AccessPoint> APSTAList(std::vector<WifiStation> stations);
 	void openSTADetail(WifiStation sta);
 

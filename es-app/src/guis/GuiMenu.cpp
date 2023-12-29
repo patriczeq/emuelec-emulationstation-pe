@@ -1702,10 +1702,16 @@ void GuiMenu::scanSTA()
 	}
 
 
-void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid)
+void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, std::string bssid)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, (_("STATIONS LIST") + (bssid.empty() ? "" : " " + bssid) + " ("+std::to_string(stations.size())+")").c_str());
+		std::string wTitle = _("STATIONS LIST") + " ("+std::to_string(stations.size())+ ")";
+		if(bssid != "")
+			{
+				wTitle = _("STA ON: ") + bssid + " " + ssid;
+			}
+
+		auto s = new GuiSettings(window, wTitle.c_str());
 
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
@@ -1715,16 +1721,29 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid)
 			{
 				for (auto sta : stations)
 					{
-						sta.name = getName("STA", sta.mac).name;
-						std::string _title 	=  (sta.name.empty() ? sta.mac : sta.name) + (sta.ap.ssid.empty() ? "" : (" -> " + sta.ap.ssid));
-						std::string _subtitle 	= sta.vendor + " -> " + sta.ap.bssid;
+						if(bssid == "" || bssid == sta.ap.bssid)
+							{
+								sta.name = getName("STA", sta.mac).name;
+								std::string _title;
+								std::string _subtitle;
+								if(bssid == "")
+									{
+										_title 		=  (sta.name.empty() ? sta.mac : sta.name) + (sta.ap.ssid.empty() ? "" : (" -> " + sta.ap.ssid));
+										_subtitle = sta.vendor + " -> " + sta.ap.bssid;
+									}
+								else
+									{
+										_title 			= sta.mac + (sta.name.empty() ? "" : " " + sta.name);
+										_subtitle		= sta.vendor;
+									}
 
-						s->addWithDescription(_title, _subtitle,
-							std::make_shared<TextComponent>(window, sta.rssi + "dBm", 	font, color),
-							[this, sta]
-						{
-							openSTADetail(sta);
-						}, "iconNetwork");
+								s->addWithDescription(_title, _subtitle,
+									std::make_shared<TextComponent>(window, sta.rssi + "dBm", 	font, color),
+									[this, sta]
+								{
+									openSTADetail(sta);
+								}, "iconNetwork");
+							}
 					}
 			}
 		window->pushGui(s);
@@ -1747,6 +1766,7 @@ std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations)
 					}
 				if(!found)
 					{
+						station.ap.stations = 0;
 						list.push_back(station.ap);
 					}
 			}
@@ -1758,7 +1778,7 @@ std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations)
 					{
 						if(station.ap.bssid == ap.bssid)
 							{
-								list.at(n).stations.push_back(station);
+								list.at(n).stations++;
 							}
 					}
 				n++;
@@ -1766,7 +1786,7 @@ std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations)
 		return list;
 	}
 
-void GuiMenu::openAP_STAmenu(std::vector<AccessPoint> aps)
+void GuiMenu::openAP_STAmenu(td::vector<WifiStation> stations)
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, _("AP STA LIST").c_str());
@@ -1774,16 +1794,17 @@ void GuiMenu::openAP_STAmenu(std::vector<AccessPoint> aps)
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
+		std::vector<AccessPoint> aps = APSTAList(stations)
 		for(auto ap : aps)
 			{
 				std::string _title 	=  ap.bssid + (ap.ssid.empty() ? "" : " " + ap.ssid);
 				std::string _subtitle 	= ap.vendor;
 
 				s->addWithDescription(_title, _subtitle,
-					std::make_shared<TextComponent>(window, ap.stations.size(),	font, color),
-					[this, ap]
+					std::make_shared<TextComponent>(window, ap.stations.toString(),	font, color),
+					[this, stations, ap]
 				{
-					openSTAmenu(ap.stations, ap.bssid);
+					openSTAmenu(stations, ap.bssid, ap.ssid);
 				}, "iconNetwork");
 			}
 
