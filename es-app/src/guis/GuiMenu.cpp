@@ -912,7 +912,14 @@ void GuiMenu::openESP01Menu()
 				{
 					window->pushGui(new GuiMsgBox(window, _("START NEW STA SCAN?"),
 					_("NO"), [this] {
-						openSTAmenu(stalist);
+						if(SystemConf::getInstance()->get("pe_hack.sta_cat") == "1")
+							{
+								openAP_STAmenu(stalist);
+							}
+						else
+							{
+								openSTAmenu(stalist);
+							}
 					}, _("YES"), [this] {
 						scanSTA();
 					}));
@@ -1733,8 +1740,8 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 									}
 								else
 									{
-										_title 			= sta.mac + (sta.name.empty() ? "" : " " + sta.name);
-										_subtitle		= sta.vendor;
+										_title 			= sta.name.empty() ? sta.mac : sta.name;
+										_subtitle		= sta.mac + " -> " + sta.vendor;
 									}
 
 								s->addWithDescription(_title, _subtitle,
@@ -1797,8 +1804,8 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations)
 		std::vector<AccessPoint> aps = APSTAList(stations);
 		for(auto ap : aps)
 			{
-				std::string _title 	=  ap.bssid + (ap.ssid.empty() ? "" : " " + ap.ssid);
-				std::string _subtitle 	= ap.vendor;
+				std::string _title 			= ap.ssid.empty() ? ap.bssid : ap.ssid;
+				std::string _subtitle 	= ap.bssid + " -> " + ap.vendor;
 
 				s->addWithDescription(_title, _subtitle,
 					std::make_shared<TextComponent>(window, std::to_string(ap.stations),	font, color),
