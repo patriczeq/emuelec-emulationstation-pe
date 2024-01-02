@@ -625,15 +625,15 @@ private:
 	void openESP01Menu();
 	void openESP01Settings();
 
-	void scanBSSIDS();
+	void scanBSSIDS(bool all = false);
 	void openBSSIDSMenu(std::vector<AccessPoint> bssids);
 	void openDEAUTHMenu(AccessPoint ap);
 
 
 	void scanSTA();
 	void openSTAmenu(std::vector<WifiStation> stations, std::string bssid = "", std::string ssid = "");
-	void openAP_STAmenu(std::vector<WifiStation> stations);
-	std::vector<AccessPoint> APSTAList(std::vector<WifiStation> stations);
+	void openAP_STAmenu(std::vector<WifiStation> stations, bool all = false);
+	std::vector<AccessPoint> APSTAList(std::vector<WifiStation> stations, bool all = false);
 	void openSTADetail(WifiStation sta, bool lessAPinfo = false);
 
 	void openIRlist();

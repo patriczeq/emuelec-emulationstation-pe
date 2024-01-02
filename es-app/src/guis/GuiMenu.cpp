@@ -899,6 +899,9 @@ void GuiMenu::openESP01Menu()
 			}, "iconRestart");
 
 		s->addGroup(_("SCAN NETWORK"));
+		s->addEntry(_("SCAN ALL"), true, [this] {
+			scanBSSIDS(true);
+		}, "iconNetwork");
 			s->addEntry(_("SCAN AP"), true, [this] {
 				scanBSSIDS();
 			}, "iconNetwork");
@@ -1521,7 +1524,7 @@ std::vector<AccessPoint> GuiMenu::scanBSSIDSlist()
 	}
 
 
-void GuiMenu::scanBSSIDS()
+void GuiMenu::scanBSSIDS(bool all)
 	{
 		Window* window = mWindow;
 		mWindow->pushGui(new GuiLoading<std::vector<AccessPoint>>(window, _("SEARCHING APs..."),
@@ -1532,12 +1535,19 @@ void GuiMenu::scanBSSIDS()
 				updateNames();
 				return scanlist;
 			},
-			[this, window](std::vector<AccessPoint> bssids)
+			[this, window, all](std::vector<AccessPoint> bssids)
 			{
 				mWaitingLoad = false;
 				if(bssids.size() > 0)
 				{
-					openBSSIDSMenu(bssids);
+					if(all)
+						{
+							scanSTA(true);
+						}
+					else
+						{
+							openBSSIDSMenu(bssids);
+						}
 				}
 				else
 				{
@@ -1722,7 +1732,7 @@ stalist = StationsList(hacksGet(cmd));
 return stalist;
 */
 
-void GuiMenu::scanSTA()
+void GuiMenu::scanSTA(bool apsta)
 	{
 		Window* window = mWindow;
 
@@ -1750,9 +1760,9 @@ void GuiMenu::scanSTA()
 
 							if(stations.size() > 0)
 							{
-								if(SystemConf::getInstance()->get("pe_hack.sta_cat") == "1")
+								if(SystemConf::getInstance()->get("pe_hack.sta_cat") == "1" || apsta)
 									{
-										openAP_STAmenu(stations);
+										openAP_STAmenu(stations, apsta);
 									}
 								else
 									{
@@ -1776,7 +1786,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 		std::string wTitle = _("STATIONS LIST") + " ("+std::to_string(stations.size())+ ")";
 		if(bssid != "")
 			{
-				wTitle = _("STA ON: ") + bssid + " " + ssid;
+				wTitle = bssid;
 			}
 
 		auto s = new GuiSettings(window, wTitle.c_str());
@@ -1789,12 +1799,17 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 			{
 				// AP Info
 				s->addGroup(_("AP INFO"));
-					if(!stations.at(0).ap.rssi.empty()){s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, stations.at(0).ap.rssi + "dBm", 	font, color));}
-					s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, stations.at(0).ap.bssid, 	font, color));
-					s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, stations.at(0).ap.vendor, 	font, color));
-					if(!stations.at(0).ap.ssid.empty()){s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, stations.at(0).ap.ssid, 	font, color));}
-					if(!stations.at(0).ap.channel.empty()){s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, stations.at(0).ap.channel, 	font, color));}
-					if(!stations.at(0).ap.enc.empty()){s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, stations.at(0).ap.enc, 	font, color));}
+					AccessPoint ap = stations.at(0).ap;
+					if(!ap.rssi.empty()){s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, ap.rssi + "dBm", 	font, color));}
+					s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, ap.bssid, 	font, color));
+					s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, ap.vendor, 	font, color));
+					if(!ap.ssid.empty()){s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ap.ssid, 	font, color));}
+					if(!ap.channel.empty()){s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, ap.channel, 	font, color));}
+					if(!ap.enc.empty()){s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, ap.enc, 	font, color));}
+
+					s->addEntry(_("AP MENU"), true, [this, window, ap]() {
+						openDEAUTHMenu(ap);
+					}, "iconNetwork");
 				s->addGroup(_("STATIONS") + " ("+std::to_string(stations.size())+ ")");
 			}
 		bool lessAPinfo = bssid != "";
@@ -1830,27 +1845,35 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 		window->pushGui(s);
 	}
 
-std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations)
+std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations, bool all)
 	{
 		// generate AP list
 		std::vector<AccessPoint> list;
-		for(auto station : stations)
+		if(all)
 			{
-				bool found = false;
-				for(auto ap : list)
+				list = scanlist;
+			}
+		if(!all)
+			{
+				for(auto station : stations)
 					{
-						if(ap.bssid == station.ap.bssid)
+						bool found = false;
+						for(auto ap : list)
 							{
-								found = true;
-								break;
+								if(ap.bssid == station.ap.bssid)
+									{
+										found = true;
+										break;
+									}
+							}
+						if(!found)
+							{
+								//station.ap.stations = 0;
+								list.push_back(station.ap);
 							}
 					}
-				if(!found)
-					{
-						station.ap.stations = 0;
-						list.push_back(station.ap);
-					}
 			}
+
 		// push STAs to APs
 		int n = 0;
 		for(auto ap : list)
@@ -1867,19 +1890,18 @@ std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations)
 		return list;
 	}
 
-void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations)
+void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations, bool all)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("AP STA LIST").c_str());
+		auto s = new GuiSettings(window, _("SCAN LIST").c_str());
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
-		s->addEntry(_("RESCAN"), true, [this, s]() {
-			delete s;
+		s->addEntry(_("RESCAN"), true, [this]() {
 			scanSTA();
 		}, "iconUpdates");
 		s->addGroup(_("ACCESS POINTS"));
-		std::vector<AccessPoint> aps = APSTAList(stations);
+		std::vector<AccessPoint> aps = APSTAList(stations, all);
 		for(auto ap : aps)
 			{
 				std::string _title 			= ap.ssid.empty() ? ap.bssid : ap.ssid;
@@ -2030,19 +2052,29 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 			if(!ap.enc.empty()){s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, ap.enc, 	font, color));}
 		// -------------------------------------------------------------------------------------
 		std::string name = getName("AP", ap.bssid).name;
+		s->addGroup(_("TOOLS"));
 		if(name.empty())
 			{
-				s->addGroup(_("TOOLS"));
-					s->addEntry(_("SAVE NETWORK"), false, [this, window, ap]() {
-						HackName n;
-							n.type = "AP";
-							n.id = ap.bssid;
-							n.name = ap.ssid;
-							n.channel = ap.channel;
-						addName(n);
-						window->pushGui(new GuiMsgBox(window, _("SAVED!"),
-							_("ok"),nullptr));
-					}, "iconSettings");
+				s->addEntry(_("SAVE NETWORK"), false, [this, window, ap]() {
+					HackName n;
+						n.type = "AP";
+						n.id = ap.bssid;
+						n.name = ap.ssid;
+						n.channel = ap.channel;
+					addName(n);
+					window->pushGui(new GuiMsgBox(window, _("SAVED!"),
+						_("ok"),nullptr));
+				}, "iconSettings");
+			}
+		else
+			{
+				s->addEntry(_("REMOVE NAME"), false, [this, window, ap]() {
+					remName("AP", ap.bssid);
+					window->pushGui(new GuiMsgBox(window, _("REMOVE") + "\n" + ap.ssid + "\n?",
+						_("YES"),[this, ap]{
+							remName("AP", ap.bssid);
+						},_("NO"),nullptr));
+				}, "iconSettings");
 			}
 
 		s->addGroup(_("AP HACKS"));
