@@ -1743,7 +1743,7 @@ void GuiMenu::scanSTA(bool apsta)
 				const std::string cmd = "espscansta " + std::to_string(Settings::getInstance()->getInt("pe_hack.stasniffduration") * 1000);
 				return hacksGet(cmd);
 			},
-			[this, window](std::vector<std::string> stations)
+			[this, window, apsta](std::vector<std::string> stations)
 			{
 				mWaitingLoad = false;
 					mWindow->pushGui(new GuiLoading<std::vector<WifiStation>>(window, _("PARSING RESULTS..."),
