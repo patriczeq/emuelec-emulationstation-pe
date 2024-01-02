@@ -1996,7 +1996,7 @@ std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations, b
 						if(station.ap.bssid == ap.bssid)
 							{
 								list.at(n).stations++;
-								list.at(n).pkts += station.pkts.toInt();
+								list.at(n).pkts += std::stoi(station.pkts);
 							}
 					}
 				n++;
