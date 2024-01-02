@@ -1795,19 +1795,21 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		if(bssid != "" && stations.size() > 0)
+		AccessPoint ap;
+		for(auto a : scanlist)
+			{
+				if(a.bssid == bssid)
+					{
+						ap = a;
+						break;
+					}
+			}
+			
+		if(bssid != "")
 			{
 				// AP Info
 				s->addGroup(_("AP INFO"));
-					AccessPoint ap;
-					for(auto a : scanlist)
-					 	{
-							if(a.bssid == bssid)
-								{
-									ap = a;
-									break;
-								}
-						}
+
 					if(!ap.rssi.empty()){s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, ap.rssi + "dBm", 	font, color));}
 					s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, ap.bssid, 	font, color));
 					s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, ap.vendor, 	font, color));
