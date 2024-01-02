@@ -1796,15 +1796,30 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 		unsigned int color = theme->Text.color;
 
 		AccessPoint ap;
-		for(auto a : scanlist)
+		if(!bssid.empty())
 			{
-				if(a.bssid == bssid)
+				for(auto a : scanlist)
 					{
-						ap = a;
-						break;
+						if(a.bssid == bssid)
+							{
+								ap = a;
+								break;
+							}
+					}
+				// not scanned AP
+				if(ap.bssid.empty())
+					{
+						for(auto sta : stations)
+							{
+								if(bssid == sta.ap.bssid)
+									{
+										ap = sta.ap;
+										break;
+									}
+							}
 					}
 			}
-			
+
 		if(bssid != "")
 			{
 				// AP Info
