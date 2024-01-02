@@ -1867,7 +1867,7 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations)
 		unsigned int color = theme->Text.color;
 		s->addEntry(_("RESCAN"), true, [this, s]() {
 			delete s;
-			scanSTA(true);
+			scanSTA();
 		}, "iconUpdates");
 		s->addGroup(_("ACCESS POINTS"));
 		std::vector<AccessPoint> aps = APSTAList(stations);
