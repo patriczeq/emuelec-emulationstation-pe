@@ -65,6 +65,10 @@ public:
 	{
 		mMenu.removeLastRowIfGroup();
 	}
+	void clearList(int s)
+	{
+		mMenu.clearList(s);
+	}
 
 	void addInputTextRow(const std::string& title, const std::string& settingsID, bool password, bool storeInSettings = false, const std::function<void(Window*, std::string/*title*/, std::string /*value*/, const std::function<void(std::string)>& onsave)>& customEditor = nullptr);
 	void addFileBrowser(const std::string& title, const std::string& settingsID, GuiFileBrowser::FileTypes type, bool storeInSettings = false);

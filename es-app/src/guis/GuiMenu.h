@@ -606,7 +606,7 @@ private:
 	void openNames(std::string category = "");
 	void openName(HackName name);
 	// names UPDATEr
-	void updateNames();
+	bool updateNames();
 	// WPS
 	void sniffWPS();
 	void openWPSpwned(std::string raw);
@@ -630,7 +630,7 @@ private:
 	void openDEAUTHMenu(AccessPoint ap);
 
 
-	void scanSTA();
+	void scanSTA(bool open = true);
 	void openSTAmenu(std::vector<WifiStation> stations, std::string bssid = "", std::string ssid = "");
 	void openAP_STAmenu(std::vector<WifiStation> stations);
 	std::vector<AccessPoint> APSTAList(std::vector<WifiStation> stations);

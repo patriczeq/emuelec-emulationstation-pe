@@ -1214,7 +1214,7 @@ void GuiMenu::openName(HackName name)
 		window->pushGui(s);
 	}
 
-void GuiMenu::updateNames()
+bool GuiMenu::updateNames()
 	{
 		Window* window = mWindow;
 		// load current data
@@ -1236,7 +1236,7 @@ void GuiMenu::updateNames()
 										name.bssid 		= sta.ap.bssid;
 										name.channel 	= sta.ap.channel;
 										window->pushGui(new GuiMsgBox(window,
-											_("UPDATE FOR STA") + name.name + "\nBSSID: " + updatedName.bssid + "\nCH: " + updatedName.channel,
+											_("UPDATE FOR STA") + "\n" + name.name + "\nBSSID: " + updatedName.bssid + "\nCH: " + updatedName.channel,
 											_("UPDATE"), [this, updatedName]{
 												addName(updatedName);
 											},
@@ -1258,7 +1258,7 @@ void GuiMenu::updateNames()
 									name.name 		= ap.ssid;
 									name.channel 	= ap.channel;
 									window->pushGui(new GuiMsgBox(window,
-										_("UPDATE FOR AP") + name.name + "\nSSID: " + updatedName.name + "\nCH: " + updatedName.channel,
+										_("UPDATE FOR AP") + "\n" + name.name + "\nSSID: " + updatedName.name + "\nCH: " + updatedName.channel,
 										_("UPDATE"), [this, updatedName]{
 											addName(updatedName);
 										},
@@ -1535,7 +1535,7 @@ void GuiMenu::scanBSSIDS()
 			[this, window](std::vector<AccessPoint> bssids)
 			{
 				mWaitingLoad = false;
-				if(bssids.size() > 0)
+				if(bssids.size() > 0 && updateNames())
 				{
 					openBSSIDSMenu(bssids);
 				}
@@ -1722,7 +1722,7 @@ stalist = StationsList(hacksGet(cmd));
 return stalist;
 */
 
-void GuiMenu::scanSTA()
+void GuiMenu::scanSTA(bool open)
 	{
 		Window* window = mWindow;
 
@@ -1747,7 +1747,7 @@ void GuiMenu::scanSTA()
 						{
 							mWaitingLoad = false;
 
-							if(stations.size() > 0)
+							if(stations.size() > 0 && updateNames() && open)
 							{
 								if(SystemConf::getInstance()->get("pe_hack.sta_cat") == "1")
 									{
@@ -1758,7 +1758,7 @@ void GuiMenu::scanSTA()
 										openSTAmenu(stations);
 									}
 							}
-							else
+							else if(open)
 							{
 								window->pushGui(new GuiMsgBox(window, _("NO STA FOUND!"),_("OK"),nullptr));
 							}
@@ -1806,7 +1806,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 								else
 									{
 										_title 			= sta.name.empty() ? sta.mac : sta.name;
-										_subtitle		= sta.mac + " -> " + sta.vendor;
+										_subtitle		= sta.pkts + "pkts, " + sta.vendor;
 									}
 
 								s->addWithDescription(_title, _subtitle,
@@ -1819,7 +1819,6 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 					}
 			}
 		window->pushGui(s);
-		updateNames();
 	}
 
 std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations)
@@ -1866,7 +1865,24 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations)
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
+		s->addEntry(_("RESCAN"), true, [this, s]() {
+			s->clearList(1);
+			scanSTA(false);
+			std::vector<AccessPoint> aps = APSTAList(stations);
+			for(auto ap : aps)
+				{
+					std::string _title 			= ap.ssid.empty() ? ap.bssid : ap.ssid;
+					std::string _subtitle 	= ap.bssid + " -> " + ap.vendor;
 
+					s->addWithDescription(_title, _subtitle,
+						std::make_shared<TextComponent>(window, std::to_string(ap.stations),	font, color),
+						[this, stations, ap]
+					{
+						openSTAmenu(stations, ap.bssid, ap.ssid);
+					}, "iconNetwork");
+				}
+		}, "iconUpdates");
+		s->addGroup(_("ACCESS POINTS"));
 		std::vector<AccessPoint> aps = APSTAList(stations);
 		for(auto ap : aps)
 			{
@@ -1880,9 +1896,8 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations)
 					openSTAmenu(stations, ap.bssid, ap.ssid);
 				}, "iconNetwork");
 			}
-		mMenu.addButton(_("RESCAN"), _("update"), [this] { delete this; scanSTA(); });
+
 		window->pushGui(s);
-		updateNames();
 	}
 
 void GuiMenu::openSTADetail(WifiStation sta)
@@ -1990,8 +2005,8 @@ void GuiMenu::openBSSIDSMenu(std::vector<AccessPoint> bssids)
 			}
 		}
 		window->pushGui(s);
-		updateNames();
 	}
+
 void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 	{
 		Window* window = mWindow;

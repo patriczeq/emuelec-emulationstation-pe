@@ -21,7 +21,7 @@ std::shared_ptr<ImageComponent> makeArrow(Window* window);
 class MenuComponent : public GuiComponent
 {
 public:
-	MenuComponent(Window* window, 
+	MenuComponent(Window* window,
 		const std::string& title, const std::shared_ptr<Font>& titleFont = Font::get(FONT_SIZE_LARGE),
 		const std::string& subTitle = "");
 
@@ -40,7 +40,18 @@ public:
 	void addGroup(const std::string& label, bool forceVisible = false, bool doUpdateSize = true) { mList->addGroup(label, forceVisible); if (doUpdateSize) updateSize(); }
 	void removeLastRowIfGroup(bool doUpdateSize = true) { mList->removeLastRowIfGroup(); if (doUpdateSize) updateSize(); }
 	void removeEntry(const std::string& userData, bool doUpdateSize = true) { mList->remove(userData); if (doUpdateSize) updateSize(); }
-
+	void clearList(int start)
+		{
+			int s = 0;
+			for(auto item : mList)
+				{
+					if(start >= s)
+						{
+							delete mList.at(s);
+						}
+					s++;
+				}
+		}
 	void addButton(const std::string& label, const std::string& helpText, const std::function<void()>& callback);
 
 	void setTitle(const std::string& title, const std::shared_ptr<Font>& font = nullptr);
@@ -64,12 +75,12 @@ public:
 	float getTitleHeight() const;
 	float getButtonGridHeight() const;
 
-	void setMaxHeight(float maxHeight) 
-	{ 
+	void setMaxHeight(float maxHeight)
+	{
 		if (mMaxHeight == maxHeight)
 			return;
 
-		mMaxHeight = maxHeight; 
+		mMaxHeight = maxHeight;
 		updateSize();
 	}
 
@@ -77,7 +88,7 @@ public:
 	void clearButtons();
 
 	std::shared_ptr<ComponentList> getList() { return mList; };
-	
+
 	static void addMenuIcon(Window* window, ComponentListRow& row, const std::string& iconName);
 
 private:
