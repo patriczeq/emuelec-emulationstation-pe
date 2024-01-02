@@ -40,18 +40,7 @@ public:
 	void addGroup(const std::string& label, bool forceVisible = false, bool doUpdateSize = true) { mList->addGroup(label, forceVisible); if (doUpdateSize) updateSize(); }
 	void removeLastRowIfGroup(bool doUpdateSize = true) { mList->removeLastRowIfGroup(); if (doUpdateSize) updateSize(); }
 	void removeEntry(const std::string& userData, bool doUpdateSize = true) { mList->remove(userData); if (doUpdateSize) updateSize(); }
-	void clearList(int start)
-		{
-			int s = 0;
-			for(auto item : mList)
-				{
-					if(start >= s)
-						{
-							delete mList.at(s);
-						}
-					s++;
-				}
-		}
+
 	void addButton(const std::string& label, const std::string& helpText, const std::function<void()>& callback);
 
 	void setTitle(const std::string& title, const std::shared_ptr<Font>& font = nullptr);

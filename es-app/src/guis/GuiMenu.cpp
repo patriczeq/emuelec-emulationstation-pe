@@ -1866,21 +1866,8 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations)
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 		s->addEntry(_("RESCAN"), true, [this, s]() {
-			s->clearList(1);
-			scanSTA(false);
-			std::vector<AccessPoint> aps = APSTAList(stations);
-			for(auto ap : aps)
-				{
-					std::string _title 			= ap.ssid.empty() ? ap.bssid : ap.ssid;
-					std::string _subtitle 	= ap.bssid + " -> " + ap.vendor;
-
-					s->addWithDescription(_title, _subtitle,
-						std::make_shared<TextComponent>(window, std::to_string(ap.stations),	font, color),
-						[this, stations, ap]
-					{
-						openSTAmenu(stations, ap.bssid, ap.ssid);
-					}, "iconNetwork");
-				}
+			delete s;
+			scanSTA(true);
 		}, "iconUpdates");
 		s->addGroup(_("ACCESS POINTS"));
 		std::vector<AccessPoint> aps = APSTAList(stations);
