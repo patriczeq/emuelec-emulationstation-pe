@@ -1722,7 +1722,7 @@ stalist = StationsList(hacksGet(cmd));
 return stalist;
 */
 
-void GuiMenu::scanSTA(bool open)
+void GuiMenu::scanSTA()
 	{
 		Window* window = mWindow;
 
@@ -1747,7 +1747,7 @@ void GuiMenu::scanSTA(bool open)
 						{
 							mWaitingLoad = false;
 
-							if(stations.size() > 0 && updateNames() && open)
+							if(stations.size() > 0 && updateNames())
 							{
 								if(SystemConf::getInstance()->get("pe_hack.sta_cat") == "1")
 									{
