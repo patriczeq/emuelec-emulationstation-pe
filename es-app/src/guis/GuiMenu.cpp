@@ -1214,11 +1214,9 @@ void GuiMenu::openName(HackName name)
 		window->pushGui(s);
 	}
 
-bool GuiMenu::updateNames()
+void GuiMenu::updateNames()
 	{
 		Window* window = mWindow;
-		// load current data
-		loadNames();
 		for(auto name : names)
 			{
 				if(name.type == "AP" || name.type == "STA")
@@ -1232,12 +1230,12 @@ bool GuiMenu::updateNames()
 										)
 									)
 									{
-										HackName updatedName = name;
-										name.bssid 		= sta.ap.bssid;
-										name.channel 	= sta.ap.channel;
 										window->pushGui(new GuiMsgBox(window,
 											_("UPDATE FOR STA") + "\n" + name.name + "\nBSSID: " + updatedName.bssid + "\nCH: " + updatedName.channel,
-											_("UPDATE"), [this, updatedName]{
+											_("UPDATE"), [this, name, sta]{
+												HackName updatedName = name;
+													updatedName.bssid 		= sta.ap.bssid;
+													updatedName.channel 	= sta.ap.channel;
 												addName(updatedName);
 											},
 											_("CANCEL"),
@@ -1254,12 +1252,12 @@ bool GuiMenu::updateNames()
 									)
 								)
 								{
-									HackName updatedName = name;
-									name.name 		= ap.ssid;
-									name.channel 	= ap.channel;
 									window->pushGui(new GuiMsgBox(window,
 										_("UPDATE FOR AP") + "\n" + name.name + "\nSSID: " + updatedName.name + "\nCH: " + updatedName.channel,
-										_("UPDATE"), [this, updatedName]{
+										_("UPDATE"), [this, name, ap]{
+											HackName updatedName = name;
+												updatedName.name 			= ap.ssid;
+												updatedName.channel 	= ap.channel;
 											addName(updatedName);
 										},
 										_("CANCEL"),
