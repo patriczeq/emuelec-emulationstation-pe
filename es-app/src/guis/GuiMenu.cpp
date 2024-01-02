@@ -1880,7 +1880,7 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations)
 					openSTAmenu(stations, ap.bssid, ap.ssid);
 				}, "iconNetwork");
 			}
-		s->addButton(_("RESCAN"), _("update"), [this] { delete this; scanSTA(); });
+		mMenu.addButton(_("RESCAN"), _("update"), [this] { delete this; scanSTA(); });
 		window->pushGui(s);
 		updateNames();
 	}
