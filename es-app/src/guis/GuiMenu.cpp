@@ -1818,6 +1818,14 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 									}
 							}
 					}
+				ap.stations = 0;
+				for(auto sta : stations)
+					{
+						if(sta.ap.bssid == bssid)
+							{
+								ap.stations++;
+							}
+					}
 			}
 
 		if(bssid != "")
@@ -1988,6 +1996,7 @@ std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations, b
 						if(station.ap.bssid == ap.bssid)
 							{
 								list.at(n).stations++;
+								list.at(n).pkts += std::to_int(station.pkts);
 							}
 					}
 				n++;
@@ -2007,10 +2016,10 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations, bool all)
 		for(auto ap : aps)
 			{
 				std::string _title 			= ap.ssid.empty() ? ap.bssid : ap.ssid;
-				std::string _subtitle 	= ap.bssid + " -> " + ap.vendor;
+				std::string _subtitle 	= std::to_string(ap.pkts) + "pkts, " + ap.bssid + " -> " + ap.vendor;
 
 				s->addWithDescription(_title, _subtitle,
-					std::make_shared<TextComponent>(window, std::to_string(ap.stations),	font, color),
+					std::make_shared<TextComponent>(window, ap.rssi + "dBm, " + std::to_string(ap.stations) + " STA",	font, color),
 					[this, stations, ap]
 				{
 					openSTAmenu(stations, ap.bssid, ap.ssid);

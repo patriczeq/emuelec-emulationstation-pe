@@ -116,6 +116,7 @@ struct AccessPoint {
 	std::string enc;
 	std::string password;
 	int stations;
+	int pkts;
 };
 
 struct WifiStation {
