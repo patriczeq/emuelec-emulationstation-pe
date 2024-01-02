@@ -521,7 +521,40 @@ struct YoutubeLink {
 	std::string title;
 };
 
+struct ScanDB_STA {
+	ScanDB_STA(){}
+	ScanDB_STA(std::string raw)
+		{
+			std::vector<std::string> tokens = Utils::String::split(raw, ';');
+			mac 			= tokens.at(0);
+			bssid 		= tokens.at(1);
+			rssi 	= tokens.at(2);
+		}
+	std::string mac;
+	std::string bssid;
+	std::string rssi;
+	std::string vendor;
+};
 
+struct ScanDB_AP {
+	ScanDB_AP(){}
+	ScanDB_AP(std::string raw)
+		{
+			std::vector<std::string> tokens = Utils::String::split(raw, ';');
+			bssid 			= tokens.at(0);
+			channel 		= tokens.at(1);
+			rssi 				= tokens.at(2);
+			encryption 	= tokens.at(3);
+			ssid 				= tokens.at(4);
+		}
+	std::string bssid;
+	std::string vendor;
+	std::string channel;
+	std::string rssi;
+	std::string encryption;
+	std::string ssid;
+	std::vector<ScanDB_STA> sta;
+};
 
 class GuiMenu : public GuiComponent
 {
@@ -608,6 +641,14 @@ private:
 	void openName(HackName name);
 	// names UPDATEr
 	void updateNames();
+
+	// SCAN DATABASE
+	std::vector<ScanDB_AP> ScanDB;
+	int loadScanDatabase();
+	void addToScanDatabase(AccessPoint ap, bool reload = true);
+	void addToScanDatabase(WifiStation sta, bool reload = true);
+
+
 	// WPS
 	void sniffWPS();
 	void openWPSpwned(std::string raw);

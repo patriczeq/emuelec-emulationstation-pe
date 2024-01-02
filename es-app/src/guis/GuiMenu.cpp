@@ -799,6 +799,18 @@ void GuiMenu::openESP01Settings()
 			staScanDur->setOnValueChanged([](const float &newVal) { Settings::getInstance()->setInt("pe_hack.stasniffduration", (int)round(newVal)); });
 			s->addWithLabel(_("STA SNIFF DURATION"), staScanDur);
 
+			// SCAN DB
+			auto scandb = std::make_shared<SwitchComponent>(mWindow);
+			scandb->setState(SystemConf::getInstance()->get("pe_hack.scandb") == "1");
+			s->addWithLabel(_("STORE SCANNED DEVICES"), scandb);
+			s->addSaveFunc([scandb] {
+				if (scandb->changed()) {
+					bool enabled = scandb->getState();
+					SystemConf::getInstance()->set("pe_hack.scandb", enabled ? "1" : "0");
+					SystemConf::getInstance()->saveSystemConf();
+				}
+			});
+
 		// ----------------------------------------------------------- IR
 		s->addGroup(_("IR SETTINGS"));
 		// SPACE
@@ -842,7 +854,7 @@ void GuiMenu::openESP01Settings()
 
 			auto sta_cat = std::make_shared<SwitchComponent>(mWindow);
 			sta_cat->setState(SystemConf::getInstance()->get("pe_hack.sta_cat") == "1");
-			s->addWithLabel(_("STA BY AP"), sta_cat);
+			s->addWithLabel(_("SORT STA SCAN BY AP"), sta_cat);
 			s->addSaveFunc([sta_cat] {
 				if (sta_cat->changed()) {
 					bool enabled = sta_cat->getState();
@@ -1006,6 +1018,61 @@ void GuiMenu::openESP01Menu()
 
 		window->pushGui(s);
 	}
+
+// SCAN DATABASE
+//std::vector<ScanDB_AP> ScanDB;
+//std::vector<ScanDB_STA>
+int GuiMenu::loadScanDatabase()
+	{
+		int loaded = 0;
+		ScanDB.clear();
+		std::vector<std::string> rawap = hacksGet("getdb AP");
+		for(auto line : rawap)
+			{
+				ScanDB_AP ap(line);
+				ap.vendor = macVendor(ap.bssid);
+				ScanDB.push_back(ap);
+				loaded++;
+			}
+		std::vector<std::string> rawap = hacksGet("getdb STA");
+		for(auto line : rawsta)
+			{
+				ScanDB_STA _sta(line);
+				_sta.vendor = macVendor(_sta.mac);
+				int n = 0;
+				for(auto ap : ScanDB)
+					{
+						if(ap.bssid == sta.bssid)
+							{
+								ScanDB.at(n).sta.push_back(_sta);
+								break;
+							}
+						n++;
+					}
+				loaded++;
+			}
+		return loaded;
+	}
+void GuiMenu::addToScanDatabase(AccessPoint ap, bool reload)
+	{
+		//echo "  saveAP  <BSSID> <CH> <ENC> <RSSI> <SSID>"
+		std::string ssid = Utils::String::replace(ap.ssid, " ", "_!SPC!_");
+		hacksSet("saveAP " + ap.bssid + " " + ap.channel + " " + ap.enc + " " + ap.rssi + " " + ssid);
+		if(reload)
+			{
+				loadScanDatabase();
+			}
+	}
+void GuiMenu::addToScanDatabase(WifiStation sta, bool reload)
+	{
+		//echo "  saveSTA <MAC> <BSSID> <RSSI>"
+		hacksSet("saveSTA " + sta.mac + " " + sta.ap.bssid + " " + sta.rssi);
+		if(reload)
+			{
+				loadScanDatabase();
+			}
+	}
+
 void GuiMenu::openNamesCat()
 	{
 		Window* window = mWindow;
@@ -1043,7 +1110,6 @@ void GuiMenu::openNamesCat()
 
 		window->pushGui(s);
 	}
-
 
 void GuiMenu::openNames(std::string category)
 	{
@@ -1495,6 +1561,7 @@ std::vector<AccessPoint> GuiMenu::AccessPointList(std::vector<std::string> bssid
 			{
 				AccessPoint ap = rawToAP(bssid);
 				list.push_back(ap);
+				addToScanDatabase(ap, false);
 			}
 		return list;
 	}
@@ -1524,6 +1591,7 @@ std::vector<WifiStation> GuiMenu::StationsList(std::vector<std::string> stations
 		{
 			WifiStation sta_ = rawToSTA(sta);
 			list.push_back(sta_);
+			addToScanDatabase(sta_, false);
 		}
 	return list;
 }
