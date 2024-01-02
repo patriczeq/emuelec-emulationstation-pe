@@ -1034,7 +1034,7 @@ int GuiMenu::loadScanDatabase()
 				ScanDB.push_back(ap);
 				loaded++;
 			}
-		std::vector<std::string> rawap = hacksGet("getdb STA");
+		std::vector<std::string> rawsta = hacksGet("getdb STA");
 		for(auto line : rawsta)
 			{
 				ScanDB_STA _sta(line);
