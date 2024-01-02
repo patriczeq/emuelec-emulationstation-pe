@@ -1530,12 +1530,14 @@ void GuiMenu::scanBSSIDS()
 			[this, window](auto gui)
 			{
 				mWaitingLoad = true;
-				return scanBSSIDSlist();
+				scanlist = AccessPointList(hacksGet("espscan"));
+				updateNames();
+				return scanlist;
 			},
 			[this, window](std::vector<AccessPoint> bssids)
 			{
 				mWaitingLoad = false;
-				if(bssids.size() > 0 && updateNames())
+				if(bssids.size() > 0)
 				{
 					openBSSIDSMenu(bssids);
 				}
@@ -1741,13 +1743,14 @@ void GuiMenu::scanSTA()
 						{
 							mWaitingLoad = true;
 							stalist = StationsList(stations);
+							updateNames();
 							return stalist;
 						},
 						[this, window](std::vector<WifiStation> stations)
 						{
 							mWaitingLoad = false;
 
-							if(stations.size() > 0 && updateNames())
+							if(stations.size() > 0)
 							{
 								if(SystemConf::getInstance()->get("pe_hack.sta_cat") == "1")
 									{
