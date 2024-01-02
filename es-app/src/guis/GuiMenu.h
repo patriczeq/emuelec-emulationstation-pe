@@ -630,7 +630,7 @@ private:
 	void openDEAUTHMenu(AccessPoint ap);
 
 
-	void scanSTA();
+	void scanSTA(bool apsta = false);
 	void openSTAmenu(std::vector<WifiStation> stations, std::string bssid = "", std::string ssid = "");
 	void openAP_STAmenu(std::vector<WifiStation> stations, bool all = false);
 	std::vector<AccessPoint> APSTAList(std::vector<WifiStation> stations, bool all = false);
