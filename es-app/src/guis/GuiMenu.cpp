@@ -891,15 +891,15 @@ void GuiMenu::openESP01Menu()
 			s->addEntry(_("SETTINGS"), true, [this] {
 				openESP01Settings();
 			}, "iconSystem");
-			s->addEntry(_("STOP ALL JOBS"), false, [this, window] {
+			s->addEntry(_("STOP ALL JOBS"), false, [this] {
 				hacksSend("stop");
 			}, "iconQuit");
-			s->addEntry(_("REBOOT ESP01"), false, [this, window] {
+			s->addEntry(_("REBOOT ESP01"), false, [this] {
 				hacksSend("reboot");
 			}, "iconRestart");
 
 		s->addGroup(_("SCAN NETWORK"));
-			s->addEntry(_("SCAN ALL"), true, [this] {
+			s->addEntry(_("SCAN ALL"), true, [this, window] {
 				if(stalist.size() > 0 && scanlist.size() > 0)
 					{
 						window->pushGui(new GuiMsgBox(window, _("START NEW SCAN?"),
@@ -950,7 +950,7 @@ void GuiMenu::openESP01Menu()
 
 
 		s->addGroup(_("WIFI DEAUTH/BEACONS"));
-			s->addEntry(_("SEND RANDOM BEACONS"), false, [this, window] {
+			s->addEntry(_("SEND RANDOM BEACONS"), false, [this] {
 					hacksSend("beacon");
 				});
 			s->addEntry(_("CLONE APs"), false, [this, window] {
@@ -969,7 +969,7 @@ void GuiMenu::openESP01Menu()
 				});
 
 		s->addGroup(_("IR ATTACKS"));
-			s->addEntry(_("IR POWER-OFF"), false, [this, window] {
+			s->addEntry(_("IR POWER-OFF"), false, [this] {
 				//set space
 				std::string space = Settings::getInstance()->getString("pe_hack.irspace");
 				if(space != ""){
@@ -982,7 +982,7 @@ void GuiMenu::openESP01Menu()
 				// run
 				hacksSend("irkillonce");
 			});
-			s->addEntry(_("IR POWER-OFF (LOOP)"), false, [this, window] {
+			s->addEntry(_("IR POWER-OFF (LOOP)"), false, [this] {
 				//set space
 				std::string space = Settings::getInstance()->getString("pe_hack.irspace");
 				if(space != ""){
