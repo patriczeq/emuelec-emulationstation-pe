@@ -1228,13 +1228,13 @@ void GuiMenu::updateNames()
 							{
 								if(sta.mac == name.id &&
 										(
-											sta.ap.bssid 		!= name.bssid ||
-											sta.ap.channel	!= name.channel
+											(!sta.ap.bssid.empty() && sta.ap.bssid != name.bssid) ||
+											(!sta.ap.channel.empty() && sta.ap.channel	!= name.channel)
 										)
 									)
 									{
 										window->pushGui(new GuiMsgBox(window,
-											_("UPDATE FOR STA") + "\n" + name.name + "\nBSSID: " + sta.ap.bssid + "\nCH: " + sta.ap.channel,
+											_("NAME UPDATE") + "\n" + name.name + "\nBSSID: " + sta.ap.bssid + "\nCH: " + sta.ap.channel,
 											_("UPDATE"), [this, name, sta]{
 												HackName updatedName = name;
 													updatedName.bssid 		= sta.ap.bssid;
@@ -1250,13 +1250,13 @@ void GuiMenu::updateNames()
 							{
 								if(ap.bssid == name.id &&
 									(
-										ap.ssid != name.name ||
-										ap.channel != name.channel
+										(!ap.ssid.empty() && ap.ssid != name.name) ||
+										(!ap.channel.empty() && ap.channel != name.channel)
 									)
 								)
 								{
 									window->pushGui(new GuiMsgBox(window,
-										_("UPDATE FOR AP") + "\n" + name.name + "\nSSID: " + ap.ssid + "\nCH: " + ap.channel,
+										_("NAME UPDATE") + "\n" + name.name + "\nSSID: " + ap.ssid + "\nCH: " + ap.channel,
 										_("UPDATE"), [this, name, ap]{
 											HackName updatedName = name;
 												updatedName.name 			= ap.ssid;
