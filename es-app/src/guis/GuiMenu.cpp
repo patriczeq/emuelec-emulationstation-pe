@@ -1878,7 +1878,6 @@ std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations, b
 				list.at(li).stations = 0;
 				li++;
 			}
-		delete li;
 
 		// push STAs to APs
 		int n = 0;
@@ -1893,8 +1892,7 @@ std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations, b
 					}
 				n++;
 			}
-	 	delete n;
-		
+
 		return list;
 	}
 
