@@ -1217,6 +1217,8 @@ void GuiMenu::openName(HackName name)
 void GuiMenu::updateNames()
 	{
 		Window* window = mWindow;
+		// load current data
+		loadNames();
 		for(auto name : names)
 			{
 				if(name.type == "AP" || name.type == "STA")
@@ -1267,6 +1269,8 @@ void GuiMenu::updateNames()
 							}
 					}
 			}
+		// load updated data
+		loadNames();
 	}
 
 void GuiMenu::openIRlist()
@@ -1533,7 +1537,6 @@ void GuiMenu::scanBSSIDS()
 				mWaitingLoad = false;
 				if(bssids.size() > 0)
 				{
-					updateNames();
 					openBSSIDSMenu(bssids);
 				}
 				else
@@ -1746,7 +1749,6 @@ void GuiMenu::scanSTA()
 
 							if(stations.size() > 0)
 							{
-								updateNames();
 								if(SystemConf::getInstance()->get("pe_hack.sta_cat") == "1")
 									{
 										openAP_STAmenu(stations);
@@ -1817,6 +1819,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 					}
 			}
 		window->pushGui(s);
+		updateNames();
 	}
 
 std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations)
@@ -1877,9 +1880,9 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations)
 					openSTAmenu(stations, ap.bssid, ap.ssid);
 				}, "iconNetwork");
 			}
-
-
+		s->addButton(_("RESCAN"), _("update"), [this] { delete this; scanSTA(); });
 		window->pushGui(s);
+		updateNames();
 	}
 
 void GuiMenu::openSTADetail(WifiStation sta)
@@ -1986,8 +1989,8 @@ void GuiMenu::openBSSIDSMenu(std::vector<AccessPoint> bssids)
 					}
 			}
 		}
-
 		window->pushGui(s);
+		updateNames();
 	}
 void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 	{
