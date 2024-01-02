@@ -634,7 +634,7 @@ private:
 	void openSTAmenu(std::vector<WifiStation> stations, std::string bssid = "", std::string ssid = "");
 	void openAP_STAmenu(std::vector<WifiStation> stations);
 	std::vector<AccessPoint> APSTAList(std::vector<WifiStation> stations);
-	void openSTADetail(WifiStation sta);
+	void openSTADetail(WifiStation sta, bool lessAPinfo = false);
 
 	void openIRlist();
 	void sendIRcode(int code = -1);

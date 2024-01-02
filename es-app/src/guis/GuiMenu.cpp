@@ -1231,7 +1231,7 @@ void GuiMenu::updateNames()
 									)
 									{
 										window->pushGui(new GuiMsgBox(window,
-											_("UPDATE FOR STA") + "\n" + name.name + "\nBSSID: " + updatedName.bssid + "\nCH: " + updatedName.channel,
+											_("UPDATE FOR STA") + "\n" + name.name + "\nBSSID: " + sta.ap.bssid + "\nCH: " + sta.ap.channel,
 											_("UPDATE"), [this, name, sta]{
 												HackName updatedName = name;
 													updatedName.bssid 		= sta.ap.bssid;
@@ -1253,7 +1253,7 @@ void GuiMenu::updateNames()
 								)
 								{
 									window->pushGui(new GuiMsgBox(window,
-										_("UPDATE FOR AP") + "\n" + name.name + "\nSSID: " + updatedName.name + "\nCH: " + updatedName.channel,
+										_("UPDATE FOR AP") + "\n" + name.name + "\nSSID: " + ap.ssid + "\nCH: " + ap.channel,
 										_("UPDATE"), [this, name, ap]{
 											HackName updatedName = name;
 												updatedName.name 			= ap.ssid;
@@ -1785,11 +1785,19 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		if(bssid != "")
+		if(bssid != "" && stations.size() > 0)
 			{
 				// AP Info
+				s->addGroup(_("AP INFO"));
+					if(!stations.at(0).ap.rssi.empty()){s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, stations.at(0).ap.rssi + "dBm", 	font, color));}
+					s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, stations.at(0).ap.bssid, 	font, color));
+					s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, stations.at(0).ap.vendor, 	font, color));
+					if(!stations.at(0).ap.ssid.empty()){s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, stations.at(0).ap.ssid, 	font, color));}
+					if(!stations.at(0).ap.channel.empty()){s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, stations.at(0).ap.channel, 	font, color));}
+					if(!stations.at(0).ap.enc.empty()){s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, stations.at(0).ap.enc, 	font, color));}
+				s->addGroup(_("STATIONS") + " ("+std::to_string(stations.size())+ ")");
 			}
-
+		bool lessAPinfo = bssid != "";
 		if (stations.size() > 0)
 			{
 				for (auto sta : stations)
@@ -1812,9 +1820,9 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 
 								s->addWithDescription(_title, _subtitle,
 									std::make_shared<TextComponent>(window, sta.rssi + "dBm", 	font, color),
-									[this, sta]
+									[this, sta, lessAPinfo]
 								{
-									openSTADetail(sta);
+									openSTADetail(sta, lessAPinfo);
 								}, "iconNetwork");
 							}
 					}
@@ -1888,7 +1896,7 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations)
 		window->pushGui(s);
 	}
 
-void GuiMenu::openSTADetail(WifiStation sta)
+void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 	{
 		sta.name = getName("STA", sta.mac).name;
 
@@ -1945,14 +1953,22 @@ void GuiMenu::openSTADetail(WifiStation sta)
 						openSTADetail(sta);
 					}, false));
 			});
+		if(lessAPinfo)
+			{
+				s->addGroup(_("AP INFO"));
+				if(!sta.ap.ssid.empty()){s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, sta.ap.ssid, 	font, color));}
+			}
+		else
+			{
+				s->addGroup(_("AP INFO"));
+					if(!sta.ap.rssi.empty()){s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, sta.ap.rssi + "dBm", 	font, color));}
+					s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, sta.ap.bssid, 	font, color));
+					s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, sta.ap.vendor, 	font, color));
+					if(!sta.ap.ssid.empty()){s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, sta.ap.ssid, 	font, color));}
+					if(!sta.ap.channel.empty()){s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, sta.ap.channel, 	font, color));}
+					if(!sta.ap.enc.empty()){s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, sta.ap.enc, 	font, color));}
+			}
 
-		s->addGroup(_("AP INFO"));
-			if(!sta.ap.rssi.empty()){s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, sta.ap.rssi + "dBm", 	font, color));}
-			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, sta.ap.bssid, 	font, color));
-			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, sta.ap.vendor, 	font, color));
-			if(!sta.ap.ssid.empty()){s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, sta.ap.ssid, 	font, color));}
-			if(!sta.ap.channel.empty()){s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, sta.ap.channel, 	font, color));}
-			if(!sta.ap.enc.empty()){s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, sta.ap.enc, 	font, color));}
 		// -------------------------------------------------------------------------------------
 
 		s->addGroup(_("STATION HACKS"));
