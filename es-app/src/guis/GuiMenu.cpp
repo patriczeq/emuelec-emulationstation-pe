@@ -1868,11 +1868,17 @@ std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations, b
 							}
 						if(!found)
 							{
-								//station.ap.stations = 0;
 								list.push_back(station.ap);
 							}
 					}
 			}
+		int li = 0;
+		for(auto ap : list)
+			{
+				list.at(li).stations = 0;
+				li++;
+			}
+		delete li;
 
 		// push STAs to APs
 		int n = 0;
@@ -1887,6 +1893,8 @@ std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations, b
 					}
 				n++;
 			}
+	 	delete n;
+		
 		return list;
 	}
 
@@ -1897,17 +1905,6 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations, bool all)
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
-		s->addEntry(_("RESCAN"), true, [this, all]() {
-			if(all)
-				{
-					scanBSSIDS(true);
-				}
-			else
-				{
-					scanSTA();
-				}
-		}, "iconUpdates");
-		s->addGroup(_("ACCESS POINTS"));
 		std::vector<AccessPoint> aps = APSTAList(stations, all);
 		for(auto ap : aps)
 			{
@@ -1915,7 +1912,7 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations, bool all)
 				std::string _subtitle 	= ap.bssid + " -> " + ap.vendor;
 
 				s->addWithDescription(_title, _subtitle,
-					std::make_shared<TextComponent>(window, std::to_string(ap.stations),	font, color),
+					std::make_shared<TextComponent>(window, std::to_string(ap.stations) + " STA",	font, color),
 					[this, stations, ap]
 				{
 					openSTAmenu(stations, ap.bssid, ap.ssid);
