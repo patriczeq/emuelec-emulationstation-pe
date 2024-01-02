@@ -1042,7 +1042,7 @@ int GuiMenu::loadScanDatabase()
 				int n = 0;
 				for(auto ap : ScanDB)
 					{
-						if(ap.bssid == sta.bssid)
+						if(ap.bssid == _sta.bssid)
 							{
 								ScanDB.at(n).sta.push_back(_sta);
 								break;
