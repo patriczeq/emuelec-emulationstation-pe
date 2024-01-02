@@ -899,9 +899,21 @@ void GuiMenu::openESP01Menu()
 			}, "iconRestart");
 
 		s->addGroup(_("SCAN NETWORK"));
-		s->addEntry(_("SCAN ALL"), true, [this] {
-			scanBSSIDS(true);
-		}, "iconNetwork");
+			s->addEntry(_("SCAN ALL"), true, [this] {
+				if(stalist.size() > 0 && scanlist.size() > 0)
+					{
+						window->pushGui(new GuiMsgBox(window, _("START NEW SCAN?"),
+						_("NO"), [this] {
+							openAP_STAmenu(stalist, true);
+						}, _("YES"), [this] {
+							scanBSSIDS(true);
+						}));
+					}
+				else
+					{
+						scanBSSIDS(true);
+					}
+			}, "iconNetwork");
 			s->addEntry(_("SCAN AP"), true, [this] {
 				scanBSSIDS();
 			}, "iconNetwork");
@@ -913,7 +925,7 @@ void GuiMenu::openESP01Menu()
 					}
 				else
 				{
-					window->pushGui(new GuiMsgBox(window, _("START NEW STA SCAN?"),
+					window->pushGui(new GuiMsgBox(window, _("START NEW SCAN?"),
 					_("NO"), [this] {
 						if(SystemConf::getInstance()->get("pe_hack.sta_cat") == "1")
 							{
@@ -1918,9 +1930,9 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 		bool lessAPinfo = bssid != "";
 		if (stations.size() > 0)
 			{
-				if(bssid != "")
+				if(bssid != "" && ap.stations > 0)
 					{
-						s->addGroup(_("STATIONS") + " ("+std::to_string(ap.stations)+ ")");
+						s->addGroup(_("STATIONS") + " (" + std::to_string(ap.stations) + ")");
 					}
 
 				for (auto sta : stations)
