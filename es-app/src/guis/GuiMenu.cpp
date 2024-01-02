@@ -1758,7 +1758,7 @@ void GuiMenu::scanSTA()
 										openSTAmenu(stations);
 									}
 							}
-							else if(open)
+							else
 							{
 								window->pushGui(new GuiMsgBox(window, _("NO STA FOUND!"),_("OK"),nullptr));
 							}
