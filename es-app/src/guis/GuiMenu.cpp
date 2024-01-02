@@ -1754,7 +1754,7 @@ void GuiMenu::scanSTA(bool apsta)
 							updateNames();
 							return stalist;
 						},
-						[this, window](std::vector<WifiStation> stations)
+						[this, window, apsta](std::vector<WifiStation> stations)
 						{
 							mWaitingLoad = false;
 
