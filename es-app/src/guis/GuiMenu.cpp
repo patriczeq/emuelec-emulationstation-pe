@@ -1213,6 +1213,62 @@ void GuiMenu::openName(HackName name)
 
 		window->pushGui(s);
 	}
+
+void GuiMenu::updateNames()
+	{
+		Window* window = mWindow;
+		for(auto name : names)
+			{
+				if(name.type == "AP" || name.type == "STA")
+					{
+						for(auto sta : stalist)
+							{
+								if(sta.mac == name.id &&
+										(
+											sta.ap.bssid 		!= name.bssid ||
+											sta.ap.channel	!= name.channel
+										)
+									)
+									{
+										HackName updatedName = name;
+										name.bssid 		= sta.ap.bssid;
+										name.channel 	= sta.ap.channel;
+										window->pushGui(new GuiMsgBox(window,
+											_("UPDATE FOR STA") + name.name + "\nBSSID: " + updatedName.bssid + "\nCH: " + updatedName.channel,
+											_("UPDATE"), [this, updatedName]{
+												addName(updatedName);
+											},
+											_("CANCEL"),
+											nullptr
+										));
+									}
+							}
+						for(auto ap : scanlist)
+							{
+								if(ap.bssid == name.id &&
+									(
+										ap.ssid != name.name ||
+										ap.channel != name.channel
+									)
+								)
+								{
+									HackName updatedName = name;
+									name.name 		= ap.ssid;
+									name.channel 	= ap.channel;
+									window->pushGui(new GuiMsgBox(window,
+										_("UPDATE FOR AP") + name.name + "\nSSID: " + updatedName.name + "\nCH: " + updatedName.channel,
+										_("UPDATE"), [this, updatedName]{
+											addName(updatedName);
+										},
+										_("CANCEL"),
+										nullptr
+									));
+								}
+							}
+					}
+			}
+	}
+
 void GuiMenu::openIRlist()
 	{
 		Window* window = mWindow;
@@ -1477,6 +1533,7 @@ void GuiMenu::scanBSSIDS()
 				mWaitingLoad = false;
 				if(bssids.size() > 0)
 				{
+					updateNames();
 					openBSSIDSMenu(bssids);
 				}
 				else
@@ -1689,6 +1746,7 @@ void GuiMenu::scanSTA()
 
 							if(stations.size() > 0)
 							{
+								updateNames();
 								if(SystemConf::getInstance()->get("pe_hack.sta_cat") == "1")
 									{
 										openAP_STAmenu(stations);
@@ -1723,6 +1781,11 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
+
+		if(bssid != "")
+			{
+				// AP Info
+			}
 
 		if (stations.size() > 0)
 			{

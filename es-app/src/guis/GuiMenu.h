@@ -605,6 +605,8 @@ private:
 	void openNamesCat();
 	void openNames(std::string category = "");
 	void openName(HackName name);
+	// names UPDATEr
+	void updateNames();
 	// WPS
 	void sniffWPS();
 	void openWPSpwned(std::string raw);
