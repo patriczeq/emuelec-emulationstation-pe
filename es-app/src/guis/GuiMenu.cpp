@@ -1212,10 +1212,10 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 		unsigned int color = theme->Text.color;
 
 		s->addGroup(_("STA INFO"));
-			s->addWithLabel(_("MAC"), 	std::make_shared<TextComponent>(window, sta.mac, font, color));
-			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, sta.bssid, 	font, color));
-			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, sta.vendor, font, color));
-			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, sta.rssi + "dBm", font, color));
+			s->addWithLabel(_("MAC"), 				std::make_shared<TextComponent>(window, sta.mac, font, color));
+			s->addWithLabel(_("BSSID"), 			std::make_shared<TextComponent>(window, sta.bssid, 	font, color));
+			s->addWithLabel(_("VENDOR"), 			std::make_shared<TextComponent>(window, sta.vendor, font, color));
+			s->addWithLabel(_("RSSI"), 				std::make_shared<TextComponent>(window, sta.rssi + "dBm", font, color));
 			s->addWithLabel(_("LAST SEEN"), 	std::make_shared<TextComponent>(window, sta.lastSeenDate + " " + sta.lastSeenTime, font, color));
 		s->addGroup(_("STATION HACKS"));
 				s->addEntry(_("STOP ALL JOBS"), false, [this]() {
@@ -1234,7 +1234,8 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 											break;
 										}
 								}
-							hacksSend("deauthsta " + sta.mac + " " + sta.bssid + " " + apCH);
+							std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+							runSystemCommand("hacks.sh " + port + " deauthsta " + sta.mac + " " + sta.bssid + " " + apCH, "", nullptr);
 						}, _("CANCEL"),nullptr));
 					}, "iconHack");
 		s->addGroup(_("MANAGEMENT"));
