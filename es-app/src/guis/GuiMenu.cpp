@@ -922,7 +922,7 @@ void GuiMenu::openESP01Menu()
 								}
 							}
 						));
-					});
+					}, "iconNetwork");
 				}
 
 			s->addEntry(_("SETTINGS"), true, [this] {
@@ -1225,7 +1225,16 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 					std::string msg = _("DEAUTH STATION") +":\n\n" + sta.mac + "\n"+ sta.vendor + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
 						_("YES"), [this, sta] {
-							hacksSend("deauthsta " + sta.mac);
+							std::string apCH = "0";
+							for(auto ap : ScanDB)
+								{
+									if(ap.bssid == sta.bssid)
+										{
+											apCH = ap.channel;
+											break;
+										}
+								}
+							hacksSend("deauthsta " + sta.mac + " " + sta.bssid + " " + apCH);
 						}, _("CANCEL"),nullptr));
 					}, "iconHack");
 		s->addGroup(_("MANAGEMENT"));
