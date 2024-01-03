@@ -518,6 +518,11 @@ void GuiMenu::openAllSettings()
 
 			s->addEntry(_("SYSTEM SETTINGS").c_str(), true, [this] { openSystemSettings(); }, "iconSystem");
 			s->addEntry(_("CUSTOM SYSTEM SETTINGS").c_str(), true, [this] { openEmuELECSettings(); }, "iconSystem");
+			if(SystemConf::getInstance()->get("pe_hack.enabled") == "1")
+				{
+					s->addEntry(_("DEAUTHER SETTINGS"), true, [this] { openESP01Settings(); }, "iconHack");
+				}
+
 	window->pushGui(s);
 }
 
@@ -925,9 +930,6 @@ void GuiMenu::openESP01Menu()
 					}, "iconNetwork");
 				}
 
-			s->addEntry(_("SETTINGS"), true, [this] {
-				openESP01Settings();
-			}, "iconSystem");
 			s->addEntry(_("STOP ALL JOBS"), false, [this] {
 				hacksSend("stop");
 			}, "iconQuit");
@@ -7284,6 +7286,21 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 						 _("PLAY"),[this, link]{
 							 std::string cmd = "youtube.sh play " + link.link;
 							 appLauncher(cmd);
+						 },
+						 _("PLAY VLC"),[this, link]{
+							 mWindow->pushGui(new GuiLoading<std::string>(window, _("LOADING..."),
+				 				[this, window, link](auto gui)
+				 				{
+				 					mWaitingLoad = true;
+				 					return getShOutput("youtube.sh link " + link.link);
+				 				},
+				 				[this, window](std::string l)
+				 				{
+				 					mWaitingLoad = false;
+									GuiVideoViewer::playVideo(mWindow, l, true);
+				 					// vlc play "l"
+				 				}
+				 			));
 						 },
 						 _("CANCEL"), nullptr));
 				});
