@@ -1202,14 +1202,14 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, ap.rssi + "dBm", font, color));
 			s->addWithLabel(_("LAST SEEN"), 	std::make_shared<TextComponent>(window, ap.lastSeenDate + " " + ap.lastSeenTime, font, color));
 			s->addEntry(_("AP MENU"), true, [this, ap]() {
-				Accesspoint _ap;
-				_ap.bssid 		= ap.bssid;
-				_ap.rssi 			= ap.rssi;
-				_ap.ssid 			= ap.ssid;
-				_ap.vendor 		= ap.vendor;
-				_ap.channel 	= ap.channel;
-				_ap.enc 			= ap.encryption;
-				openDEAUTHMenu(_ap);
+				Accesspoint a();
+					a.bssid 		= ap.bssid;
+					a.rssi 			= ap.rssi;
+					a.ssid 			= ap.ssid;
+					a.vendor 		= ap.vendor;
+					a.channel 	= ap.channel;
+					a.enc 			= ap.encryption;
+				openDEAUTHMenu(a);
 			}, "iconHack");
 		s->addGroup(_("MANAGEMENT"));
 			s->addEntry(_("REMOVE FROM DATABASE"), false, [this, window, ap]() {
@@ -1255,7 +1255,7 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, sta.bssid, 	font, color));
 			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, sta.vendor, font, color));
 			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, sta.rssi + "dBm", font, color));
-			s->addWithLabel(_("LAST SEEN"), 	std::make_shared<TextComponent>(window, ap.lastSeenDate + " " + ap.lastSeenTime, font, color));
+			s->addWithLabel(_("LAST SEEN"), 	std::make_shared<TextComponent>(window, sta.lastSeenDate + " " + sta.lastSeenTime, font, color));
 		s->addGroup(_("STATION HACKS"));
 				s->addEntry(_("STOP ALL JOBS"), false, [this]() {
 					hacksSend("stop");
