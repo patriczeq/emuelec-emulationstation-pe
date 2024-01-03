@@ -643,13 +643,13 @@ void GuiMenu::openMPServers(std::vector<AVAHIserviceDetail> servers)
 				icon->setIsLinear(true);
 				icon->setPadding(4);
 
-			s->addWithDescription(std::to_string(_U("\uF11B ")) + " " + (platform.empty() ? "" : "["+platform+"] ") + (gamename.empty() ? "Unknown game" : gamename),
+			s->addWithDescription((platform.empty() ? "" : "["+platform+"] ") + (gamename.empty() ? "Unknown game" : gamename),
 				_subtitle,
 				icon,//std::make_shared<TextComponent>(window, platform.empty() ? "?" : platform, font, color),
 				[this, window, server]
 			{
 					ApiSystem::getInstance()->launchApp(window, "playertoo " + server.ip);
-			});
+			}, "iconControllers");
 
 		}
 		window->pushGui(s);
@@ -902,7 +902,7 @@ void GuiMenu::openESP01Menu()
 			}
 			if(SystemConf::getInstance()->get("pe_hack.scandb") == "1")
 				{
-					s->addEntry(std::to_string(_U("\uF1C0 ")) + " " + _("SCAN DATABASE"), true, [this, window] {
+					s->addEntry(_("SCAN DATABASE"), true, [this, window] {
 						mWindow->pushGui(new GuiLoading<int>(window, _("Loading..."),
 							[this, window](auto gui)
 							{
@@ -940,7 +940,7 @@ void GuiMenu::openESP01Menu()
 			{
 				auto enableDBSaving = std::make_shared<SwitchComponent>(mWindow);
 				enableDBSaving->setState(enableScanDBsaving);
-				s->addWithLabel(std::to_string(_U("\uF0C7 ")) + " " + _("STORE SCAN RESULTS"), enableDBSaving);
+				s->addWithLabel(_("STORE SCAN RESULTS"), enableDBSaving);
 				s->addSaveFunc([this, enableDBSaving] {
 					enableScanDBsaving = enableDBSaving->getState();
 				});
@@ -1173,7 +1173,7 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 				openDEAUTHMenu(a);
 			}, "iconHack");
 		s->addGroup(_("MANAGEMENT"));
-			s->addEntry(std::to_string(_U("\uF014 ")) + " " + _("REMOVE FROM DATABASE"), false, [this, window, ap]() {
+			s->addEntry(_("REMOVE FROM DATABASE"), false, [this, window, ap]() {
 				window->pushGui(new GuiMsgBox(window, _("REMOVE") + "\n" + ap.bssid + "\nFROM SCAN DB?",
 					_("YES"), [this, window, ap] {
 						hacksSet("remDB AP " + ap.bssid);
@@ -1192,7 +1192,7 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 				s->addGroup(_("STATIONS") + " (" + std::to_string(ap.sta.size()) + ")");
 				for(auto sta : ap.sta)
 					{
-						s->addWithDescription(std::to_string(_U("\uf007  ")) + " " + (sta.name.empty() ? sta.mac : (sta.name + " (" + sta.mac + ")")), sta.vendor,
+						s->addWithDescription((sta.name.empty() ? sta.mac : (sta.name + " (" + sta.mac + ")")), sta.vendor,
 							std::make_shared<TextComponent>(window, sta.rssi + "dBm", font, color),
 							[this, sta]
 						{
@@ -1229,7 +1229,7 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 						}, _("CANCEL"),nullptr));
 					}, "iconHack");
 		s->addGroup(_("MANAGEMENT"));
-			s->addEntry(std::to_string(_U("\uF014 ")) + " " + _("REMOVE FROM DATABASE"), false, [this, window, sta]() {
+			s->addEntry(_("REMOVE FROM DATABASE"), false, [this, window, sta]() {
 				window->pushGui(new GuiMsgBox(window, _("REMOVE") + "\n" + sta.mac + "\nFROM SCAN DB?",
 					_("YES"), [this, window, sta] {
 						hacksSet("remDB STA " + sta.mac);
@@ -1423,7 +1423,7 @@ void GuiMenu::openName(HackName name)
 			}
 		// NAME
 		s->addGroup(_("OPTIONS"));
-		s->addEntry(std::to_string(_U("\uF014 ")) + " " + _("REMOVE NAME"), true, [this, window, s, name]() {
+		s->addEntry(_("REMOVE NAME"), true, [this, window, s, name]() {
 				window->pushGui(new GuiMsgBox(window, _("REMOVE NAME") + "\n" + name.name + "\n?",
 					_("YES"), [this, window, s, name] {
 						remName(name.type, name.id);
@@ -2119,7 +2119,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 								}
 							else
 								{
-									s->addEntry(std::to_string(_U("\uF014 ")) + " " + _("REMOVE NAME"), false, [this, window, ap]() {
+									s->addEntry(_("REMOVE NAME"), false, [this, window, ap]() {
 										remName("AP", ap.bssid);
 										window->pushGui(new GuiMsgBox(window, _("REMOVE") + "\n" + ap.ssid + "\n?",
 											_("YES"),[this, ap]{
@@ -2187,12 +2187,12 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 								std::string _subtitle;
 								if(bssid == "")
 									{
-										_title 		=  std::to_string(_U("\uf007  ")) + " " + (sta.name.empty() ? sta.mac : sta.name) + (sta.ap.ssid.empty() ? "" : (" -> " + sta.ap.ssid));
+										_title 		=  (sta.name.empty() ? sta.mac : sta.name) + (sta.ap.ssid.empty() ? "" : (" -> " + sta.ap.ssid));
 										_subtitle = sta.vendor + " -> " + sta.ap.bssid;
 									}
 								else
 									{
-										_title 			= std::to_string(_U("\uf007  ")) + " " + (sta.name.empty() ? sta.mac : sta.name);
+										_title 			= (sta.name.empty() ? sta.mac : sta.name);
 										_subtitle		= sta.pkts + "pkts, " + sta.vendor;
 									}
 
@@ -2305,7 +2305,7 @@ void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 
 			if(!sta.name.empty())
 			{
-				s->addEntry(std::to_string(_U("\uF014 ")) + " " + _("REMOVE NAME"), true, [this, window, s, sta]() {
+				s->addEntry(_("REMOVE NAME"), true, [this, window, s, sta]() {
 					window->pushGui(new GuiMsgBox(window, _("REMOVE NAME") + "?\n" + sta.name,
 						_("YES"), [this, sta, s] {
 							remName("STA", sta.mac);
@@ -2434,7 +2434,7 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 			}
 		else
 			{
-				s->addEntry(std::to_string(_U("\uF014 ")) + " " + _("REMOVE NAME"), false, [this, window, ap]() {
+				s->addEntry(_("REMOVE NAME"), false, [this, window, ap]() {
 					remName("AP", ap.bssid);
 					window->pushGui(new GuiMsgBox(window, _("REMOVE") + "\n" + ap.ssid + "\n?",
 						_("YES"),[this, ap]{
