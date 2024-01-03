@@ -655,13 +655,11 @@ private:
 	// SCAN DATABASE
 	std::vector<ScanDB_STA> STA_ScanDB;
 	std::vector<ScanDB_AP> ScanDB;
+	bool enableScanDBsaving = true;
 	int loadScanDatabase();
 	void addToScanDatabase(AccessPoint ap, bool reload = true);
 	void addToScanDatabase(WifiStation sta, bool reload = true);
 	void openScanDatabase();
-	void openScanDatabaseAP();
-	void openScanDatabaseSTA();
-	void openScanDatabaseCAT();
 
 	void openScanDBItem(ScanDB_STA sta);
 	void openScanDBItem(ScanDB_AP ap);

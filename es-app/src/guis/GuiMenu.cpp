@@ -935,6 +935,15 @@ void GuiMenu::openESP01Menu()
 			}, "iconRestart");
 
 		s->addGroup(_("SCAN NETWORK"));
+		if(SystemConf::getInstance()->get("pe_hack.scandb") == "1")
+			{
+				auto enableDBSaving = std::make_shared<SwitchComponent>(mWindow);
+				enableDBSaving->setState(enableScanDBsaving);
+				s->addWithLabel(_("STORE SCAN RESULTS"), enableDBSaving);
+				s->addSaveFunc([this, enableDBSaving] {
+					enableScanDBsaving = enableDBSaving->getState();
+				});
+			}
 			s->addEntry(_("SCAN ALL"), true, [this, window] {
 				if(stalist.size() > 0 && scanlist.size() > 0)
 					{
@@ -1059,7 +1068,7 @@ int GuiMenu::loadScanDatabase()
 			{
 				ScanDB_AP ap(line);
 				ap.vendor = macVendor(ap.bssid);
-				ap.ssid 	= Utils::String::replace(ap.ssid, " ", "_!SPC!_");
+				ap.ssid 	= Utils::String::replace(ap.ssid, "_!SPC!_", " ");
 				ap.name  	= getName("AP", ap.bssid).name;
 				ScanDB.push_back(ap);
 				loaded++;
@@ -1114,39 +1123,11 @@ void GuiMenu::addToScanDatabase(WifiStation sta, bool reload)
 			}
 	}
 
+
 void GuiMenu::openScanDatabase()
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, _("SCAN DATABASE"));
-		auto theme = ThemeData::getMenuTheme();
-		std::shared_ptr<Font> font = theme->Text.font;
-		unsigned int color = theme->Text.color;
-
-		s->addEntry(_("CATEGORIZED BY AP"), true, [this]() {
-			openScanDatabaseCAT();
-		});
-
-		s->addWithDescription(_("ACCESS POINTS"), "",
-			std::make_shared<TextComponent>(window, std::to_string(ScanDB.size()), font, color),
-			[this]
-		{
-			openScanDatabaseAP();
-		});
-
-		s->addWithDescription(_("STATIONS"), "",
-			std::make_shared<TextComponent>(window, std::to_string(STA_ScanDB.size()), font, color),
-			[this]
-		{
-			openScanDatabaseSTA();
-		});
-
-		window->pushGui(s);
-	}
-
-void GuiMenu::openScanDatabaseAP()
-	{
-		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("SCAN DATABASE: ACCESS POINTS"));
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -1164,27 +1145,6 @@ void GuiMenu::openScanDatabaseAP()
 		window->pushGui(s);
 	}
 
-void GuiMenu::openScanDatabaseSTA()
-	{
-		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("SCAN DATABASE: STATIONS"));
-		auto theme = ThemeData::getMenuTheme();
-		std::shared_ptr<Font> font = theme->Text.font;
-		unsigned int color = theme->Text.color;
-
-		for(auto sta : STA_ScanDB)
-			{
-				s->addWithDescription(sta.name.empty() ? sta.mac : (sta.name + " (" + sta.mac + ")"), sta.vendor,
-					std::make_shared<TextComponent>(window, sta.bssid, font, color),
-					[this, sta]
-				{
-					openScanDBItem(sta);
-				});
-			}
-
-		window->pushGui(s);
-	}
-void GuiMenu::openScanDatabaseCAT(){}
 void GuiMenu::openScanDBItem(ScanDB_AP ap)
 	{
 		Window* window = mWindow;
@@ -1820,6 +1780,7 @@ std::vector<AccessPoint> GuiMenu::scanBSSIDSlist()
 void GuiMenu::scanBSSIDS(bool all)
 	{
 		Window* window = mWindow;
+
 		mWindow->pushGui(new GuiLoading<std::vector<AccessPoint>>(window, _("SEARCHING APs..."),
 			[this, window](auto gui)
 			{
