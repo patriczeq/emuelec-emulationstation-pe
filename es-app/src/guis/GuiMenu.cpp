@@ -7287,7 +7287,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 							 std::string cmd = "youtube.sh play " + link.link;
 							 appLauncher(cmd);
 						 },
-						 _("PLAY VLC"),[this, link]{
+						 _("PLAY VLC"),[this, window, link]{
 							 mWindow->pushGui(new GuiLoading<std::string>(window, _("LOADING..."),
 				 				[this, window, link](auto gui)
 				 				{
