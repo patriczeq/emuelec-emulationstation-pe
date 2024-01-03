@@ -1202,7 +1202,14 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, ap.rssi + "dBm", font, color));
 			s->addWithLabel(_("LAST SEEN"), 	std::make_shared<TextComponent>(window, ap.lastSeenDate + " " + ap.lastSeenTime, font, color));
 			s->addEntry(_("AP MENU"), true, [this, ap]() {
-				openDEAUTHMenu(ap);
+				Accesspoint _ap;
+				_ap.bssid 		= ap.bssid;
+				_ap.rssi 			= ap.rssi;
+				_ap.ssid 			= ap.ssid;
+				_ap.vendor 		= ap.vendor;
+				_ap.channel 	= ap.channel;
+				_ap.enc 			= ap.encryption;
+				openDEAUTHMenu(_ap);
 			}, "iconHack");
 		s->addGroup(_("MANAGEMENT"));
 			s->addEntry(_("REMOVE FROM DATABASE"), false, [this, window, ap]() {
