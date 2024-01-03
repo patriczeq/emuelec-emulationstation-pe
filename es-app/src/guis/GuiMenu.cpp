@@ -1202,7 +1202,7 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, ap.rssi + "dBm", font, color));
 			s->addWithLabel(_("LAST SEEN"), 	std::make_shared<TextComponent>(window, ap.lastSeenDate + " " + ap.lastSeenTime, font, color));
 			s->addEntry(_("AP MENU"), true, [this, ap]() {
-				Accesspoint a();
+				AccessPoint a;
 					a.bssid 		= ap.bssid;
 					a.rssi 			= ap.rssi;
 					a.ssid 			= ap.ssid;
