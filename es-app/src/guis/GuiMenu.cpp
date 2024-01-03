@@ -1070,7 +1070,7 @@ int GuiMenu::loadScanDatabase()
 				ScanDB_STA _sta(line);
 				_sta.vendor = macVendor(_sta.mac);
 				_sta.name 	= getName("STA", _sta.mac).name;
-				STA_ScanDB.push(_sta);
+				STA_ScanDB.push_back(_sta);
 				int n = 0;
 				for(auto ap : ScanDB)
 					{
