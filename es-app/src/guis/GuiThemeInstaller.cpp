@@ -128,7 +128,7 @@ void GuiThemeInstaller::OnContentInstalled(int contentType, std::string contentN
 					auto window = mWindow;
 
 					window->postToUiThread([window]
-					{						
+					{
 						auto win = window;
 						auto viewController = ViewController::get();
 
@@ -206,7 +206,7 @@ void GuiThemeInstaller::loadList()
 		mList->addRow(row, i == idx);
 		i++;
 	}
-	
+
 	if (i == 0)
 	{
 		auto theme = ThemeData::getMenuTheme();
@@ -228,7 +228,7 @@ void GuiThemeInstaller::loadThemesAsync()
 	mWindow->pushGui(new GuiLoading<std::vector<BatoceraTheme>>(mWindow, _("PLEASE WAIT"),
 		[this, window](auto gui)
 		{
-			return ApiSystem::getInstance()->getBatoceraThemesList();		
+			return ApiSystem::getInstance()->getBatoceraThemesList();
 		},
 		[this, window](std::vector<BatoceraTheme> themes)
 		{
@@ -266,8 +266,8 @@ void GuiThemeInstaller::processTheme(BatoceraTheme theme, bool isCurrentTheme)
 			mWindow->displayNotificationMessage(_U("\uF019 ") + std::string(trstring));
 
 			ContentInstaller::Enqueue(mWindow, ContentInstaller::CONTENT_THEME_INSTALL, theme.name);
-			
-			mReloadList = 2;			
+
+			mReloadList = 2;
 			msgBox->close();
 		});
 
@@ -301,7 +301,7 @@ void GuiThemeInstaller::processTheme(BatoceraTheme theme, bool isCurrentTheme)
 			ContentInstaller::Enqueue(mWindow, ContentInstaller::CONTENT_THEME_INSTALL, theme.name);
 
 			mReloadList = 2;
-			msgBox->close();			
+			msgBox->close();
 		});
 	}
 
@@ -312,7 +312,7 @@ bool GuiThemeInstaller::input(InputConfig* config, Input input)
 {
 	if(GuiComponent::input(config, input))
 		return true;
-	
+
 	if(input.value != 0 && config->isMappedTo(BUTTON_BACK, input))
 	{
 		delete this;
@@ -378,13 +378,13 @@ GuiBatoceraThemeEntry::GuiBatoceraThemeEntry(Window* window, BatoceraTheme& entr
 
 	if (entry.size > 0)
 		details = details + _U("  \uf019  ") + std::to_string(entry.size) + "Mb";
-	
+
 	if (!entry.lastUpdate.empty())
 	{
 		details = details + "\r\n";
 		details = details + _U("\uf073  ") + entry.lastUpdate + "  ";
 		for (int i = 0; i < entry.upToDate; i++)
-			details = details + _U("\uf006 ");		
+			details = details + _U("\uf006 ");
 	}
 
 	details = details + "\r\n";
@@ -393,7 +393,7 @@ GuiBatoceraThemeEntry::GuiBatoceraThemeEntry(Window* window, BatoceraTheme& entr
 	if (mIsCurrentTheme)
 		details = _U("\uf05A  ") + _("CURRENT THEME") + std::string("  ") + details;
 	else if (mIsPending)
-		details = _("CURRENTLY IN DOWNLOAD QUEUE");	
+		details = _("CURRENTLY IN DOWNLOAD QUEUE");
 
 	mSubstring = std::make_shared<TextComponent>(mWindow, details, theme->TextSmall.font, theme->Text.color);
 	mSubstring->setOpacity(192);
@@ -430,19 +430,19 @@ GuiBatoceraThemeEntry::GuiBatoceraThemeEntry(Window* window, BatoceraTheme& entr
 		mText->setOpacity(150);
 		mSubstring->setOpacity(120);
 	}
-	
+
 	if (!mEntry.image.empty())
 	{
 		Vector2f maxSize(windowWidth * refImageWidth, itemHeight * 0.85f);
 
 		mPreviewImage = std::make_shared<WebImageComponent>(window, 600); // image expire after 10 minutes
-		mPreviewImage->setImage(mEntry.image, false, maxSize);		
+		mPreviewImage->setImage(mEntry.image, false, maxSize);
 		mPreviewImage->setMaxSize(maxSize);
 		// mPreviewImage->setRoundCorners(0.02);
 
 		setEntry(mPreviewImage, Vector2i(4, 0), false, false, Vector2i(1, 4));
 	}
-		
+
 	setSize(Vector2f(0, itemHeight));
 }
 

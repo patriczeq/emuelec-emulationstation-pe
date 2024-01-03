@@ -643,12 +643,13 @@ void GuiMenu::openMPServers(std::vector<AVAHIserviceDetail> servers)
 				icon->setIsLinear(true);
 				icon->setPadding(4);
 
-			s->addWithDescription((platform.empty() ? "" : "["+platform+"] ") + (gamename.empty() ? "Unknown game" : gamename), _subtitle,
+			s->addWithDescription(_U("\uF11B ") + " " + (platform.empty() ? "" : "["+platform+"] ") + (gamename.empty() ? "Unknown game" : gamename),
+				_subtitle,
 				icon,//std::make_shared<TextComponent>(window, platform.empty() ? "?" : platform, font, color),
 				[this, window, server]
 			{
 					ApiSystem::getInstance()->launchApp(window, "playertoo " + server.ip);
-			}, "iconControllers");
+			});
 
 		}
 		window->pushGui(s);
@@ -901,7 +902,7 @@ void GuiMenu::openESP01Menu()
 			}
 			if(SystemConf::getInstance()->get("pe_hack.scandb") == "1")
 				{
-					s->addEntry(_("SCAN DATABASE"), true, [this, window] {
+					s->addEntry(_U("\uF1C0 ") + " " + _("SCAN DATABASE"), true, [this, window] {
 						mWindow->pushGui(new GuiLoading<int>(window, _("Loading..."),
 							[this, window](auto gui)
 							{
@@ -921,7 +922,7 @@ void GuiMenu::openESP01Menu()
 								}
 							}
 						));
-					}, "iconNetwork");
+					});
 				}
 
 			s->addEntry(_("SETTINGS"), true, [this] {
@@ -939,7 +940,7 @@ void GuiMenu::openESP01Menu()
 			{
 				auto enableDBSaving = std::make_shared<SwitchComponent>(mWindow);
 				enableDBSaving->setState(enableScanDBsaving);
-				s->addWithLabel(_("STORE SCAN RESULTS"), enableDBSaving);
+				s->addWithLabel(_U("\uF0C7 ") + " " + _("STORE SCAN RESULTS"), enableDBSaving);
 				s->addSaveFunc([this, enableDBSaving] {
 					enableScanDBsaving = enableDBSaving->getState();
 				});
@@ -1160,7 +1161,7 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ap.ssid, font, color));
 			s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, ap.encryption, font, color));
 			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, ap.rssi + "dBm", font, color));
-			s->addWithLabel(_("LAST SEEN"), 	std::make_shared<TextComponent>(window, ap.lastSeenDate + " " + ap.lastSeenTime, font, color));
+			s->addWithLabel(_U("\uf073  ") + " " + _("LAST SEEN"), 	std::make_shared<TextComponent>(window, ap.lastSeenDate + " " + ap.lastSeenTime, font, color));
 			s->addEntry(_("AP MENU"), true, [this, ap]() {
 				AccessPoint a;
 					a.bssid 		= ap.bssid;
@@ -1172,7 +1173,7 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 				openDEAUTHMenu(a);
 			}, "iconHack");
 		s->addGroup(_("MANAGEMENT"));
-			s->addEntry(_("REMOVE FROM DATABASE"), false, [this, window, ap]() {
+			s->addEntry(_U("\uF014 ") + " " + _("REMOVE FROM DATABASE"), false, [this, window, ap]() {
 				window->pushGui(new GuiMsgBox(window, _("REMOVE") + "\n" + ap.bssid + "\nFROM SCAN DB?",
 					_("YES"), [this, window, ap] {
 						hacksSet("remDB AP " + ap.bssid);
@@ -1191,7 +1192,7 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 				s->addGroup(_("STATIONS") + " (" + std::to_string(ap.sta.size()) + ")");
 				for(auto sta : ap.sta)
 					{
-						s->addWithDescription(sta.name.empty() ? sta.mac : (sta.name + " (" + sta.mac + ")"), sta.vendor,
+						s->addWithDescription(_U("\uf007  ") + " " + (sta.name.empty() ? sta.mac : (sta.name + " (" + sta.mac + ")")), sta.vendor,
 							std::make_shared<TextComponent>(window, sta.rssi + "dBm", font, color),
 							[this, sta]
 						{
@@ -1215,7 +1216,7 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, sta.bssid, 	font, color));
 			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, sta.vendor, font, color));
 			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, sta.rssi + "dBm", font, color));
-			s->addWithLabel(_("LAST SEEN"), 	std::make_shared<TextComponent>(window, sta.lastSeenDate + " " + sta.lastSeenTime, font, color));
+			s->addWithLabel(_U("\uf073  ") + _("LAST SEEN"), 	std::make_shared<TextComponent>(window, sta.lastSeenDate + " " + sta.lastSeenTime, font, color));
 		s->addGroup(_("STATION HACKS"));
 				s->addEntry(_("STOP ALL JOBS"), false, [this]() {
 					hacksSend("stop");
@@ -1228,7 +1229,7 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 						}, _("CANCEL"),nullptr));
 					}, "iconHack");
 		s->addGroup(_("MANAGEMENT"));
-			s->addEntry(_("REMOVE FROM DATABASE"), false, [this, window, sta]() {
+			s->addEntry(_U("\uF014 ") + " " + _("REMOVE FROM DATABASE"), false, [this, window, sta]() {
 				window->pushGui(new GuiMsgBox(window, _("REMOVE") + "\n" + sta.mac + "\nFROM SCAN DB?",
 					_("YES"), [this, window, sta] {
 						hacksSet("remDB STA " + sta.mac);
@@ -1422,13 +1423,13 @@ void GuiMenu::openName(HackName name)
 			}
 		// NAME
 		s->addGroup(_("OPTIONS"));
-		s->addEntry(_("REMOVE NAME"), true, [this, window, s, name]() {
+		s->addEntry(_U("\uF014 ") + " " + _("REMOVE NAME"), true, [this, window, s, name]() {
 				window->pushGui(new GuiMsgBox(window, _("REMOVE NAME") + "\n" + name.name + "\n?",
 					_("YES"), [this, window, s, name] {
 						remName(name.type, name.id);
 						delete s;
 					}, _("CANCEL"),nullptr));
-			},"iconRemove");
+			});
 		if(name.type != "AP")
 			{
 				s->addEntry(_("EDIT NAME"), true, [this, window, s, name]() {
@@ -2118,13 +2119,13 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 								}
 							else
 								{
-									s->addEntry(_("REMOVE NAME"), false, [this, window, ap]() {
+									s->addEntry(_U("\uF014 ") + " " + _("REMOVE NAME"), false, [this, window, ap]() {
 										remName("AP", ap.bssid);
 										window->pushGui(new GuiMsgBox(window, _("REMOVE") + "\n" + ap.ssid + "\n?",
 											_("YES"),[this, ap]{
 												remName("AP", ap.bssid);
 											},_("NO"),nullptr));
-									}, "iconSettings");
+									});
 								}
 
 							s->addGroup(_("AP HACKS"));
@@ -2186,12 +2187,12 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 								std::string _subtitle;
 								if(bssid == "")
 									{
-										_title 		=  (sta.name.empty() ? sta.mac : sta.name) + (sta.ap.ssid.empty() ? "" : (" -> " + sta.ap.ssid));
+										_title 		=  _U("\uf007  ") + " " + (sta.name.empty() ? sta.mac : sta.name) + (sta.ap.ssid.empty() ? "" : (" -> " + sta.ap.ssid));
 										_subtitle = sta.vendor + " -> " + sta.ap.bssid;
 									}
 								else
 									{
-										_title 			= sta.name.empty() ? sta.mac : sta.name;
+										_title 			= _U("\uf007  ") + " " + (sta.name.empty() ? sta.mac : sta.name);
 										_subtitle		= sta.pkts + "pkts, " + sta.vendor;
 									}
 
@@ -2304,14 +2305,14 @@ void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 
 			if(!sta.name.empty())
 			{
-				s->addEntry(_("REMOVE NAME"), true, [this, window, s, sta]() {
+				s->addEntry(_U("\uF014 ") + " " + _("REMOVE NAME"), true, [this, window, s, sta]() {
 					window->pushGui(new GuiMsgBox(window, _("REMOVE NAME") + "?\n" + sta.name,
 						_("YES"), [this, sta, s] {
 							remName("STA", sta.mac);
 							delete s;
 							openSTADetail(sta);
 						}, _("NO"),nullptr));
-				}, "iconRemove");
+				});
 			}
 
 			s->addEntry(sta.name.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, s, sta]() {
@@ -2433,13 +2434,13 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 			}
 		else
 			{
-				s->addEntry(_("REMOVE NAME"), false, [this, window, ap]() {
+				s->addEntry(_U("\uF014 ") + " " + _("REMOVE NAME"), false, [this, window, ap]() {
 					remName("AP", ap.bssid);
 					window->pushGui(new GuiMsgBox(window, _("REMOVE") + "\n" + ap.ssid + "\n?",
 						_("YES"),[this, ap]{
 							remName("AP", ap.bssid);
 						},_("NO"),nullptr));
-				}, "iconSettings");
+				});
 			}
 
 		s->addGroup(_("AP HACKS"));
@@ -7266,7 +7267,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 		for(auto link : links)
 			{
 
-				s->addWithDescription(link.title, link.link, nullptr /*icon*/,
+				s->addWithDescription(link.title, "", nullptr /*icon*/,
 					[this, window, link]
 				{
 					window->pushGui(new GuiMsgBox(window, _("YouTube video: ") + "\n" + link.title + "\n?",
