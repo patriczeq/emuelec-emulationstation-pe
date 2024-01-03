@@ -528,12 +528,17 @@ struct ScanDB_STA {
 			std::vector<std::string> tokens = Utils::String::split(raw, ';');
 			mac 			= tokens.at(0);
 			bssid 		= tokens.at(1);
-			rssi 	= tokens.at(2);
+			rssi 			= tokens.at(2);
+			lastSeenDate = tokens.at(3);
+			lastSeenTime = tokens.at(4);
 		}
 	std::string mac;
 	std::string bssid;
 	std::string rssi;
 	std::string vendor;
+	std::string name;
+	std::string lastSeenDate;
+	std::string lastSeenTime;
 };
 
 struct ScanDB_AP {
@@ -546,6 +551,8 @@ struct ScanDB_AP {
 			rssi 				= tokens.at(2);
 			encryption 	= tokens.at(3);
 			ssid 				= tokens.at(4);
+			lastSeenDate = tokens.at(5);
+			lastSeenTime = tokens.at(6);
 		}
 	std::string bssid;
 	std::string vendor;
@@ -553,6 +560,9 @@ struct ScanDB_AP {
 	std::string rssi;
 	std::string encryption;
 	std::string ssid;
+	std::string name;
+	std::string lastSeenDate;
+	std::string lastSeenTime;
 	std::vector<ScanDB_STA> sta;
 };
 
@@ -643,11 +653,18 @@ private:
 	void updateNames();
 
 	// SCAN DATABASE
+	std::vector<ScanDB_STA> STA_ScanDB;
 	std::vector<ScanDB_AP> ScanDB;
 	int loadScanDatabase();
 	void addToScanDatabase(AccessPoint ap, bool reload = true);
 	void addToScanDatabase(WifiStation sta, bool reload = true);
+	void openScanDatabase();
+	void openScanDatabaseAP();
+	void openScanDatabaseSTA();
+	void openScanDatabaseCAT();
 
+	void openScanDBItem(ScanDB_STA sta);
+	void openScanDBItem(ScanDB_AP ap);
 
 	// WPS
 	void sniffWPS();

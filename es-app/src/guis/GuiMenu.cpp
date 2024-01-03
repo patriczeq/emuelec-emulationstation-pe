@@ -899,6 +899,30 @@ void GuiMenu::openESP01Menu()
 						}
 				}, "iconHack");
 			}
+			if(SystemConf::getInstance()->get("pe_hack.scandb") == "1")
+				{
+					s->addEntry(_("SCAN DATABASE"), true, [this, window] {
+						mWindow->pushGui(new GuiLoading<int>(window, _("Loading..."),
+							[this, window](auto gui)
+							{
+								mWaitingLoad = true;
+								return loadScanDatabase();
+							},
+							[this, window](int items)
+							{
+								mWaitingLoad = false;
+								if(items > 0)
+								{
+									openScanDatabase();
+								}
+								else
+								{
+									window->pushGui(new GuiMsgBox(window, _("SCAN DATABASE IS EMPTY!"),_("OK"),nullptr));
+								}
+							}
+						));
+					}, "iconNetwork");
+				}
 
 			s->addEntry(_("SETTINGS"), true, [this] {
 				openESP01Settings();
@@ -1024,6 +1048,10 @@ void GuiMenu::openESP01Menu()
 //std::vector<ScanDB_STA>
 int GuiMenu::loadScanDatabase()
 	{
+		if(SystemConf::getInstance()->get("pe_hack.scandb") != "1")
+			{
+				return 0;
+			}
 		int loaded = 0;
 		ScanDB.clear();
 		std::vector<std::string> rawap = hacksGet("getdb AP");
@@ -1031,14 +1059,18 @@ int GuiMenu::loadScanDatabase()
 			{
 				ScanDB_AP ap(line);
 				ap.vendor = macVendor(ap.bssid);
+				ap.name  	= getName("AP", ap.bssid).name;
 				ScanDB.push_back(ap);
 				loaded++;
 			}
 		std::vector<std::string> rawsta = hacksGet("getdb STA");
+		STA_ScanDB.clear();
 		for(auto line : rawsta)
 			{
 				ScanDB_STA _sta(line);
 				_sta.vendor = macVendor(_sta.mac);
+				_sta.name 	= getName("STA", _sta.mac).name;
+				STA_ScanDB.push(_sta);
 				int n = 0;
 				for(auto ap : ScanDB)
 					{
@@ -1055,6 +1087,10 @@ int GuiMenu::loadScanDatabase()
 	}
 void GuiMenu::addToScanDatabase(AccessPoint ap, bool reload)
 	{
+		if(SystemConf::getInstance()->get("pe_hack.scandb") != "1")
+			{
+				return;
+			}
 		//echo "  saveAP  <BSSID> <CH> <ENC> <RSSI> <SSID>"
 		std::string ssid = Utils::String::replace(ap.ssid, " ", "_!SPC!_");
 		hacksSet("saveAP " + ap.bssid + " " + ap.channel + " " + ap.enc + " " + ap.rssi + " " + ssid);
@@ -1065,6 +1101,10 @@ void GuiMenu::addToScanDatabase(AccessPoint ap, bool reload)
 	}
 void GuiMenu::addToScanDatabase(WifiStation sta, bool reload)
 	{
+		if(SystemConf::getInstance()->get("pe_hack.scandb") != "1")
+			{
+				return;
+			}
 		//echo "  saveSTA <MAC> <BSSID> <RSSI>"
 		hacksSet("saveSTA " + sta.mac + " " + sta.ap.bssid + " " + sta.rssi);
 		if(reload)
@@ -1072,6 +1112,119 @@ void GuiMenu::addToScanDatabase(WifiStation sta, bool reload)
 				loadScanDatabase();
 			}
 	}
+
+void GuiMenu::openScanDatabase()
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, _("SCAN DATABASE"));
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		s->addEntry(_("CATEGORIZED BY AP"), true, [this]() {
+			openScanDatabaseCAT();
+		});
+
+		s->addWithDescription(_("ACCESS POINTS"), "",
+			std::make_shared<TextComponent>(window, std::to_string(ScanDB.size()), font, color),
+			[this]
+		{
+			openScanDatabaseAP();
+		});
+
+		s->addWithDescription(_("STATIONS"), "",
+			std::make_shared<TextComponent>(window, std::to_string(STA_ScanDB.size()), font, color),
+			[this]
+		{
+			openScanDatabaseSTA();
+		});
+
+		window->pushGui(s);
+	}
+
+void GuiMenu::openScanDatabaseAP()
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, _("SCAN DATABASE: ACCESS POINTS"));
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		for(auto ap : ScanDB)
+			{
+				s->addWithDescription(ap.ssid.empty() ? ap.bssid : ap.ssid, ap.vendor,
+					std::make_shared<TextComponent>(window, std::to_string(ap.sta.size()), font, color),
+					[this, ap]
+				{
+					openScanDBItem(ap);
+				});
+			}
+
+		window->pushGui(s);
+	}
+
+void GuiMenu::openScanDatabaseSTA()
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, _("SCAN DATABASE: STATIONS"));
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		for(auto sta : STA_ScanDB)
+			{
+				s->addWithDescription(sta.name.empty() ? sta.mac : (sta.name + " (" + sta.mac + ")"), sta.vendor,
+					std::make_shared<TextComponent>(window, sta.bssid, font, color),
+					[this, sta]
+				{
+					openScanDBItem(sta);
+				});
+			}
+
+		window->pushGui(s);
+	}
+void GuiMenu::openScanDatabaseCAT(){}
+void GuiMenu::openScanDBItem(ScanDB_AP ap)
+	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, _("ScanDB: ") + ap.bssid);
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		s->addGroup(_("AP INFO"));
+			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, ap.bssid, 	font, color));
+			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, ap.vendor, font, color));
+			s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, ap.channel, font, color));
+			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ap.ssid, font, color));
+			s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, ap.encryption, font, color));
+			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, ap.rssi, font, color));
+			s->addWithLabel(_("LAST SEEN"), 	std::make_shared<TextComponent>(window, ap.lastSeenDate + " " + ap.lastSeenTime, font, color));
+
+		if(ap.sta.size() > 0)
+			{
+				s->addGroup(_("STATIONS") + " (" + std::to_string(ap.sta.size()) + ")");
+				for(auto sta : ap.sta)
+					{
+						s->addWithDescription(sta.name.empty() ? sta.mac : (sta.name + " (" + sta.mac + ")"), sta.vendor,
+							std::make_shared<TextComponent>(window, sta.bssid, font, color),
+							[this, sta]
+						{
+							openScanDBItem(sta);
+						}, "iconNetwork");
+					}
+			}
+
+		window->pushGui(s);
+	}
+void GuiMenu::openScanDBItem(ScanDB_STA sta)
+	{
+
+	}
+
+
+
+
 
 void GuiMenu::openNamesCat()
 	{
@@ -1563,6 +1716,7 @@ std::vector<AccessPoint> GuiMenu::AccessPointList(std::vector<std::string> bssid
 				list.push_back(ap);
 				addToScanDatabase(ap, false);
 			}
+		loadScanDatabase();
 		return list;
 	}
 WifiStation GuiMenu::rawToSTA(std::string raw)
@@ -1593,6 +1747,7 @@ std::vector<WifiStation> GuiMenu::StationsList(std::vector<std::string> stations
 			list.push_back(sta_);
 			addToScanDatabase(sta_, false);
 		}
+	loadScanDatabase();
 	return list;
 }
 
