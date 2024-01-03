@@ -548,8 +548,8 @@ struct ScanDB_AP {
 			std::vector<std::string> tokens = Utils::String::split(raw, ';');
 			bssid 			= tokens.at(0);
 			channel 		= tokens.at(1);
-			rssi 				= tokens.at(2);
-			encryption 	= tokens.at(3);
+			encryption 	= tokens.at(2);
+			rssi 				= tokens.at(3);
 			ssid 				= tokens.at(4);
 			lastSeenDate = tokens.at(5);
 			lastSeenTime = tokens.at(6);

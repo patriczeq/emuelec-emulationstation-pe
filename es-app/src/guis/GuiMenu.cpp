@@ -1059,6 +1059,7 @@ int GuiMenu::loadScanDatabase()
 			{
 				ScanDB_AP ap(line);
 				ap.vendor = macVendor(ap.bssid);
+				ap.ssid 	= Utils::String::replace(ap.ssid, " ", "_!SPC!_");
 				ap.name  	= getName("AP", ap.bssid).name;
 				ScanDB.push_back(ap);
 				loaded++;
@@ -1198,16 +1199,33 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 			s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, ap.channel, font, color));
 			s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ap.ssid, font, color));
 			s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, ap.encryption, font, color));
-			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, ap.rssi, font, color));
+			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, ap.rssi + "dBm", font, color));
 			s->addWithLabel(_("LAST SEEN"), 	std::make_shared<TextComponent>(window, ap.lastSeenDate + " " + ap.lastSeenTime, font, color));
-
+			s->addEntry(_("AP MENU"), true, [this, ap]() {
+				openDEAUTHMenu(ap);
+			}, "iconHack");
+		s->addGroup(_("MANAGEMENT"));
+			s->addEntry(_("REMOVE FROM DATABASE"), false, [this, window, ap]() {
+				window->pushGui(new GuiMsgBox(window, _("REMOVE") + "\n" + ap.bssid + "\nFROM SCAN DB?",
+					_("YES"), [this, window, ap] {
+						hacksSet("remDB AP " + ap.bssid);
+						window->pushGui(new GuiMsgBox(window, _("REMOVE ASSOCIATED STATIONS?"),
+							_("YES"), [this, window, ap] {
+								for(auto sta : ap.sta)
+									{
+										hacksSet("remDB STA " + sta.mac);
+									}
+							}, _("NO"), nullptr));
+							loadScanDatabase();
+					}, _("CANCEL"),nullptr));
+				}, "iconClose");
 		if(ap.sta.size() > 0)
 			{
 				s->addGroup(_("STATIONS") + " (" + std::to_string(ap.sta.size()) + ")");
 				for(auto sta : ap.sta)
 					{
 						s->addWithDescription(sta.name.empty() ? sta.mac : (sta.name + " (" + sta.mac + ")"), sta.vendor,
-							std::make_shared<TextComponent>(window, sta.bssid, font, color),
+							std::make_shared<TextComponent>(window, sta.rssi + "dBm", font, color),
 							[this, sta]
 						{
 							openScanDBItem(sta);
@@ -1219,7 +1237,40 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 	}
 void GuiMenu::openScanDBItem(ScanDB_STA sta)
 	{
+		Window* window = mWindow;
+		auto s = new GuiSettings(window, _("ScanDB: ") + (sta.name.empty() ? sta.mac : sta.name));
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
 
+		s->addGroup(_("STA INFO"));
+			s->addWithLabel(_("MAC"), 	std::make_shared<TextComponent>(window, sta.mac, font, color));
+			s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, sta.bssid, 	font, color));
+			s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, sta.vendor, font, color));
+			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, sta.rssi + "dBm", font, color));
+			s->addWithLabel(_("LAST SEEN"), 	std::make_shared<TextComponent>(window, ap.lastSeenDate + " " + ap.lastSeenTime, font, color));
+		s->addGroup(_("STATION HACKS"));
+				s->addEntry(_("STOP ALL JOBS"), false, [this]() {
+					hacksSend("stop");
+					}, "iconQuit");
+				s->addEntry(_("DEAUTH STATION"), true, [this, window, sta]() {
+					std::string msg = _("DEAUTH STATION") +":\n\n" + sta.mac + "\n"+ sta.vendor + "\n";
+					window->pushGui(new GuiMsgBox(window, msg,
+						_("YES"), [this, sta] {
+							hacksSend("deauthsta " + sta.mac);
+						}, _("CANCEL"),nullptr));
+					}, "iconHack");
+		s->addGroup(_("MANAGEMENT"));
+			s->addEntry(_("REMOVE FROM DATABASE"), false, [this, window, sta]() {
+				window->pushGui(new GuiMsgBox(window, _("REMOVE") + "\n" + sta.mac + "\nFROM SCAN DB?",
+					_("YES"), [this, window, sta] {
+						hacksSet("remDB STA " + sta.mac);
+						loadScanDatabase();
+					}, _("CANCEL"),nullptr));
+				}, "iconClose");
+
+
+		window->pushGui(s);
 	}
 
 
