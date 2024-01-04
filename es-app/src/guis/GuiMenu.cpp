@@ -7325,16 +7325,16 @@ void GuiMenu::YTJsonSearch(std::string sword, int maxResults)
 					}
 				return links;
 			},
-			[this, window, sword](std::vector<YoutubeLink> links)
+			[this, window, sword](std::vector<YoutubeLink> _links)
 			{
 				mWaitingLoad = false;
-				if(links.size() == 0)
+				if(_links.size() == 0)
 					{
 						window->pushGui(new GuiMsgBox(window, sword + "\n" + _("NOT FOUND"),_("OK"),nullptr));
 					}
 				else
 					{
-							YTResults(links);
+							YTResults(_links);
 					}
 			}
 		));
