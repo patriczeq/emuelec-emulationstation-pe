@@ -7310,24 +7310,25 @@ void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 								{
 									std::string err = std::string("YouTube - Error parsing JSON. \n\t");
 									LOG(LogError) << err;
-									return;
 								}
-
-								YoutubeLink yt_item;
-									yt_item.link 		= doc.HasMember("url") 		? doc["url"].GetString() : "";
-									yt_item.title 		= doc.HasMember("title") 	? doc["title"].GetString() : "";
-									yt_item.duration = doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
-									if(doc.HasMember("thumbnails"))
-										{
-											for (auto& item : doc["thumbnails"].GetArray())
-												{
-													if(item.HasMember("url"))
-														{
-															yt_item.img = item["url"].GetString();
-														}
-												}
-										}
-								Links.push_back(yt_item);
+								else
+								{
+									YoutubeLink yt_item;
+										yt_item.link 		= doc.HasMember("url") 		? doc["url"].GetString() : "";
+										yt_item.title 		= doc.HasMember("title") 	? doc["title"].GetString() : "";
+										yt_item.duration = doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
+										if(doc.HasMember("thumbnails"))
+											{
+												for (auto& item : doc["thumbnails"].GetArray())
+													{
+														if(item.HasMember("url"))
+															{
+																yt_item.img = item["url"].GetString();
+															}
+													}
+											}
+									Links.push_back(yt_item);
+								}
 							}
 						YTResults(Links);
 					}
