@@ -7413,14 +7413,15 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 			        left padding is 100px
 
 				*/
-				Vector4f padding(
-					(96 - h * minifier) / 2,
-					(96 - w * minifier) / 2,
-					(96 - h * minifier) / 2,
-					(96 - w * minifier) / 2
-				);
-
-				icon->setPadding(padding);
+				if(h > w)
+					{
+						icon->setPadding(Vector4f(
+							(96 - h * minifier) / 2,
+							0,
+							(96 - h * minifier) / 2,
+							0
+						));
+					}
 
 				s->addWithDescription(link.title, link.link, icon,
 					[this, window, link]
