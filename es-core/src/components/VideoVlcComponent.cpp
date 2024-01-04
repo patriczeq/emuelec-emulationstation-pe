@@ -616,8 +616,13 @@ void VideoVlcComponent::startVideo()
 	mVideoWidth = 0;
 	mVideoHeight = 0;
 
+	bool isStream = Utils::String::containsIgnoreCase(mVideoPath, "http:") || Utils::String::containsIgnoreCase(mVideoPath, "https:");
+	if(isStream)
+		{
+			LOG(LogDebug) << "VLCVideoComponent STREAM: " << mVideoPath;
+		}
 #ifdef WIN32
-	std::string path(Utils::String::replace(mVideoPath, "/", "\\"));
+	std::string path(isStream ? mVideoPath : Utils::String::replace(mVideoPath, "/", "\\"));
 #else
 	std::string path(mVideoPath);
 #endif
@@ -628,7 +633,11 @@ void VideoVlcComponent::startVideo()
 		mPlayingVideoPath = mVideoPath;
 
 		// Open the media
-		mMedia = libvlc_media_new_path(mVLC, path.c_str());
+		// URL: 	libvlc_media_new_location
+		// FILE: 	libvlc_media_new_path
+
+		mMedia = isStream ? libvlc_media_new_location(mVLC, path.c_str()) : libvlc_media_new_path(mVLC, path.c_str());
+
 		if (mMedia)
 		{
 

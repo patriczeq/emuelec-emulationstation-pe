@@ -1212,30 +1212,31 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
+		std::string apCH = "0";
+		for(auto ap : ScanDB)
+			{
+				if(ap.bssid == sta.bssid)
+					{
+						apCH = ap.channel;
+						break;
+					}
+			}
 
 		s->addGroup(_("STA INFO"));
 			s->addWithLabel(_("MAC"), 				std::make_shared<TextComponent>(window, sta.mac, font, color));
 			s->addWithLabel(_("BSSID"), 			std::make_shared<TextComponent>(window, sta.bssid, 	font, color));
 			s->addWithLabel(_("VENDOR"), 			std::make_shared<TextComponent>(window, sta.vendor, font, color));
 			s->addWithLabel(_("RSSI"), 				std::make_shared<TextComponent>(window, sta.rssi + "dBm", font, color));
+			s->addWithLabel(_("CHANNEL"), 		std::make_shared<TextComponent>(window, apCH, font, color));
 			s->addWithLabel(_("LAST SEEN"), 	std::make_shared<TextComponent>(window, sta.lastSeenDate + " " + sta.lastSeenTime, font, color));
 		s->addGroup(_("STATION HACKS"));
 				s->addEntry(_("STOP ALL JOBS"), false, [this]() {
 					hacksSend("stop");
 					}, "iconQuit");
-				s->addEntry(_("DEAUTH STATION"), true, [this, window, sta]() {
+				s->addEntry(_("DEAUTH STATION"), true, [this, window, sta, apCH]() {
 					std::string msg = _("DEAUTH STATION") +":\n\n" + sta.mac + "\n"+ sta.vendor + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
-						_("YES"), [this, sta] {
-							std::string apCH = "0";
-							for(auto ap : ScanDB)
-								{
-									if(ap.bssid == sta.bssid)
-										{
-											apCH = ap.channel;
-											break;
-										}
-								}
+						_("YES"), [this, sta, apCH] {
 							std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
 							runSystemCommand("hacks.sh " + port + " deauthsta " + sta.mac + " " + sta.bssid + " " + apCH, "", nullptr);
 						}, _("CANCEL"),nullptr));
@@ -1247,7 +1248,45 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 						hacksSet("remDB STA " + sta.mac);
 						loadScanDatabase();
 					}, _("CANCEL"),nullptr));
-				}, "iconClose");
+				}, "iconRemove");
+
+		if(!sta.name.empty())
+		{
+			s->addEntry(_("REMOVE NAME"), true, [this, window, s, sta]() {
+				window->pushGui(new GuiMsgBox(window, _("REMOVE NAME") + "?\n" + sta.name,
+					_("YES"), [this, sta, s] {
+						remName("STA", sta.mac);
+						delete s;
+						openScanDBItem(sta);
+					}, _("NO"),nullptr));
+			}, "iconRemove");
+		}
+		s->addEntry(sta.name.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, s, sta, apCH]() {
+			if (Settings::getInstance()->getBool("UseOSK"))
+				mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "NAME " + sta.mac, sta.name, [this, s, sta, apCH](const std::string& value) {
+					HackName n;
+						n.type = "STA";
+						n.id = sta.mac;
+						n.name = value;
+						n.channel = apCH;
+						n.bssid = sta.bssid;
+					addName(n);
+					delete s;
+					openScanDBItem(sta);
+				}, false));
+			else
+				mWindow->pushGui(new GuiTextEditPopup(mWindow, "NAME " + sta.mac, sta.name, [this, s, sta, apCH](const std::string& value) {
+					HackName n;
+						n.type = "STA";
+						n.id = sta.mac;
+						n.name = value;
+						n.channel = apCH;
+						n.bssid = sta.bssid;
+					addName(n);
+					delete s;
+					openScanDBItem(sta);
+				}, false));
+		});
 
 
 		window->pushGui(s);
@@ -7301,7 +7340,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 				 					// vlc play "l"
 				 				}
 				 			));
-						 },
+						},
 						 _("CANCEL"), nullptr));
 				});
 			}
