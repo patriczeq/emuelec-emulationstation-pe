@@ -7393,9 +7393,9 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 				float w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).w;
 				float h = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).h;
 
-				float minifier = 64 / w;
+				float minifier = (w > h) ? 64 / w : 64 / h;
 
-				Vector2f maxSize(64, h * minifier);
+				Vector2f maxSize(w * minifier, h * minifier);
 
 				auto icon = std::make_shared<WebImageComponent>(window, 600); // image expire after 10 minutes
 				icon->setImage(!link.thumbnails.size() ? "" : link.thumbnails.at(0).url, false, maxSize);
