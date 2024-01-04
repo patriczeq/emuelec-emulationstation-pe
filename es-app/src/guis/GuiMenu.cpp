@@ -7386,8 +7386,13 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 
 		for(auto link : links)
 			{
+				Vector2f maxSize(96,64);
 
-				s->addWithDescription(link.title, "", nullptr /*icon*/,
+				auto ison = std::make_shared<WebImageComponent>(window, 600); // image expire after 10 minutes
+				ison->setImage(link.img, false, maxSize);
+				ison->setMaxSize(maxSize);
+
+				s->addWithDescription(link.title, link.duration + " - " + link.link, icon,
 					[this, window, link]
 				{
 					window->pushGui(new GuiMsgBox(window, _("YouTube video: ") + "\n" + link.title + "\n?",
