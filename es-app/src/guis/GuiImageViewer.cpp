@@ -729,7 +729,8 @@ void GuiImageViewer::showCbz(Window* window, const std::string imagePath)
 
 void GuiVideoViewer::playVideo(Window* window, const std::string videoPath, bool movie)
 {
-	if (!Utils::FileSystem::exists(videoPath))
+	bool isStream = Utils::String::containsIgnoreCase(videoPath, "http:") || Utils::String::containsIgnoreCase(videoPath, "https:");
+	if (!isStream && !Utils::FileSystem::exists(videoPath))
 		return;
 
 	window->pushGui(new GuiVideoViewer(window, videoPath, movie));
