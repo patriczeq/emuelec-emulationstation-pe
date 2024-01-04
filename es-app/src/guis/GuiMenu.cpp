@@ -7276,11 +7276,9 @@ void GuiMenu::YTJsonSearch(std::string sword, int maxResults)
 		Window* window = mWindow;
 
 		mWindow->pushGui(new GuiLoading<std::vector<YoutubeLink>>(window, _("SEARCHING..."),
-			[this, window, sword, maxResults](auto gui)
+			[this, window, sword](auto gui)
 			{
 				mWaitingLoad = true;
-				// PHASE 1 - bash yt-dlp search
-				//yt-dlp ytsearch10:"odroid go advance" --dump-json --default-search ytsearch --no-playlist --no-check-certificate --geo-bypass --flat-playlist --ignore-errors --prefer-insecure
 				std::string ytdlpcmd = "yt-dlp ";
 										ytdlpcmd+= "ytsearch" + std::to_string(maxResults) + ":\"" + sword + "\" ";
 										ytdlpcmd+= "--dump-json ";
@@ -7294,7 +7292,7 @@ void GuiMenu::YTJsonSearch(std::string sword, int maxResults)
 				std::vector<std::string> YTres = ApiSystem::getInstance()->getScriptResults(ytdlpcmd);
 
 				// PHASE 2 - parse links
-				std::vector<YoutubeLink> links;
+				std::vector<YoutubeLink> Links;
 				for(auto json : YTres)
 					{
 						rapidjson::Document doc;
@@ -7308,37 +7306,36 @@ void GuiMenu::YTJsonSearch(std::string sword, int maxResults)
 						}
 
 						YoutubeLink yt;
-						yt.link 		= doc.HasMember("url") 		? doc["url"].GetString() : "";
-						yt.title 		= doc.HasMember("title") 	? doc["title"].GetString() : "";
-						yt.duration = doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
-						if(doc.HasMember("thumbnails"))
-							{
-								for (auto& item : doc["thumbnails"].GetArray())
-									{
-										if(item.HasMember("url"))
-											{
-												yt.img = item["url"].GetString();
-											}
-									}
-							}
-							links.push_back(yt);
+							yt.link 		= doc.HasMember("url") 		? doc["url"].GetString() : "";
+							yt.title 		= doc.HasMember("title") 	? doc["title"].GetString() : "";
+							yt.duration = doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
+							if(doc.HasMember("thumbnails"))
+								{
+									for (auto& item : doc["thumbnails"].GetArray())
+										{
+											if(item.HasMember("url"))
+												{
+													yt.img = item["url"].GetString();
+												}
+										}
+								}
+						Links.push_back(yt);
 					}
-				return links;
+				return Links;
 			},
-			[this, window, sword](std::vector<YoutubeLink> _links)
+			[this, window, sword](std::vector<YoutubeLink> links)
 			{
 				mWaitingLoad = false;
-				if(_links.size() == 0)
+				if(links.size() == 0)
 					{
 						window->pushGui(new GuiMsgBox(window, sword + "\n" + _("NOT FOUND"),_("OK"),nullptr));
 					}
 				else
 					{
-							YTResults(_links);
+							YTResults(links);
 					}
 			}
 		));
-
 
 	}
 
