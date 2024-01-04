@@ -7276,7 +7276,7 @@ void GuiMenu::YTJsonSearch(std::string sword, int maxResults)
 		Window* window = mWindow;
 
 		mWindow->pushGui(new GuiLoading<std::vector<YoutubeLink>>(window, _("SEARCHING..."),
-			[this, window, sword](auto gui)
+			[this, window, sword, maxResults](auto gui)
 			{
 				mWaitingLoad = true;
 				std::string ytdlpcmd = "yt-dlp ";
