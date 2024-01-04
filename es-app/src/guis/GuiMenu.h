@@ -719,6 +719,7 @@ private:
 	void openProccesses(std::vector<SysProccess> p);
 
 	void YTSearch(std::string q);
+	void YTJsonSearch(std::string sword, int maxResults = 10);
 	void YTResults(std::vector<YoutubeLink> links);
 
 

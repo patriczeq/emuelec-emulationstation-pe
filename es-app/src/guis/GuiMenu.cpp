@@ -7282,7 +7282,7 @@ void GuiMenu::YTJsonSearch(std::string sword, int maxResults)
 				// PHASE 1 - bash yt-dlp search
 				//yt-dlp ytsearch10:"odroid go advance" --dump-json --default-search ytsearch --no-playlist --no-check-certificate --geo-bypass --flat-playlist --ignore-errors --prefer-insecure
 				std::string ytdlpcmd = "yt-dlp "
-										ytdlpcmd+= "ytsearch" + std::to_string(maxResults) + ':"' + sword + '" '
+										ytdlpcmd+= "ytsearch" + std::to_string(maxResults) + ":\"" + sword + "\" "
 										ytdlpcmd+= "--dump-json "
 										ytdlpcmd+= "--default-search ytsearch "
 										ytdlpcmd+= "--no-playlist "
