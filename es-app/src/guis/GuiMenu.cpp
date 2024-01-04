@@ -7274,9 +7274,6 @@ void GuiMenu::openTraceroute(std::string addr, std::vector<TraceRouteHop> hops)
 void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 	{
 		Window* window = mWindow;
-		// ok simplest WAY
-		Window* window = mWindow;
-
 		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING..."),
 			[this, window, q, maxResults](auto gui)
 			{
