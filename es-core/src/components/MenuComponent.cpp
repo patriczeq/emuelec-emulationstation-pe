@@ -180,33 +180,6 @@ void MenuComponent::addWithDescription(const std::string& label, const std::stri
 	addRow(row, setCursorHere, doUpdateSize, userData);
 }
 
-void MenuComponent::addWithDescriptionWebImage(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func, const std::string& iconName, bool setCursorHere, bool multiLine, const std::string& userData, bool doUpdateSize)
-{
-	auto theme = ThemeData::getMenuTheme();
-
-	ComponentListRow row;
-
-	addMenuIcon(mWindow, row, iconName);
-
-	if (comp != nullptr)
-		row.addElement(comp, true);
-
-	if (!description.empty())
-	{
-		if (!multiLine)
-			mList->setUpdateType(ComponentListFlags::UpdateType::UPDATE_ALWAYS);
-
-		row.addElement(std::make_shared<MultiLineMenuEntry>(mWindow, Utils::String::toUpper(label), description, multiLine), true);
-	}
-	else
-		row.addElement(std::make_shared<TextComponent>(mWindow, Utils::String::toUpper(label), theme->Text.font, theme->Text.color), true);
-
-
-	if (func != nullptr)
-		row.makeAcceptInputHandler(func);
-
-	addRow(row, setCursorHere, doUpdateSize, userData);
-}
 
 void MenuComponent::addEntry(const std::string& name, bool add_arrow, const std::function<void()>& func, const std::string& iconName, bool setCursorHere, bool onButtonRelease, const std::string& userData, bool doUpdateSize)
 {

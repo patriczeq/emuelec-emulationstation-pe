@@ -7404,7 +7404,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 				icon->setIsLinear(true);
 				icon->setPadding(4);*/
 
-				s->addWithDescriptionWebImage(link.title, link.duration + " - " + link.link, icon,
+				s->addWithDescription(link.title, link.duration + " - " + link.link, icon,
 					[this, window, link]
 				{
 					window->pushGui(new GuiMsgBox(window, _("YouTube video: ") + "\n" + link.title + "\n?",
