@@ -7405,7 +7405,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 				icon->setUpdateColors(false);
 				icon->setPadding(4);
 
-				s->addWithDescription(link.title, link.link, w == -1 ? std::make_shared<TextComponent>(window, link.duration, font, color) : icon,
+				s->addWithDescription(link.title, link.link, icon,
 					[this, window, link]
 				{
 					window->pushGui(new GuiMsgBox(window, _("YouTube video: ") + "\n" + link.title + "\n?",
