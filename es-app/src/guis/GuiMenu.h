@@ -506,7 +506,18 @@ struct SysProccess {
 	std::string PROC;
 	std::string CMD;
 };
-
+struct YoutubeThumbnail {
+	YoutubeThumbnail(){}
+	YoutubeThumbnail(std::string _url, int _w, int _h)
+		{
+			url = _url;
+			w = _w;
+			h = _h;
+		}
+	std::string url;
+	int w;
+	int h;
+};
 struct YoutubeLink {
 	YoutubeLink(){}
 	YoutubeLink(std::string raw)
@@ -520,6 +531,8 @@ struct YoutubeLink {
 	std::string img;
 	std::string title;
 	std::string duration;
+	std::string description;
+	std::vector<YoutubeThumbnail> thumbnails;
 };
 
 struct ScanDB_STA {

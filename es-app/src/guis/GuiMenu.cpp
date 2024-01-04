@@ -7318,14 +7318,18 @@ void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 										yt_item.link 		= doc.HasMember("url") 		? doc["url"].GetString() : "";
 										yt_item.title 		= doc.HasMember("title") 	? doc["title"].GetString() : "";
 										yt_item.duration = doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
+										yt_item.description = doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
 										if(doc.HasMember("thumbnails"))
 											{
 												for (auto& item : doc["thumbnails"].GetArray())
 													{
-														if(item.HasMember("url"))
-															{
-																yt_item.img = item["url"].GetString();
-															}
+														yt_item.thumbnails.push_back(
+															YoutubeThumbnail(
+																item["url"].GetString(),
+																item["width"].GetInt(),
+																item["height"].GetInt()
+															)
+														);
 													}
 											}
 									Links.push_back(yt_item);
@@ -7386,25 +7390,22 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 
 		for(auto link : links)
 			{
-				Vector2f maxSize(64,32);
+				float w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).w;
+				float h = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).h;
+
+				float minifier = 64 / w;
+
+				Vector2f maxSize(64, h * minifier);
 
 				auto icon = std::make_shared<WebImageComponent>(window, 600); // image expire after 10 minutes
-				icon->setImage(link.img, false, maxSize);
+				icon->setImage(!link.thumbnails.size() ? "" : link.thumbnails.at(0).url, false, maxSize);
 				icon->setMaxSize(maxSize);
 				//icon->setSize(maxSize);
 				icon->setMinSize(maxSize);
 				icon->setUpdateColors(false);
 				icon->setPadding(4);
 
-				/*auto icon = std::make_shared<ImageComponent>(window);
-				Vector2f maxSize(64, 64);
-				icon->setUpdateColors(false);
-				icon->setImage(image, false, maxSize);
-				icon->setMaxSize(maxSize);
-				icon->setIsLinear(true);
-				icon->setPadding(4);*/
-
-				s->addWithDescription(link.title, link.duration + " - " + link.link, icon,
+				s->addWithDescription(link.title, link.link, w == -1 ? std::make_shared<TextComponent>(window, link.duration, font, color) : icon,
 					[this, window, link]
 				{
 					window->pushGui(new GuiMsgBox(window, _("YouTube video: ") + "\n" + link.title + "\n?",
