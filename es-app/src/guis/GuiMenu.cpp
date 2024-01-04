@@ -7303,6 +7303,7 @@ void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 						// parse
 						for(auto json : links)
 							{
+								LOG(LogDebug) << "JSON:" << json;
 								rapidjson::Document doc;
 								doc.Parse(json.c_str());
 
