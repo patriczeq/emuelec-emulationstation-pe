@@ -7391,10 +7391,10 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 				auto icon = std::make_shared<WebImageComponent>(window, 600); // image expire after 10 minutes
 				icon->setImage(link.img, false, maxSize);
 				icon->setMaxSize(maxSize);
-				icon->setSize(maxSize);
+				//icon->setSize(maxSize);
 				icon->setMinSize(maxSize);
 				icon->setUpdateColors(false);
-				icon->setIsLinear(true);
+				icon->setPadding(4);
 
 				/*auto icon = std::make_shared<ImageComponent>(window);
 				Vector2f maxSize(64, 64);
