@@ -62,6 +62,9 @@
 #include "TextToSpeech.h"
 #include "Paths.h"
 
+#include <rapidjson/rapidjson.h>
+#include <rapidjson/pointer.h>
+
 #include "components/WebImageComponent.h"
 
 #include "oui.h"
@@ -304,9 +307,9 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 	addEntry(_("FILE MANAGER").c_str(), false, [this] { appLauncher("file_manager.sh"); }, "iconFileManager");
 	addEntry(_("YouTube Search"), false, [this, window]() {
 		if (Settings::getInstance()->getBool("UseOSK"))
-			mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "YouTube Search", "carplay", [this](const std::string& value) { YTSearch(value); }, false));
+			mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "YouTube Search", "carplay", [this](const std::string& value) { YTJsonSearch(value); }, false));
 		else
-			mWindow->pushGui(new GuiTextEditPopup(window, "YouTube Search", "carplay", [this](const std::string& value) { YTSearch(value); }, false));
+			mWindow->pushGui(new GuiTextEditPopup(window, "YouTube Search", "carplay", [this](const std::string& value) { YTJsonSearch(value); }, false));
 	}, "iconYouTube");
 	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "iconApps");
 
@@ -7268,6 +7271,77 @@ void GuiMenu::openTraceroute(std::string addr, std::vector<TraceRouteHop> hops)
 	}
 
 // YOUTUBE
+void GuiMenu::YTJsonSearch(std::string sword, int maxResults)
+	{
+		Window* window = mWindow;
+
+		mWindow->pushGui(new GuiLoading<std::vector<YoutubeLink>>(window, _("SEARCHING..."),
+			[this, window, sword, maxResults](auto gui)
+			{
+				mWaitingLoad = true;
+				// PHASE 1 - bash yt-dlp search
+				//yt-dlp ytsearch10:"odroid go advance" --dump-json --default-search ytsearch --no-playlist --no-check-certificate --geo-bypass --flat-playlist --ignore-errors --prefer-insecure
+				std::string ytdlpcmd = "yt-dlp "
+										ytdlpcmd+= "ytsearch" + std::to_string(maxResults) + ':"' + sword + '" '
+										ytdlpcmd+= "--dump-json "
+										ytdlpcmd+= "--default-search ytsearch "
+										ytdlpcmd+= "--no-playlist "
+										ytdlpcmd+= "--no-check-certificate "
+										ytdlpcmd+= "--geo-bypass "
+										ytdlpcmd+= "--flat-playlist "
+										ytdlpcmd+= "--ignore-errors "
+										ytdlpcmd+= "--prefer-insecure"
+				std::vector<std::string> YTres = ApiSystem::getInstance()->getScriptResults(ytdlpcmd);
+
+				// PHASE 2 - parse links
+				std::vector<YoutubeLink> links;
+				for(auto json : YTres)
+					{
+						rapidjson::Document doc;
+						doc.Parse(json.c_str());
+
+						if (doc.HasParseError())
+						{
+							std::string err = std::string("YouTube - Error parsing JSON. \n\t");
+							LOG(LogError) << err;
+							return;
+						}
+
+						YoutubeLink yt;
+						yt.link 		= doc.HasMember("url") 		? doc["url"].GetString() : "";
+						yt.title 		= doc.HasMember("title") 	? doc["title"].GetString() : "";
+						yt.duration = doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
+						if(doc.HasMember("thumbnails"))
+							{
+								for (auto& item : doc["thumbnails"].GetArray())
+									{
+										if(item.HasMember("url"))
+											{
+												yt.img = item["url"].GetString()
+											}
+									}
+							}
+							links.push_back(yt);
+					}
+				return links;
+			},
+			[this, window, sword](std::vector<YoutubeLink> links)
+			{
+				mWaitingLoad = false;
+				if(links.size() == 0)
+					{
+						window->pushGui(new GuiMsgBox(window, sword + "\n" + _("NOT FOUND"),_("OK"),nullptr));
+					}
+				else
+					{
+							YTResults(Links);
+					}
+			}
+		));
+
+
+	}
+
 void GuiMenu::YTSearch(std::string q)
 	{
 		Window* window = mWindow;

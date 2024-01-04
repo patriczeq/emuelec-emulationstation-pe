@@ -519,6 +519,7 @@ struct YoutubeLink {
 	std::string link;
 	std::string img;
 	std::string title;
+	std::string duration;
 };
 
 struct ScanDB_STA {
