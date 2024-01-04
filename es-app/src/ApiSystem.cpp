@@ -1464,8 +1464,8 @@ std::vector<std::string> ApiSystem::executeEnumerationScript(const std::string c
 	if (pipe == NULL)
 		return res;
 
-	char line[1024];
-	while (fgets(line, 1024, pipe))
+	char line[4096];
+	while (fgets(line, 4096, pipe))
 	{
 		strtok(line, "\n");
 		res.push_back(std::string(line));
