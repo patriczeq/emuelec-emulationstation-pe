@@ -7281,16 +7281,16 @@ void GuiMenu::YTJsonSearch(std::string sword, int maxResults)
 				mWaitingLoad = true;
 				// PHASE 1 - bash yt-dlp search
 				//yt-dlp ytsearch10:"odroid go advance" --dump-json --default-search ytsearch --no-playlist --no-check-certificate --geo-bypass --flat-playlist --ignore-errors --prefer-insecure
-				std::string ytdlpcmd = "yt-dlp "
-										ytdlpcmd+= "ytsearch" + std::to_string(maxResults) + ":\"" + sword + "\" "
-										ytdlpcmd+= "--dump-json "
-										ytdlpcmd+= "--default-search ytsearch "
-										ytdlpcmd+= "--no-playlist "
-										ytdlpcmd+= "--no-check-certificate "
-										ytdlpcmd+= "--geo-bypass "
-										ytdlpcmd+= "--flat-playlist "
-										ytdlpcmd+= "--ignore-errors "
-										ytdlpcmd+= "--prefer-insecure"
+				std::string ytdlpcmd = "yt-dlp ";
+										ytdlpcmd+= "ytsearch" + std::to_string(maxResults) + ":\"" + sword + "\" ";
+										ytdlpcmd+= "--dump-json ";
+										ytdlpcmd+= "--default-search ytsearch ";
+										ytdlpcmd+= "--no-playlist ";
+										ytdlpcmd+= "--no-check-certificate ";
+										ytdlpcmd+= "--geo-bypass ";
+										ytdlpcmd+= "--flat-playlist ";
+										ytdlpcmd+= "--ignore-errors ";
+										ytdlpcmd+= "--prefer-insecure";
 				std::vector<std::string> YTres = ApiSystem::getInstance()->getScriptResults(ytdlpcmd);
 
 				// PHASE 2 - parse links
