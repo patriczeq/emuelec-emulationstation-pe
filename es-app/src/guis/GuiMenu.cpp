@@ -7390,8 +7390,8 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 
 		for(auto link : links)
 			{
-				float w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).w;
-				float h = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).h;
+				int w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).w;
+				int h = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).h;
 
 				float minifier = (w > h) ? 96 / w : 96 / h;
 
@@ -7413,7 +7413,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 			        left padding is 100px
 
 				*/
-				if(h > w)
+				if(h > w)
 					{
 						icon->setPadding(Vector4f(
 							(96 - h * minifier) / 2,
