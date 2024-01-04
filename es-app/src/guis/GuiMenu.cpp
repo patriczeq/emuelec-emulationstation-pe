@@ -7393,18 +7393,34 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 				float w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).w;
 				float h = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).h;
 
-				float minifier = (w > h) ? 64 / w : 64 / h;
+				float minifier = (w > h) ? 96 / w : 96 / h;
 
 				Vector2f maxSize(w * minifier, h * minifier);
-				Vector2f sSize(64, 64);
 
 				auto icon = std::make_shared<WebImageComponent>(window, 600); // image expire after 10 minutes
 				icon->setImage(!link.thumbnails.size() ? "" : link.thumbnails.at(0).url, false, maxSize);
 				icon->setMaxSize(maxSize);
-				icon->setSize(sSize);
-				//icon->setMinSize(maxSize);
+				//icon->setSize(maxSize);
+				icon->setMinSize(maxSize);
 				icon->setUpdateColors(false);
-				icon->setPadding(4);
+				//icon->setPadding(4);
+				/*
+
+			    padding: 25px 50px 75px 100px;
+			        top padding is 25px
+			        right padding is 50px
+			        bottom padding is 75px
+			        left padding is 100px
+
+				*/
+				Vector4f padding(
+					(96 - h * minifier) / 2,
+					(96 - w * minifier) / 2,
+					(96 - h * minifier) / 2,
+					(96 - w * minifier) / 2
+				);
+
+				icon->setPadding(padding);
 
 				s->addWithDescription(link.title, link.link, icon,
 					[this, window, link]
