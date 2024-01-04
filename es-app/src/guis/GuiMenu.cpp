@@ -7317,7 +7317,7 @@ void GuiMenu::YTJsonSearch(std::string sword, int maxResults)
 									{
 										if(item.HasMember("url"))
 											{
-												yt.img = item["url"].GetString()
+												yt.img = item["url"].GetString();
 											}
 									}
 							}
@@ -7334,7 +7334,7 @@ void GuiMenu::YTJsonSearch(std::string sword, int maxResults)
 					}
 				else
 					{
-							YTResults(Links);
+							YTResults(links);
 					}
 			}
 		));
