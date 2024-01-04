@@ -7271,16 +7271,18 @@ void GuiMenu::openTraceroute(std::string addr, std::vector<TraceRouteHop> hops)
 	}
 
 // YOUTUBE
-void GuiMenu::YTJsonSearch(std::string sword, int maxResults)
+void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 	{
 		Window* window = mWindow;
+		// ok simplest WAY
+		Window* window = mWindow;
 
-		mWindow->pushGui(new GuiLoading<std::vector<YoutubeLink>>(window, _("SEARCHING..."),
-			[this, window, sword, maxResults](auto gui)
+		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING..."),
+			[this, window, q](auto gui)
 			{
 				mWaitingLoad = true;
 				std::string ytdlpcmd = "yt-dlp ";
-										ytdlpcmd+= "ytsearch" + std::to_string(maxResults) + ":\"" + sword + "\" ";
+										ytdlpcmd+= "ytsearch" + std::to_string(maxResults) + ":\"" + q + "\" ";
 										ytdlpcmd+= "--dump-json ";
 										ytdlpcmd+= "--default-search ytsearch ";
 										ytdlpcmd+= "--no-playlist ";
@@ -7289,54 +7291,51 @@ void GuiMenu::YTJsonSearch(std::string sword, int maxResults)
 										ytdlpcmd+= "--flat-playlist ";
 										ytdlpcmd+= "--ignore-errors ";
 										ytdlpcmd+= "--prefer-insecure";
-				std::vector<std::string> YTres = ApiSystem::getInstance()->getScriptResults(ytdlpcmd);
-
-				// PHASE 2 - parse links
-				std::vector<YoutubeLink> Links;
-				for(auto json : YTres)
-					{
-						rapidjson::Document doc;
-						doc.Parse(json.c_str());
-
-						if (doc.HasParseError())
-						{
-							std::string err = std::string("YouTube - Error parsing JSON. \n\t");
-							LOG(LogError) << err;
-							return;
-						}
-
-						YoutubeLink yt;
-							yt.link 		= doc.HasMember("url") 		? doc["url"].GetString() : "";
-							yt.title 		= doc.HasMember("title") 	? doc["title"].GetString() : "";
-							yt.duration = doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
-							if(doc.HasMember("thumbnails"))
-								{
-									for (auto& item : doc["thumbnails"].GetArray())
-										{
-											if(item.HasMember("url"))
-												{
-													yt.img = item["url"].GetString();
-												}
-										}
-								}
-						Links.push_back(yt);
-					}
-				return Links;
+				return ApiSystem::getInstance()->getScriptResults(ytdlpcmd);
 			},
-			[this, window, sword](std::vector<YoutubeLink> links)
+			[this, window, q](std::vector<std::string> links)
 			{
 				mWaitingLoad = false;
 				if(links.size() == 0)
 					{
-						window->pushGui(new GuiMsgBox(window, sword + "\n" + _("NOT FOUND"),_("OK"),nullptr));
+						window->pushGui(new GuiMsgBox(window, q + "\n" + _("NOT FOUND"),_("OK"),nullptr));
 					}
 				else
 					{
-							YTResults(links);
+						std::vector<YoutubeLink> Links;
+						// parse
+						for(auto json : links)
+							{
+								rapidjson::Document doc;
+								doc.Parse(json.c_str());
+
+								if (doc.HasParseError())
+								{
+									std::string err = std::string("YouTube - Error parsing JSON. \n\t");
+									LOG(LogError) << err;
+									return;
+								}
+
+								YoutubeLink yt_item;
+									yt_item.link 		= doc.HasMember("url") 		? doc["url"].GetString() : "";
+									yt_item.title 		= doc.HasMember("title") 	? doc["title"].GetString() : "";
+									yt_item.duration = doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
+									if(doc.HasMember("thumbnails"))
+										{
+											for (auto& item : doc["thumbnails"].GetArray())
+												{
+													if(item.HasMember("url"))
+														{
+															yt_item.img = item["url"].GetString();
+														}
+												}
+										}
+								Links.push_back(yt_item);
+							}
+						YTResults(Links);
 					}
 			}
 		));
-
 	}
 
 void GuiMenu::YTSearch(std::string q)
