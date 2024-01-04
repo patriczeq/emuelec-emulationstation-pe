@@ -660,27 +660,35 @@ void VideoVlcComponent::startVideo()
 			bool hasAudioTrack = false;
 
 			unsigned track_count;
-			// Get the media metadata so we can find the aspect ratio
-			libvlc_media_parse(mMedia);
-			libvlc_media_track_t** tracks;
-			track_count = libvlc_media_tracks_get(mMedia, &tracks);
-			for (unsigned track = 0; track < track_count; ++track)
-			{
-				if (tracks[track]->i_type == libvlc_track_audio)
-					hasAudioTrack = true;
-				else if (tracks[track]->i_type == libvlc_track_video)
+			if(isStream)
 				{
-					mVideoWidth = tracks[track]->video->i_width;
-					mVideoHeight = tracks[track]->video->i_height;
-
-					if (hasAudioTrack)
-						break;
+					hasAudioTrack = true;
+					mVideoWidth = 640;
+					mVideoHeight = 480;
 				}
+			else
+				{
+				// Get the media metadata so we can find the aspect ratio
+				libvlc_media_parse(mMedia);
+				libvlc_media_track_t** tracks;
+				track_count = libvlc_media_tracks_get(mMedia, &tracks);
+				for (unsigned track = 0; track < track_count; ++track)
+				{
+					if (tracks[track]->i_type == libvlc_track_audio)
+						hasAudioTrack = true;
+					else if (tracks[track]->i_type == libvlc_track_video)
+					{
+						mVideoWidth = tracks[track]->video->i_width;
+						mVideoHeight = tracks[track]->video->i_height;
+
+						if (hasAudioTrack)
+							break;
+					}
+				}
+
+
+				libvlc_media_tracks_release(tracks, track_count);
 			}
-
-
-			libvlc_media_tracks_release(tracks, track_count);
-
 			if (mVideoWidth == 0 && mVideoHeight == 0 && Utils::FileSystem::isAudio(path))
 			{
 				if (getPlayAudio() && !mScreensaverMode && Settings::getInstance()->getBool("VideoAudio"))
