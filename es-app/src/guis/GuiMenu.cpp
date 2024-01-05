@@ -7438,9 +7438,9 @@ void GuiMenu::YTResult(YoutubeLink link)
 				 [this, window](std::string l)
 				 {
 					 loadChromecast(window, l, true);
-				 }
+				 }));
 			}, "iconChromecast");
-		s->addGroup(_("DOWNLOADS"))
+		s->addGroup(_("DOWNLOADS"));
 			s->addEntry(_("DOWNLOAD MP4"), false, [this, window, link]{
 
 			});
