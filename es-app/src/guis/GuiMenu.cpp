@@ -7291,7 +7291,7 @@ void GuiMenu::YouTube()
 		Window *window = mWindow;
 		auto s = new GuiSettings(mWindow, "YouTube");
 
-		s->addEntry( _("SEARCH"), true, [this](){
+		s->addEntry(_U("\uF002 ") + "SEARCH", true, [this](){
 			YouTubeSearchMenu();
 		});
 		s->addGroup(_("RECENTLY PLAYED"));
@@ -7402,7 +7402,7 @@ void GuiMenu::YTResultRow(Window* window, GuiSettings* s, YoutubeLink link)
 		//icon->setPadding(4);
 		s->addWithDescription(
 				link.title,
-				link.duration_string + "\r\n" + link.uploader + "\r\n" + std::to_string(link.view_count) + "views",
+				link.duration_string,
 				icon,
 				[this, window, link]
 					{
@@ -7454,9 +7454,9 @@ void GuiMenu::YTResult(YoutubeLink link)
 				 }));
 			}, "iconScraper", true);
 
-			s->addEntry(_("CAST"), false, [this, window, link]{
+			/*s->addEntry(_("CAST"), false, [this, window, link]{
 				loadChromecast(window, "YouTube/"+link.id);
-			}, "iconChromecast");
+			}, "iconChromecast");*/
 
 			s->addEntry(_("DOWNLOAD"), false, [this, window, link]{
 				// download menu
