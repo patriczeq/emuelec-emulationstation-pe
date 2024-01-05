@@ -512,12 +512,12 @@ struct YoutubeThumbnail {
 	YoutubeThumbnail(std::string _url, int _w, int _h)
 		{
 			url = _url;
-			w = _w;
-			h = _h;
+			width = _w;
+			height = _h;
 		}
 	std::string url;
-	int w;
-	int h;
+	int width;
+	int height;
 };
 struct YoutubeLink {
 	YoutubeLink(){}
@@ -529,8 +529,10 @@ struct YoutubeLink {
 			{
 					link 			= doc.HasMember("url") 		? doc["url"].GetString() : "";
 					title 		= doc.HasMember("title") 	? doc["title"].GetString() : "";
-					duration 	= doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
-					description = doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
+					duration_string 	= doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
+					description = doc.HasMember("description") 		? doc["description"].GetString() : "";
+					uploader = doc.HasMember("uploader") 		? doc["uploader"].GetString() : "";
+					view_count = doc.HasMember("view_count") 		? doc["view_count"].GetString() : "";
 					if(doc.HasMember("thumbnails"))
 						{
 							for (auto& item : doc["thumbnails"].GetArray())
@@ -550,10 +552,11 @@ struct YoutubeLink {
 
 	}
 	std::string link;
-	std::string img;
 	std::string title;
-	std::string duration;
+	std::string duration_string;
 	std::string description;
+	std::string uploader;
+	std::string view_count;
 	std::vector<YoutubeThumbnail> thumbnails;
 };
 

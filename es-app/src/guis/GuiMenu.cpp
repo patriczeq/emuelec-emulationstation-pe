@@ -7323,7 +7323,7 @@ void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 										ytdlpcmd+= "--geo-bypass ";
 										ytdlpcmd+= "--flat-playlist ";
 										ytdlpcmd+= "--ignore-errors ";
-										ytdlpcmd+= "--prefer-insecure";
+										ytdlpcmd+= "--prefer-insecure ";
 										ytdlpcmd+= "--match-filter \"original_url!*=/shorts/ & url!*=/shorts/\"";
 				return ApiSystem::getInstance()->getScriptResults(ytdlpcmd);
 			},
@@ -7365,8 +7365,8 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links, std::string search)
 			}
 		for(auto link : links)
 			{
-				float w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).w;
-				float h = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).h;
+				float w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).width;
+				float h = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).height;
 
 				float minifier = (w > h) ? 96 / w : 96 / h;
 
@@ -7379,32 +7379,28 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links, std::string search)
 				icon->setMinSize(maxSize);
 				icon->setUpdateColors(false);
 				//icon->setPadding(4);
-
-				s->addWithDescription(link.title, link.link, icon,
-					[this, window, link]
-				{
-					/*window->pushGui(new GuiMsgBox(window, _("YouTube video: ") + "\n" + link.title + "\n?",
-						 _("PLAY"),[this, link]{
-							 std::string cmd = "youtube.sh play " + link.link;
-							 appLauncher(cmd);
-						 },
-						 _("PLAY VLC"),[this, window, link]{
-							 mWindow->pushGui(new GuiLoading<std::string>(window, _("LOADING..."),
-				 				[this, window, link](auto gui)
-				 				{
-				 					mWaitingLoad = true;
-				 					return getShOutput("youtube.sh link " + link.link);
-				 				},
-				 				[this, window](std::string l)
-				 				{
-				 					mWaitingLoad = false;
-									GuiVideoViewer::playVideo(mWindow, l, true);
-				 				}
-				 			));
-						},
-						 _("CANCEL"), nullptr));*/
-						 YTResult(link);
-				});
+				/*
+					inline void addWithDescription(
+						const std::string& label,
+						const std::string& description,
+						const std::shared_ptr<GuiComponent>& comp,
+						const std::function<void()>& func,
+						const std::string iconName = "",
+						bool setCursorHere = false,
+						bool multiLine = false)
+				*/
+				s->addWithDescription(
+						link.title,
+						link.uploader + "\n" + link.duration_string + "\n" + link.view_count + " views",
+						icon,
+						[this, window, link]
+							{
+									 YTResult(link);
+							},
+						"",
+						false,
+						true
+				);
 			}
 		mWindow->pushGui(s);
 	}
