@@ -6672,7 +6672,7 @@ void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data,
 	win->pushGui(new GuiWifi(win, title, data, onsave));
 }
 
-void GuiMenu::loadChromecast(Window* mWindow, std::string file, bool http)
+void GuiMenu::loadChromecast(Window* mWindow, std::string file)
 	{
 		Window* window = mWindow;
 		LOG(LogInfo) << "Chromecast:" << file;
@@ -6682,7 +6682,7 @@ void GuiMenu::loadChromecast(Window* mWindow, std::string file, bool http)
 				//mWaitingLoad = true;
 				return getAvahiService("_googlecast._tcp");
 			},
-			[window, file, http](std::vector<AVAHIserviceDetail> casts)
+			[window, file](std::vector<AVAHIserviceDetail> casts)
 			{
 				//mWaitingLoad = false;
 				if(casts.size() == 0)
@@ -6691,12 +6691,12 @@ void GuiMenu::loadChromecast(Window* mWindow, std::string file, bool http)
 					}
 				else
 					{
-						loadChromecastDevices(window, casts, file, http);
+						loadChromecastDevices(window, casts, file);
 					}
 			}
 		));
 	}
-void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDetail> casts, std::string file, bool http)
+void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDetail> casts, std::string file)
 	{
 		Window* window = mWindow;
 
@@ -6704,7 +6704,7 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 		std::string basename;
-		if(!file.empty() && !http)
+		if(!file.empty())
 			{
 				std::vector<std::string> bstr = Utils::String::split(file, '/');
 				basename = bstr[bstr.size() - 1];
@@ -6719,17 +6719,17 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 
 				s->addWithDescription(device.name , device.player,
 					std::make_shared<TextComponent>(window, device.oname, font, color),
-					[window, device, file, http]
+					[window, device, file]
 				{
 					LOG(LogInfo) << "Chromecast device:" << device.name;
-					loadChromecastDevice(window, device, file, http);
+					loadChromecastDevice(window, device, file);
 				}, "iconChromecast");
 			}
 
 		window->pushGui(s);
 	}
 
-void GuiMenu::ChromecastControl(std::string id, std::string action, std::string file, bool http)
+void GuiMenu::ChromecastControl(std::string id, std::string action, std::string file)
 	{
 		LOG(LogInfo) << "Chromecast action:" << action;
 
@@ -6756,16 +6756,24 @@ void GuiMenu::ChromecastControl(std::string id, std::string action, std::string 
 				AudioManager::getInstance()->setChromecastPaused(false);
 			}
 
-		runSystemCommand("go-chromecast -u " + id + " " + action + (file.empty() ? " &" : " '" + file + "' &"), "", nullptr);
+		if(action == "youtube")
+			{
+				AudioManager::getInstance()->setChromecast(true, file, id);
+				std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("go-chromecast -u " + id + " load-app YouTube \"v="+file+"\" &");
+			}
+		else
+			{
+				std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("go-chromecast -u " + id + " " + action + (file.empty() ? " &" : " '" + file + "' &"));
+			}
 
 	}
 
 
-void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::string file, bool http)
+void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::string file)
 	{
 		Window* window = mWindow;
 		std::string basename;
-		if(!file.empty() && !http)
+		if(!file.empty())
 			{
 				std::vector<std::string> bstr = Utils::String::split(file, '/');
 				basename = bstr[bstr.size() - 1];
@@ -6781,18 +6789,26 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 			{
 				if(file != AudioManager::getInstance()->ChromecastData().filename)
 					{
-						ChromecastControl(device.id, "load", file, http);
+						std::vector<std::string> bstr = Utils::String::split(file, '/');
+						if(bstr.size() == 2 && bstr.at(0) == "YouTube")
+							{
+								ChromecastControl(device.id, "youtube", bstr.at(1));
+							}
+						else
+							{
+								ChromecastControl(device.id, "load", file);
+							}
 					}
 
 				std::string basename = file;
 				std::vector<std::string> bstr = Utils::String::split(file, '/');
 				basename = bstr[bstr.size() - 1];
-				s->addEntry("LOAD " + basename, false, [device, file, http] {
-					ChromecastControl(device.id, "load", file, http);
+				s->addEntry("LOAD " + basename, false, [device, file] {
+					ChromecastControl(device.id, "load", file);
 				});
 			}
 
-			s->addEntry("STOP", false, [s, window, device, http] {
+			s->addEntry("STOP", false, [s, window, device] {
 				ChromecastControl(device.id, "stop");
 			});
 
@@ -7419,18 +7435,6 @@ void GuiMenu::YTResult(YoutubeLink link)
 		unsigned int color = theme->Text.color;
 		Window *window = mWindow;
 		auto s = new GuiSettings(mWindow, link.title);
-		// TODO: video info
-		s->addWithLabel(_("UPLOADER"), 	std::make_shared<TextComponent>(window, link.uploader, font, color));
-		s->addWithLabel(_("DURATION"), 	std::make_shared<TextComponent>(window, link.duration_string, font, color));
-		s->addWithLabel(_("VIEWS"), 	std::make_shared<TextComponent>(window, std::to_string(link.view_count), font, color));
-		s->addWithLabel(_("ID"), 	std::make_shared<TextComponent>(window, link.id, font, color));
-
-		if(!link.description.empty())
-			{
-				s->addEntry(_("DESCRIPTION"), true, [this, window, link]{ window->pushGui(new GuiMsgBox(window, link.description,	_("OK"), nullptr));	});
-			}
-
-		s->addGroup(_("VIDEO"));
 			s->addWithDescription(_("PLAY"), "",
 				nullptr,
 				[this, window, link]
@@ -7449,22 +7453,10 @@ void GuiMenu::YTResult(YoutubeLink link)
 					 YouTubeLoad();
 				 }));
 			}, "iconScraper", true);
-			/*
-			s->addEntry(_("PLAY"), false, [this, window, link]{
-				mWindow->pushGui(new GuiLoading<std::string>(window, _("Running..."),
-				 [this, window, link](auto gui)
-				 {
-					 mWaitingLoad = true;
-					 return getShOutput("sleep 0.5; echo 1");
-				 },
-				 [this, window, link](std::string l)
-				 {
-					 mWaitingLoad = false;
-					 appLauncher("youtube.sh play " + link.link);
-					 std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh phistory \"" + link.id + "\" \"" + Utils::String::replace(link.json, "\"", "\\\"") + "\"");
-					 YouTubeLoad();
-				 }));
-			});*/
+
+			s->addEntry(_("CAST"), false, [this, window, link]{
+				loadChromecast(window, "youtube/"+link.id);
+			}, "iconChromecast");
 
 			s->addEntry(_("DOWNLOAD"), false, [this, window, link]{
 				// download menu

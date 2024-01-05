@@ -625,10 +625,10 @@ public:
 	static void updateGameLists(Window* window, bool confirm = true);
 	static void editKeyboardMappings(Window *window, IKeyboardMapContainer* mapping, bool editable);
 
-	static void ChromecastControl(std::string id, std::string action, std::string file = "", bool http = false);
-	static void loadChromecast(Window* mWindow, std::string file = "", bool http = false);
-	static void loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDetail> casts, std::string file = "", bool http = false);
-	static void loadChromecastDevice(Window* mWindow, Chromecast device, std::string file = "", bool http = false);
+	static void ChromecastControl(std::string id, std::string action, std::string file = "");
+	static void loadChromecast(Window* mWindow, std::string file = "");
+	static void loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDetail> casts, std::string file = "");
+	static void loadChromecastDevice(Window* mWindow, Chromecast device, std::string file = "");
 	static std::vector<AVAHIserviceDetail> getAvahiService(std::string service);
 private:
 	void addEntry(std::string name, bool add_arrow, const std::function<void()>& func, const std::string iconName = "");
