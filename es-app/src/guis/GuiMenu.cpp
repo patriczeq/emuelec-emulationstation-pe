@@ -7335,7 +7335,7 @@ void GuiMenu::YouTubeSearchMenu()
 void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 	{
 		Window* window = mWindow;
-		std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh shistory \"" + q + "\"");
+		//std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh shistory \"" + q + "\"");
 
 		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING..."),
 			[this, window, q, maxResults](auto gui)
@@ -7361,6 +7361,7 @@ void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 										Links.push_back(yt_item);
 									}
 							}
+						YouTubeLoad();
 						YTResults(Links, q);
 					}
 			}
@@ -7385,7 +7386,7 @@ void GuiMenu::YTResultRow(Window* window, GuiSettings* s, YoutubeLink link)
 		//icon->setPadding(4);
 		s->addWithDescription(
 				link.title,
-				link.duration_string + "\n @" + link.uploader,
+				link.duration_string + "\r\n" + link.uploader + "\r\n" + std::to_string(link.view_count) + "views",
 				icon,
 				[this, window, link]
 					{
@@ -7431,6 +7432,7 @@ void GuiMenu::YTResult(YoutubeLink link)
 					 mWaitingLoad = false;
 					 appLauncher("youtube.sh play " + link.link);
 					 std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh phistory \"" + link.id + "\" \"" + Utils::String::replace(link.json, "\"", "\\\"") + "\"");
+					 YouTubeLoad();
 				 }));
 			});
 
