@@ -7317,9 +7317,9 @@ void GuiMenu::YouTubeSearchMenu()
 		auto s = new GuiSettings(mWindow, "YouTube Search");
 		s->addEntry(_("NEW SEARCH"), true, [this, window]() {
 			if (Settings::getInstance()->getBool("UseOSK"))
-				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "YouTube Search", "carplay", [this](const std::string& value) { YTJsonSearch(value); }, false));
+				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "YouTube Search", "", [this](const std::string& value) { YTJsonSearch(value); }, false));
 			else
-				mWindow->pushGui(new GuiTextEditPopup(window, "YouTube Search", "carplay", [this](const std::string& value) { YTJsonSearch(value); }, false));
+				mWindow->pushGui(new GuiTextEditPopup(window, "YouTube Search", "", [this](const std::string& value) { YTJsonSearch(value); }, false));
 		});
 		s->addGroup(_("SEARCH HISTORY"));
 		for(auto item : YouTubeSearchHistory)
@@ -7420,6 +7420,36 @@ void GuiMenu::YTResult(YoutubeLink link)
 		Window *window = mWindow;
 		auto s = new GuiSettings(mWindow, link.title);
 		// TODO: video info
+		s->addWithLabel(_("UPLOADER"), 	std::make_shared<TextComponent>(window, link.uploader, font, color));
+		s->addWithLabel(_("DURATION"), 	std::make_shared<TextComponent>(window, link.duration_string, font, color));
+		s->addWithLabel(_("VIEWS"), 	std::make_shared<TextComponent>(window, std::to_string(link.view_count), font, color));
+		s->addWithLabel(_("ID"), 	std::make_shared<TextComponent>(window, link.id, font, color));
+
+		if(!link.description.empty())
+			{
+				s->addEntry(_("DESCRIPTION"), true, [this, window, link]{ window->pushGui(new GuiMsgBox(window, link.description,	_("OK"), nullptr));	});
+			}
+
+		s->addGroup(_("VIDEO"));
+			s->addWithDescription(_("PLAY"), "",
+				nullptr,
+				[this, window, link]
+			{
+				mWindow->pushGui(new GuiLoading<std::string>(window, _("Running..."),
+				 [this, window, link](auto gui)
+				 {
+					 mWaitingLoad = true;
+					 return getShOutput("sleep 0.5; echo 1");
+				 },
+				 [this, window, link](std::string l)
+				 {
+					 mWaitingLoad = false;
+					 appLauncher("youtube.sh play " + link.link);
+					 std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh phistory \"" + link.id + "\" \"" + Utils::String::replace(link.json, "\"", "\\\"") + "\"");
+					 YouTubeLoad();
+				 }));
+			}, "iconScraper", true);
+			/*
 			s->addEntry(_("PLAY"), false, [this, window, link]{
 				mWindow->pushGui(new GuiLoading<std::string>(window, _("Running..."),
 				 [this, window, link](auto gui)
@@ -7434,14 +7464,10 @@ void GuiMenu::YTResult(YoutubeLink link)
 					 std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh phistory \"" + link.id + "\" \"" + Utils::String::replace(link.json, "\"", "\\\"") + "\"");
 					 YouTubeLoad();
 				 }));
-			});
+			});*/
 
-		s->addGroup(_("DOWNLOADS"));
-			s->addEntry(_("DOWNLOAD MP4"), false, [this, window, link]{
-
-			});
-			s->addEntry(_("DOWNLOAD MP3"), false, [this, window, link]{
-
+			s->addEntry(_("DOWNLOAD"), false, [this, window, link]{
+				// download menu
 			});
 
 		window->pushGui(s);

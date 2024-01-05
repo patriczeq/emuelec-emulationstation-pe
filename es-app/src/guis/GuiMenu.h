@@ -846,7 +846,7 @@ private:
 
 	inline void addWithDescription(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func, const std::string iconName = "", bool setCursorHere = false, /*bool invert_when_selected = true,*/ bool multiLine = false)
 	{
-		mMenu.addWithDescription(label, description, comp, func, iconName, setCursorHere, true/*multiLine*/);
+		mMenu.addWithDescription(label, description, comp, func, iconName, setCursorHere, multiLine);
 	}
 
 public:
