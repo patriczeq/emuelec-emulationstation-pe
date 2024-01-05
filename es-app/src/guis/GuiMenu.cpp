@@ -7272,7 +7272,9 @@ void GuiMenu::YouTube()
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 		Window *window = mWindow;
-		auto s = new GuiSettings(mWindow, "YouTube", _("SEARCH"), [this]{
+		auto s = new GuiSettings(mWindow, "YouTube");
+
+		s->addEntry( _("SEARCH"), true, [this](){
 			YouTubeSearchMenu();
 		});
 
