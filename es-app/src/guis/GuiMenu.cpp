@@ -7282,29 +7282,6 @@ void GuiMenu::YouTube()
 		for(auto link : YouTubeLastPlayed)
 			{
 				YTResultRow(window, s, link);
-				/*float w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).width;
-				float h = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).height;
-
-				float minifier = (w > h) ? 96 / w : 96 / h;
-
-				Vector2f maxSize(w * minifier, h * minifier);
-
-				auto icon = std::make_shared<WebImageComponent>(window, 600); // image expire after 10 minutes
-				icon->setImage(!link.thumbnails.size() ? "" : link.thumbnails.at(0).url, false, maxSize);
-				icon->setMaxSize(maxSize);
-				//icon->setSize(maxSize);
-				icon->setMinSize(maxSize);
-				icon->setUpdateColors(false);
-				//icon->setPadding(4);
-				s->addWithDescription(
-						link.title,
-						link.duration_string,
-						icon,
-						[this, window, link]
-							{
-									 YTResult(link);
-							}
-				);*/
 			}
 
 		window->pushGui(s);
@@ -7420,29 +7397,6 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links, std::string search)
 		for(auto link : links)
 			{
 				YTResultRow(window, s, link);
-				/*float w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).width;
-				float h = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).height;
-
-				float minifier = (w > h) ? 96 / w : 96 / h;
-
-				Vector2f maxSize(w * minifier, h * minifier);
-
-				auto icon = std::make_shared<WebImageComponent>(window, 600); // image expire after 10 minutes
-				icon->setImage(!link.thumbnails.size() ? "" : link.thumbnails.at(0).url, false, maxSize);
-				icon->setMaxSize(maxSize);
-				//icon->setSize(maxSize);
-				icon->setMinSize(maxSize);
-				icon->setUpdateColors(false);
-				//icon->setPadding(4);
-				s->addWithDescription(
-						link.title,
-						link.duration_string,
-						icon,
-						[this, window, link]
-							{
-									 YTResult(link);
-							}
-				);*/
 			}
 		mWindow->pushGui(s);
 	}
@@ -7454,28 +7408,7 @@ void GuiMenu::YTResult(YoutubeLink link)
 		unsigned int color = theme->Text.color;
 		Window *window = mWindow;
 		auto s = new GuiSettings(mWindow, link.title);
-
-			/*s->addEntry(_("PLAY"), false, [this, window, link]{
-				mWindow->pushGui(new GuiLoading<std::string>(window, _("GENERATING VIDEO URL..."),
-				 [this, window, link](auto gui)
-				 {
-					 mWaitingLoad = true;
-					 std::vector<std::string> _req = ApiSystem::getInstance()->getScriptResults("youtube.sh getlink " + link.link);
-					 return _req.size() > 0 ? _req.at(0) : "";
-				 },
-				 [this, window](std::string l)
-				 {
-					 mWaitingLoad = false;
-					 if(l.empty())
-					 	{
-							window->pushGui(new GuiMsgBox(window, _("ERROR\nFAILED TO GET VIDEO LINK!"),_("OK"),nullptr));
-						}
-						else
-						{
-							appLauncher("youtube.sh playlink \"" + l + "\"");
-						}
-				 }));
-			});*/
+		// TODO: video info
 			s->addEntry(_("PLAY"), false, [this, window, link]{
 				mWindow->pushGui(new GuiLoading<std::string>(window, _("Running..."),
 				 [this, window, link](auto gui)
@@ -7487,21 +7420,10 @@ void GuiMenu::YTResult(YoutubeLink link)
 				 {
 					 mWaitingLoad = false;
 					 appLauncher("youtube.sh play " + link.link);
-					 std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh phistory \"" + Utils::String::replace(link.json, "\"", "\\\"") + "\"");
+					 std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh phistory " + link.id + " \"" + Utils::String::replace(link.json, "\"", "\\\"") + "\"");
 				 }));
 			});
-			/*s->addEntry(_("CAST"), false, [this, window, link]{
-				mWindow->pushGui(new GuiLoading<std::string>(window, _("GENERATING VIDEO URL..."),
-				 [this, window, link](auto gui)
-				 {
-					 mWaitingLoad = true;
-					 return getShOutput("youtube.sh getlink " + link.link);
-				 },
-				 [this, window](std::string l)
-				 {
-					 loadChromecast(window, l, true);
-				 }));
-			}, "iconChromecast");*/
+
 		s->addGroup(_("DOWNLOADS"));
 			s->addEntry(_("DOWNLOAD MP4"), false, [this, window, link]{
 

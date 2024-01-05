@@ -529,6 +529,7 @@ struct YoutubeLink {
 			if (!doc.HasParseError())
 			{
 					link 							= doc.HasMember("url") && doc["url"].IsString()	? doc["url"].GetString() : "";
+					id 							= doc.HasMember("id") && doc["id"].IsString()	? doc["id"].GetString() : "";
 					title 						= doc.HasMember("title") && doc["title"].IsString()	? doc["title"].GetString() : "";
 					duration_string 	= doc.HasMember("duration_string") && doc["duration_string"].IsString()		? doc["duration_string"].GetString() : "";
 					description 			= doc.HasMember("description") && doc["description"].IsString()		? doc["description"].GetString() : "";
@@ -554,6 +555,7 @@ struct YoutubeLink {
 	std::string duration_string;
 	std::string description;
 	std::string uploader;
+	std::string id;
 	int view_count;
 	std::string json;
 	std::vector<YoutubeThumbnail> thumbnails;
