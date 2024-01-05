@@ -7402,7 +7402,7 @@ void GuiMenu::YTResult(YoutubeLink link)
 		Window *window = mWindow;
 		auto s = new GuiSettings(mWindow, link.title);
 
-			s->addEntry(_("PLAY"), false, [this, window, link]{
+			/*s->addEntry(_("PLAY"), false, [this, window, link]{
 				mWindow->pushGui(new GuiLoading<std::string>(window, _("GENERATING VIDEO URL..."),
 				 [this, window, link](auto gui)
 				 {
@@ -7419,12 +7419,22 @@ void GuiMenu::YTResult(YoutubeLink link)
 						}
 						else
 						{
-							appLauncher("youtube.sh playlink " + l);
+							appLauncher("youtube.sh playlink \"" + l + "\"");
 						}
 				 }));
-			});
-			s->addEntry(_("PLAY FROM STD"), false, [this, link]{
-				appLauncher("youtube.sh play " + link.link);
+			});*/
+			s->addEntry(_("PLAY"), false, [this, link]{
+				mWindow->pushGui(new GuiLoading<std::string>(window, _("Running..."),
+				 [this, window, link](auto gui)
+				 {
+					 mWaitingLoad = true;
+					 return getShOutput("sleep 0.5; echo 1");
+				 },
+				 [this, window, link](std::string l)
+				 {
+					 mWaitingLoad = false;
+					 appLauncher("youtube.sh play " + link.link);
+				 }));
 			});
 			/*s->addEntry(_("CAST"), false, [this, window, link]{
 				mWindow->pushGui(new GuiLoading<std::string>(window, _("GENERATING VIDEO URL..."),
