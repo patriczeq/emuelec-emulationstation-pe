@@ -524,21 +524,16 @@ struct YoutubeLink {
 	YoutubeLink(std::string json)
 		{
 			rapidjson::Document doc;
-			// fix null
-			json = Utils::String::replace(json, "\":null", "\":\"\"");
-			json = Utils::String::replace(json, "\": null", "\":\"\"");
-			json = Utils::String::replace(json, "\":NULL", "\":\"\"");
-			json = Utils::String::replace(json, "\": NULL", "\":\"\"");
 
 			doc.Parse(json.c_str());
 			if (!doc.HasParseError())
 			{
-					link 							= doc.HasMember("url") 		? doc["url"].GetString() : "";
-					title 						= doc.HasMember("title") 	? doc["title"].GetString() : "";
-					duration_string 	= doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
-					description 			= doc.HasMember("description") 		? doc["description"].GetString() : "";
-					uploader 					= doc.HasMember("uploader") 		? doc["uploader"].GetString() : "";
-					view_count 				= doc.HasMember("view_count") 		? doc["view_count"].GetString() : "";
+					link 							= doc.HasMember("url") && doc["url"].IsString()	? doc["url"].GetString() : "";
+					title 						= doc.HasMember("title") && doc["title"].IsString()	? doc["title"].GetString() : "";
+					duration_string 	= doc.HasMember("duration_string") && doc["duration_string"].IsString()		? doc["duration_string"].GetString() : "";
+					description 			= doc.HasMember("description") && doc["description"].IsString()		? doc["description"].GetString() : "";
+					uploader 					= doc.HasMember("uploader") 	&& doc["uploader"].IsString()	? doc["uploader"].GetString() : "";
+					view_count 				= doc.HasMember("view_count") && doc["uploader"].IsNumber()		? doc["view_count"].GetInt() : -1;
 					if(doc.HasMember("thumbnails"))
 						{
 							for (auto& item : doc["thumbnails"].GetArray())
@@ -562,7 +557,7 @@ struct YoutubeLink {
 	std::string duration_string;
 	std::string description;
 	std::string uploader;
-	std::string view_count;
+	int view_count;
 	std::vector<YoutubeThumbnail> thumbnails;
 };
 
@@ -767,7 +762,7 @@ private:
 	std::vector<std::string> YouTubeSearchHistory;
 	std::vector<YoutubeLink> YouTubeLastPlayed;
 	void YouTubeSearchMenu();
-	void YTJsonSearch(std::string q, int maxResults = 10);
+	void YTJsonSearch(std::string q, int maxResults = 20);
 	void YTResults(std::vector<YoutubeLink> links, std::string search = "");
 	void YTResult(YoutubeLink link);
 

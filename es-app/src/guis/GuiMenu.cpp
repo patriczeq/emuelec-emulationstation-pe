@@ -7391,7 +7391,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links, std::string search)
 				*/
 				s->addWithDescription(
 						link.title,
-						link.uploader + "\n" + link.duration_string + "\n" + link.view_count + " views",
+						link.duration_string,
 						icon,
 						[this, window, link]
 							{
