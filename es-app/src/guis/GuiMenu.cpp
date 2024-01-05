@@ -7322,7 +7322,7 @@ void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 										ytdlpcmd+= "--flat-playlist ";
 										ytdlpcmd+= "--ignore-errors ";
 										ytdlpcmd+= "--prefer-insecure";
-										yrdlpcmd+= "--match-filter \"original_url!*=/shorts/ & url!*=/shorts/\"";
+										ytdlpcmd+= "--match-filter \"original_url!*=/shorts/ & url!*=/shorts/\"";
 				return ApiSystem::getInstance()->getScriptResults(ytdlpcmd);
 			},
 			[this, window, q](std::vector<std::string> links)
@@ -7426,7 +7426,7 @@ void GuiMenu::YTResult(YoutubeLink link)
 				 {
 					 mWaitingLoad = false;
 					 appLauncher("youtube.sh playlink " + l);
-				 }
+				 }));
 			});
 			s->addEntry(_("CAST"), false, [this, window, link]{
 				mWindow->pushGui(new GuiLoading<std::string>(window, _("GENERATING VIDEO URL..."),
