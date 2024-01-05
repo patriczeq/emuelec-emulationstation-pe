@@ -7310,6 +7310,8 @@ void GuiMenu::YouTubeSearchMenu()
 void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 	{
 		Window* window = mWindow;
+		runSystemCommand("youtube.sh history \"" + Utils::String::replace(q, "_!SPC!_", " ") + "\"", "", nullptr);
+
 		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING..."),
 			[this, window, q, maxResults](auto gui)
 			{
@@ -7379,16 +7381,6 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links, std::string search)
 				icon->setMinSize(maxSize);
 				icon->setUpdateColors(false);
 				//icon->setPadding(4);
-				/*
-					inline void addWithDescription(
-						const std::string& label,
-						const std::string& description,
-						const std::shared_ptr<GuiComponent>& comp,
-						const std::function<void()>& func,
-						const std::string iconName = "",
-						bool setCursorHere = false,
-						bool multiLine = false)
-				*/
 				s->addWithDescription(
 						link.title,
 						link.duration_string,
@@ -7415,15 +7407,26 @@ void GuiMenu::YTResult(YoutubeLink link)
 				 [this, window, link](auto gui)
 				 {
 					 mWaitingLoad = true;
-					 return getShOutput("youtube.sh getlink " + link.link);
+					 std::vector<std::string> _req = ApiSystem::getInstance()->getScriptResults("youtube.sh getlink " + link.link);
+					 return _req.size() > 0 ? _req.at(0) : "";
 				 },
 				 [this, window](std::string l)
 				 {
 					 mWaitingLoad = false;
-					 appLauncher("youtube.sh playlink " + l);
+					 if(l.empty())
+					 	{
+							window->pushGui(new GuiMsgBox(window, _("ERROR\nFAILED TO GET VIDEO LINK!"),_("OK"),nullptr));
+						}
+						else
+						{
+							appLauncher("youtube.sh playlink " + l);
+						}
 				 }));
 			});
-			s->addEntry(_("CAST"), false, [this, window, link]{
+			s->addEntry(_("PLAY FROM STD"), false, [this, link]{
+				appLauncher("youtube.sh play " + link.link);
+			});
+			/*s->addEntry(_("CAST"), false, [this, window, link]{
 				mWindow->pushGui(new GuiLoading<std::string>(window, _("GENERATING VIDEO URL..."),
 				 [this, window, link](auto gui)
 				 {
@@ -7434,7 +7437,7 @@ void GuiMenu::YTResult(YoutubeLink link)
 				 {
 					 loadChromecast(window, l, true);
 				 }));
-			}, "iconChromecast");
+			}, "iconChromecast");*/
 		s->addGroup(_("DOWNLOADS"));
 			s->addEntry(_("DOWNLOAD MP4"), false, [this, window, link]{
 

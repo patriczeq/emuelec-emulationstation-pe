@@ -765,6 +765,7 @@ private:
 	void YTJsonSearch(std::string q, int maxResults = 20);
 	void YTResults(std::vector<YoutubeLink> links, std::string search = "");
 	void YTResult(YoutubeLink link);
+	
 
 
 
