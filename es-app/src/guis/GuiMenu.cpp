@@ -6759,11 +6759,11 @@ void GuiMenu::ChromecastControl(std::string id, std::string action, std::string 
 		if(action == "YouTube")
 			{
 				AudioManager::getInstance()->setChromecast(true, file, id);
-				std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("go-chromecast -u " + id + " load-app YouTube \"v="+file+"\" &");
+				runSystemCommand("go-chromecast -u " + id + " load-app YouTube \"v="+file+"\" &", "", nullptr);
 			}
 		else
 			{
-				std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("go-chromecast -u " + id + " " + action + (file.empty() ? " &" : " '" + file + "' &"));
+				runSystemCommand("go-chromecast -u " + id + " " + action + (file.empty() ? " &" : " '" + file + "' &"), "", nullptr);
 			}
 
 	}
