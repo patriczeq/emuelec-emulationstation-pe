@@ -524,15 +524,21 @@ struct YoutubeLink {
 	YoutubeLink(std::string json)
 		{
 			rapidjson::Document doc;
+			// fix null
+			json = Utils::String::replace(json, "\":null", "\":\"\"");
+			json = Utils::String::replace(json, "\": null", "\":\"\"");
+			json = Utils::String::replace(json, "\":NULL", "\":\"\"");
+			json = Utils::String::replace(json, "\": NULL", "\":\"\"");
+
 			doc.Parse(json.c_str());
 			if (!doc.HasParseError())
 			{
-					link 			= doc.HasMember("url") 		? doc["url"].GetString() : "";
-					title 		= doc.HasMember("title") 	? doc["title"].GetString() : "";
+					link 							= doc.HasMember("url") 		? doc["url"].GetString() : "";
+					title 						= doc.HasMember("title") 	? doc["title"].GetString() : "";
 					duration_string 	= doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
-					description = doc.HasMember("description") 		? doc["description"].GetString() : "";
-					uploader = doc.HasMember("uploader") 		? doc["uploader"].GetString() : "";
-					view_count = doc.HasMember("view_count") 		? doc["view_count"].GetString() : "";
+					description 			= doc.HasMember("description") 		? doc["description"].GetString() : "";
+					uploader 					= doc.HasMember("uploader") 		? doc["uploader"].GetString() : "";
+					view_count 				= doc.HasMember("view_count") 		? doc["view_count"].GetString() : "";
 					if(doc.HasMember("thumbnails"))
 						{
 							for (auto& item : doc["thumbnails"].GetArray())
@@ -842,7 +848,7 @@ private:
 
 	inline void addWithDescription(const std::string& label, const std::string& description, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func, const std::string iconName = "", bool setCursorHere = false, /*bool invert_when_selected = true,*/ bool multiLine = false)
 	{
-		mMenu.addWithDescription(label, description, comp, func, iconName, setCursorHere, multiLine);
+		mMenu.addWithDescription(label, description, comp, func, iconName, setCursorHere, true/*multiLine*/);
 	}
 
 public:

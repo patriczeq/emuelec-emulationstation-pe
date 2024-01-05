@@ -7396,10 +7396,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links, std::string search)
 						[this, window, link]
 							{
 									 YTResult(link);
-							},
-						"",
-						false,
-						true
+							}
 				);
 			}
 		mWindow->pushGui(s);
