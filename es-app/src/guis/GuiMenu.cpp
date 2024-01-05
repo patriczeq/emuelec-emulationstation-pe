@@ -7297,7 +7297,17 @@ void GuiMenu::YouTubeLoad()
 		YouTubeLastPlayed.clear();
 			for(auto phistory : ApiSystem::getInstance()->getScriptResults("youtube.sh getPhistory"))
 				{
-					YouTubeLastPlayed.push_back(YoutubeLink(phistory));
+					std::string json = "";
+					int t = 0;
+					for(auto token : Utils::String::split(phistory, ';'))
+						{
+							if(t > 0)
+								{
+									json += token;
+								}
+							t++;
+						}
+					YouTubeLastPlayed.push_back(YoutubeLink(token));
 				}
 	}
 
@@ -7375,7 +7385,7 @@ void GuiMenu::YTResultRow(Window* window, GuiSettings* s, YoutubeLink link)
 		//icon->setPadding(4);
 		s->addWithDescription(
 				link.title,
-				link.duration_string,
+				link.duration_string + "\n @" + link.uploader,
 				icon,
 				[this, window, link]
 					{
@@ -7420,7 +7430,7 @@ void GuiMenu::YTResult(YoutubeLink link)
 				 {
 					 mWaitingLoad = false;
 					 appLauncher("youtube.sh play " + link.link);
-					 std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh phistory " + link.id + " \"" + Utils::String::replace(link.json, "\"", "\\\"") + "\"");
+					 std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh phistory \"" + link.id + "\" \"" + Utils::String::replace(link.json, "\"", "\\\"") + "\"");
 				 }));
 			});
 
