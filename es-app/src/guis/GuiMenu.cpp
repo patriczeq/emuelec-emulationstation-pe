@@ -7307,7 +7307,7 @@ void GuiMenu::YouTubeLoad()
 								}
 							t++;
 						}
-					YouTubeLastPlayed.push_back(YoutubeLink(token));
+					YouTubeLastPlayed.push_back(YoutubeLink(json));
 				}
 	}
 
