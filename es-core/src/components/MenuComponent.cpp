@@ -119,6 +119,11 @@ void MenuComponent::addMenuIcon(Window* window, ComponentListRow& row, const std
 	else if (iconName == "unknown")
 		label = _U("\uf1de");
 
+	else if (iconName.rfind("\u", 0) == 0)
+		{
+			label = _U(iconName);
+		}
+
 	if (!label.empty())
 	{
 		auto text = std::make_shared<TextComponent>(window, label, theme->Text.font, theme->Text.color, ALIGN_CENTER);
