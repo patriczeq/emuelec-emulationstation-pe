@@ -7423,7 +7423,7 @@ void GuiMenu::YTResult(YoutubeLink link)
 						}
 				 }));
 			});*/
-			s->addEntry(_("PLAY"), false, [this, link]{
+			s->addEntry(_("PLAY"), false, [this, window, link]{
 				mWindow->pushGui(new GuiLoading<std::string>(window, _("Running..."),
 				 [this, window, link](auto gui)
 				 {
