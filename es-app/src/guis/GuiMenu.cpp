@@ -7272,7 +7272,7 @@ void GuiMenu::YouTube()
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 		Window *window = mWindow;
-		auto s = new GuiSettings(mWindow, _U("\uF16A  ") + " YouTube");
+		auto s = new GuiSettings(mWindow, /*_U("\uF16A  ") + */"YouTube");
 		s->addEntry(_("DEBUG NEWSEARCH"), true, [this, window]() {
 			if (Settings::getInstance()->getBool("UseOSK"))
 				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "YouTube Search", "carplay", [this](const std::string& value) { YTJsonSearch(value); }, false));
