@@ -303,9 +303,9 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 				GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
 	addEntry(_UL("\uf07b", "FILE MANAGER"), false, [this] { appLauncher("file_manager.sh"); }, "iconFileManager");
-	addEntry(_UL("\uf16a", "YouTube"), true, [this]() {
+	addEntry(_("YouTube"), true, [this]() {
 		YouTube();
-	}, "iconYouTube");
+	}, "\uf16a");
 	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "iconApps");
 
 	if (isFullUI)
