@@ -10,7 +10,8 @@
 #include <SystemData.h>
 #include "KeyboardMapping.h"
 #include "utils/VectorEx.h"
-
+#include <rapidjson/rapidjson.h>
+#include <rapidjson/pointer.h>
 
 class StrInputConfig
 {
@@ -520,13 +521,34 @@ struct YoutubeThumbnail {
 };
 struct YoutubeLink {
 	YoutubeLink(){}
-	YoutubeLink(std::string raw)
+	YoutubeLink(std::string json)
 		{
-			std::vector<std::string> tokens = Utils::String::split(raw, ';');
-			link 		= tokens.at(0);
-			img 		= tokens.at(1);
-			title 	= tokens.at(2);
+			rapidjson::Document doc;
+			doc.Parse(json.c_str());
+			if (!doc.HasParseError())
+			{
+					link 			= doc.HasMember("url") 		? doc["url"].GetString() : "";
+					title 		= doc.HasMember("title") 	? doc["title"].GetString() : "";
+					duration 	= doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
+					description = doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
+					if(doc.HasMember("thumbnails"))
+						{
+							for (auto& item : doc["thumbnails"].GetArray())
+								{
+									thumbnails.push_back(
+										YoutubeThumbnail(
+											item["url"].GetString(),
+											item["width"].GetInt(),
+											item["height"].GetInt()
+										)
+									);
+								}
+						}
+			}
 		}
+	std::string getJSON(){
+
+	}
 	std::string link;
 	std::string img;
 	std::string title;
@@ -731,9 +753,9 @@ private:
 
 	void openProccesses(std::vector<SysProccess> p);
 
-	void YTSearch(std::string q);
+	//void YTSearch(std::string q);
 	void YTJsonSearch(std::string q, int maxResults = 10);
-	void YTResults(std::vector<YoutubeLink> links);
+	void YTResults(std::vector<YoutubeLink> links, std::string search = "");
 
 
 

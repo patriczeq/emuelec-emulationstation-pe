@@ -62,8 +62,6 @@
 #include "TextToSpeech.h"
 #include "Paths.h"
 
-#include <rapidjson/rapidjson.h>
-#include <rapidjson/pointer.h>
 
 #include "components/WebImageComponent.h"
 
@@ -305,11 +303,8 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 				GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
 	addEntry(_("FILE MANAGER").c_str(), false, [this] { appLauncher("file_manager.sh"); }, "iconFileManager");
-	addEntry(_("YouTube Search"), false, [this, window]() {
-		if (Settings::getInstance()->getBool("UseOSK"))
-			mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "YouTube Search", "carplay", [this](const std::string& value) { YTJsonSearch(value); }, false));
-		else
-			mWindow->pushGui(new GuiTextEditPopup(window, "YouTube Search", "carplay", [this](const std::string& value) { YTJsonSearch(value); }, false));
+	addEntry(_("YouTube"), true, [this]() {
+		YouTube();
 	}, "iconYouTube");
 	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "iconApps");
 
@@ -7271,6 +7266,26 @@ void GuiMenu::openTraceroute(std::string addr, std::vector<TraceRouteHop> hops)
 	}
 
 // YOUTUBE
+void GuiMenu::YouTube()
+	{
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+		Window *window = mWindow;
+		auto s = new GuiSettings(mWindow, _U("\uF16A  ") + " YouTube");
+		s->addEntry(_("DEBUG NEWSEARCH"), true, [this, window]() {
+			if (Settings::getInstance()->getBool("UseOSK"))
+				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "YouTube Search", "carplay", [this](const std::string& value) { YTJsonSearch(value); }, false));
+			else
+				mWindow->pushGui(new GuiTextEditPopup(window, "YouTube Search", "carplay", [this](const std::string& value) { YTJsonSearch(value); }, false));
+		});
+		s->addEntry(_("SEARCH"), true, [this]() {
+			//YouTubeSearchMenu();
+		});
+
+		window->pushGui(s);
+	}
+
 void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 	{
 		Window* window = mWindow;
@@ -7303,7 +7318,12 @@ void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 						// parse
 						for(auto json : links)
 							{
-								LOG(LogDebug) << "JSON:" << json;
+								YoutubeLink yt_item(json);
+								if(!yt_item.link.empty())
+									{
+										Links.push_back(yt_item);
+									}
+								/*LOG(LogDebug) << "JSON:" << json;
 								rapidjson::Document doc;
 								doc.Parse(json.c_str());
 
@@ -7333,7 +7353,7 @@ void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 													}
 											}
 									Links.push_back(yt_item);
-								}
+								}*/
 							}
 						YTResults(Links);
 					}
@@ -7341,6 +7361,7 @@ void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 		));
 	}
 
+/*
 void GuiMenu::YTSearch(std::string q)
 	{
 		Window* window = mWindow;
@@ -7370,24 +7391,18 @@ void GuiMenu::YTSearch(std::string q)
 					}
 			}
 		));
-	}
-void GuiMenu::YTResults(std::vector<YoutubeLink> links)
+	}*/
+void GuiMenu::YTResults(std::vector<YoutubeLink> links, std::string search)
 	{
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 		Window *window = mWindow;
-		auto s = new GuiSettings(mWindow, _("YouTube").c_str());
-		/*auto logo = "/emuelec/bin/ytlogo.png";
-		if (Utils::FileSystem::exists(logo))
-		{
-			auto image = std::make_shared<ImageComponent>(mWindow, true);  // image expire immediately
-			image->setIsLinear(true);
-			image->setImage(logo);
-			s->setSubTitle("fake");
-			s->setTitleImage(image, true);
-		}*/
-
+		auto s = new GuiSettings(mWindow, _("YouTube"));
+		if(!search.empty())
+			{
+				s->setSubTitle(search);
+			}
 		for(auto link : links)
 			{
 				float w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).w;
@@ -7404,15 +7419,6 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 				icon->setMinSize(maxSize);
 				icon->setUpdateColors(false);
 				//icon->setPadding(4);
-				/*
-
-			    padding: 25px 50px 75px 100px;
-			        top padding is 25px
-			        right padding is 50px
-			        bottom padding is 75px
-			        left padding is 100px
-
-				*/
 
 				s->addWithDescription(link.title, link.link, icon,
 					[this, window, link]
@@ -7433,7 +7439,6 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links)
 				 				{
 				 					mWaitingLoad = false;
 									GuiVideoViewer::playVideo(mWindow, l, true);
-				 					// vlc play "l"
 				 				}
 				 			));
 						},
