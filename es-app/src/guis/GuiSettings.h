@@ -25,6 +25,7 @@ public:
 	{
 		mMenu.setUpdateType(updateType);
 	}
+	
 
 	inline void addRow(const ComponentListRow& row)
 	{

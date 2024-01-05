@@ -6672,7 +6672,7 @@ void GuiMenu::openWifiSettings(Window* win, std::string title, std::string data,
 	win->pushGui(new GuiWifi(win, title, data, onsave));
 }
 
-void GuiMenu::loadChromecast(Window* mWindow, std::string file)
+void GuiMenu::loadChromecast(Window* mWindow, std::string file, bool http)
 	{
 		Window* window = mWindow;
 		LOG(LogInfo) << "Chromecast:" << file;
@@ -6682,7 +6682,7 @@ void GuiMenu::loadChromecast(Window* mWindow, std::string file)
 				//mWaitingLoad = true;
 				return getAvahiService("_googlecast._tcp");
 			},
-			[window, file](std::vector<AVAHIserviceDetail> casts)
+			[window, file, http](std::vector<AVAHIserviceDetail> casts)
 			{
 				//mWaitingLoad = false;
 				if(casts.size() == 0)
@@ -6691,12 +6691,12 @@ void GuiMenu::loadChromecast(Window* mWindow, std::string file)
 					}
 				else
 					{
-						loadChromecastDevices(window, casts, file);
+						loadChromecastDevices(window, casts, file, http);
 					}
 			}
 		));
 	}
-void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDetail> casts, std::string file)
+void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDetail> casts, std::string file, bool http)
 	{
 		Window* window = mWindow;
 
@@ -6704,13 +6704,13 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 		std::string basename;
-		if(!file.empty())
+		if(!file.empty() && !http)
 			{
 				std::vector<std::string> bstr = Utils::String::split(file, '/');
 				basename = bstr[bstr.size() - 1];
 			}
 
-		auto s = new GuiSettings(window, _("CHROMECAST") + (!file.empty() ? (": "+basename) : ""));
+		auto s = new GuiSettings(window, _("CHROMECAST") + (!basename.empty() ? (": "+basename) : ""));
 
 
 		for(auto dev : casts)
@@ -6722,14 +6722,14 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 					[window, device, file]
 				{
 					LOG(LogInfo) << "Chromecast device:" << device.name;
-					loadChromecastDevice(window, device, file);
+					loadChromecastDevice(window, device, file, http);
 				}, "iconChromecast");
 			}
 
 		window->pushGui(s);
 	}
 
-void GuiMenu::ChromecastControl(std::string id, std::string action, std::string file)
+void GuiMenu::ChromecastControl(std::string id, std::string action, std::string file, bool http)
 	{
 		LOG(LogInfo) << "Chromecast action:" << action;
 
@@ -6761,11 +6761,11 @@ void GuiMenu::ChromecastControl(std::string id, std::string action, std::string 
 	}
 
 
-void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::string file)
+void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::string file, bool http)
 	{
 		Window* window = mWindow;
 		std::string basename;
-		if(!file.empty())
+		if(!file.empty() && !http)
 			{
 				std::vector<std::string> bstr = Utils::String::split(file, '/');
 				basename = bstr[bstr.size() - 1];
@@ -6781,18 +6781,18 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 			{
 				if(file != AudioManager::getInstance()->ChromecastData().filename)
 					{
-						ChromecastControl(device.id, "load", file);
+						ChromecastControl(device.id, "load", file, http);
 					}
 
 				std::string basename = file;
 				std::vector<std::string> bstr = Utils::String::split(file, '/');
 				basename = bstr[bstr.size() - 1];
-				s->addEntry("LOAD " + basename, false, [device, file] {
-					ChromecastControl(device.id, "load", file);
+				s->addEntry("LOAD " + basename, false, [device, file, http] {
+					ChromecastControl(device.id, "load", file, http);
 				});
 			}
 
-			s->addEntry("STOP", false, [s, window, device] {
+			s->addEntry("STOP", false, [s, window, device, http] {
 				ChromecastControl(device.id, "stop");
 			});
 
@@ -7272,16 +7272,35 @@ void GuiMenu::YouTube()
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 		Window *window = mWindow;
-		auto s = new GuiSettings(mWindow, /*_U("\uF16A  ") + */"YouTube");
-		s->addEntry(_("DEBUG NEWSEARCH"), true, [this, window]() {
+		auto s = new GuiSettings(mWindow, "YouTube", _("SEARCH"), [this]{
+			YouTubeSearchMenu();
+		});
+
+		for(auto item : YouTubeLastPlayed)
+			{
+
+			}
+
+		window->pushGui(s);
+	}
+
+void GuiMenu::YouTubeSearchMenu()
+	{
+		Window *window = mWindow;
+		auto s = new GuiSettings(mWindow, "YouTube Search");
+		s->addEntry(_("NEW SEARCH"), true, [this, window]() {
 			if (Settings::getInstance()->getBool("UseOSK"))
 				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "YouTube Search", "carplay", [this](const std::string& value) { YTJsonSearch(value); }, false));
 			else
 				mWindow->pushGui(new GuiTextEditPopup(window, "YouTube Search", "carplay", [this](const std::string& value) { YTJsonSearch(value); }, false));
 		});
-		s->addEntry(_("SEARCH"), true, [this]() {
-			//YouTubeSearchMenu();
-		});
+		s->addGroup(_("SEARCH HISTORY"));
+		for(auto item : YouTubeSearchHistory)
+			{
+				s->addEntry(item, false, [this, window, item]() {
+					YTJsonSearch(item);
+				});
+			}
 
 		window->pushGui(s);
 	}
@@ -7303,6 +7322,7 @@ void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 										ytdlpcmd+= "--flat-playlist ";
 										ytdlpcmd+= "--ignore-errors ";
 										ytdlpcmd+= "--prefer-insecure";
+										yrdlpcmd+= "--match-filter \"original_url!*=/shorts/ & url!*=/shorts/\"";
 				return ApiSystem::getInstance()->getScriptResults(ytdlpcmd);
 			},
 			[this, window, q](std::vector<std::string> links)
@@ -7315,7 +7335,6 @@ void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 				else
 					{
 						std::vector<YoutubeLink> Links;
-						// parse
 						for(auto json : links)
 							{
 								YoutubeLink yt_item(json);
@@ -7323,75 +7342,14 @@ void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 									{
 										Links.push_back(yt_item);
 									}
-								/*LOG(LogDebug) << "JSON:" << json;
-								rapidjson::Document doc;
-								doc.Parse(json.c_str());
-
-								if (doc.HasParseError())
-								{
-									std::string err = std::string("YouTube - Error parsing JSON. \n\t");
-									LOG(LogError) << err;
-								}
-								else
-								{
-									YoutubeLink yt_item;
-										yt_item.link 		= doc.HasMember("url") 		? doc["url"].GetString() : "";
-										yt_item.title 		= doc.HasMember("title") 	? doc["title"].GetString() : "";
-										yt_item.duration = doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
-										yt_item.description = doc.HasMember("duration_string") 		? doc["duration_string"].GetString() : "";
-										if(doc.HasMember("thumbnails"))
-											{
-												for (auto& item : doc["thumbnails"].GetArray())
-													{
-														yt_item.thumbnails.push_back(
-															YoutubeThumbnail(
-																item["url"].GetString(),
-																item["width"].GetInt(),
-																item["height"].GetInt()
-															)
-														);
-													}
-											}
-									Links.push_back(yt_item);
-								}*/
 							}
-						YTResults(Links);
+						YTResults(Links, q);
 					}
 			}
 		));
 	}
 
-/*
-void GuiMenu::YTSearch(std::string q)
-	{
-		Window* window = mWindow;
 
-		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING..."),
-			[this, window, q](auto gui)
-			{
-				mWaitingLoad = true;
-				const std::string cmd = "youtube.sh search \"" + q + "\"";
-				return ApiSystem::getInstance()->getScriptResults(cmd);
-			},
-			[this, window, q](std::vector<std::string> links)
-			{
-				mWaitingLoad = false;
-				if(links.size() == 0)
-					{
-						window->pushGui(new GuiMsgBox(window, q + "\n" + _("NOT FOUND"),_("OK"),nullptr));
-					}
-				else
-					{
-						std::vector<YoutubeLink> Links;
-						for(auto link : links)
-							{
-								Links.push_back(YoutubeLink(link));
-							}
-							YTResults(Links);
-					}
-			}
-		));
-	}*/
 void GuiMenu::YTResults(std::vector<YoutubeLink> links, std::string search)
 	{
 		auto theme = ThemeData::getMenuTheme();
@@ -7423,7 +7381,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links, std::string search)
 				s->addWithDescription(link.title, link.link, icon,
 					[this, window, link]
 				{
-					window->pushGui(new GuiMsgBox(window, _("YouTube video: ") + "\n" + link.title + "\n?",
+					/*window->pushGui(new GuiMsgBox(window, _("YouTube video: ") + "\n" + link.title + "\n?",
 						 _("PLAY"),[this, link]{
 							 std::string cmd = "youtube.sh play " + link.link;
 							 appLauncher(cmd);
@@ -7442,12 +7400,56 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links, std::string search)
 				 				}
 				 			));
 						},
-						 _("CANCEL"), nullptr));
+						 _("CANCEL"), nullptr));*/
+						 YTResult(link);
 				});
 			}
 		mWindow->pushGui(s);
 	}
 
+void GuiMenu::YTResult(YoutubeLink link)
+	{
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+		Window *window = mWindow;
+		auto s = new GuiSettings(mWindow, link.title);
+
+			s->addEntry(_("PLAY"), false, [this, window, link]{
+				mWindow->pushGui(new GuiLoading<std::string>(window, _("GENERATING VIDEO URL..."),
+				 [this, window, link](auto gui)
+				 {
+					 mWaitingLoad = true;
+					 return getShOutput("youtube.sh getlink " + link.link);
+				 },
+				 [this, window](std::string l)
+				 {
+					 mWaitingLoad = false;
+					 appLauncher("youtube.sh playlink " + l);
+				 }
+			});
+			s->addEntry(_("CAST"), false, [this, window, link]{
+				mWindow->pushGui(new GuiLoading<std::string>(window, _("GENERATING VIDEO URL..."),
+				 [this, window, link](auto gui)
+				 {
+					 mWaitingLoad = true;
+					 return getShOutput("youtube.sh getlink " + link.link);
+				 },
+				 [this, window](std::string l)
+				 {
+					 loadChromecast(window, l, true);
+				 }
+			}, "iconChromecast");
+		s->addGroup(_("DOWNLOADS"))
+			s->addEntry(_("DOWNLOAD MP4"), false, [this, window, link]{
+
+			});
+			s->addEntry(_("DOWNLOAD MP3"), false, [this, window, link]{
+
+			});
+
+		window->pushGui(s);
+	}
 // EOF YOUTUBE
 
 
