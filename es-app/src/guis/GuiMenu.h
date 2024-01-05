@@ -762,6 +762,7 @@ private:
 	std::vector<YoutubeLink> YouTubeLastPlayed;
 	void YouTubeSearchMenu();
 	void YTJsonSearch(std::string q, int maxResults = 20);
+	void YTResultRow(Window* window, GuiSettings* s, YoutubeLink link);
 	void YTResults(std::vector<YoutubeLink> links, std::string search = "");
 	void YTResult(YoutubeLink link);
 

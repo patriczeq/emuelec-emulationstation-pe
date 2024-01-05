@@ -7278,10 +7278,11 @@ void GuiMenu::YouTube()
 		s->addEntry( _("SEARCH"), true, [this](){
 			YouTubeSearchMenu();
 		});
-
+		s->addGroup(_("RECENTLY PLAYED"));
 		for(auto link : YouTubeLastPlayed)
 			{
-				float w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).width;
+				YTResultRow(window, s, link);
+				/*float w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).width;
 				float h = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).height;
 
 				float minifier = (w > h) ? 96 / w : 96 / h;
@@ -7303,7 +7304,7 @@ void GuiMenu::YouTube()
 							{
 									 YTResult(link);
 							}
-				);
+				);*/
 			}
 
 		window->pushGui(s);
@@ -7379,7 +7380,32 @@ void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 		));
 	}
 
+void GuiMenu::YTResultRow(Window* window, GuiSettings* s, YoutubeLink link)
+	{
+		float w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).width;
+		float h = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).height;
 
+		float minifier = (w > h) ? 96 / w : 96 / h;
+
+		Vector2f maxSize(w * minifier, h * minifier);
+
+		auto icon = std::make_shared<WebImageComponent>(window, 600); // image expire after 10 minutes
+		icon->setImage(!link.thumbnails.size() ? "" : link.thumbnails.at(0).url, false, maxSize);
+		icon->setMaxSize(maxSize);
+		//icon->setSize(maxSize);
+		icon->setMinSize(maxSize);
+		icon->setUpdateColors(false);
+		//icon->setPadding(4);
+		s->addWithDescription(
+				link.title,
+				link.duration_string,
+				icon,
+				[this, window, link]
+					{
+							 YTResult(link);
+					}
+		);
+	}
 void GuiMenu::YTResults(std::vector<YoutubeLink> links, std::string search)
 	{
 		auto theme = ThemeData::getMenuTheme();
@@ -7393,7 +7419,8 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links, std::string search)
 			}
 		for(auto link : links)
 			{
-				float w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).width;
+				YTResultRow(window, s, link);
+				/*float w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).width;
 				float h = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).height;
 
 				float minifier = (w > h) ? 96 / w : 96 / h;
@@ -7415,7 +7442,7 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links, std::string search)
 							{
 									 YTResult(link);
 							}
-				);
+				);*/
 			}
 		mWindow->pushGui(s);
 	}
