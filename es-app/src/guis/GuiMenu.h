@@ -521,11 +521,11 @@ struct YoutubeThumbnail {
 };
 struct YoutubeLink {
 	YoutubeLink(){}
-	YoutubeLink(std::string json)
+	YoutubeLink(std::string j)
 		{
+			json = j;
 			rapidjson::Document doc;
-
-			doc.Parse(json.c_str());
+			doc.Parse(j.c_str());
 			if (!doc.HasParseError())
 			{
 					link 							= doc.HasMember("url") && doc["url"].IsString()	? doc["url"].GetString() : "";
@@ -549,15 +549,13 @@ struct YoutubeLink {
 						}
 			}
 		}
-	std::string getJSON(){
-
-	}
 	std::string link;
 	std::string title;
 	std::string duration_string;
 	std::string description;
 	std::string uploader;
 	int view_count;
+	std::string json;
 	std::vector<YoutubeThumbnail> thumbnails;
 };
 
@@ -759,13 +757,14 @@ private:
 
 	//void YTSearch(std::string q);
 	void YouTube();
+	void YouTubeLoad();
 	std::vector<std::string> YouTubeSearchHistory;
 	std::vector<YoutubeLink> YouTubeLastPlayed;
 	void YouTubeSearchMenu();
 	void YTJsonSearch(std::string q, int maxResults = 20);
 	void YTResults(std::vector<YoutubeLink> links, std::string search = "");
 	void YTResult(YoutubeLink link);
-	
+
 
 
 

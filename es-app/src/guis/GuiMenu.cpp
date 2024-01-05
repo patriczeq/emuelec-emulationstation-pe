@@ -7268,6 +7268,7 @@ void GuiMenu::openTraceroute(std::string addr, std::vector<TraceRouteHop> hops)
 // YOUTUBE
 void GuiMenu::YouTube()
 	{
+		YouTubeLoad();
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -7278,12 +7279,48 @@ void GuiMenu::YouTube()
 			YouTubeSearchMenu();
 		});
 
-		for(auto item : YouTubeLastPlayed)
+		for(auto link : YouTubeLastPlayed)
 			{
+				float w = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).width;
+				float h = !link.thumbnails.size() ? -1 : link.thumbnails.at(0).height;
 
+				float minifier = (w > h) ? 96 / w : 96 / h;
+
+				Vector2f maxSize(w * minifier, h * minifier);
+
+				auto icon = std::make_shared<WebImageComponent>(window, 600); // image expire after 10 minutes
+				icon->setImage(!link.thumbnails.size() ? "" : link.thumbnails.at(0).url, false, maxSize);
+				icon->setMaxSize(maxSize);
+				//icon->setSize(maxSize);
+				icon->setMinSize(maxSize);
+				icon->setUpdateColors(false);
+				//icon->setPadding(4);
+				s->addWithDescription(
+						link.title,
+						link.duration_string,
+						icon,
+						[this, window, link]
+							{
+									 YTResult(link);
+							}
+				);
 			}
 
 		window->pushGui(s);
+	}
+void GuiMenu::YouTubeLoad()
+	{
+		YouTubeSearchHistory.clear();
+			for(auto shistory : ApiSystem::getInstance()->getScriptResults("youtube.sh getShistory"))
+				{
+					YouTubeSearchHistory.push_back(shistory);
+				}
+
+		YouTubeLastPlayed.clear();
+			for(auto phistory : ApiSystem::getInstance()->getScriptResults("youtube.sh getPhistory"))
+				{
+					YouTubeLastPlayed.push_back(YoutubeLink(phistory));
+				}
 	}
 
 void GuiMenu::YouTubeSearchMenu()
@@ -7310,24 +7347,13 @@ void GuiMenu::YouTubeSearchMenu()
 void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 	{
 		Window* window = mWindow;
-		runSystemCommand("youtube.sh history \"" + Utils::String::replace(q, "_!SPC!_", " ") + "\"", "", nullptr);
+		std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh shistory \"" + q + "\"");
 
 		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING..."),
 			[this, window, q, maxResults](auto gui)
 			{
 				mWaitingLoad = true;
-				std::string ytdlpcmd = "yt-dlp ";
-										ytdlpcmd+= "ytsearch" + std::to_string(maxResults) + ":\"" + q + "\" ";
-										ytdlpcmd+= "--dump-json ";
-										ytdlpcmd+= "--default-search ytsearch ";
-										ytdlpcmd+= "--no-playlist ";
-										ytdlpcmd+= "--no-check-certificate ";
-										ytdlpcmd+= "--geo-bypass ";
-										ytdlpcmd+= "--flat-playlist ";
-										ytdlpcmd+= "--ignore-errors ";
-										ytdlpcmd+= "--prefer-insecure ";
-										ytdlpcmd+= "--match-filter \"original_url!*=/shorts/ & url!*=/shorts/\"";
-				return ApiSystem::getInstance()->getScriptResults(ytdlpcmd);
+				return ApiSystem::getInstance()->getScriptResults("youtube.sh search \"" + q + "\"");
 			},
 			[this, window, q](std::vector<std::string> links)
 			{
@@ -7434,6 +7460,7 @@ void GuiMenu::YTResult(YoutubeLink link)
 				 {
 					 mWaitingLoad = false;
 					 appLauncher("youtube.sh play " + link.link);
+					 std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh phistory \"" + Utils::String::replace(link.json, "\"", "\\\"") + "\"");
 				 }));
 			});
 			/*s->addEntry(_("CAST"), false, [this, window, link]{
