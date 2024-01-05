@@ -649,9 +649,9 @@ private:
 
 	std::string _UL(char icon[4], std::string label)
 		{
-			std:string o = _U(icon);
-								 o+= " ";
-								 o+= label;
+			std::string o = _U(icon);
+								  o+= " ";
+								  o+= label;
 			return o;
 		}
 
