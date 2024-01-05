@@ -7290,8 +7290,10 @@ void GuiMenu::YouTube()
 		unsigned int color = theme->Text.color;
 		Window *window = mWindow;
 		auto s = new GuiSettings(mWindow, "YouTube");
+		std::string searchLabel = _U("\uF002 ");
+								searchLabel+= _("SEARCH");
 
-		s->addEntry(_U("\uF002 ") + "SEARCH", true, [this](){
+		s->addEntry(searchLabel, true, [this](){
 			YouTubeSearchMenu();
 		});
 		s->addGroup(_("RECENTLY PLAYED"));
