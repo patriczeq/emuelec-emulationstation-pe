@@ -7455,7 +7455,7 @@ void GuiMenu::YTResult(YoutubeLink link)
 			}, "iconScraper", true);
 
 			s->addEntry(_("CAST"), false, [this, window, link]{
-				loadChromecast(window, "youtube/"+link.id);
+				loadChromecast(window, "YouTube/"+link.id);
 			}, "iconChromecast");
 
 			s->addEntry(_("DOWNLOAD"), false, [this, window, link]{
