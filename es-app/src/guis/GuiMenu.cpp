@@ -872,7 +872,7 @@ void GuiMenu::openESP01Menu()
 	{
   	Window* window = mWindow;
 		std::string Title = _U("\uf1e2");
-								Title += " H4CK TH3 FK1N W0RLD!"
+								Title += " H4CK TH3 FK1N W0RLD!";
 		auto s = new GuiSettings(window, Title);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
