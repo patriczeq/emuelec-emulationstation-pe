@@ -621,7 +621,7 @@ public:
 	static void updateGameLists(Window* window, bool confirm = true);
 	static void editKeyboardMappings(Window *window, IKeyboardMapContainer* mapping, bool editable);
 
-	static void ChromecastControl(std::string id, std::string action, std::string file = "");
+	static void ChromecastControl(std::string id, std::string action, std::string file = "", bool http = false);
 	static void loadChromecast(Window* mWindow, std::string file = "", bool http = false);
 	static void loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDetail> casts, std::string file = "", bool http = false);
 	static void loadChromecastDevice(Window* mWindow, Chromecast device, std::string file = "", bool http = false);

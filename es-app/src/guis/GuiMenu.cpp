@@ -6719,7 +6719,7 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 
 				s->addWithDescription(device.name , device.player,
 					std::make_shared<TextComponent>(window, device.oname, font, color),
-					[window, device, file]
+					[window, device, file, http]
 				{
 					LOG(LogInfo) << "Chromecast device:" << device.name;
 					loadChromecastDevice(window, device, file, http);
