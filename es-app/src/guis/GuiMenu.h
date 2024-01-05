@@ -647,6 +647,14 @@ private:
 
 	std::string getShO(const std::string cmd);
 
+	std::string _UL(char icon[4], std::string label)
+		{
+			std:string o = _U(icon);
+								 o+= " ";
+								 o+= label;
+			return o;
+		}
+
 	void openNetworkTools();
 	std::vector<ARPcli> getARPclients();
 	void openARPlist(std::vector<ARPcli> list);

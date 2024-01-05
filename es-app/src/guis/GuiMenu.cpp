@@ -302,8 +302,8 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 					return;
 				GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
-	addEntry(_("FILE MANAGER").c_str(), false, [this] { appLauncher("file_manager.sh"); }, "iconFileManager");
-	addEntry(_("YouTube"), true, [this]() {
+	addEntry(_UL("\uf07b", "FILE MANAGER"), false, [this] { appLauncher("file_manager.sh"); }, "iconFileManager");
+	addEntry(_UL("\uf16a", "YouTube"), true, [this]() {
 		YouTube();
 	}, "iconYouTube");
 	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "iconApps");
@@ -7290,13 +7290,10 @@ void GuiMenu::YouTube()
 		unsigned int color = theme->Text.color;
 		Window *window = mWindow;
 		auto s = new GuiSettings(mWindow, "YouTube");
-		std::string searchLabel = _U("\uF002 ");
-								searchLabel+= _("SEARCH");
-
-		s->addEntry(searchLabel, true, [this](){
+		s->addEntry(_UL("\uf002", "SEARCH"), true, [this](){
 			YouTubeSearchMenu();
 		});
-		s->addGroup(_("RECENTLY PLAYED"));
+		s->addGroup(_UL("\uf1da", "RECENTLY PLAYED"));
 		for(auto link : YouTubeLastPlayed)
 			{
 				YTResultRow(window, s, link);
