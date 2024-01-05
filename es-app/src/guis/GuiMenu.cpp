@@ -6756,7 +6756,7 @@ void GuiMenu::ChromecastControl(std::string id, std::string action, std::string 
 				AudioManager::getInstance()->setChromecastPaused(false);
 			}
 
-		if(action == "youtube")
+		if(action == "YouTube")
 			{
 				AudioManager::getInstance()->setChromecast(true, file, id);
 				std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("go-chromecast -u " + id + " load-app YouTube \"v="+file+"\" &");
@@ -6792,7 +6792,7 @@ void GuiMenu::loadChromecastDevice(Window* mWindow, Chromecast device, std::stri
 						std::vector<std::string> bstr = Utils::String::split(file, '/');
 						if(bstr.size() == 2 && bstr.at(0) == "YouTube")
 							{
-								ChromecastControl(device.id, "youtube", bstr.at(1));
+								ChromecastControl(device.id, "YouTube", bstr.at(1));
 							}
 						else
 							{
