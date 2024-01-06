@@ -286,7 +286,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 				}, "fa-skull");
 			}
 
-		addEntry(_("2ND PLAYER").c_str(), true, [this] { scanMPServers(); }, "fa-male");
+		addEntry(_("2ND PLAYER").c_str(), true, [this] { scanMPServers(); }, "fa-person-circle-plus");
 
 #ifdef _ENABLEEMUELEC
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::WIFI))
@@ -484,19 +484,19 @@ void GuiMenu::openAllSettings()
 				s->addEntry(_("NETWORK SETTINGS").c_str(), true, [this] { openNetworkSettings(); }, "iconNetwork");
 	#else
 			if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::GAMESETTINGS))
-				s->addEntry(_("GAME SETTINGS").c_str(), true, [this] { openGamesSettings(); }, "iconGames");
+				s->addEntry(_("GAME SETTINGS").c_str(), true, [this] { openGamesSettings(); }, "fa-ghost");
 
-			s->addEntry(_("USER INTERFACE SETTINGS").c_str(), true, [this] { openUISettings(); }, "iconUI");
+			s->addEntry(_("USER INTERFACE SETTINGS").c_str(), true, [this] { openUISettings(); }, "fa-palette");
 
 			if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::GAMESETTINGS))
 				s->addEntry(controllers_settings_label.c_str(), true, [this] { openControllersSettings(); }, "iconControllers");
 			else
-				s->addEntry(_("CONFIGURE INPUT"), true, [this] { openConfigInput(); }, "iconControllers");
+				s->addEntry(_("CONFIGURE INPUT"), true, [this] { openConfigInput(); }, "fa-gamepad");
 
-			s->addEntry(_("SOUND SETTINGS").c_str(), true, [this] { openSoundSettings(); }, "iconSound");
+			s->addEntry(_("SOUND SETTINGS").c_str(), true, [this] { openSoundSettings(); }, "fa-volume-high");
 
 
-			s->addEntry(_("GAME COLLECTION SETTINGS").c_str(), true, [this] { openCollectionSystemSettings(); }, "iconAdvanced");
+			s->addEntry(_("GAME COLLECTION SETTINGS").c_str(), true, [this] { openCollectionSystemSettings(); }, "fa-book");
 
 			if (!ApiSystem::getInstance()->isScriptingSupported(ApiSystem::GAMESETTINGS))
 			{
@@ -512,8 +512,8 @@ void GuiMenu::openAllSettings()
 	#endif
 
 
-			s->addEntry(_("SYSTEM SETTINGS").c_str(), true, [this] { openSystemSettings(); }, "iconSystem");
-			s->addEntry(_("CUSTOM SYSTEM SETTINGS").c_str(), true, [this] { openEmuELECSettings(); }, "iconSystem");
+			s->addEntry(_("SYSTEM SETTINGS").c_str(), true, [this] { openSystemSettings(); }, "fa-gear");
+			s->addEntry(_("CUSTOM SYSTEM SETTINGS").c_str(), true, [this] { openEmuELECSettings(); }, "fa-gears");
 			if(SystemConf::getInstance()->get("pe_hack.enabled") == "1")
 				{
 					s->addEntry(_("DEAUTHER SETTINGS"), true, [this] { openESP01Settings(); }, "fa-skull");
@@ -740,7 +740,7 @@ void GuiMenu::openESP01Settings()
 					//ESP01_OTA_SERVER;OTA.8266;https://192.168.4.1/update
 				}
 			));
-		}, "iconUpdates");
+		}, "fa-cloud-arrow-up");
 
 		// ----------------------------------------------------------- MAIN SETTINGS
 		s->addGroup(_("UART"));
@@ -871,7 +871,7 @@ void GuiMenu::openESP01Settings()
 void GuiMenu::openESP01Menu()
 	{
   	Window* window = mWindow;
-		std::string Title = _U("\uf1e2");
+		std::string Title = _U("\uf54c");
 								Title += " H4CK TH3 FK1N W0RLD!";
 		auto s = new GuiSettings(window, Title);
 		auto theme = ThemeData::getMenuTheme();
@@ -992,7 +992,7 @@ void GuiMenu::openESP01Menu()
 					_("YES"), [this] {
 						sniffWPS();
 					}, _("NO"), nullptr));
-				}, "fa-wifi");
+				}, "fa-rss");
 
 
 		s->addGroup(_("WIFI DEAUTH/BEACONS"));
@@ -1162,6 +1162,7 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 			s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, ap.encryption, font, color));
 			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, ap.rssi + "dBm", font, color));
 			s->addWithLabel(_("LAST SEEN"), 	std::make_shared<TextComponent>(window, ap.lastSeenDate + " " + ap.lastSeenTime, font, color));
+		s->addGroup(_("MANAGEMENT"));
 			s->addEntry(_("AP MENU"), true, [this, ap]() {
 				AccessPoint a;
 					a.bssid 		= ap.bssid;
@@ -1172,7 +1173,6 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 					a.enc 			= ap.encryption;
 				openDEAUTHMenu(a);
 			}, "fa-house-signal");
-		s->addGroup(_("MANAGEMENT"));
 			s->addEntry(_("REMOVE FROM DATABASE"), false, [this, window, ap]() {
 				window->pushGui(new GuiMsgBox(window, _("REMOVE") + "\n" + ap.bssid + "\nFROM SCAN DB?",
 					_("YES"), [this, window, ap] {
@@ -7168,9 +7168,9 @@ void GuiMenu::openNetworkTools()
 				}
 				delete s;
 				//openNetworkSettings();
-			}, "iconAdvanced");
+			}, "fa-cloud");
 
-		s->addEntry(_("CHROMECAST").c_str(), true, [this] { loadChromecast(mWindow); }, "iconChromecast");
+		s->addEntry(_("CHROMECAST").c_str(), true, [this] { loadChromecast(mWindow); }, "fa-chromecast");
 
 		s->addGroup(_("DIAGNOSTICS"));
 			s->addEntry(_("ARP-SCAN"), false, [this, window]() {

@@ -275,9 +275,9 @@ std::vector<std::string> getFallbackFontPaths()
 {
 	std::vector<std::string> fallbackFonts =
 	{
+		":/fa-solid-900.ttf",
 		":/fa-brands-400.ttf",
 		":/fa-regular-400.ttf",
-		":/fa-solid-900.ttf",
 		":/fontawesome-webfont.ttf", // v4 fallback
 		":/DroidSansFallbackFull.ttf",// japanese, chinese, present on Debian
 		":/NanumMyeongjo.ttf", // korean font
