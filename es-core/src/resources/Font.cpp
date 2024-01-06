@@ -53,7 +53,7 @@ void Font::initLibrary()
 size_t Font::getMemUsage() const
 {
 	size_t memUsage = 0;
-	
+
 	for(auto tex : mTextures)
 		memUsage += (tex->textureId != 0 ? tex->textureSize.x() * tex->textureSize.y() * 4 : 0);
 
@@ -131,7 +131,7 @@ void Font::reload()
 {
 	if (mLoaded)
 		return;
-	
+
 	Renderer::bindTexture(0);
 	rebuildTextures();
 	clearFaceCache();
@@ -143,7 +143,7 @@ void Font::reload()
 bool Font::unload()
 {
 	if (mLoaded)
-	{		
+	{
 		for (auto tex : mTextures)
 			tex->deinitTexture();
 
@@ -261,7 +261,7 @@ void Font::getTextureForNewGlyph(const Vector2i& glyphSize, FontTexture*& tex_ou
 	tex_out = tex;
 
 	mTextures.push_back(tex);
-	
+
 	bool ok = tex_out->findEmpty(glyphSize, cursor_out);
 	if(!ok)
 	{
@@ -277,7 +277,7 @@ std::vector<std::string> getFallbackFontPaths()
 	{
 		":/fontawesome-webfont.ttf",
 		":/DroidSansFallbackFull.ttf",// japanese, chinese, present on Debian
-		":/NanumMyeongjo.ttf", // korean font		
+		":/NanumMyeongjo.ttf", // korean font
 		":/Cairo.ttf", // arabic
 		":/Rubik-Regular.ttf" // hebrew (https://fontmeme.com/polices/police-rubik-hebrew public domain)
 	};
@@ -373,12 +373,12 @@ Font::Glyph* Font::getGlyph(unsigned int id)
 
 	// create glyph
 	Glyph* pGlyph = new Glyph();
-	
+
 	pGlyph->texture = tex;
 	pGlyph->texPos = Vector2f((float)cursor.x() / (float)tex->textureSize.x(), (float)cursor.y() / (float)tex->textureSize.y());
 	pGlyph->texSize = Vector2f((float)glyphSize.x() / (float)tex->textureSize.x(), (float)glyphSize.y() / (float)tex->textureSize.y());
 	pGlyph->advance = Vector2f((float)g->metrics.horiAdvance / 64.0f, (float)g->metrics.vertAdvance / 64.0f);
-	pGlyph->bearing = Vector2f((float)g->metrics.horiBearingX / 64.0f, (float)g->metrics.horiBearingY / 64.0f);	
+	pGlyph->bearing = Vector2f((float)g->metrics.horiBearingX / 64.0f, (float)g->metrics.horiBearingY / 64.0f);
 	pGlyph->cursor = cursor;
 	pGlyph->glyphSize = glyphSize;
 
@@ -416,7 +416,7 @@ void Font::rebuildTextures()
 		FT_Load_Char(face, it->first, FT_LOAD_RENDER);
 
 		Glyph* glyph = it->second;
-		
+
 		// upload to texture
 		Renderer::updateTexture(glyph->texture->textureId, Renderer::Texture::ALPHA,
 			glyph->cursor.x(), glyph->cursor.y(),
@@ -496,14 +496,14 @@ void Font::renderTextCache(TextCache* cache, bool verticesChanged)
 	int tex = -1;
 
 	for(auto& vertex : cache->vertexLists)
-	{		
+	{
 		if (vertex.textureIdPtr == nullptr)
 			continue;
-		
+
 		if (tex != *vertex.textureIdPtr)
 		{
 			tex = *vertex.textureIdPtr;
-			Renderer::bindTexture(tex);			
+			Renderer::bindTexture(tex);
 		}
 
 		if (tex != 0)
@@ -519,10 +519,10 @@ void Font::renderTextCache(TextCache* cache, bool verticesChanged)
 		{
 			if (Settings::DebugImage())
 				Renderer::drawRect(
-					sub.vertex[0].pos.x(), 
-					sub.vertex[0].pos.y(), 
+					sub.vertex[0].pos.x(),
+					sub.vertex[0].pos.y(),
 					sub.vertex[3].pos.x() - sub.vertex[0].pos.x(),
-					sub.vertex[3].pos.x() - sub.vertex[0].pos.x(), 
+					sub.vertex[3].pos.x() - sub.vertex[0].pos.x(),
 					0xFF000033, 0xFF000033);
 
 			Renderer::drawTriangleStrips(&sub.vertex[0], 4);
@@ -556,13 +556,13 @@ void Font::renderGradientTextCache(TextCache* cache, unsigned int colorTop, unsi
 		{
 			float topOffset = it->verts[i + 1].pos.y();
 			float bottomOffset = it->verts[i + 2].pos.y();
-			
+
 			float topPercent = (maxY == 0 ? 1.0 : topOffset / maxY);
 			float bottomPercent = (maxY == 0 ? 1.0 : bottomOffset / maxY);
 
 			const unsigned int colorT = Renderer::mixColors(colorTop, colorBottom, topPercent);
 			const unsigned int colorB = Renderer::mixColors(colorTop, colorBottom, bottomPercent);
-		
+
 			vxs[i + 1] = it->verts[i + 1];
 			vxs[i + 1].col = colorT;
 
@@ -581,7 +581,7 @@ void Font::renderGradientTextCache(TextCache* cache, unsigned int colorTop, unsi
 		}
 
 		Renderer::bindTexture(*it->textureIdPtr);
-		Renderer::drawTriangleStrips(&vxs[0], vxs.size());		
+		Renderer::drawTriangleStrips(&vxs[0], vxs.size());
 	}
 }
 
@@ -599,7 +599,7 @@ std::string tryFastBidi(const std::string& text)
     while (i < text.length())
     {
         const char&  c = text[i];
-        
+
         if ((c & 0xE0) == 0xC0)
         {
             if (isBidiChar(c))
@@ -733,9 +733,9 @@ std::string Font::wrapText(std::string text, float maxWidth)
 				if (glyph)
 					lineWidth += glyph->advance.x();
 			}
-						
+
 			if (isWhiteSpace(c))
-				lastWhiteSpace = cursor;			
+				lastWhiteSpace = cursor;
 		}
 
 		if (cursor == text.length()) // arrived at end of text.
@@ -832,7 +832,7 @@ float Font::getNewlineStartOffset(const std::string& text, const unsigned int& c
 TextCache* Font::buildTextCache(const std::string& _text, Vector2f offset, unsigned int color, float xLen, Alignment alignment, float lineSpacing)
 {
 	float x = offset[0] + (xLen != 0 ? getNewlineStartOffset(_text, 0, xLen, alignment) : 0);
-	
+
 	float yTop = getGlyph('S')->bearing.y();
 	float yBot = getHeight(lineSpacing);
 	float yDecal = (yBot + yTop) / 2.0f;
@@ -923,11 +923,11 @@ TextCache* Font::buildTextCache(const std::string& _text, Vector2f offset, unsig
 				auto sz = ImageIO::adjustPictureSize(Vector2i(imgSize.x(), imgSize.y()), Vector2i(rect.w, rect.h));
 
 				Renderer::Rect rc(
-					rect.x + (rect.w / 2.0f) - (sz.x() / 2.0f), 
+					rect.x + (rect.w / 2.0f) - (sz.x() / 2.0f),
 					rect.y + (rect.h / 2.0f) - (sz.y() / 2.0f),
 					sz.x(),
 					sz.y());
-				
+
 				is.vertex[0] = { { (float) rc.x			, (float) rc.y + rc.h }	, { 0.0f, 0.0f }, 0xFFFFFFFF };
 				is.vertex[1] = { { (float) rc.x			, (float) rc.y }		, { 0.0f, 1.0f }, 0xFFFFFFFF };
 				is.vertex[2] = { { (float) rc.x + rc.w  , (float) rc.y + rc.h }	, { 1.0f, 0.0f }, 0xFFFFFFFF };
@@ -1075,13 +1075,13 @@ std::shared_ptr<Font> Font::getFromTheme(const ThemeData::ThemeElement* elem, un
 	using namespace ThemeFlags;
 	if(!(properties & FONT_PATH) && !(properties & FONT_SIZE))
 		return orig;
-	
+
 	std::shared_ptr<Font> font;
 	int size = (orig ? orig->mSize : FONT_SIZE_MEDIUM);
 	std::string path = (orig ? orig->mPath : getDefaultPath());
 
 	float sh = (float) Math::min(Renderer::getScreenHeight(), Renderer::getScreenWidth());
-	if(properties & FONT_SIZE && elem->has("fontSize")) 
+	if(properties & FONT_SIZE && elem->has("fontSize"))
 	{
 		if ((int)(sh * elem->get<float>("fontSize")) > 0)
 			size = (int)(sh * elem->get<float>("fontSize"));

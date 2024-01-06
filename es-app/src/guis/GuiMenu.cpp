@@ -283,16 +283,16 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 					runSystemCommand("hacks.sh " + port + " -b " + baud, "", nullptr);
 
 					openESP01Menu();
-				}, "fa-bomb");
+				}, "fa-skull");
 			}
 
 		addEntry(_("2ND PLAYER").c_str(), true, [this] { scanMPServers(); }, "fa-male");
 
 #ifdef _ENABLEEMUELEC
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::WIFI))
-			addEntry(_("NETWORK SETTINGS").c_str(), true, [this] { openNetworkSettings(); }, "iconNetwork");
+			addEntry(_("NETWORK SETTINGS").c_str(), true, [this] { openNetworkSettings(); }, "fa-wifi");
 #endif
-			addEntry(_("NETWORK TOOLS").c_str(), true, [this] { openNetworkTools(); }, "fa-gears");
+			addEntry(_("NETWORK TOOLS").c_str(), true, [this] { openNetworkTools(); }, "fa-network-wired");
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::RETROACHIVEMENTS) &&
 		SystemConf::getInstance()->getBool("global.retroachievements") &&
 		Settings::getInstance()->getBool("RetroachievementsMenuitem") &&
@@ -303,28 +303,28 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 				GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
 	addEntry(_("FILE MANAGER"), false, [this] { appLauncher("file_manager.sh"); }, "fa-folder");
-	addEntry(_("YouTube"), true, [this]() {	YouTube();}, "fa-youtube-play");
-	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "fa-bars");
+	addEntry(_("YouTube"), true, [this]() {	YouTube();}, "fa-youtube");
+	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "fa-rocket");
 
 	if (isFullUI)
 	{
-		addEntry(_("SCRAPER").c_str(), true, [this] { openScraperSettings(); }, "iconScraper");
+		addEntry(_("SCRAPER").c_str(), true, [this] { openScraperSettings(); }, "fa-image");
 
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::BATOCERASTORE) || ApiSystem::getInstance()->isScriptingSupported(ApiSystem::THEMESDOWNLOADER) ||
 			(ApiSystem::getInstance()->isScriptingSupported(ApiSystem::THEBEZELPROJECT) && ApiSystem::getInstance()->isScriptingSupported(ApiSystem::DECORATIONS)) ||
 			ApiSystem::getInstance()->isScriptingSupported(ApiSystem::UPGRADE))
-			addEntry(_("UPDATES & DOWNLOADS"), true, [this] { openUpdatesSettings(); }, "iconUpdates");
-		addEntry(_("SETTINGS").c_str(), true, [this] { openAllSettings(); }, "iconSystem");
-		addEntry(_("INFORMATION").c_str(), true, [this] { openSysInfo(); }, "iconAdvanced");
+			addEntry(_("UPDATES & DOWNLOADS"), true, [this] { openUpdatesSettings(); }, "fa-rotate");
+		addEntry(_("SETTINGS").c_str(), true, [this] { openAllSettings(); }, "fa-gear");
+		addEntry(_("INFORMATION").c_str(), true, [this] { openSysInfo(); }, "fa-circle-info");
 	}
 	else
 	{
-		addEntry(_("INFORMATION").c_str(), true, [this] { openSystemInformations(); }, "fa-linux");
-		addEntry(_("UNLOCK USER INTERFACE MODE").c_str(), true, [this] { exitKidMode(); }, "iconAdvanced");
+		addEntry(_("INFORMATION").c_str(), true, [this] { openSystemInformations(); }, "fa-circle-info");
+		addEntry(_("UNLOCK USER INTERFACE MODE").c_str(), true, [this] { exitKidMode(); }, "fa-unlock");
 	}
 
 #ifdef WIN32
-	addEntry(_("QUIT").c_str(), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] {openQuitMenu(); }, "iconQuit");
+	addEntry(_("QUIT").c_str(), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] {openQuitMenu(); }, "fa-sign-out");
 #else
 #ifdef _ENABLEEMUELEC
 if (!isKidUI)
@@ -516,7 +516,7 @@ void GuiMenu::openAllSettings()
 			s->addEntry(_("CUSTOM SYSTEM SETTINGS").c_str(), true, [this] { openEmuELECSettings(); }, "iconSystem");
 			if(SystemConf::getInstance()->get("pe_hack.enabled") == "1")
 				{
-					s->addEntry(_("DEAUTHER SETTINGS"), true, [this] { openESP01Settings(); }, "fa-bomb");
+					s->addEntry(_("DEAUTHER SETTINGS"), true, [this] { openESP01Settings(); }, "fa-skull");
 				}
 
 	window->pushGui(s);
@@ -925,7 +925,7 @@ void GuiMenu::openESP01Menu()
 								}
 							}
 						));
-					}, "fa-database");
+					}, "fa-book-skull");
 				}
 
 			s->addEntry(_("STOP ALL JOBS"), false, [this] {
@@ -959,10 +959,10 @@ void GuiMenu::openESP01Menu()
 					{
 						scanBSSIDS(true);
 					}
-			}, "fa-wifi");
+			}, "fa-satellite-dish");
 			s->addEntry(_("SCAN AP"), true, [this] {
 				scanBSSIDS();
-			}, "fa-wifi");
+			}, "fa-satellite-dish");
 
 			s->addEntry(_("SCAN STA"), true, [this, window] {
 				if(stalist.size() == 0)
@@ -985,7 +985,7 @@ void GuiMenu::openESP01Menu()
 						scanSTA();
 					}));
 				}
-			}, "fa-wifi");
+			}, "fa-satellite-dish");
 
 				s->addEntry(_("SNIFF WPS-PBC FRAME"), true, [this, window] {
 					window->pushGui(new GuiMsgBox(window, _("REALLY START SNIFFING?\n(30sec timeout)"),
@@ -998,7 +998,7 @@ void GuiMenu::openESP01Menu()
 		s->addGroup(_("WIFI DEAUTH/BEACONS"));
 			s->addEntry(_("SEND RANDOM BEACONS"), false, [this] {
 					hacksSend("beacon");
-				}, "fa-braille");
+				}, "fa-tower-broadcast");
 			s->addEntry(_("CLONE APs"), false, [this, window] {
 					window->pushGui(new GuiMsgBox(window, _("SEND DEAUTH PACKETS?"),
 					_("YES"), [this, window] {
@@ -1012,7 +1012,7 @@ void GuiMenu::openESP01Menu()
 						_("YES"), [this, window] {
 							hacksSend("killall");
 						}, _("NO"),nullptr));
-				}, "fa-bomb");
+				}, "fa-skull");
 
 		s->addGroup(_("IR ATTACKS"));
 			s->addEntry(_("IR POWER-OFF"), false, [this] {
@@ -1027,7 +1027,7 @@ void GuiMenu::openESP01Menu()
 				}
 				// run
 				hacksSend("irkillonce");
-			});
+			}, "fa-bolt");
 			s->addEntry(_("IR POWER-OFF (LOOP)"), false, [this] {
 				//set space
 				std::string space = Settings::getInstance()->getString("pe_hack.irspace");
@@ -1040,14 +1040,14 @@ void GuiMenu::openESP01Menu()
 				}
 				// run
 				hacksSend("irkill");
-			});
+			}, "fa-bolt");
 
 			s->addEntry(_("SEARCH POWER-CODE"), false, [this] {
 				sendIRcode();
-			});
+			}, "fa-search");
 			s->addEntry(_("SEND CUSTOM POWER-CODE"), true, [this] {
 				openIRlist();
-			});
+			}, "fa-list");
 
 
 		window->pushGui(s);
@@ -1140,7 +1140,7 @@ void GuiMenu::openScanDatabase()
 					[this, ap]
 				{
 					openScanDBItem(ap);
-				}, "fa-wifi");
+				}, "fa-house-signal");
 			}
 
 		window->pushGui(s);
@@ -1171,7 +1171,7 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 					a.channel 	= ap.channel;
 					a.enc 			= ap.encryption;
 				openDEAUTHMenu(a);
-			}, "fa-bomb");
+			}, "fa-house-signal");
 		s->addGroup(_("MANAGEMENT"));
 			s->addEntry(_("REMOVE FROM DATABASE"), false, [this, window, ap]() {
 				window->pushGui(new GuiMsgBox(window, _("REMOVE") + "\n" + ap.bssid + "\nFROM SCAN DB?",
@@ -1186,7 +1186,7 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 							}, _("NO"), nullptr));
 							loadScanDatabase();
 					}, _("CANCEL"),nullptr));
-				}, "fa-close");
+				}, "fa-trash");
 		if(ap.sta.size() > 0)
 			{
 				s->addGroup(_("STATIONS") + " (" + std::to_string(ap.sta.size()) + ")");
@@ -1197,7 +1197,7 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 							[this, sta]
 						{
 							openScanDBItem(sta);
-						}, "fa-user");
+						}, "fa-wifi");
 					}
 			}
 
@@ -1246,7 +1246,7 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 						hacksSet("remDB STA " + sta.mac);
 						loadScanDatabase();
 					}, _("CANCEL"),nullptr));
-				}, "fa-close");
+				}, "fa-trash");
 
 		if(!sta.name.empty())
 		{
@@ -1257,7 +1257,7 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 						delete s;
 						openScanDBItem(sta);
 					}, _("NO"),nullptr));
-			}, "fa-close");
+			}, "fa-trash");
 		}
 		s->addEntry(sta.name.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, s, sta, apCH]() {
 			if (Settings::getInstance()->getBool("UseOSK"))
@@ -1308,7 +1308,7 @@ void GuiMenu::openNamesCat()
 					[this]
 				{
 					openNames("STA");
-				}, "fa-users");
+				}, "fa-wifi");
 			}
 			if(namesCounter.AP > 0)
 				{
@@ -1317,7 +1317,7 @@ void GuiMenu::openNamesCat()
 						[this]
 					{
 						openNames("AP");
-					}, "fa-wifi");
+					}, "fa-house-signal");
 				}
 			if(namesCounter.IR > 0)
 				{
@@ -1326,7 +1326,7 @@ void GuiMenu::openNamesCat()
 						[this]
 					{
 						openNames("IR");
-					});
+					}, "fa-bolt");
 				}
 
 		window->pushGui(s);
@@ -1402,10 +1402,10 @@ void GuiMenu::openName(HackName name)
 				s->addGroup(_("ACTIONS"));
 					s->addEntry(_("SEND POWER-CODE"), false, [this, name]() {
 						hacksSend("ir " + name.id);
-					}, "iconHack");
+					}, "fa-bolt");
 					s->addEntry(_("SEND POWER-CODE") + " LOOP", false, [this, name]() {
 						hacksSend("irloop " + name.id);
-					}, "iconHack");
+					}, "fa-bolt");
 			}
 		else if(name.type == "STA")
 			{
@@ -1445,7 +1445,7 @@ void GuiMenu::openName(HackName name)
 								_("YES"), [this, window, name] {
 									hacksSend("deauthapclone " + name.id);
 								}, _("CANCEL"),nullptr));
-						},"fa-bomb");
+						},"fa-skull");
 					s->addEntry(_("FAKE AP, DEAUTH"), true, [this, window, name]() {
 							std::string msg = _("FAKE AP, DEAUTH") +"\n";
 													msg+= name.name.empty() ? "" : (name.name + "\n");
@@ -1454,7 +1454,7 @@ void GuiMenu::openName(HackName name)
 								_("YES"), [this, window, name] {
 									hacksSend("deauthapcaptive " + name.id);
 								}, _("CANCEL"),nullptr));
-						},"fa-bomb");
+						},"fa-skull");
 					s->addEntry(_("STOP ALL JOBS"), false, [this, window]() {
 						hacksSend("stop");
 						}, "fa-stop-circle");
@@ -1478,7 +1478,7 @@ void GuiMenu::openName(HackName name)
 						remName(name.type, name.id);
 						delete s;
 					}, _("CANCEL"),nullptr));
-			}, "fa-close");
+			}, "fa-trash");
 		if(name.type != "AP")
 			{
 				s->addEntry(_("EDIT NAME"), true, [this, window, s, name]() {
@@ -1723,7 +1723,7 @@ void GuiMenu::openWPSpwned(std::string raw)
 						_("YES"), [this, window, ap] {
 							hacksSend("deauthap " + ap.bssid);
 						}, _("CANCEL"),nullptr));
-				},"iconHack");
+				},"fa-chain-broken");
 
 			s->addEntry(_("CLONE BSSID, DEAUTH"), true, [this, window, ap]() {
 					std::string msg = _("CLONE BSSID, DEAUTH") +"\n";
@@ -1733,7 +1733,7 @@ void GuiMenu::openWPSpwned(std::string raw)
 						_("YES"), [this, window, ap] {
 							hacksSend("deauthapclone " + ap.bssid);
 						}, _("CANCEL"),nullptr));
-				},"fa-bomb");
+				},"fa-clone");
 			if(!ap.ssid.empty())
 			{
 				s->addEntry(_("FAKE AP, DEAUTH"), true, [this, window, ap]() {
@@ -1744,7 +1744,7 @@ void GuiMenu::openWPSpwned(std::string raw)
 							_("YES"), [this, window, ap] {
 								hacksSend("deauthapcaptive " + ap.bssid);
 							}, _("CANCEL"),nullptr));
-					},"fa-bomb");
+					},"fa-skull");
 			}
 		s->addGroup(_("TOOLS"));
 			s->addEntry(_("SAVE NETWORK"), false, [this, window, ap]() {
@@ -2147,7 +2147,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 						{
 							s->addEntry(_("AP MENU"), true, [this, window, ap]() {
 								openDEAUTHMenu(ap);
-							}, "fa-wifi");
+							}, "fa-house-signal");
 						}
 					else
 						{
@@ -2174,7 +2174,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 											_("YES"),[this, ap]{
 												remName("AP", ap.bssid);
 											},_("NO"),nullptr));
-									}, "fa-close");
+									}, "fa-trash");
 								}
 
 							s->addGroup(_("AP HACKS"));
@@ -2204,7 +2204,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 											_("YES"), [this, window, ap] {
 												hacksSend("deauthapclone " + ap.bssid);
 											}, _("CANCEL"),nullptr));
-									},"fa-bomb");
+									},"fa-clone");
 								if(!ap.ssid.empty())
 								{
 									s->addEntry(_("FAKE AP, DEAUTH"), true, [this, window, ap]() {
@@ -2215,7 +2215,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 												_("YES"), [this, window, ap] {
 													hacksSend("deauthapcaptive " + ap.bssid);
 												}, _("CANCEL"),nullptr));
-										},"fa-bomb");
+										},"fa-skull");
 								}
 						}
 			}
@@ -2250,7 +2250,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 									[this, sta, lessAPinfo]
 								{
 									openSTADetail(sta, lessAPinfo);
-								}, "fa-user");
+								}, "fa-wifi");
 							}
 					}
 			}
@@ -2361,7 +2361,7 @@ void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 							delete s;
 							openSTADetail(sta);
 						}, _("NO"),nullptr));
-				}, "fa-close");
+				}, "fa-trash");
 			}
 
 			s->addEntry(sta.name.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, s, sta]() {
@@ -2441,7 +2441,7 @@ void GuiMenu::openBSSIDSMenu(std::vector<AccessPoint> bssids)
 							[this, ap]
 						{
 							openDEAUTHMenu(ap);
-						}, "fa-wifi");
+						}, "fa-house-signal");
 					}
 			}
 		}
@@ -2489,7 +2489,7 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 						_("YES"),[this, ap]{
 							remName("AP", ap.bssid);
 						},_("NO"),nullptr));
-				}, "fa-close");
+				}, "fa-trash");
 			}
 
 		s->addGroup(_("AP HACKS"));
@@ -2519,7 +2519,7 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 						_("YES"), [this, window, ap] {
 							hacksSend("deauthapclone " + ap.bssid);
 						}, _("CANCEL"),nullptr));
-				},"fa-bomb");
+				},"fa-clone");
 			if(!ap.ssid.empty())
 			{
 				s->addEntry(_("FAKE AP, DEAUTH"), true, [this, window, ap]() {
@@ -2530,7 +2530,7 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 							_("YES"), [this, window, ap] {
 								hacksSend("deauthapcaptive " + ap.bssid);
 							}, _("CANCEL"),nullptr));
-					},"fa-bomb");
+					},"fa-skull");
 			}
 
 
@@ -7453,7 +7453,7 @@ void GuiMenu::YTResult(YoutubeLink link)
 					 std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh phistory \"" + link.id + "\" \"" + Utils::String::replace(link.json, "\"", "\\\"") + "\"");
 					 YouTubeLoad();
 				 }));
-			}, "iconScraper", true);
+			}, "fa-play", true);
 
 			/*s->addEntry(_("CAST"), false, [this, window, link]{
 				loadChromecast(window, "YouTube/"+link.id);
@@ -7461,7 +7461,7 @@ void GuiMenu::YTResult(YoutubeLink link)
 
 			s->addEntry(_("DOWNLOAD"), false, [this, window, link]{
 				// download menu
-			});
+			}, "fa-download");
 
 		window->pushGui(s);
 	}
@@ -7483,7 +7483,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	s->addEntry(_("RELOAD"), false, [s, this]() {
 		delete s;
 		openNetworkSettings();
-	}, "iconRestart");
+	}, "fa-rotate");
 
 
 	s->addEntry(_("RECONNECT TO SAVED NETWORK"), false, [s, this, window]() {
@@ -7498,7 +7498,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 					openNetworkSettings();
 				 },
 				 _("NO"), nullptr));
-		}, "iconRestart");
+		}, "fa-link");
 
 	s->addGroup(_("INFORMATION"));
 
@@ -7545,11 +7545,11 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 						openNetworkSettings();
 					 },
 					 _("NO"), nullptr));
-			}, "iconNetwork");
+			}, "fa-house-signal");
 
 			s->addEntry(_("CONNECT TO GAME AP"), false, [this]() {
 					searchGameAP();
-			}, "iconControllers");
+			}, "fa-link");
 	}
 
 	if(gameApMode == "host")
@@ -7565,7 +7565,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 						openNetworkSettings();
 					 },
 					 _("NO"), nullptr));
-			}, "iconQuit");
+			}, "fa-circle-stop");
 	}
 
 	if(gameApMode == "cli")
@@ -7750,7 +7750,7 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 		window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"),
 			_("YES"), [] { quitES(QuitMode::REBOOT); },
 			_("NO"), nullptr));
-	}, "iconRestart");
+	}, "fa-rotate");
 
 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::SUSPEND))
 	{
@@ -7765,7 +7765,7 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 		window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"),
 			_("YES"), [] { quitES(QuitMode::SHUTDOWN); },
 			_("NO"), nullptr));
-	}, "iconShutdown");
+	}, "fa-power-off");
 
 #ifndef _ENABLEEMUELEC
 	s->addWithDescription(_("FAST SHUTDOWN SYSTEM"), _("Shutdown without saving metadata."), nullptr, [window] {
