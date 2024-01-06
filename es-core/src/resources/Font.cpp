@@ -273,9 +273,12 @@ void Font::getTextureForNewGlyph(const Vector2i& glyphSize, FontTexture*& tex_ou
 
 std::vector<std::string> getFallbackFontPaths()
 {
-	std::vector<std::string> fallbackFonts = 
+	std::vector<std::string> fallbackFonts =
 	{
-		":/fontawesome-webfont.ttf",
+		":/fa-brands-400.ttf",
+		":/fa-regular-400.ttf",
+		":/fa-solid-900.ttf",
+		":/fontawesome-webfont.ttf", // v4 fallback
 		":/DroidSansFallbackFull.ttf",// japanese, chinese, present on Debian
 		":/NanumMyeongjo.ttf", // korean font
 		":/Cairo.ttf", // arabic
