@@ -7367,158 +7367,158 @@ void MenuComponent::addMenuIcon(Window* window, ComponentListRow& row, const std
 	else if(iconName == "fa-pix"){
 	  label = _U("\ue43a"); }
 
-	else if(iconName == "fa-0"){
-	label = _U("\u30"); }
+		else if(iconName == "fa-0"){
+	  label = _U("\u0030"); }
 
-	else if(iconName == "fa-1"){
-	label = _U("\u31"); }
+	  else if(iconName == "fa-1"){
+	  label = _U("\u0031"); }
 
-	else if(iconName == "fa-2"){
-	label = _U("\u32"); }
+	  else if(iconName == "fa-2"){
+	  label = _U("\u0032"); }
 
-	else if(iconName == "fa-3"){
-	label = _U("\u33"); }
+	  else if(iconName == "fa-3"){
+	  label = _U("\u0033"); }
 
-	else if(iconName == "fa-4"){
-	label = _U("\u34"); }
+	  else if(iconName == "fa-4"){
+	  label = _U("\u0034"); }
 
-	else if(iconName == "fa-5"){
-	label = _U("\u35"); }
+	  else if(iconName == "fa-5"){
+	  label = _U("\u0035"); }
 
-	else if(iconName == "fa-6"){
-	label = _U("\u36"); }
+	  else if(iconName == "fa-6"){
+	  label = _U("\u0036"); }
 
-	else if(iconName == "fa-7"){
-	label = _U("\u37"); }
+	  else if(iconName == "fa-7"){
+	  label = _U("\u0037"); }
 
-	else if(iconName == "fa-8"){
-	label = _U("\u38"); }
+	  else if(iconName == "fa-8"){
+	  label = _U("\u0038"); }
 
-	else if(iconName == "fa-9"){
-	label = _U("\u39"); }
+	  else if(iconName == "fa-9"){
+	  label = _U("\u0039"); }
 
-	else if(iconName == "fa-at"){
-	label = _U("\u40"); }
+	  else if(iconName == "fa-at"){
+	  label = _U("\u0040"); }
 
-	else if(iconName == "fa-k"){
-	label = _U("\u4b"); }
+	  else if(iconName == "fa-k"){
+	  label = _U("\u004b"); }
 
-	else if(iconName == "fa-w"){
-	label = _U("\u57"); }
+	  else if(iconName == "fa-w"){
+	  label = _U("\u0057"); }
 
-	else if(iconName == "fa-asterisk"){
-	label = _U("\u2a"); }
+	  else if(iconName == "fa-asterisk"){
+	  label = _U("\u002a"); }
 
-	else if(iconName == "fa-i"){
-	label = _U("\u49"); }
+	  else if(iconName == "fa-i"){
+	  label = _U("\u0049"); }
 
-	else if(iconName == "fa-v"){
-	label = _U("\u56"); }
+	  else if(iconName == "fa-v"){
+	  label = _U("\u0056"); }
 
-	else if(iconName == "fa-q"){
-	label = _U("\u51"); }
+	  else if(iconName == "fa-q"){
+	  label = _U("\u0051"); }
 
-	else if(iconName == "fa-g"){
-	label = _U("\u47"); }
+	  else if(iconName == "fa-g"){
+	  label = _U("\u0047"); }
 
-	else if(iconName == "fa-e"){
-	label = _U("\u45"); }
+	  else if(iconName == "fa-e"){
+	  label = _U("\u0045"); }
 
-	else if(iconName == "fa-c"){
-	label = _U("\u43"); }
+	  else if(iconName == "fa-c"){
+	  label = _U("\u0043"); }
 
-	else if(iconName == "fa-l"){
-	label = _U("\u4c"); }
+	  else if(iconName == "fa-l"){
+	  label = _U("\u004c"); }
 
-	else if(iconName == "fa-z"){
-	label = _U("\u5a"); }
+	  else if(iconName == "fa-z"){
+	  label = _U("\u005a"); }
 
-	else if(iconName == "fa-a"){
-	label = _U("\u41"); }
+	  else if(iconName == "fa-a"){
+	  label = _U("\u0041"); }
 
-	else if(iconName == "fa-p"){
-	label = _U("\u50"); }
+	  else if(iconName == "fa-p"){
+	  label = _U("\u0050"); }
 
-	else if(iconName == "fa-question"){
-	label = _U("\u3f"); }
+	  else if(iconName == "fa-question"){
+	  label = _U("\u003f"); }
 
-	else if(iconName == "fa-f"){
-	label = _U("\u46"); }
+	  else if(iconName == "fa-f"){
+	  label = _U("\u0046"); }
 
-	else if(iconName == "fa-h"){
-	label = _U("\u48"); }
+	  else if(iconName == "fa-h"){
+	  label = _U("\u0048"); }
 
-	else if(iconName == "fa-r"){
-	label = _U("\u52"); }
+	  else if(iconName == "fa-r"){
+	  label = _U("\u0052"); }
 
-	else if(iconName == "fa-j"){
-	label = _U("\u4a"); }
+	  else if(iconName == "fa-j"){
+	  label = _U("\u004a"); }
 
-	else if(iconName == "fa-o"){
-	label = _U("\u4f"); }
+	  else if(iconName == "fa-o"){
+	  label = _U("\u004f"); }
 
-	else if(iconName == "fa-u"){
-	label = _U("\u55"); }
+	  else if(iconName == "fa-u"){
+	  label = _U("\u0055"); }
 
-	else if(iconName == "fa-s"){
-	label = _U("\u53"); }
+	  else if(iconName == "fa-s"){
+	  label = _U("\u0053"); }
 
-	else if(iconName == "fa-n"){
-	label = _U("\u4e"); }
+	  else if(iconName == "fa-n"){
+	  label = _U("\u004e"); }
 
-	else if(iconName == "fa-b"){
-	label = _U("\u42"); }
+	  else if(iconName == "fa-b"){
+	  label = _U("\u0042"); }
 
-	else if(iconName == "fa-less-than"){
-	label = _U("\u3c"); }
+	  else if(iconName == "fa-less-than"){
+	  label = _U("\u003c"); }
 
-	else if(iconName == "fa-greater-than"){
-	label = _U("\u3e"); }
+	  else if(iconName == "fa-greater-than"){
+	  label = _U("\u003e"); }
 
-	else if(iconName == "fa-y"){
-	label = _U("\u59"); }
+	  else if(iconName == "fa-y"){
+	  label = _U("\u0059"); }
 
-	else if(iconName == "fa-plus"){
-	label = _U("\u2b"); }
+	  else if(iconName == "fa-plus"){
+	  label = _U("\u002b"); }
 
-	else if(iconName == "fa-add"){
-	label = _U("\u2b"); }
+	  else if(iconName == "fa-add"){
+	  label = _U("\u002b"); }
 
-	else if(iconName == "fa-equals"){
-	label = _U("\u3d"); }
+	  else if(iconName == "fa-equals"){
+	  label = _U("\u003d"); }
 
-	else if(iconName == "fa-percent"){
-	label = _U("\u25"); }
+	  else if(iconName == "fa-percent"){
+	  label = _U("\u0025"); }
 
-	else if(iconName == "fa-percentage"){
-	label = _U("\u25"); }
+	  else if(iconName == "fa-percentage"){
+	  label = _U("\u0025"); }
 
-	else if(iconName == "fa-hashtag"){
-	label = _U("\u23"); }
+	  else if(iconName == "fa-hashtag"){
+	  label = _U("\u0023"); }
 
-	else if(iconName == "fa-t"){
-	label = _U("\u54"); }
+	  else if(iconName == "fa-t"){
+	  label = _U("\u0054"); }
 
-	else if(iconName == "fa-m"){
-	label = _U("\u4d"); }
+	  else if(iconName == "fa-m"){
+	  label = _U("\u004d"); }
 
-	else if(iconName == "fa-exclamation"){
-	label = _U("\u21"); }
+	  else if(iconName == "fa-exclamation"){
+	  label = _U("\u0021"); }
 
-	else if(iconName == "fa-dollar-sign"){
-	label = _U("\u24"); }
+	  else if(iconName == "fa-dollar-sign"){
+	  label = _U("\u0024"); }
 
-	else if(iconName == "fa-dollar"){
-	label = _U("\u24"); }
+	  else if(iconName == "fa-dollar"){
+	  label = _U("\u0024"); }
 
-	else if(iconName == "fa-usd"){
-	label = _U("\u24"); }
+	  else if(iconName == "fa-usd"){
+	  label = _U("\u0024"); }
 
-	else if(iconName == "fa-x"){
-	label = _U("\u58"); }
+	  else if(iconName == "fa-x"){
+	  label = _U("\u0058"); }
 
-	else if(iconName == "fa-d"){
-	label = _U("\u44"); }
+	  else if(iconName == "fa-d"){
+	  label = _U("\u0044"); }
 
 	if (!label.empty())
 	{
