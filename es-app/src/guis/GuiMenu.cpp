@@ -302,9 +302,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 					return;
 				GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
-	addEntry(_("FILE MANAGER"), false, [this] { appLauncher("file_manager.sh"); }, "fa-folder");
-	addEntry(_("YouTube"), true, [this]() {	YouTube();}, "fa-youtube");
-	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "fa-rocket");
+	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "fa-bars");
 
 	if (isFullUI)
 	{
@@ -457,14 +455,16 @@ void GuiMenu::openAppsMenu()
 {
 	Window* window = mWindow;
 	auto s = new GuiSettings(window, _("APPS").c_str());
-	s->addEntry(_("GMU MUSIC PLAYER").c_str(), false, [this] { appLauncher("gmu_player.sh"); });
+	s->addEntry(_("FILE MANAGER"), false, [this] { appLauncher("file_manager.sh"); }, "fa-folder");
+	s->addEntry(_("YouTube"), true, [this]() {	YouTube();}, "fa-youtube");
+	s->addEntry(_("GMU MUSIC PLAYER").c_str(), false, [this] { appLauncher("gmu_player.sh"); }, "fa-music");
 
 	s->addGroup(_("EMULATORS"));
-		s->addEntry(_("PPSSPP").c_str(), false, [this] { appLauncher("PPSSPPSDL", true); });
-		s->addEntry(_("DUCKSTATION").c_str(), false, [this] { appLauncher("duckstation-nogui", true); });
-		s->addEntry(_("FLYCAST").c_str(), false, [this] { appLauncher("flycast", true); });
-		s->addEntry(_("RETROARCH").c_str(), false, [this] { appLauncher("retroarch", true); });
-		s->addEntry(_("RETROARCH 32bit").c_str(), false, [this] { appLauncher("retroarch32", true); });
+		s->addEntry(_("PPSSPP").c_str(), false, [this] { appLauncher("PPSSPPSDL", true); }, "fa-rocket");
+		s->addEntry(_("DUCKSTATION").c_str(), false, [this] { appLauncher("duckstation-nogui", true); }, "fa-rocket");
+		s->addEntry(_("FLYCAST").c_str(), false, [this] { appLauncher("flycast", true); }, "fa-rocket");
+		s->addEntry(_("RETROARCH").c_str(), false, [this] { appLauncher("retroarch", true); }, "fa-rocket");
+		s->addEntry(_("RETROARCH 32bit").c_str(), false, [this] { appLauncher("retroarch32", true); }, "fa-rocket");
 
 	window->pushGui(s);
 }
@@ -489,7 +489,7 @@ void GuiMenu::openAllSettings()
 			s->addEntry(_("USER INTERFACE SETTINGS").c_str(), true, [this] { openUISettings(); }, "fa-palette");
 
 			if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::GAMESETTINGS))
-				s->addEntry(controllers_settings_label.c_str(), true, [this] { openControllersSettings(); }, "iconControllers");
+				s->addEntry(controllers_settings_label.c_str(), true, [this] { openControllersSettings(); }, "icon-gamepad");
 			else
 				s->addEntry(_("CONFIGURE INPUT"), true, [this] { openConfigInput(); }, "fa-gamepad");
 
@@ -650,7 +650,7 @@ void GuiMenu::openMPServers(std::vector<AVAHIserviceDetail> servers)
 				[this, window, server]
 			{
 					ApiSystem::getInstance()->launchApp(window, "playertoo " + server.ip);
-			}, "iconControllers");
+			}, "icon-gamepad");
 
 		}
 		window->pushGui(s);
@@ -678,11 +678,11 @@ void GuiMenu::openMusicPlayer()
 			//bool paused = AudioManager::getInstance()->isPaused();
 			s->addEntry(_("PAUSE / RESUME"), false, [this, s] {
 				AudioManager::getInstance()->pause();
-			});
+			}, "fa-play");
 
 			s->addEntry(_("STOP"), false, [this] {
 				AudioManager::getInstance()->stopMusic();
-			}, "iconStop");
+			}, "fa-stop");
 		}
 
 		if (AudioManager::getInstance()->myPlaylist.size() > 0)
@@ -690,13 +690,13 @@ void GuiMenu::openMusicPlayer()
 			s->addEntry(_("CLEAR PLAYLIST"), false, [s] {
 				AudioManager::getInstance()->clearPlaylist();
 				delete s;
-			}, "iconRestart");
+			}, "fa-trash");
 			s->addGroup(_("PLAYLIST"));
 			for (auto song : AudioManager::getInstance()->myPlaylist)
 			{
 				s->addEntry(Utils::FileSystem::getStem(song), false, [song] {
 					AudioManager::getInstance()->playMySong(song);
-				}, AudioManager::getInstance()->isPlaying(song) ? "iconSound" : "");
+				}, AudioManager::getInstance()->isPlaying(song) ? "fa-play" : "fa-file-audio");
 			}
 		}
 		/*else
@@ -7331,14 +7331,16 @@ void GuiMenu::YouTubeLoad()
 void GuiMenu::YouTubeSearchMenu()
 	{
 		Window *window = mWindow;
-		auto s = new GuiSettings(mWindow, "YouTube Search");
-		s->addEntry(_("NEW SEARCH"), true, [this, window]() {
+		std::string Title = _U("\uf16a");
+								Title+= " YouTube Search";
+		auto s = new GuiSettings(mWindow, Title);
+		s->addEntry(_("NEW SEARCH"), true, [this, window, Title]() {
 			if (Settings::getInstance()->getBool("UseOSK"))
-				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "YouTube Search", "", [this](const std::string& value) { YTJsonSearch(value); }, false));
+				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, Title, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
 			else
-				mWindow->pushGui(new GuiTextEditPopup(window, "YouTube Search", "", [this](const std::string& value) { YTJsonSearch(value); }, false));
-		});
-		s->addGroup(_("SEARCH HISTORY"));
+				mWindow->pushGui(new GuiTextEditPopup(window, Title, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
+		}, "fa-search");
+		s->addGroup(_U("\uf1da").c_str() + " " + _("SEARCH HISTORY").c_str());
 		for(auto item : YouTubeSearchHistory)
 			{
 				s->addEntry(item, false, [this, window, item]() {
@@ -7680,7 +7682,7 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 					AudioManager::getInstance()->playRandomMusic(false);
 					delete s;
 					openQuitMenu_static(w, true, false);
-				}, "iconSound");
+				}, "fa-volume-high");
 			}
 		}
 
@@ -7694,7 +7696,7 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 			});
 			delete s;
 
-		}, "iconScraper", true);
+		}, "fa-photo-film", true);
 
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::PDFEXTRACTION) && Utils::FileSystem::exists(Paths::getUserManualPath()))
 		{
@@ -7714,7 +7716,7 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
     		   Scripting::fireEvent("quit", "restart");
 			   quitES(QuitMode::QUIT);
 		}, _("NO"), nullptr));
-	}, "iconRestart");
+	}, "fa-rotate");
 
 	bool isFullUI = UIModeController::getInstance()->isUIModeFull();
 	if (isFullUI)
@@ -7728,7 +7730,7 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 				Scripting::fireEvent("quit", "retroarch");
 				quitES(QuitMode::QUIT);
 			}, _("NO"), nullptr));
-		}, "iconControllers");
+		}, "fa-rocket");
 
 		s->addEntry(_("REBOOT FROM NAND"), false, [window] {
 			window->pushGui(new GuiMsgBox(window, _("REALLY REBOOT FROM NAND?"), _("YES"),
@@ -7739,7 +7741,7 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 				runSystemCommand("systemctl reboot", "", nullptr);
 				quitES(QuitMode::QUIT);
 			}, _("NO"), nullptr));
-		}, "iconAdvanced");
+		}, "fa-microchip");
 	}
 #endif
 

@@ -73,12 +73,12 @@ if(game->getType() == FOLDER && SystemConf::getInstance()->get("pe_femusic.enabl
 		{
 			AudioManager::getInstance()->playDir(_path);
 			this->close();
-		}, "iconSound");
+		}, "fa-folder");
 	mMenu.addEntry(_("CAST DIRECTORY"), false, [_path, this]
 		{
 			GuiMenu::loadChromecast(mWindow, _path + "/*");
 			this->close();
-		}, "iconChromecast");
+		}, "fa-chromecast");
 }
 
 if(isAudio && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
@@ -88,18 +88,18 @@ if(isAudio && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 		{
 			AudioManager::getInstance()->playMySong(_path);
 			this->close();
-		}, "iconSound");
+		}, "fa-play");
 	mMenu.addEntry(_("ADD TO PLAYLIST"), false, [_path, this]
 		{
 			AudioManager::getInstance()->addToPlaylist(_path);
 			this->close();
-		}, "iconSound");
+		}, "fa-circle-plus");
 
 	mMenu.addEntry(_("CAST"), false, [_path, this]
 		{
 			GuiMenu::loadChromecast(mWindow, _path);
 			this->close();
-		}, "iconChromecast");
+		}, "fa-chromecast");
 
 
 }
@@ -110,13 +110,13 @@ if( isVideo && SystemConf::getInstance()->get("pe_fevideo.enabled") == "1")
 		{
 			GuiVideoViewer::playVideo(mWindow, _path, true);
 			this->close();
-		}, "iconScraper");
+		}, "fa-play");
 
 		mMenu.addEntry(_("CAST"), false, [_path, this]
 			{
 				GuiMenu::loadChromecast(mWindow, _path);
 				this->close();
-			}, "iconChromecast");
+			}, "fa-chromecast");
 
 }
 
@@ -140,7 +140,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 						std::string cmd = "fbterm.sh mplayer_video \"" + _path + "\" \"mpv\"";
 						ApiSystem::getInstance()->launchApp(window, cmd);
 						this->close();
-					}, isImageViewer ? "iconScraper" : "iconController");
+					}, isImageViewer ? "fa-image" : "fa-gamepad");
 			}
 		else
 			{
@@ -148,7 +148,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 					{
 						ViewController::get()->launch(game);
 						this->close();
-					}, isImageViewer ? "iconScraper" : "iconController");
+					}, isImageViewer ? "fa-image" : "fa-gamepad");
 			}
 
 
@@ -193,7 +193,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 							this->close();
 						}
 					));
-				}, "iconMultiplayer");
+				}, "fa-people-arrows");
 
 			if (SaveStateRepository::isEnabled(game))
 			{

@@ -10,16 +10,16 @@
 #include "SaveStateRepository.h"
 #include "CollectionSystemManager.h"
 
-#define FOLDERICON	 _U("\uF07C ")
-#define FAVORITEICON _U("\uF006 ")
+#define FOLDERICON	 _U("\uf07b ")
+#define FAVORITEICON _U("\uf004 ")
 
-#define CHEEVOSICON _U("\uF091")
-#define SAVESTATE	_U("\uF0C7")
-#define MANUAL		_U("\uF02D")
+#define CHEEVOSICON _U("\uf091")
+#define SAVESTATE	_U("\uf0c7")
+#define MANUAL		_U("\uf518")
 
 #define GUN			_U("\uF05B")
 
-#define RATINGSTAR _U("\uF005")
+#define RATINGSTAR _U("\uf005")
 #define SEPARATOR_BEFORE "["
 #define SEPARATOR_AFTER "] "
 
@@ -51,6 +51,7 @@ std::map<std::string, std::string> langFlag =
 
 std::string getLangFlag(const std::string lang)
 {
+	return "";// disable flags
 	auto it = langFlag.find(lang);
 	if (it == langFlag.cend())
 		return "";
@@ -74,7 +75,7 @@ GameNameFormatter::GameNameFormatter(SystemData* system)
 
 	mShowYear =
 		mSortId == FileSorts::RELEASEDATE_ASCENDING ||
-#ifdef _ENABLEEMUELEC			
+#ifdef _ENABLEEMUELEC
 		mSortId == FileSorts::RELEASEDATE_DESCENDING ||
 #else
 		mSortId == FileSorts::RELEASEDATE_ASCENDING ||
@@ -179,7 +180,7 @@ std::string GameNameFormatter::getDisplayName(FileData* fd, bool showFolderIcon)
 			std::string timeText;
 			if (h > 0)
 				timeText = Utils::String::format("%02d:%02d:%02d", h, m, s);
-			else 
+			else
 				timeText = Utils::String::format("%02d:%02d", m, s);
 
 			name = name + " [" + timeText + "]";
