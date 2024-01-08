@@ -88,8 +88,17 @@ void MenuComponent::addMenuIcon(Window* window, ComponentListRow& row, const std
 		return;
 
 	auto theme = ThemeData::getMenuTheme();
+	std::string iconPath;
+	std::vector<std::string> faSplit = Utils::String::split(iconName, '-');
+	if(faSplit.size() > 1 && fa.at(0) == "fa")
+		{
+			iconPath = ":/fa-svg/" + Utils::String::replace(iconName, "fa-", "");
+		}
+	else
+		{
+			iconPath = theme->getMenuIcon(iconName);
+		}
 
-	std::string iconPath = theme->getMenuIcon(iconName);
 	if (!iconPath.empty())
 	{
 		// icon
@@ -119,7 +128,8 @@ void MenuComponent::addMenuIcon(Window* window, ComponentListRow& row, const std
 	else if (iconName == "unknown")
 		label = _U("\uf1de");
 
-		else if(iconName == "fa-fill-drip"){
+/*
+	else if(iconName == "fa-fill-drip"){
 	  label = _U("\uf576"); }
 
 	else if(iconName == "fa-arrows-to-circle"){
@@ -7519,7 +7529,7 @@ void MenuComponent::addMenuIcon(Window* window, ComponentListRow& row, const std
 
 	  else if(iconName == "fa-d"){
 	  label = _U("\u0044"); }
-
+*/
 	if (!label.empty())
 	{
 		auto text = std::make_shared<TextComponent>(window, label, theme->Text.font, theme->Text.color, ALIGN_CENTER);
