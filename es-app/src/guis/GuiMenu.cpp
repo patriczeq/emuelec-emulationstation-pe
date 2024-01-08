@@ -455,16 +455,29 @@ void GuiMenu::openAppsMenu()
 {
 	Window* window = mWindow;
 	auto s = new GuiSettings(window, _("APPS").c_str());
+	bool webfilesStatus = apInlineInfo("webfiles") == "1";
+	s->addEntry(webfilesStatus ? _("STOP WEB FILE BROWSER") : _("START WEB FILE BROWSER"), false, [window, s, this, webfilesStatus]() {
+		if(webfilesStatus)
+		{
+			runSystemCommand("ap.sh stopwebfiles", "", nullptr);
+		}
+		else
+		{
+			runSystemCommand("ap.sh startwebfiles", "", nullptr);
+		}
+		delete s;
+		//openNetworkSettings();
+	}, "fa-cloud");
 	s->addEntry(_("FILE MANAGER"), false, [this] { appLauncher("file_manager.sh"); }, "fa-folder");
-	s->addEntry(_("YouTube"), true, [this]() {	YouTube();}, "fa-youtube");
 	s->addEntry(_("GMU MUSIC PLAYER").c_str(), false, [this] { appLauncher("gmu_player.sh"); }, "fa-music");
+	s->addEntry(_("YouTube"), true, [this]() {	YouTube();}, "fa-youtube");
 
 	s->addGroup(_("EMULATORS"));
-		s->addEntry(_("PPSSPP").c_str(), false, [this] { appLauncher("PPSSPPSDL", true); }, "fa-rocket");
-		s->addEntry(_("DUCKSTATION").c_str(), false, [this] { appLauncher("duckstation-nogui", true); }, "fa-rocket");
-		s->addEntry(_("FLYCAST").c_str(), false, [this] { appLauncher("flycast", true); }, "fa-rocket");
-		s->addEntry(_("RETROARCH").c_str(), false, [this] { appLauncher("retroarch", true); }, "fa-rocket");
-		s->addEntry(_("RETROARCH 32bit").c_str(), false, [this] { appLauncher("retroarch32", true); }, "fa-rocket");
+		s->addEntry(_("PPSSPP").c_str(), false, [this] { appLauncher("emu-launcher.sh PPSSPPSDL", true); }, "fa-rocket");
+		s->addEntry(_("DUCKSTATION").c_str(), false, [this] { appLauncher("emu-launcher.sh duckstation-nogui", true); }, "fa-rocket");
+		s->addEntry(_("FLYCAST").c_str(), false, [this] { appLauncher("emu-launcher.sh flycast", true); }, "fa-rocket");
+		s->addEntry(_("RETROARCH").c_str(), false, [this] { appLauncher("emu-launcher.sh retroarch", true); }, "fa-rocket");
+		s->addEntry(_("RETROARCH 32bit").c_str(), false, [this] { appLauncher("emu-launcher.sh retroarch32", true); }, "fa-rocket");
 
 	window->pushGui(s);
 }
@@ -489,7 +502,7 @@ void GuiMenu::openAllSettings()
 			s->addEntry(_("USER INTERFACE SETTINGS").c_str(), true, [this] { openUISettings(); }, "fa-palette");
 
 			if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::GAMESETTINGS))
-				s->addEntry(controllers_settings_label.c_str(), true, [this] { openControllersSettings(); }, "icon-gamepad");
+				s->addEntry(controllers_settings_label.c_str(), true, [this] { openControllersSettings(); }, "fa-gamepad");
 			else
 				s->addEntry(_("CONFIGURE INPUT"), true, [this] { openConfigInput(); }, "fa-gamepad");
 
@@ -1139,9 +1152,6 @@ void GuiMenu::openScanDatabase()
 
 		for(auto ap : ScanDB)
 			{
-				std::string StaCount = _U("\uf1eb");
-										StaCount+= " ";
-										StaCount+= std::to_string(ap.sta.size());
 				s->addWithDescription(ap.ssid.empty() ? ap.bssid : ap.ssid, ap.vendor,
 					std::make_shared<TextComponent>(window, std::to_string(ap.sta.size()), font, color),
 					[this, ap]
@@ -7027,7 +7037,7 @@ std::vector<AVAHIservice> GuiMenu::getAvahiServices()
 
 std::vector<ARPcli> GuiMenu::getARPclients()
 	{
-		std::vector<std::string> rawClients = ApiSystem::getInstance()->getScriptResults("arp-scan -l -x -q -F '${mac};${ip}'");
+		std::vector<std::string> rawClients = ApiSystem::getInstance()->getScriptResults("arp-scan -l -x -q -F '${mac};${ip}' | uniq");
 		std::vector<ARPcli> list;
 		for(auto _cli : rawClients)
 			{
@@ -7166,81 +7176,65 @@ void GuiMenu::openNetworkTools()
 				return;
 			}
 
-		std::string gameApMode = apInlineInfo("gameapmode");
+		//std::string gameApMode = apInlineInfo("gameapmode");
 
 		auto s = new GuiSettings(mWindow, _("NETWORK TOOLS").c_str());
 		//ffmpeg -f fbdev -re -i /dev/fb0 -framerate 20 -listen 1 -f mp4 -preset veryfast -b:v 320k -maxrate 320k -bufsize 1280k -movflags frag_keyframe+empty_moov -vf "transpose=1,mpdecimate,setpts=N/FRAME_RATE/TB" http://127.0.0.1:8080
-		s->addGroup(_("SYSTEM"));
-		//Start WebFileBrowser
-			bool webfilesStatus = apInlineInfo("webfiles") == "1";
-			s->addEntry(webfilesStatus ? _("STOP WEB FILE BROWSER") : _("START WEB FILE BROWSER"), false, [window, s, this, webfilesStatus]() {
-				if(webfilesStatus)
-				{
-					runSystemCommand("ap.sh stopwebfiles", "", nullptr);
-				}
-				else
-				{
-					runSystemCommand("ap.sh startwebfiles", "", nullptr);
-				}
-				delete s;
-				//openNetworkSettings();
-			}, "fa-cloud");
 
 		s->addEntry(_("CHROMECAST").c_str(), true, [this] { loadChromecast(mWindow); }, "fa-chromecast");
 
-		s->addGroup(_("DIAGNOSTICS"));
-			s->addEntry(_("ARP-SCAN"), false, [this, window]() {
-				window->pushGui(new GuiLoading<std::vector<ARPcli>>(window, _("Loading..."),
-					[this, window](auto gui)
+		s->addEntry(_("ARP-SCAN"), true, [this, window]() {
+			window->pushGui(new GuiLoading<std::vector<ARPcli>>(window, _("Loading..."),
+				[this, window](auto gui)
+				{
+					mWaitingLoad = true;
+					return getARPclients();
+				},
+				[this, window](std::vector<ARPcli> list)
+				{
+					mWaitingLoad = false;
+					if(list.size() > 0)
 					{
-						mWaitingLoad = true;
-						return getARPclients();
-					},
-					[this, window](std::vector<ARPcli> list)
-					{
-						mWaitingLoad = false;
-						if(list.size() > 0)
-						{
-							openARPlist(list);
-						}
-						else
-						{
-							window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
-						}
+						openARPlist(list);
 					}
-				));
-			});
-
-			s->addEntry(_("AVAHI-BROWSE"), false, [this, window]() {
-				window->pushGui(new GuiLoading<std::vector<AVAHIservice>>(window, _("Loading..."),
-					[this, window](auto gui)
+					else
 					{
-						mWaitingLoad = true;
-						return getAvahiServices();
-					},
-					[this, window](std::vector<AVAHIservice> list)
-					{
-						mWaitingLoad = false;
-						if(list.size() > 0)
-						{
-							openAvahiList(list);
-						}
-						else
-						{
-							window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
-						}
+						window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
 					}
-				));
-			});
+				}
+			));
+		});
 
-			s->addEntry(_("NSLOOKUP"), false, [this, window]() {
+		s->addEntry(_("AVAHI-BROWSE"), true, [this, window]() {
+			window->pushGui(new GuiLoading<std::vector<AVAHIservice>>(window, _("Loading..."),
+				[this, window](auto gui)
+				{
+					mWaitingLoad = true;
+					return getAvahiServices();
+				},
+				[this, window](std::vector<AVAHIservice> list)
+				{
+					mWaitingLoad = false;
+					if(list.size() > 0)
+					{
+						openAvahiList(list);
+					}
+					else
+					{
+						window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
+					}
+				}
+			));
+		});
+
+			s->addEntry(_("NSLOOKUP"), true, [this, window]() {
 				if (Settings::getInstance()->getBool("UseOSK"))
 					mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "ENTER LOOKUP ADDRESS", "", [this](const std::string& value) { const std::string cmd = "nslookup " + value; msgExec(cmd); }, false));
 				else
 					mWindow->pushGui(new GuiTextEditPopup(window, "ENTER LOOKUP ADDRESS", "", [this](const std::string& value) { const std::string cmd = "nslookup " + value; msgExec(cmd); }, false));
 			});
 
-			s->addEntry(_("TRACEROUTE"), false, [this, window]() {
+			s->addEntry(_("TRACEROUTE"), true, [this, window]() {
 				if (Settings::getInstance()->getBool("UseOSK"))
 					mWindow->pushGui(new GuiTextEditPopupKeyboard(window, "ENTER ADDRESS", "8.8.8.8", [this](const std::string& value) { traceroute(value); }, false));
 				else
@@ -7425,7 +7419,10 @@ void GuiMenu::YTResultRow(Window* window, GuiSettings* s, YoutubeLink link)
 				icon,
 				[this, window, link]
 					{
-							 YTResult(link);
+						appLauncher("youtube.sh play " + link.link);
+					 std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh phistory \"" + link.id + "\" \"" + Utils::String::replace(link.json, "\"", "\\\"") + "\"");
+					 YouTubeLoad();
+							 	//YTResult(link);
 					}
 		);
 	}
