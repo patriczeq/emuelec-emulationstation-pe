@@ -90,7 +90,7 @@ void MenuComponent::addMenuIcon(Window* window, ComponentListRow& row, const std
 	auto theme = ThemeData::getMenuTheme();
 	std::string iconPath;
 	std::vector<std::string> faSplit = Utils::String::split(iconName, '-');
-	if(faSplit.size() > 1 && fa.at(0) == "fa")
+	if(faSplit.size() > 1 && faSplit.at(0) == "fa")
 		{
 			iconPath = ":/fa-svg/" + Utils::String::replace(iconName, "fa-", "");
 		}
