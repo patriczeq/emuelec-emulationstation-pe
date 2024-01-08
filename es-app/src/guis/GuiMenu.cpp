@@ -7340,7 +7340,7 @@ void GuiMenu::YouTubeSearchMenu()
 			else
 				mWindow->pushGui(new GuiTextEditPopup(window, Title, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
 		}, "fa-search");
-		s->addGroup(_U("\uf1da").c_str() + " " + _("SEARCH HISTORY").c_str());
+		s->addGroup(_("SEARCH HISTORY").c_str());
 		for(auto item : YouTubeSearchHistory)
 			{
 				s->addEntry(item, false, [this, window, item]() {
