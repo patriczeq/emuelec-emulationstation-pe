@@ -99,7 +99,7 @@ void MenuComponent::addMenuIcon(Window* window, ComponentListRow& row, const std
 			iconPath = theme->getMenuIcon(iconName);
 		}*/
 
-	iconPath = theme->getMenuIcon(iconName);
+	std::string iconPath = theme->getMenuIcon(iconName);
 	if (!iconPath.empty())
 	{
 		// icon
