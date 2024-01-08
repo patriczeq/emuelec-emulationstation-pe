@@ -901,7 +901,7 @@ void GuiMenu::openESP01Menu()
 						{
 							window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
 						}
-				}, "fa-star");
+				}, "fa-heart");
 			}
 			if(SystemConf::getInstance()->get("pe_hack.scandb") == "1")
 				{
@@ -925,7 +925,7 @@ void GuiMenu::openESP01Menu()
 								}
 							}
 						));
-					}, "fa-book-skull");
+					}, "fa-warehouse");
 				}
 
 			s->addEntry(_("STOP ALL JOBS"), false, [this] {
@@ -1128,13 +1128,20 @@ void GuiMenu::addToScanDatabase(WifiStation sta, bool reload)
 void GuiMenu::openScanDatabase()
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("SCAN DATABASE"));
+		std::string Title  = _U("\uf494");
+								Title += " ";
+								Title	+= _("SCAN DATABASE");
+
+		auto s = new GuiSettings(window, Title);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
 		for(auto ap : ScanDB)
 			{
+				std::string StaCount = _U("\uf1eb");
+										StaCount+= " ";
+										StaCount+= std::to_string(ap.sta.size());
 				s->addWithDescription(ap.ssid.empty() ? ap.bssid : ap.ssid, ap.vendor,
 					std::make_shared<TextComponent>(window, std::to_string(ap.sta.size()), font, color),
 					[this, ap]
@@ -1149,7 +1156,11 @@ void GuiMenu::openScanDatabase()
 void GuiMenu::openScanDBItem(ScanDB_AP ap)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("ScanDB: ") + ap.bssid);
+		std::string Title = _U("\ue012");
+								Title += " ";
+								Title	+= _("DB: ");
+								Title += ap.bssid;
+		auto s = new GuiSettings(window, Title);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -1206,7 +1217,13 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 void GuiMenu::openScanDBItem(ScanDB_STA sta)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("ScanDB: ") + (sta.name.empty() ? sta.mac : sta.name));
+		std::string Title = _U("\uf1eb");
+								Title += " ";
+								Title	+= _("DB: ");
+								Title += (sta.name.empty() ? sta.mac : sta.name);
+		auto s = new GuiSettings(window, Title);
+
+		auto s = new GuiSettings(window, Title);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -1284,7 +1301,7 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 					delete s;
 					openScanDBItem(sta);
 				}, false));
-		}, sta.name.empty() ? "fa-plus" : "fa-pencil");
+		}, sta.name.empty() ? "fa-heart" : "fa-pencil");
 
 
 		window->pushGui(s);
@@ -1478,7 +1495,7 @@ void GuiMenu::openName(HackName name)
 						remName(name.type, name.id);
 						delete s;
 					}, _("CANCEL"),nullptr));
-			}, "fa-trash");
+			}, "fa-heart-crack");
 		if(name.type != "AP")
 			{
 				s->addEntry(_("EDIT NAME"), true, [this, window, s, name]() {
@@ -1757,7 +1774,7 @@ void GuiMenu::openWPSpwned(std::string raw)
 				addName(n);
 				window->pushGui(new GuiMsgBox(window, _("SAVED!"),
 					_("ok"),nullptr));
-			}, "fa-save");
+			}, "fa-floppy-disk");
 			s->addEntry(_("CONNECT TO NETWORK"), false, [this, window, ap]() {
 				const std::string baseSSID 	= ap.ssid;
 				const std::string baseKEY 	= ap.password;
@@ -2389,7 +2406,7 @@ void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 						delete s;
 						openSTADetail(sta);
 					}, false));
-			}, sta.name.empty() ? "fa-plus" : "fa-pencil");
+			}, sta.name.empty() ? "fa-heart" : "fa-pencil");
 		if(lessAPinfo)
 			{
 				s->addGroup(_("AP INFO"));

@@ -209,7 +209,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 						guiSaveStateLoad(mWindow, game);
 	#endif
 						this->close();
-				});
+				}, "fa-floppy-disk");
 			}
 
 			if (game->isNetplaySupported())
@@ -248,7 +248,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 
 					mWindow->pushGui(msgBox);
 					close();
-				});
+				}, "fa-globe");
 			}
 
 		}
@@ -263,7 +263,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 			{
 				GuiImageViewer::showPdf(window, game->getMetadata(MetaDataId::Manual));
 				close();
-			});
+			}, "fa-book-open");
 		}
 
 		if (hasMagazine)
@@ -272,7 +272,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 			{
 				GuiImageViewer::showPdf(window, game->getMetadata(MetaDataId::Magazine));
 				close();
-			});
+			}, "fa-book-open");
 		}
 
 		if (hasMap)
@@ -282,7 +282,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 				auto imagePath = game->getMetadata(MetaDataId::Map);
 				GuiImageViewer::showImage(window, imagePath, Utils::String::toLower(Utils::FileSystem::getExtension(imagePath)) != ".pdf");
 				close();
-			});
+			}, "fa-book-open");
 		}
 
 		if (hasVideo)
@@ -292,7 +292,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 				auto imagePath = game->getMetadata(MetaDataId::Video);
 				GuiVideoViewer::playVideo(mWindow, imagePath);
 				close();
-			});
+			}, "fa-clapperboard");
 		}
 
 		if (hasAlternateMedias)
@@ -302,7 +302,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 				auto imageList = game->getSourceFileData()->getFileMedias();
 				GuiImageViewer::showImages(mWindow, imageList);
 				close();
-			});
+			}, "fa-images");
 		}
 
 		if (hasCheevos)
@@ -357,7 +357,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 				});
 
 				close();
-			});
+			}, "fa-search");
 		}
 
 		if (UIModeController::getInstance()->isUIModeFull())
@@ -373,7 +373,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 					_("NO"), nullptr));
 
 
-			});
+			}, "fa-trash");
 #ifdef _ENABLEEMUELEC
 			if (!isImageViewer) {
 				if (game->getMetadata(MetaDataId::Hidden) == "false")
@@ -382,14 +382,14 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 					{
 						hideGame(game, true);
 						close();
-					});
+					}, "fa-eye-slash");
 				}
 				else {
 					mMenu.addEntry(_("UNHIDE GAME"), false, [this, game]
 					{
 						hideGame(game, false);
 						close();
-					});
+					}, "fa-eye");
 				}
 			}
 #endif
@@ -431,7 +431,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 			{
 				CollectionSystemManager::get()->toggleGameInCollection(game, "Favorites");
 				close();
-			});
+			}, game->getFavorite() ? "fa-heart-crack" : "fa-heart");
 
 			int addToCollectionCount = 0;
 			for (auto customCollection : CollectionSystemManager::get()->getCustomCollectionSystems())
@@ -468,7 +468,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 
 					mWindow->pushGui(msgBox);
 				//	close();
-				});
+			}, "fa-plus-circle");
 			}
 
 			for (auto customCollection : CollectionSystemManager::get()->getCustomCollectionSystems())
@@ -527,7 +527,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 			mWindow->pushGui(scr);
 
 			close();
-		});
+		}, "fa-image");
 
 		if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::ScriptId::EVMAPY) && game->getType() != FOLDER)
 		{
