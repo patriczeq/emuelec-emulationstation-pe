@@ -92,7 +92,7 @@ void MenuComponent::addMenuIcon(Window* window, ComponentListRow& row, const std
 	std::vector<std::string> faSplit = Utils::String::split(iconName, '-');
 	if(faSplit.size() > 1 && faSplit.at(0) == "fa")
 		{
-			iconPath = ":/fa-svg/" + Utils::String::replace(iconName, "fa-", "");
+			iconPath = ":/fa-svg/" + Utils::String::replace(iconName, "fa-", "") + ".svg";
 		}
 	else
 		{
