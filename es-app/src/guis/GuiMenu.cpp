@@ -7419,9 +7419,19 @@ void GuiMenu::YTResultRow(Window* window, GuiSettings* s, YoutubeLink link)
 				icon,
 				[this, window, link]
 					{
-						appLauncher("youtube.sh play " + link.link);
-					 std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh phistory \"" + link.id + "\" \"" + Utils::String::replace(link.json, "\"", "\\\"") + "\"");
-					 YouTubeLoad();
+						mWindow->pushGui(new GuiLoading<std::string>(window, _("Running..."),
+						 [this, window, link](auto gui)
+						 {
+							 mWaitingLoad = true;
+							 return getShOutput("sleep 0.5; echo 1");
+						 },
+						 [this, window, link](std::string l)
+						 {
+							 mWaitingLoad = false;
+							 appLauncher("youtube.sh play " + link.link);
+							 std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh phistory \"" + link.id + "\" \"" + Utils::String::replace(link.json, "\"", "\\\"") + "\"");
+							 YouTubeLoad();
+						 }));
 							 	//YTResult(link);
 					}
 		);
