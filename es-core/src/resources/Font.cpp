@@ -275,9 +275,9 @@ std::vector<std::string> getFallbackFontPaths()
 {
 	std::vector<std::string> fallbackFonts =
 	{
-		/*":/fa-solid-900.ttf",
+		":/fa-solid-900.ttf",
 		":/fa-brands-400.ttf",
-		":/fa-regular-400.ttf",*/
+		":/fa-regular-400.ttf",
 		":/fontawesome-webfont.ttf", // v4 fallback
 		":/DroidSansFallbackFull.ttf",// japanese, chinese, present on Debian
 		":/NanumMyeongjo.ttf", // korean font
@@ -1102,6 +1102,9 @@ std::shared_ptr<Font> Font::getFromTheme(const ThemeData::ThemeElement* elem, un
 
 void Font::OnThemeChanged()
 {
+	// disable flags
+	return;
+
 	static std::map<unsigned int, std::string> defaultMap =
 	{
 		{ 0xF300, ":/flags/au.png" },
