@@ -1223,7 +1223,6 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 								Title += (sta.name.empty() ? sta.mac : sta.name);
 		auto s = new GuiSettings(window, Title);
 
-		auto s = new GuiSettings(window, Title);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
