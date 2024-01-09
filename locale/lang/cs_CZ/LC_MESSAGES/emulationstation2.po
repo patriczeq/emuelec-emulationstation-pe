@@ -104,6 +104,18 @@ msgstr "RESTARTOVAT ESP01"
 msgid "SCAN NETWORK"
 msgstr "SKENOVÁNÍ SÍTĚ"
 
+msgid "STORE SCAN RESULTS"
+msgstr "ULOŽIT VÝSLEDKY SKENOVÁNÍ"
+
+msgid "START NEW SCAN?"
+msgstr "SPUSTIT NOVÉ SKENOVÁNÍ?"
+
+msgid "SCAN LIST"
+msgstr "VÝSLEDKY SKENOVÁNÍ"
+
+msgid "SCAN ALL"
+msgstr "SKENOVAT VŠE"
+
 msgid "SCAN AP"
 msgstr "SKENOVAT AP"
 
@@ -249,6 +261,46 @@ msgstr "OPRAVDU CHCETE VYPNOUT PŘÍSTUPOVÝ BOD?"
 msgid "GAME AP IS NOT FOUND"
 msgstr "HERNÍ AP NALEZEN"
 
+msgid "AP INFO"
+msgstr "INFORMACE O AP"
+
+msgid "AP MENU"
+msgstr "NABÍDKA AP"
+
+msgid "SAVE NETWORK"
+msgstr "ULOŽIT SÍŤ"
+
+msgid "MANAGEMENT"
+msgstr "SPRÁVA"
+
+msgid "STATIONS"
+msgstr "STANICE"
+
+msgid "STATION HACKS"
+msgstr "HACKOVÁNÍ STANICE"
+
+msgid "AP HACKS"
+msgstr "HACKOVÁNÍ AP"
+
+msgid "DEAUTH"
+msgstr "DEAUTORIZOVAT"
+
+msgid "STA INFO"
+msgstr "INFORMACE O STANICI"
+
+msgid "ACTIONS"
+msgstr "AKCE"
+
+msgid "AP SSID"
+msgstr "NÁZEV SÍTĚ"
+
+msgid "REMOVE FROM DATABASE"
+msgstr "ODSTRANIT Z DATABÁZE"
+
+msgid "FROM SCAN DB?"
+msgstr "ZE SCAN DB?"
+
+
 
 msgid "AP SSID"
 msgstr "NÁZEV SÍTĚ"
@@ -266,6 +318,92 @@ msgstr "DEAUTORIZOVAT KLIENTA"
 msgid "NETWORK TOOLS"
 msgstr "NÁSTROJE SÍTĚ"
 
+msgid "YOUTUBE SEARCH"
+msgstr "VYHLEDÁVÁNÍ YOUTUBE"
+
+msgid "NEW SEARCH"
+msgstr "NOVÉ VYHLEDÁVÁNÍ"
+
+msgid "SEARCH HISTORY"
+msgstr "HISTORIE VYHLEDÁVÁNÍ"
+
+msgid "RECENTLY PLAYED"
+msgstr "NEDÁVNO PŘEHRANÉ"
+
+msgid "Running..."
+msgstr "Spouští se..."
+
+msgid "DEAUTHER SETTINGS"
+msgstr "NASTAVENÍ DEAUTHERA"
+
+msgid "START OTA AP"
+msgstr "SPUSTIT AKTUALIZAČNÍ AP"
+
+msgid "STORE SCANNED DEVICES"
+msgstr "UKLÁDAT SKENOVANÁ ZAŘÍZENÍ"
+
+msgid "NEOPIXEL SETTINGS"
+msgstr "NASTAVENÍ NEOPIXEL LED"
+
+msgid "CATEGORIES"
+msgstr "KATEGORIZACE"
+
+msgid "NAMES CATEGORIES"
+msgstr "ZOBRAZOVAT NÁZVY V KATEGORIÍCH"
+
+msgid "SORT STA SCAN BY AP"
+msgstr "SHLUKOVAT STA SKEN PODLE AP"
+
+msgid "CUSTOM SYSTEM SETTINGS"
+msgstr "NASTAVENÍ NÁSTAVBY SYSTÉMU"
+
+msgid "PE MOD SETTINGS"
+msgstr "NASTAVENÍ PE MODU"
+
+msgid "U-BOOT THEME"
+msgstr "SCHÉMA ZAVADĚČE"
+
+msgid "SCAN ONLY IPV4 SERVICES"
+msgstr "SKENOVAT POUZE SLUŽBY IPV4"
+
+msgid "ES MUSIC PLAYER"
+msgstr "INTEGROVANÝ HUDEBNÍ PŘEHRÁVAČ"
+
+msgid "ES VIDEO PLAYER"
+msgstr "INTEGROVANÝ VIDEO PŘEHRÁVAČ"
+
+msgid "SYSTEM INFORMATION"
+msgstr "INFORMACE O SYSTÉMU"
+
+msgid "TASK MANAGER"
+msgstr "SPRÁVCE ÚLOH"
+
+msgid "SPACE"
+msgstr "ÚLOŽIŠTĚ"
+
+msgid "TEMPERATURE"
+msgstr "TEPLOTA"
+
+msgid "POWER"
+msgstr "NAPÁJENÍ"
+
+msgid "BATT. CURRENT"
+msgstr "ODBĚR Z AKU."
+
+msgid "BATT. VOLTAGE"
+msgstr "NAPĚTÍ AKU."
+
+msgid "BATT. STATUS"
+msgstr "STAV AKUMULÁTORU"
+
+msgid "BATT. CAPACITY"
+msgstr "KAPACITA AKU."
+
+msgid "CHARGER CONNECTED"
+msgstr "PŘIPOJENA NABÍJEČKA"
+
+msgid "USB CONNECTED"
+msgstr "PŘIPOJENO ZAŘÍZENÍ USB"
 
 msgid "UPDATE AVAILABLE"
 msgstr "AKTUALIZACE DOSTUPNÁ"

@@ -7748,7 +7748,7 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 	bool isFullUI = UIModeController::getInstance()->isUIModeFull();
 	if (isFullUI)
 	{
-		s->addEntry(_("START RETROARCH"), false, [window] {
+		/*s->addEntry(_("START RETROARCH"), false, [window] {
 			window->pushGui(new GuiMsgBox(window, _("REALLY START RETROARCH?"), _("YES"),
 				[] {
 				remove("/var/lock/start.games");
@@ -7768,7 +7768,7 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 				runSystemCommand("systemctl reboot", "", nullptr);
 				quitES(QuitMode::QUIT);
 			}, _("NO"), nullptr));
-		}, "fa-microchip");
+		}, "fa-microchip");*/
 	}
 #endif
 
