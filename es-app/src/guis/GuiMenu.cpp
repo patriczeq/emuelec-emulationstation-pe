@@ -2116,10 +2116,12 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 		std::string wTitle = _("STATIONS LIST") + " ("+std::to_string(stations.size())+ ")";
 		if(bssid != "")
 			{
-				wTitle = bssid;
+				wTitle = _U("\ue012");
+				wTitle+= " ";
+				wTitle+= bssid;
 			}
 
-		auto s = new GuiSettings(window, wTitle.c_str());
+		auto s = new GuiSettings(window, wTitle);
 
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
@@ -2338,7 +2340,10 @@ std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations, b
 void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations, bool all)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, _("SCAN LIST").c_str());
+		std::string Title = _U("\uf7c0");
+								Title+= " ";
+								Title+= _("SCAN LIST");
+		auto s = new GuiSettings(window, Title);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -2353,7 +2358,7 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations, bool all)
 					[this, stations, ap]
 				{
 					openSTAmenu(stations, ap.bssid, ap.ssid);
-				}, "fa-wifi");
+				}, "fa-house-signal");
 			}
 
 		window->pushGui(s);
@@ -2362,7 +2367,6 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations, bool all)
 void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 	{
 		sta.name = getName("STA", sta.mac).name;
-
 		Window* window = mWindow;
 		std::string windowName = _("STA") + ": ";
 								windowName = windowName + (sta.name.empty() ? sta.mac : sta.name);

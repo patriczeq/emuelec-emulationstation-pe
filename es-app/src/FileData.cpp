@@ -1433,6 +1433,33 @@ void FileData::setEmulator(const std::string value)
 #endif
 }
 
+bool FileData::is2PSupported()
+	{
+		auto system = file->getSystem();
+		if (system == nullptr)
+			{
+				return false;
+			}
+		std::string platform 	= system->getName();
+		if(
+					 platform == "psx"
+				|| platform == "dreamcast"
+				|| platform == "nes"
+				|| platform == "snes"
+				|| platform == "megadrive"
+				|| platform == "n64"
+				|| platform == "atari2600"
+				|| platform == "atari5200"
+				|| platform == "mastersystem"
+				|| platform == "segacd"
+		)
+		{
+			return true;
+		}
+		return false;
+
+	}
+
 bool FileData::isNetplaySupported()
 {
 	if (!SystemConf::getInstance()->getBool("global.netplay"))

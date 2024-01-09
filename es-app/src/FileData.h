@@ -35,7 +35,7 @@ enum NetPlayMode
 {
 	DISABLED,
 	CLIENT,
-	SERVER,	
+	SERVER,
 	SPECTATOR
 };
 
@@ -79,7 +79,7 @@ public:
 #endif
 
 	inline FileType getType() const { return mType; }
-	
+
 	inline FolderData* getParent() const { return mParent; }
 	inline void setParent(FolderData* parent) { mParent = parent; }
 
@@ -99,6 +99,7 @@ public:
 	virtual const std::string getEmulator(bool resolveDefault = true);
 
 	virtual bool isNetplaySupported();
+	virtual bool is2PSupported();
 
 	void setCore(const std::string value);
 	void setEmulator(const std::string value);
@@ -113,7 +114,7 @@ public:
 
 	const std::string getConfigurationName();
 
-	inline bool isPlaceHolder() { return mType == PLACEHOLDER; };	
+	inline bool isPlaceHolder() { return mType == PLACEHOLDER; };
 
 	virtual std::string getKey();
 	const bool isArcadeAsset();
@@ -136,12 +137,12 @@ public:
 	bool		launchGame(Window* window, LaunchGameOptions options = LaunchGameOptions());
 
 	static void resetSettings();
-	
+
 	virtual const MetaDataList& getMetadata() const { return mMetadata; }
 	virtual MetaDataList& getMetadata() { return mMetadata; }
 
-	void setMetadata(MetaDataList value) { getMetadata() = value; } 
-	
+	void setMetadata(MetaDataList value) { getMetadata() = value; }
+
 	std::string getMetadata(MetaDataId key) { return getMetadata().get(key); }
 	void setMetadata(MetaDataId key, const std::string& value) { return getMetadata().set(key, value); }
 
@@ -177,7 +178,7 @@ private:
 	std::string getMessageFromExitCode(int exitCode);
 	MetaDataList mMetadata;
 
-protected:	
+protected:
 	std::string  findLocalArt(const std::string& type = "", std::vector<std::string> exts = { ".png", ".jpg" });
 
 	static FileData* mRunningGame;
@@ -225,7 +226,7 @@ public:
 
 	inline bool isVirtualStorage() { return !mOwnsChildrens; }
 	inline bool isVirtualFolderDisplay() { return mIsDisplayableAsVirtualFolder && !mOwnsChildrens; }
-	
+
 	void enableVirtualFolderDisplay(bool value) { mIsDisplayableAsVirtualFolder = value; };
 	bool isVirtualFolderDisplayEnabled() { return mIsDisplayableAsVirtualFolder; };
 

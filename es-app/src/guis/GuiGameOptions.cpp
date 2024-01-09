@@ -156,44 +156,49 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 
 			// PLAYERTOO
 			// TODO: only if supported!
-			mMenu.addEntry(_("LAUNCH 2 PLAYERS SESSION"), false, [window, game, this]
+
+			if(game->is2PSupported())
 				{
-					if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
+					mMenu.addEntry(_("LAUNCH 2 PLAYERS SESSION"), false, [window, game, this]
 						{
-							mWindow->pushGui(new GuiMsgBox(mWindow, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));
-							return;
-						}
+							if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
+								{
+									mWindow->pushGui(new GuiMsgBox(mWindow, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));
+									return;
+								}
 
-					mWindow->pushGui(new GuiLoading<bool>(window, _("STARTING 1ST PLAYER SERVER"),
-						[this, game](auto gui)
-						{
+							mWindow->pushGui(new GuiLoading<bool>(window, _("STARTING 1ST PLAYER SERVER"),
+								[this, game](auto gui)
+								{
 
-							SystemData* system 		= game->getSystem();
-							std::string platform 	= system->getName();
-							std::string name 			= game->getName();
-							std::string image			= game->getImagePath();
+									SystemData* system 		= game->getSystem();
+									std::string platform 	= system->getName();
+									std::string name 			= game->getName();
+									std::string image			= game->getImagePath();
 
-							/*
-								myGame DATA
-								"platform=platform" "name=my game string" "image=path to"
-							*/
+									/*
+										myGame DATA
+										"platform=platform" "name=my game string" "image=path to"
+									*/
 
-							runSystemCommand("killall gamestream_encoder_server &", "", nullptr);
-							runSystemCommand("killall avahi-publish &", "", nullptr);
-							runSystemCommand("gamestream_encoder_server &", "", nullptr);
-							runSystemCommand("avahi-publish -s --domain=local --subtype=\"_ann._sub._oga-mp._udp\" \"oga-mp-broadcast\" \"_oga-mp._udp\" 1234 \"platform="+platform+"\" \"name="+name+"\" \"image="+image+"\" &", "", nullptr);
+									runSystemCommand("killall gamestream_encoder_server &", "", nullptr);
+									runSystemCommand("killall avahi-publish &", "", nullptr);
+									runSystemCommand("gamestream_encoder_server &", "", nullptr);
+									runSystemCommand("avahi-publish -s --domain=local --subtype=\"_ann._sub._oga-mp._udp\" \"oga-mp-broadcast\" \"_oga-mp._udp\" 1234 \"platform="+platform+"\" \"name="+name+"\" \"image="+image+"\" &", "", nullptr);
 
-							return false;
-						},
-						[this, game](bool s)
-						{
-							LaunchGameOptions options;
-							options.hostMP = true;
-							ViewController::get()->launch(game, options);
-							this->close();
-						}
-					));
-				}, "fa-people-arrows");
+									return false;
+								},
+								[this, game](bool s)
+								{
+									LaunchGameOptions options;
+									options.hostMP = true;
+									ViewController::get()->launch(game, options);
+									this->close();
+								}
+							));
+						}, "fa-people-arrows");
+					}
+
 
 			if (SaveStateRepository::isEnabled(game))
 			{
