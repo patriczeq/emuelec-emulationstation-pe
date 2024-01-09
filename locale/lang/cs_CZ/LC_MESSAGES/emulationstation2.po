@@ -378,9 +378,6 @@ msgstr "INFORMACE O SYSTÉMU"
 msgid "TASK MANAGER"
 msgstr "SPRÁVCE ÚLOH"
 
-msgid "SPACE"
-msgstr "ÚLOŽIŠTĚ"
-
 msgid "TEMPERATURE"
 msgstr "TEPLOTA"
 
