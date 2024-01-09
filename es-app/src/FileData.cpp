@@ -1435,6 +1435,9 @@ void FileData::setEmulator(const std::string value)
 
 bool FileData::is2PSupported()
 	{
+		auto file = getSourceFileData();
+		if (file->getType() != GAME)
+			return false;
 		auto system = file->getSystem();
 		if (system == nullptr)
 			{
