@@ -300,11 +300,6 @@ msgstr "ODSTRANIT Z DATABÁZE"
 msgid "FROM SCAN DB?"
 msgstr "ZE SCAN DB?"
 
-
-
-msgid "AP SSID"
-msgstr "NÁZEV SÍTĚ"
-
 msgid "AP KEY"
 msgstr "HESLO K SÍTI"
 
