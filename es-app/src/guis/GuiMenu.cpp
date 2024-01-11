@@ -946,7 +946,7 @@ void GuiMenu::openESP01Menu()
 			}, "fa-stop-circle");
 			s->addEntry(_("SHOW UART OUTPUT"), false, [this] {
 				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
-				appLauncher("ttyprint.sh " + port, true); }
+				appLauncher("ttyprint.sh " + port, true);
 			}, "fa-terminal");
 			s->addEntry(_("REBOOT ESP01"), false, [this] {
 				hacksSend("reboot");
