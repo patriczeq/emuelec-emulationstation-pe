@@ -252,7 +252,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 								}
 						}
 
-				}, "iconChromecast");
+				}, "fa-chromecast");
 			}
 		// pe-player
 		if(SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
@@ -263,7 +263,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 				addWithDescription(_("MUSIC PLAYER"), _("NOW PLAYING") + ": " + sname, nullptr, [this]
 				{
 					openMusicPlayer();
-				}, "iconSound");
+				}, "fa-volume-high");
 			}
 		}
 
@@ -303,6 +303,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 				GuiRetroAchievements::show(mWindow); }, "iconRetroachievements");
 
 	addEntry(_("APPS").c_str(), true, [this] { openAppsMenu(); }, "fa-bars");
+	addEntry(_("YouTube"), true, [this]() {	YouTube();}, "fa-youtube");
 
 	if (isFullUI)
 	{
@@ -470,8 +471,7 @@ void GuiMenu::openAppsMenu()
 	}, "fa-cloud");
 	s->addEntry(_("FILE MANAGER"), false, [this] { appLauncher("file_manager.sh"); }, "fa-folder");
 	s->addEntry(_("GMU MUSIC PLAYER").c_str(), false, [this] { appLauncher("gmu_player.sh"); }, "fa-music");
-	s->addEntry(_("YouTube"), true, [this]() {	YouTube();}, "fa-youtube");
-
+	s->addEntry(_("WESTON DESKTOP").c_str(), false, [this] { appLauncher("weston.sh", true); }, "fa-arrow-pointer");
 	s->addGroup(_("EMULATORS"));
 		s->addEntry(_("PPSSPP").c_str(), false, [this] { appLauncher("emu-launcher.sh PPSSPPSDL", true); }, "fa-rocket");
 		s->addEntry(_("DUCKSTATION").c_str(), false, [this] { appLauncher("emu-launcher.sh duckstation-nogui", true); }, "fa-rocket");
@@ -663,7 +663,7 @@ void GuiMenu::openMPServers(std::vector<AVAHIserviceDetail> servers)
 				[this, window, server]
 			{
 					ApiSystem::getInstance()->launchApp(window, "playertoo " + server.ip);
-			}, "icon-gamepad");
+			}, "fa-gamepad");
 
 		}
 		window->pushGui(s);
@@ -6757,7 +6757,7 @@ void GuiMenu::loadChromecastDevices(Window* mWindow, std::vector<AVAHIserviceDet
 				{
 					LOG(LogInfo) << "Chromecast device:" << device.name;
 					loadChromecastDevice(window, device, file);
-				}, "iconChromecast");
+				}, "fa-chromecast");
 			}
 
 		window->pushGui(s);
@@ -6931,7 +6931,7 @@ void GuiMenu::openDHCPclient(DHCPClient lease)
 		s->addGroup(_("TOOLS"));
 			s->addEntry(_("PING"), true, [this, window, lease] {
 				pingIP(lease.ip);
-			}, "iconSystem");
+			}, "fa-toolbox");
 
 			s->addEntry(_("DEAUTHENTICATE CLIENT"), false, [this, window, s, lease] {
 				window->pushGui(new GuiMsgBox(window, _("DEAUTHENTICATE CLIENT") + "?",
@@ -6939,7 +6939,7 @@ void GuiMenu::openDHCPclient(DHCPClient lease)
 						runSystemCommand("ap.sh deauth " + lease.mac, "", nullptr);
 						delete s;
 					},_("NO"), nullptr));
-				}, "iconSystem");
+				}, "fa-link-slash");
 
 		window->pushGui(s);
 	}
@@ -6968,7 +6968,7 @@ void GuiMenu::openAPleases()
 						[this, lease]
 					{
 						openDHCPclient(lease);
-					}, "iconNetwork");
+					}, "fa-server");
 				}
 		}
 
@@ -6990,15 +6990,15 @@ void GuiMenu::openARPrecord(ARPcli cli)
 			s->addGroup(_("TOOLS"));
 				s->addEntry("PING", true, [this, window, cli] {
 					pingIP(cli.ip);
-				}, "iconSystem");
+				}, "fa-toolbox");
 				s->addEntry("HOSTNAME", true, [this, window, cli] {
 					std::string cmd = "avahi-resolve -a " + cli.ip + " | awk '{print $2}'";
 					msgExec(cmd);
-				}, "iconSystem");
+				}, "fa-toolbox");
 				s->addEntry("NMAP", true, [this, window, cli] {
 					std::string cmd = "nmap " + cli.ip;
 					msgExec(cmd);
-				}, "iconSystem");
+				}, "fa-toolbox");
 
 		mWindow->pushGui(s);
 	}
@@ -7303,6 +7303,11 @@ void GuiMenu::openTraceroute(std::string addr, std::vector<TraceRouteHop> hops)
 void GuiMenu::YouTube()
 	{
 		YouTubeLoad();
+		if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
+			{
+				mWindow->pushGui(new GuiMsgBox(mWindow, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));
+				return;
+			}
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -7490,7 +7495,7 @@ void GuiMenu::YTResult(YoutubeLink link)
 
 			/*s->addEntry(_("CAST"), false, [this, window, link]{
 				loadChromecast(window, "YouTube/"+link.id);
-			}, "iconChromecast");*/
+			}, "fa-chromecast");*/
 
 			s->addEntry(_("DOWNLOAD"), false, [this, window, link]{
 				// download menu
