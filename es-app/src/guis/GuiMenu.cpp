@@ -1651,7 +1651,7 @@ void GuiMenu::openIRlist()
 								})
 								);
 							}
-					});
+					}, "fa-hashtag");
 			}
 		window->pushGui(s);
 	}
@@ -2297,6 +2297,7 @@ std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations, b
 			{
 				list = scanlist;
 			}
+
 		if(!all)
 			{
 				for(auto station : stations)
@@ -7753,6 +7754,16 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 			   quitES(QuitMode::QUIT);
 		}, _("NO"), nullptr));
 	}, "fa-rotate");
+
+	auto rumble = std::make_shared<SwitchComponent>(mWindow);
+	rumble->setState(getShOutput("rumble.sh") == "1");
+	s->addWithLabel(_("ENABLE RUMBLE DEVICE"), rumble);
+	s->addSaveFunc([rumble] {
+		if (rumble->changed()) {
+			bool enabled = rumble->getState();
+			getShOutput("rumble.sh " + enabled ? "1" : "0");
+		}
+	});
 
 	bool isFullUI = UIModeController::getInstance()->isUIModeFull();
 	if (isFullUI)

@@ -107,6 +107,7 @@ struct AccessPoint {
 				if(tokens.at(4) != "*"){
 					ssid 	= tokens.at(4);
 				}
+				pkts = 0;
 			}
 	}
 	std::string bssid;
