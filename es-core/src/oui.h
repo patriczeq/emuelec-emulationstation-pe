@@ -2,11 +2,45 @@
 #ifndef OUI_H
 #define OUI_H
 
-//#define TEST_OUI
+#define TEST_OUI
 
 #ifdef TEST_OUI
 const std::unordered_map<std::string,std::string> OUI__MAP{
-{"10E992","INGRAM MICRO SERVICES"},
+  {"C0C4F9","Qisda Corporation"},
+  {"C0C520","Ruckus Wireless"},
+  {"C0C522","ARRIS Group, Inc."},
+  {"C0C569","SHANGHAI LYNUC CNC TECHNOLOGY CO.,LTD"},
+  {"C0C687","Cisco SPVTG"},
+  {"C0C70A","Ruckus Wireless"},
+  {"C0C946","MITSUYA LABORATORIES INC."},
+  {"C0C976","Shenzhen TINNO Mobile Technology Corp."},
+  {"C0C9E3","TP-LINK TECHNOLOGIES CO.,LTD."},
+  {"C0CB38","Hon Hai Precision Ind. Co.,Ltd."},
+  {"C0CBF1","Mobiwire Mobiles (NingBo) Co., LTD"},
+  {"C0CC42","Sichuan Tianyi Comheart Telecom Co.,LTD"},
+  {"C0CCF8","Apple, Inc."},
+  {"C0CECD","Apple, Inc."},
+  {"C0CFA3","Creative Electronics & Software, Inc."},
+  {"C0D012","Apple, Inc."},
+  {"C0D026","Huawei Device Co., Ltd."},
+  {"C0D044","Sagemcom Broadband SAS"},
+  {"C0D063","EM Microelectronic"},
+  {"C0D0FF","China Mobile IOT Company Limited"},
+  {"C0D193","Huawei Device Co., Ltd."},
+  {"C0D2DD","Samsung Electronics Co.,Ltd"},
+  {"C0D2F3","Hui Zhou Gaoshengda Technology Co.,LTD"},
+  {"C0D391","IEEE Registration Authority"},
+  {"C0D3C0","Samsung Electronics Co.,Ltd"},
+  {"C0D46B","Huawei Device Co., Ltd."},
+  {"C0D682","Arista Networks"},
+  {"C0D7AA","Arcadyan Corporation"},
+  {"C0D834","xvtec ltd"},
+  {"C0D962","ASKEY COMPUTER CORP"},
+  {"C0D9F7","ShanDong Domor Intelligent S&T CO.,Ltd"}
+};
+#else
+const std::unordered_map<std::string,std::string> OUI__MAP{
+  {"10E992","INGRAM MICRO SERVICES"},
 {"78F276","Cyklop Fastjet Technologies (Shanghai) Inc."},
 {"286FB9","Nokia Shanghai Bell Co., Ltd."},
 {"E0A129","Extreme Networks Headquarters"},
