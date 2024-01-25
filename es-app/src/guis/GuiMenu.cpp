@@ -7761,7 +7761,8 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 	s->addSaveFunc([rumble] {
 		if (rumble->changed()) {
 			bool enabled = rumble->getState();
-			runSystemCommand("rumble.sh " + (enabled ? "on" : "off"), "", nullptr);
+			const std::string cmd = "rumble.sh " + (enabled ? "on" : "off");
+			runSystemCommand(cmd, "", nullptr);
 		}
 	});
 
