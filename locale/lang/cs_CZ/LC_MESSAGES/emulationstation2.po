@@ -98,6 +98,9 @@ msgstr "INVERTOVAT VÝSTUP GPIO2"
 msgid "STOP ALL JOBS"
 msgstr "ZASTAVIT VŠE"
 
+msgid "SHOW UART OUTPUT"
+msgstr "ZOBRAZIT UART VÝSTUP"
+
 msgid "REBOOT ESP01"
 msgstr "RESTARTOVAT ESP01"
 

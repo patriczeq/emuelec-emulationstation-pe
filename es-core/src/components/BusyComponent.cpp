@@ -8,12 +8,16 @@
 
 // animation definition
 AnimationFrame BUSY_ANIMATION_FRAMES[] = {
-	{":/busy_0.svg", 300},
-	{":/busy_1.svg", 300},
-	{":/busy_2.svg", 300},
-	{":/busy_3.svg", 300},
+	{":/busy_0.svg", 100},
+	{":/busy_1.svg", 100},
+	{":/busy_2.svg", 100},
+	{":/busy_3.svg", 100},
+	{":/busy_4.svg", 100},
+	{":/busy_5.svg", 100},
+	{":/busy_6.svg", 100},
+	{":/busy_7.svg", 100},
 };
-const AnimationDef BUSY_ANIMATION_DEF = { BUSY_ANIMATION_FRAMES, 4, true };
+const AnimationDef BUSY_ANIMATION_DEF = { BUSY_ANIMATION_FRAMES, 8, true };
 
 BusyComponent::BusyComponent(Window* window, const std::string& text) : GuiComponent(window),
 	mBackground(window, ":/frame.png"), mGrid(window, Vector2i(5, 3))
@@ -25,12 +29,12 @@ BusyComponent::BusyComponent(Window* window, const std::string& text) : GuiCompo
 	mBackground.setEdgeColor(theme->Background.color);
 	mBackground.setCenterColor(theme->Background.centerColor);
 	mBackground.setCornerSize(theme->Background.cornerSize);
-    
+
 	mutex = SDL_CreateMutex();
 	mAnimation = std::make_shared<AnimatedImageComponent>(mWindow);
 	mAnimation->load(&BUSY_ANIMATION_DEF);
-	
-	mText = std::make_shared<TextComponent>(mWindow, text == "__default__" ? _("WORKING...") : text, ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color); 
+
+	mText = std::make_shared<TextComponent>(mWindow, text == "__default__" ? _("WORKING...") : text, ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color);
 
 	// col 0 = animation, col 1 = spacer, col 2 = text
 	mGrid.setEntry(mAnimation, Vector2i(1, 1), false, true);
@@ -49,11 +53,11 @@ void BusyComponent::setBackgroundVisible(bool visible)
 
 void BusyComponent::update(int deltaTime)
 {
-	GuiComponent::update(deltaTime);	
+	GuiComponent::update(deltaTime);
 	// mAnimation->setRotation(mAnimation->getRotation() - (deltaTime / 333.3));
 }
 
-BusyComponent::~BusyComponent() 
+BusyComponent::~BusyComponent()
 {
 	PowerSaver::resume();
 	SDL_DestroyMutex(mutex);
@@ -77,7 +81,7 @@ void BusyComponent::render(const Transform4x4f& parentTrans)
 {
 	if (SDL_LockMutex(mutex) == 0)
 	{
-		if (threadMessagechanged) 
+		if (threadMessagechanged)
 		{
 			threadMessagechanged = false;
 			mText->setText(threadMessage);
@@ -107,7 +111,7 @@ void BusyComponent::onSizeChanged()
 	mGrid.setColWidthPerc(3, textWidth / mSize.x());
 
 	mGrid.setRowHeightPerc(1, textHeight / mSize.y());
-	
+
 	mBackground.fitTo(Vector2f(mGrid.getColWidth(1) + mGrid.getColWidth(2) + mGrid.getColWidth(3), textHeight + 2),
 		mAnimation->getPosition(), Vector2f(0, 0));
 }
