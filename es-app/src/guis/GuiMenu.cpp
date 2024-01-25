@@ -7759,10 +7759,8 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 	rumble->setState(getShOutput("rumble.sh") == "1");
 	s->addWithLabel(_("ENABLE RUMBLE DEVICE"), rumble);
 	s->addSaveFunc([rumble] {
-		if (rumble->changed()) {
-			bool enabled = rumble->getState();
-			getShOutput("rumble.sh " + enabled ? "1" : "0");
-		}
+		bool enabled = rumble->getState();
+		runSystemCommand("rumble.sh " + enabled ? "1" : "0", "", nullptr);
 	});
 
 	bool isFullUI = UIModeController::getInstance()->isUIModeFull();
