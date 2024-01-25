@@ -7756,11 +7756,13 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 	}, "fa-rotate");
 
 	auto rumble = std::make_shared<SwitchComponent>(window);
-	rumble->setState(getShOutput("rumble.sh") == "1");
+	rumble->setState(getShOutput("rumble.sh") == "on");
 	s->addWithLabel(_("ENABLE RUMBLE DEVICE"), rumble);
 	s->addSaveFunc([rumble] {
-		bool enabled = rumble->getState();
-		runSystemCommand("rumble.sh " + enabled ? "1" : "0", "", nullptr);
+		if (rumble->changed()) {
+			bool enabled = rumble->getState();
+			runSystemCommand("rumble.sh " + (enabled ? "on" : "off"), "", nullptr);
+		}
 	});
 
 	bool isFullUI = UIModeController::getInstance()->isUIModeFull();
