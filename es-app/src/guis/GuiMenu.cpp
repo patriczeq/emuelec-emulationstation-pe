@@ -7755,7 +7755,7 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 		}, _("NO"), nullptr));
 	}, "fa-rotate");
 
-	auto rumble = std::make_shared<SwitchComponent>(mWindow);
+	auto rumble = std::make_shared<SwitchComponent>(window);
 	rumble->setState(getShOutput("rumble.sh") == "1");
 	s->addWithLabel(_("ENABLE RUMBLE DEVICE"), rumble);
 	s->addSaveFunc([rumble] {
