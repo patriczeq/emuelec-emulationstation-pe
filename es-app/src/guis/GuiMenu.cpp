@@ -239,7 +239,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 				std::string basename = ChromecastP.filename;
 				std::vector<std::string> bstr = Utils::String::split(basename, '/');
 				basename = bstr[bstr.size() - 1];
-				addWithDescription(_("CHROMECAST"), _("NOW PLAYING") + ": " + basename, nullptr, [this, window, ChromecastP]
+				addEntry(_("NOW PLAYING") + ": " + basename, [this, window, ChromecastP]
 				{
 					std::vector<AVAHIserviceDetail> gs = getAvahiService("_googlecast._tcp");
 					for(auto dev : gs)
@@ -253,6 +253,20 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 						}
 
 				}, "fa-chromecast");
+				/*addWithDescription(_("CHROMECAST"), _("NOW PLAYING") + ": " + basename, nullptr, [this, window, ChromecastP]
+				{
+					std::vector<AVAHIserviceDetail> gs = getAvahiService("_googlecast._tcp");
+					for(auto dev : gs)
+						{
+							Chromecast device(dev);
+							if(device.id == ChromecastP.castID)
+								{
+									loadChromecastDevice(window, device);
+									break;
+								}
+						}
+
+				}, "fa-chromecast");*/
 			}
 		// pe-player
 		if(SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
@@ -260,10 +274,13 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 			std::string sname = AudioManager::getInstance()->getSongName();
 			if(!sname.empty() && AudioManager::getInstance()->isSongPlaying())
 			{
-				addWithDescription(_("MUSIC PLAYER"), _("NOW PLAYING") + ": " + sname, nullptr, [this]
-				{
+				addEntry(_("NOW PLAYING") + ": " + sname, [this]{
 					openMusicPlayer();
 				}, "fa-volume-high");
+				/*addWithDescription(_("MUSIC PLAYER"), _("NOW PLAYING") + ": " + sname, nullptr, [this]
+				{
+					openMusicPlayer();
+				}, "fa-volume-high");*/
 			}
 		}
 
@@ -3443,7 +3460,7 @@ void GuiMenu::addVersionInfo()
 		else
 		{
 #ifdef _ENABLEEMUELEC
-		label = "PEmod v" + std::string("1.4") + " EMUELEC V" + ApiSystem::getInstance()->getVersion() + buildDate + " IP:" + getShOutput(R"(/usr/bin/emuelec-utils getip)");
+		label = "PEmod v" + std::string("1.5") + /*" EMUELEC V" + ApiSystem::getInstance()->getVersion() + buildDate +*/ " IP:" + getShOutput(R"(/usr/bin/emuelec-utils getip)");
 #else
 			std::string aboutInfo = ApiSystem::getInstance()->getApplicationName() + " V" + ApiSystem::getInstance()->getVersion();
 			label = aboutInfo + buildDate;
@@ -5622,7 +5639,16 @@ void GuiMenu::openControllersSettings(int autoSel)
 	Window* window = mWindow;
 
 	s->addGroup(_("SETTINGS"));
-
+	auto rumble = std::make_shared<SwitchComponent>(window);
+	rumble->setState(getShOutput("rumble.sh") == "on");
+	s->addWithLabel(_("ENABLE RUMBLE"), rumble);
+	s->addSaveFunc([rumble] {
+		if (rumble->changed()) {
+			bool enabled = rumble->getState();
+			const std::string cmd = std::string("rumble.sh ") + (enabled ? std::string("on") : std::string("off"));
+			runSystemCommand(cmd, "", nullptr);
+		}
+	});
 	// CONTROLLER CONFIGURATION
 	s->addEntry(_("CONTROLLER MAPPING"), false, [window, this, s]
 	{
@@ -7743,6 +7769,17 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 				delete s;
 			}, "iconManual");
 		}
+
+		auto rumble = std::make_shared<SwitchComponent>(window);
+		rumble->setState(getShOutput("rumble.sh") == "on");
+		s->addWithLabel(_("ENABLE RUMBLE"), rumble);
+		s->addSaveFunc([rumble] {
+			if (rumble->changed()) {
+				bool enabled = rumble->getState();
+				const std::string cmd = std::string("rumble.sh ") + (enabled ? std::string("on") : std::string("off"));
+				runSystemCommand(cmd, "", nullptr);
+			}
+		});
 	}
 
 #ifdef _ENABLEEMUELEC
@@ -7755,16 +7792,6 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 		}, _("NO"), nullptr));
 	}, "fa-rotate");
 
-	auto rumble = std::make_shared<SwitchComponent>(window);
-	rumble->setState(getShOutput("rumble.sh") == "on");
-	s->addWithLabel(_("ENABLE RUMBLE"), rumble);
-	s->addSaveFunc([rumble] {
-		if (rumble->changed()) {
-			bool enabled = rumble->getState();
-			const std::string cmd = std::string("rumble.sh ") + (enabled ? std::string("on") : std::string("off"));
-			runSystemCommand(cmd, "", nullptr);
-		}
-	});
 
 	bool isFullUI = UIModeController::getInstance()->isUIModeFull();
 	if (isFullUI)
