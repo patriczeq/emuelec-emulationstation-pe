@@ -8,14 +8,14 @@
 
 // animation definition
 AnimationFrame BUSY_ANIMATION_FRAMES[] = {
-	{":/busy_0.svg", 100},
-	{":/busy_1.svg", 100},
-	{":/busy_2.svg", 100},
-	{":/busy_3.svg", 100},
-	{":/busy_4.svg", 100},
-	{":/busy_5.svg", 100},
-	{":/busy_6.svg", 100},
-	{":/busy_7.svg", 100},
+	{":/busy_0.png", 100},
+	{":/busy_1.png", 100},
+	{":/busy_2.png", 100},
+	{":/busy_3.png", 100},
+	{":/busy_4.png", 100},
+	{":/busy_5.png", 100},
+	{":/busy_6.png", 100},
+	{":/busy_7.png", 100},
 };
 const AnimationDef BUSY_ANIMATION_DEF = { BUSY_ANIMATION_FRAMES, 8, true };
 
