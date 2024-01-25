@@ -239,7 +239,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 				std::string basename = ChromecastP.filename;
 				std::vector<std::string> bstr = Utils::String::split(basename, '/');
 				basename = bstr[bstr.size() - 1];
-				addEntry(_("NOW PLAYING") + ": " + basename, [this, window, ChromecastP]
+				addEntry(_("NOW PLAYING") + ": " + basename, true, [this, window, ChromecastP]
 				{
 					std::vector<AVAHIserviceDetail> gs = getAvahiService("_googlecast._tcp");
 					for(auto dev : gs)
@@ -274,7 +274,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 			std::string sname = AudioManager::getInstance()->getSongName();
 			if(!sname.empty() && AudioManager::getInstance()->isSongPlaying())
 			{
-				addEntry(_("NOW PLAYING") + ": " + sname, [this]{
+				addEntry(_("NOW PLAYING") + ": " + sname, true, [this]{
 					openMusicPlayer();
 				}, "fa-volume-high");
 				/*addWithDescription(_("MUSIC PLAYER"), _("NOW PLAYING") + ": " + sname, nullptr, [this]
