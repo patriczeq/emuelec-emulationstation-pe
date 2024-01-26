@@ -978,7 +978,7 @@ void GuiMenu::openESP01Menu()
 			{
 				auto enableDBSaving = std::make_shared<SwitchComponent>(mWindow);
 				enableDBSaving->setState(enableScanDBsaving);
-				s->addWithLabel(_("STORE SCAN RESULTS"), enableDBSaving, [this, enableDBSaving]{
+				s->forceSaveToggle(_("STORE SCAN RESULTS"), enableDBSaving, [this, enableDBSaving]{
 					enableScanDBsaving = enableDBSaving->getState();
 				}, "fa-floppy-disk");
 
