@@ -26,7 +26,13 @@ GuiSettings::GuiSettings(Window* window,
 		mMenu.addButton(customButton, customButton, [this, func] { func(this); });
 
 	if (customButton != "-----")
-		mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });
+		{
+			if(SystemConf::getInstance()->get("pe_backbtn.disabled") != "1")
+				{
+					mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });
+				}
+		}
+		//mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });
 
 	setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
 
