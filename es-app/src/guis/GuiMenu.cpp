@@ -981,8 +981,9 @@ void GuiMenu::openESP01Menu()
 				/*s->forceSaveToggle(_("STORE SCAN RESULTS"), enableDBSaving, [this, enableDBSaving]{
 					enableScanDBsaving = enableDBSaving->getState();
 				}, "fa-floppy-disk");*/
-				s->addEntry(_("DISABLE STORE SCAN RESULTS"), false, [this] {
-					enableScanDBsaving = false;
+				s->addEntry(_("DISABLE STORE SCAN RESULTS"), false, [this, window] {
+					enableScanDBsaving = !enableScanDBsaving;
+					window->pushGui(new GuiMsgBox(window, enableScanDBsaving ? _("ENABLED") : _("DISABLED"),_("OK"), nullptr));
 				}, "fa-ban");
 
 				s->addSaveFunc([this, enableDBSaving] {
@@ -7568,23 +7569,6 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 
 	Window *window = mWindow;
 	std::string gameApMode = apInlineInfo("gameapmode");
-
-	auto s = new GuiSettings(mWindow, _("NETWORK SETTINGS").c_str());
-	s->addButton(_("RELOAD"), _("reload"), [this, window, s] {
-		delete s;
-		mWindow->pushGui(new GuiLoading<std::string>(window, _("Loading..."),
-		 [this](auto gui)
-		 {
-			 mWaitingLoad = true;
-			 return getShOutput("sleep 0.5; echo 1");
-		 },
-		 [this](std::string l)
-		 {
-			 mWaitingLoad = false;
-			 openNetworkSettings();
-		 }));
-		hacksSend("stop");
-	});
 
 
 	s->addEntry(_("RECONNECT TO SAVED NETWORK"), false, [s, this, window]() {
