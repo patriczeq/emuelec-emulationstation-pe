@@ -7570,10 +7570,21 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	std::string gameApMode = apInlineInfo("gameapmode");
 
 	auto s = new GuiSettings(mWindow, _("NETWORK SETTINGS").c_str());
-	s->addEntry(_("RELOAD"), false, [s, this]() {
+	s->addButton(_("RELOAD"), _("reload"), [this, window, s] {
 		delete s;
-		openNetworkSettings();
-	}, "fa-rotate");
+		mWindow->pushGui(new GuiLoading<std::string>(window, _("Loading..."),
+		 [this](auto gui)
+		 {
+			 mWaitingLoad = true;
+			 return getShOutput("sleep 0.5; echo 1");
+		 },
+		 [this](std::string l)
+		 {
+			 mWaitingLoad = false;
+			 openNetworkSettings();
+		 }));
+		hacksSend("stop");
+	});
 
 
 	s->addEntry(_("RECONNECT TO SAVED NETWORK"), false, [s, this, window]() {
