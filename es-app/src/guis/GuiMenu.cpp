@@ -7779,14 +7779,12 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 
 		auto rumble = std::make_shared<SwitchComponent>(window);
 		rumble->setState(getShOutput("rumble.sh") == "on");
-		s->forceSaveToggle(_("ENABLE RUMBLE"), rumble, false, "fa-drum");
-		s->addSaveFunc([rumble] {
-			if (rumble->changed()) {
-				bool enabled = rumble->getState();
-				const std::string cmd = std::string("rumble.sh ") + (enabled ? std::string("on") : std::string("off"));
-				runSystemCommand(cmd, "", nullptr);
-			}
-		});
+		s->forceSaveToggle(_("ENABLE RUMBLE"), rumble, [this, rumble]{
+			bool enabled = rumble->getState();
+			const std::string cmd = std::string("rumble.sh ") + (enabled ? std::string("on") : std::string("off"));
+			runSystemCommand(cmd, "", nullptr);
+		},"fa-drum");
+
 	}
 
 #ifdef _ENABLEEMUELEC
