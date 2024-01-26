@@ -7570,6 +7570,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable)
 	Window *window = mWindow;
 	std::string gameApMode = apInlineInfo("gameapmode");
 
+	auto s = new GuiSettings(mWindow, _("NETWORK SETTINGS").c_str());
 
 	s->addEntry(_("RECONNECT TO SAVED NETWORK"), false, [s, this, window]() {
 			std::string msg = _("RECONNECT TO SAVED NETWORK") + "?";
