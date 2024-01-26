@@ -978,9 +978,12 @@ void GuiMenu::openESP01Menu()
 			{
 				auto enableDBSaving = std::make_shared<SwitchComponent>(mWindow);
 				enableDBSaving->setState(enableScanDBsaving);
-				s->forceSaveToggle(_("STORE SCAN RESULTS"), enableDBSaving, [this, enableDBSaving]{
+				/*s->forceSaveToggle(_("STORE SCAN RESULTS"), enableDBSaving, [this, enableDBSaving]{
 					enableScanDBsaving = enableDBSaving->getState();
-				}, "fa-floppy-disk");
+				}, "fa-floppy-disk");*/
+				s->addEntry(_("DISABLE STORE SCAN RESULTS"), false, [this] {
+					enableScanDBsaving = false;
+				}, "fa-ban");
 
 				s->addSaveFunc([this, enableDBSaving] {
 					enableScanDBsaving = enableDBSaving->getState();
@@ -3480,7 +3483,11 @@ void GuiMenu::addVersionInfo()
 		if (Renderer::isSmallScreen())
 		{
 			mMenu.setSubTitle(label);
-			mMenu.addButton(_("BACK"), _("go back"), [&] { delete this; });
+			if(SystemConf::getInstance()->get("pe_backbtn.disabled") != "1")
+				{
+					mMenu.addButton(_("BACK"), _("go back"), [&] { delete this; });
+				}
+			// mMenu.addButton(_("BACK"), _("go back"), [&] { delete this; });
 		}
 		else
 		{
@@ -6616,6 +6623,17 @@ void GuiMenu::openUISettings()
 	}
 
 	s->addGroup(_("DISPLAY OPTIONS"));
+	auto backButton = std::make_shared<SwitchComponent>(mWindow);
+	backButton->setState(SystemConf::getInstance()->get("pe_backbtn.disabled") == "1");
+	s->addWithLabel(_("DISABLE BACK BUTTON IN MENU"), backButton);
+	s->addSaveFunc([backButton] {
+		if (backButton->changed()) {
+			bool enabled = backButton->getState();
+			SystemConf::getInstance()->set("pe_backbtn.disabled", enabled ? "1" : "0");
+			SystemConf::getInstance()->saveSystemConf();
+		}
+	});
+
 	s->addEntry(_("SCREENSAVER SETTINGS"), true, std::bind(&GuiMenu::openScreensaverOptions, this));
 	s->addOptionList(_("LIST TRANSITION"), { { _("auto"), "auto" },{ _("fade") , "fade" },{ _("slide"), "slide" },{ _("fade & slide"), "fade & slide" },{ _("instant"), "instant" } }, "TransitionStyle", true);
 	s->addOptionList(_("GAME LAUNCH TRANSITION"), { { _("auto"), "auto" },{ _("fade") , "fade" },{ _("slide"), "slide" },{ _("instant"), "instant" } }, "GameTransitionStyle", true);
@@ -7777,14 +7795,30 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 			}, "iconManual");
 		}
 
+		bool webfilesStatus = apInlineInfo("webfiles") == "1";
+		s->addEntry(webfilesStatus ? _("STOP WEB FILE BROWSER") : _("START WEB FILE BROWSER"), false, [window, s, this, webfilesStatus]() {
+			if(webfilesStatus)
+			{
+				runSystemCommand("ap.sh stopwebfiles", "", nullptr);
+			}
+			else
+			{
+				runSystemCommand("ap.sh startwebfiles", "", nullptr);
+			}
+			delete s;
+			//openNetworkSettings();
+		}, "fa-cloud");
+
 		auto rumble = std::make_shared<SwitchComponent>(window);
 		rumble->setState(getShOutput("rumble.sh") == "on");
-		s->forceSaveToggle(_("ENABLE RUMBLE"), rumble, [rumble]{
-			bool enabled = rumble->getState();
-			const std::string cmd = std::string("rumble.sh ") + (enabled ? std::string("on") : std::string("off"));
-			runSystemCommand(cmd, "", nullptr);
-		},"fa-drum");
-
+		s->addWithLabel(_("ENABLE RUMBLE"), rumble, false, "fa-drum");
+		s->addSaveFunc([rumble] {
+			if (rumble->changed()) {
+				bool enabled = rumble->getState();
+				const std::string cmd = std::string("rumble.sh ") + (enabled ? std::string("on") : std::string("off"));
+				runSystemCommand(cmd, "", nullptr);
+			}
+		});
 	}
 
 #ifdef _ENABLEEMUELEC

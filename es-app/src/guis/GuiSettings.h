@@ -35,13 +35,6 @@ public:
 	{
 		mMenu.addRow(row);
 	}
-	// force apply
-	inline void forceSaveToggle(const std::string& label, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func = nullptr, const std::string& iconName = "")
-	{
-		//void addWithLabel(const std::string& label, const std::shared_ptr<GuiComponent>& comp, const std::function<void()>& func = nullptr, const std::string& iconName = "", bool setCursorHere = false);
-
-		mMenu.addWithLabel(label, comp, func, iconName);
-	}
 
 	inline void addWithLabel(const std::string& label, const std::shared_ptr<GuiComponent>& comp, bool setCursorHere = false, const std::string& iconName = "")
 	{
