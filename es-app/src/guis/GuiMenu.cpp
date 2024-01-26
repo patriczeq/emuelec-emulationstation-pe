@@ -7779,7 +7779,7 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 
 		auto rumble = std::make_shared<SwitchComponent>(window);
 		rumble->setState(getShOutput("rumble.sh") == "on");
-		s->addWithLabel(_("ENABLE RUMBLE"), rumble, false, "fa-drum");
+		s->forceSaveToggle(_("ENABLE RUMBLE"), rumble, false, "fa-drum");
 		s->addSaveFunc([rumble] {
 			if (rumble->changed()) {
 				bool enabled = rumble->getState();
