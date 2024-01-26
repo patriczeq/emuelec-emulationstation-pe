@@ -29,7 +29,10 @@ GuiSettings::GuiSettings(Window* window,
 		{
 			if(SystemConf::getInstance()->get("pe_backbtn.disabled") != "1")
 				{
-					mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });
+					std::string backLabel = _U("\uf060");
+											backLabel+= " ";
+											backLabel+= _("BACK");
+					mMenu.addButton(backLabel, _("go back"), [this] { close(); });
 				}
 		}
 		//mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });

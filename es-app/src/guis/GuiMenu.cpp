@@ -1265,6 +1265,10 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 								Title += (sta.name.empty() ? sta.mac : sta.name);
 		auto s = new GuiSettings(window, Title);
 
+		s->addButton(_("STOP ALL JOBS"), _("stop"), [this] {
+			hacksSend("stop");
+		});
+
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -1286,9 +1290,6 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 			s->addWithLabel(_("CHANNEL"), 		std::make_shared<TextComponent>(window, apCH, font, color));
 			s->addWithLabel(_("LAST SEEN"), 	std::make_shared<TextComponent>(window, sta.lastSeenDate + " " + sta.lastSeenTime, font, color));
 		s->addGroup(_("STATION HACKS"));
-				s->addEntry(_("STOP ALL JOBS"), false, [this]() {
-					hacksSend("stop");
-					}, "fa-stop-circle");
 				s->addEntry(_("DEAUTH STATION"), true, [this, window, sta, apCH]() {
 					std::string msg = _("DEAUTH STATION") +":\n\n" + sta.mac + "\n"+ sta.vendor + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
@@ -1429,6 +1430,10 @@ void GuiMenu::openName(HackName name)
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
+
+		s->addButton(_("STOP ALL JOBS"), _("stop"), [this] {
+			hacksSend("stop");
+		});
 		// DATA info
 		if(name.type == "IR")
 			{
@@ -1478,9 +1483,7 @@ void GuiMenu::openName(HackName name)
 								runSystemCommand("hacks.sh " + port + " deauthsta " + name.id + " " + name.bssid + " " + name.channel, "", nullptr);
 							}, _("CANCEL"),nullptr));
 					}, "fa-chain-broken");
-					s->addEntry(_("STOP ALL JOBS"), false, [this, window]() {
-						hacksSend("stop");
-						}, "fa-stop-circle");
+
 			}
 		else if(name.type == "AP")
 			{
@@ -1513,9 +1516,6 @@ void GuiMenu::openName(HackName name)
 									hacksSend("deauthapcaptive " + name.id);
 								}, _("CANCEL"),nullptr));
 						},"fa-skull");
-					s->addEntry(_("STOP ALL JOBS"), false, [this, window]() {
-						hacksSend("stop");
-						}, "fa-stop-circle");
 			if(!name.password.empty())
 				{
 					s->addGroup(_("TOOLS"));
@@ -2155,6 +2155,10 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 
 		auto s = new GuiSettings(window, wTitle);
 
+		s->addButton(_("STOP ALL JOBS"), _("stop"), [this] {
+			hacksSend("stop");
+		});
+
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -2240,10 +2244,6 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 							s->addGroup(_("AP HACKS"));
 							// -------------------------------------------------------------------------------------
 
-							// -------------------------------------------------------------------------------------
-								s->addEntry(_("STOP ALL JOBS"), false, [this, window]() {
-									hacksSend("stop");
-									}, "fa-stop-circle");
 							// -------------------------------------------------------------------------------------
 
 								s->addEntry(_("DEAUTH"), true, [this, window, ap]() {
@@ -2405,6 +2405,9 @@ void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 								windowName = windowName + (sta.name.empty() ? sta.mac : sta.name);
 
 		auto s = new GuiSettings(window, windowName);
+		s->addButton(_("STOP ALL JOBS"), _("stop"), [this] {
+			hacksSend("stop");
+		});
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -2472,9 +2475,6 @@ void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 		// -------------------------------------------------------------------------------------
 
 		s->addGroup(_("STATION HACKS"));
-			s->addEntry(_("STOP ALL JOBS"), false, [this, window]() {
-				hacksSend("stop");
-				}, "fa-stop-circle");
 			s->addEntry(_("DEAUTH STATION"), true, [this, window, sta]() {
 				std::string msg = _("DEAUTH STATION") +":\n\n" + sta.mac + "\n"+ sta.vendor + "\n";
 				window->pushGui(new GuiMsgBox(window, msg,
@@ -2515,6 +2515,9 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "AP: " + (ap.ssid.empty() ? ap.bssid : ap.ssid));
+		s->addButton(_("STOP ALL JOBS"), _("stop"), [this] {
+			hacksSend("stop");
+		});
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -2558,10 +2561,6 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 		s->addGroup(_("AP HACKS"));
 		// -------------------------------------------------------------------------------------
 
-		// -------------------------------------------------------------------------------------
-			s->addEntry(_("STOP ALL JOBS"), false, [this, window]() {
-				hacksSend("stop");
-				}, "fa-stop-circle");
 		// -------------------------------------------------------------------------------------
 
 			s->addEntry(_("DEAUTH"), true, [this, window, ap]() {
@@ -3484,10 +3483,6 @@ void GuiMenu::addVersionInfo()
 		if (Renderer::isSmallScreen())
 		{
 			mMenu.setSubTitle(label);
-			if(SystemConf::getInstance()->get("pe_backbtn.disabled") != "1")
-				{
-					mMenu.addButton(_("BACK"), _("go back"), [&] { delete this; });
-				}
 			// mMenu.addButton(_("BACK"), _("go back"), [&] { delete this; });
 		}
 		else
