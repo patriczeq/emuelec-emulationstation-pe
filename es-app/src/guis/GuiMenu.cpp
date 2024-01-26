@@ -7795,20 +7795,6 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 			}, "iconManual");
 		}
 
-		bool webfilesStatus = apInlineInfo("webfiles") == "1";
-		s->addEntry(webfilesStatus ? _("STOP WEB FILE BROWSER") : _("START WEB FILE BROWSER"), false, [window, s, this, webfilesStatus]() {
-			if(webfilesStatus)
-			{
-				runSystemCommand("ap.sh stopwebfiles", "", nullptr);
-			}
-			else
-			{
-				runSystemCommand("ap.sh startwebfiles", "", nullptr);
-			}
-			delete s;
-			//openNetworkSettings();
-		}, "fa-cloud");
-
 		auto rumble = std::make_shared<SwitchComponent>(window);
 		rumble->setState(getShOutput("rumble.sh") == "on");
 		s->addWithLabel(_("ENABLE RUMBLE"), rumble, false, "fa-drum");
