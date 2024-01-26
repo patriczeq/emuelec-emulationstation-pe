@@ -834,7 +834,6 @@ void GuiMenu::openESP01Settings()
 			// SCAN DB
 			auto scandb = std::make_shared<SwitchComponent>(mWindow);
 			scandb->setState(SystemConf::getInstance()->get("pe_hack.scandb") == "1");
-			s->addWithLabel(_("STORE SCANNED DEVICES"), scandb);
 			s->addSaveFunc([scandb] {
 				if (scandb->changed()) {
 					bool enabled = scandb->getState();
@@ -907,6 +906,11 @@ void GuiMenu::openESP01Menu()
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
+
+		s->addButton(_("STOP ALL JOBS"), _("stop"), [this] {
+			hacksSend("stop");
+		});
+
 		loadNames();
 		hacksSend("bright " + std::to_string(Settings::getInstance()->getInt("pe_hack.neobright")));
 		s->addGroup(_("SYSTEM"));
@@ -933,34 +937,34 @@ void GuiMenu::openESP01Menu()
 						}
 				}, "fa-heart");
 			}
-			if(SystemConf::getInstance()->get("pe_hack.scandb") == "1")
-				{
-					s->addEntry(_("SCAN DATABASE"), true, [this, window] {
-						mWindow->pushGui(new GuiLoading<int>(window, _("Loading..."),
-							[this, window](auto gui)
+		if(SystemConf::getInstance()->get("pe_hack.scandb") == "1")
+			{
+				s->addEntry(_("SCAN DATABASE"), true, [this, window] {
+					mWindow->pushGui(new GuiLoading<int>(window, _("Loading..."),
+						[this, window](auto gui)
+						{
+							mWaitingLoad = true;
+							return loadScanDatabase();
+						},
+						[this, window](int items)
+						{
+							mWaitingLoad = false;
+							if(items > 0)
 							{
-								mWaitingLoad = true;
-								return loadScanDatabase();
-							},
-							[this, window](int items)
-							{
-								mWaitingLoad = false;
-								if(items > 0)
-								{
-									openScanDatabase();
-								}
-								else
-								{
-									window->pushGui(new GuiMsgBox(window, _("SCAN DATABASE IS EMPTY!"),_("OK"),nullptr));
-								}
+								openScanDatabase();
 							}
-						));
-					}, "fa-warehouse");
-				}
+							else
+							{
+								window->pushGui(new GuiMsgBox(window, _("SCAN DATABASE IS EMPTY!"),_("OK"),nullptr));
+							}
+						}
+					));
+				}, "fa-warehouse");
+			}
 
-			s->addEntry(_("STOP ALL JOBS"), false, [this] {
+			/*s->addEntry(_("STOP ALL JOBS"), false, [this] {
 				hacksSend("stop");
-			}, "fa-stop-circle");
+			}, "fa-stop-circle");*/
 			s->addEntry(_("SHOW UART OUTPUT"), false, [this] {
 				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
 				appLauncher("ttyprint.sh " + port, true);
@@ -974,7 +978,10 @@ void GuiMenu::openESP01Menu()
 			{
 				auto enableDBSaving = std::make_shared<SwitchComponent>(mWindow);
 				enableDBSaving->setState(enableScanDBsaving);
-				s->addWithLabel(_("STORE SCAN RESULTS"), enableDBSaving);
+				s->addWithLabel(_("STORE SCAN RESULTS"), enableDBSaving, [this, enableDBSaving]{
+					enableScanDBsaving = enableDBSaving->getState();
+				}, "fa-floppy-disk");
+
 				s->addSaveFunc([this, enableDBSaving] {
 					enableScanDBsaving = enableDBSaving->getState();
 				});
@@ -1632,7 +1639,7 @@ void GuiMenu::openIRlist()
 			{
 				std::string code = std::to_string(i);
 				std::string name = getName("IR", code).name;
-				s->addWithDescription("# " + code, "",
+				s->addWithDescription(code, "",
 					std::make_shared<TextComponent>(window, name, font, color),
 					[this, window, code, name] {
 						hacksSend("ir " + code);
@@ -3460,7 +3467,7 @@ void GuiMenu::addVersionInfo()
 		else
 		{
 #ifdef _ENABLEEMUELEC
-		label = "PEmod v" + std::string("1.5") + /*" EMUELEC V" + ApiSystem::getInstance()->getVersion() + buildDate +*/ " IP:" + getShOutput(R"(/usr/bin/emuelec-utils getip)");
+		label = "H4CK-G0 v" + std::string("1.5") + /*" EMUELEC V" + ApiSystem::getInstance()->getVersion() + buildDate +*/ " IP:" + getShOutput(R"(/usr/bin/emuelec-utils getip)");
 #else
 			std::string aboutInfo = ApiSystem::getInstance()->getApplicationName() + " V" + ApiSystem::getInstance()->getVersion();
 			label = aboutInfo + buildDate;
@@ -5641,7 +5648,7 @@ void GuiMenu::openControllersSettings(int autoSel)
 	s->addGroup(_("SETTINGS"));
 	auto rumble = std::make_shared<SwitchComponent>(window);
 	rumble->setState(getShOutput("rumble.sh") == "on");
-	s->addWithLabel(_("ENABLE RUMBLE"), rumble);
+	s->addWithLabel(_("ENABLE RUMBLE"), rumble, false, "fa-drum");
 	s->addSaveFunc([rumble] {
 		if (rumble->changed()) {
 			bool enabled = rumble->getState();
@@ -7772,7 +7779,7 @@ void GuiMenu::openQuitMenu_static(Window *window, bool quickAccessMenu, bool ani
 
 		auto rumble = std::make_shared<SwitchComponent>(window);
 		rumble->setState(getShOutput("rumble.sh") == "on");
-		s->addWithLabel(_("ENABLE RUMBLE"), rumble);
+		s->addWithLabel(_("ENABLE RUMBLE"), rumble, false, "fa-drum");
 		s->addSaveFunc([rumble] {
 			if (rumble->changed()) {
 				bool enabled = rumble->getState();
