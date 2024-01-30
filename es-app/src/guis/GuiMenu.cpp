@@ -293,13 +293,33 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		// pe-hacks
 		if(SystemConf::getInstance()->get("pe_hack.enabled") == "1")
 			{
-				addEntry("H4CK TH3 FK1N W0RLD", true, [this] {
+				addEntry("H4CK TH3 FK1N W0RLD", true, [this, window] {
 					// prepare port - set baudrate
 					std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
 					std::string baud = Settings::getInstance()->getString("pe_hack.uart_baud");
 					runSystemCommand("hacks.sh " + port + " -b " + baud, "", nullptr);
 
-					openESP01Menu();
+					mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("Connecting..."),
+						[this, window](auto gui)
+						{
+							mWaitingLoad = true;
+							return hacksGet("knock");
+						},
+						[this, window](std::vector<std::string> knock)
+						{
+							mWaitingLoad = false;
+							if(knock.size() == 1 && knock.at(0) == "deauther")
+								{
+									openESP01Menu();
+								}
+							else
+								{
+									window->pushGui(new GuiMsgBox(window, _("FAILED TO CONNECT!"),_("OK"),nullptr));
+								}
+						}
+					));
+
+					//openESP01Menu();
 				}, "fa-skull");
 			}
 
@@ -910,6 +930,27 @@ void GuiMenu::openESP01Menu()
 		s->addButton(_("STOP ALL JOBS"), _("stop"), [this] {
 			hacksSend("stop");
 		});
+		std::string uartTitle = _U("\uF120");
+								uartTitle+= " ";
+								uartTitle+= "UART";
+		s->addButton(uartTitle, _("uart"), [this] {
+			std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+			appLauncher("ttyprint.sh " + port, true);
+		});
+
+		std::string powerTitle = _U("\uF011");
+								powerTitle+= " ";
+								powerTitle+= "POWER";
+		s->addButton(powerTitle, _("power"), [this, window] {
+				auto p = new GuiSettings(window);
+				p->addEntry(_("REBOOT ESP01"), false, [this] {
+					hacksSend("reboot");
+				}, "fa-refresh");
+				p->addEntry(_("SLEEP ESP01"), false, [this] {
+					hacksSend("sleep");
+				}, "fa-moon");
+				window->pushGui(p);
+		});
 
 		loadNames();
 		hacksSend("bright " + std::to_string(Settings::getInstance()->getInt("pe_hack.neobright")));
@@ -965,13 +1006,17 @@ void GuiMenu::openESP01Menu()
 			/*s->addEntry(_("STOP ALL JOBS"), false, [this] {
 				hacksSend("stop");
 			}, "fa-stop-circle");*/
-			s->addEntry(_("SHOW UART OUTPUT"), false, [this] {
+			/*s->addEntry(_("SHOW UART OUTPUT"), false, [this] {
 				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
 				appLauncher("ttyprint.sh " + port, true);
 			}, "fa-terminal");
 			s->addEntry(_("REBOOT ESP01"), false, [this] {
 				hacksSend("reboot");
 			}, "fa-refresh");
+			s->addEntry(_("SLEEP ESP01"), false, [this] {
+				hacksSend("sleep");
+			}, "fa-moon");*/
+
 
 		s->addGroup(_("SCAN NETWORK"));
 		if(SystemConf::getInstance()->get("pe_hack.scandb") == "1")
