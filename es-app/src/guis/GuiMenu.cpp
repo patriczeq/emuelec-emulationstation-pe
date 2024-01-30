@@ -941,8 +941,8 @@ void GuiMenu::openESP01Menu()
 		std::string powerTitle = _U("\uF011");
 								powerTitle+= " ";
 								powerTitle+= "POWER";
-		s->addButton(powerTitle, _("power"), [this, window] {
-				auto p = new GuiSettings(window);
+		s->addButton(powerTitle, _("power"), [this, window, powerTitle] {
+				auto p = new GuiSettings(window, powerTitle);
 				p->addEntry(_("REBOOT ESP01"), false, [this] {
 					hacksSend("reboot");
 				}, "fa-refresh");
