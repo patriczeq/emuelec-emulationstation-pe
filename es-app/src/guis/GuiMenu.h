@@ -721,6 +721,7 @@ private:
 
 
 	void openESP01Menu();
+	void addESP01Buttons(Window* window, GuiSettings* s);
 	void openESP01Settings();
 
 	void scanBSSIDS(bool all = false);

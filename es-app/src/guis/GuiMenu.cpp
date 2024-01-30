@@ -919,24 +919,16 @@ void GuiMenu::openESP01Settings()
 		window->pushGui(s);
 	}
 
-void GuiMenu::openESP01Menu()
+void GuiMenu::addESP01Buttons(Window* window, GuiSettings* s)
 	{
-  	Window* window = mWindow;
-		std::string Title = _U("\uf54c");
-								Title += " H4CK TH3 FK1N W0RLD!";
-		auto s = new GuiSettings(window, Title);
-		auto theme = ThemeData::getMenuTheme();
-		std::shared_ptr<Font> font = theme->Text.font;
-		unsigned int color = theme->Text.color;
-
-		std::string stopTitle = _U("\uF120");
+		std::string stopTitle = _U("\uF256");
 								stopTitle+= " ";
 								stopTitle+= "STOP";
 
-		s->addButton(_("STOP ALL JOBS"), _("stop"), [this] {
+		s->addButton(stopTitle, _("stop"), [this] {
 			hacksSend("stop");
 		});
-		std::string uartTitle = _U("\uF256");
+		std::string uartTitle = _U("\uF120");
 								uartTitle+= " ";
 								uartTitle+= "UART";
 		s->addButton(uartTitle, _("uart"), [this] {
@@ -957,6 +949,19 @@ void GuiMenu::openESP01Menu()
 				}, "fa-moon");
 				window->pushGui(p);
 		});
+	}
+
+void GuiMenu::openESP01Menu()
+	{
+  	Window* window = mWindow;
+		std::string Title = _U("\uf54c");
+								Title += " H4CK TH3 FK1N W0RLD!";
+		auto s = new GuiSettings(window, Title);
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		addESP01Buttons(window, s);
 
 		loadNames();
 		hacksSend("bright " + std::to_string(Settings::getInstance()->getInt("pe_hack.neobright")));
@@ -1316,9 +1321,7 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 								Title += (sta.name.empty() ? sta.mac : sta.name);
 		auto s = new GuiSettings(window, Title);
 
-		s->addButton(_("STOP ALL JOBS"), _("stop"), [this] {
-			hacksSend("stop");
-		});
+		addESP01Buttons(window, s);
 
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
@@ -1482,9 +1485,7 @@ void GuiMenu::openName(HackName name)
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		s->addButton(_("STOP ALL JOBS"), _("stop"), [this] {
-			hacksSend("stop");
-		});
+		addESP01Buttons(window, s);
 		// DATA info
 		if(name.type == "IR")
 			{
@@ -2206,9 +2207,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 
 		auto s = new GuiSettings(window, wTitle);
 
-		s->addButton(_("STOP ALL JOBS"), _("stop"), [this] {
-			hacksSend("stop");
-		});
+		addESP01Buttons(window, s);
 
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
@@ -2456,12 +2455,11 @@ void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 								windowName = windowName + (sta.name.empty() ? sta.mac : sta.name);
 
 		auto s = new GuiSettings(window, windowName);
-		s->addButton(_("STOP ALL JOBS"), _("stop"), [this] {
-			hacksSend("stop");
-		});
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
+
+		addESP01Buttons(window, s);
 
 		s->addGroup(_("STATION INFO"));
 			s->addWithLabel(_("RSSI"), 	std::make_shared<TextComponent>(window, sta.rssi + "dBm", 	font, color));
@@ -2566,12 +2564,10 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "AP: " + (ap.ssid.empty() ? ap.bssid : ap.ssid));
-		s->addButton(_("STOP ALL JOBS"), _("stop"), [this] {
-			hacksSend("stop");
-		});
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
+		addESP01Buttons(window, s);
 
 		//std::string vendor = macVendor(bssid);
 		s->addGroup(_("AP INFO"));
