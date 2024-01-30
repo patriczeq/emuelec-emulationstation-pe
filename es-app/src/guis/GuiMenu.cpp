@@ -314,7 +314,9 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 								}
 							else
 								{
-									window->pushGui(new GuiMsgBox(window, _("FAILED TO CONNECT!"),_("OK"),nullptr));
+									window->pushGui(new GuiMsgBox(window, _("FAILED TO CONNECT!"),_("OPEN ANYWAY"),[this]{
+										openESP01Menu();
+									},_("CANCEL"), nullptr));
 								}
 						}
 					));
@@ -927,10 +929,14 @@ void GuiMenu::openESP01Menu()
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
+		std::string stopTitle = _U("\uF120");
+								stopTitle+= " ";
+								stopTitle+= "STOP";
+
 		s->addButton(_("STOP ALL JOBS"), _("stop"), [this] {
 			hacksSend("stop");
 		});
-		std::string uartTitle = _U("\uF120");
+		std::string uartTitle = _U("\uF256");
 								uartTitle+= " ";
 								uartTitle+= "UART";
 		s->addButton(uartTitle, _("uart"), [this] {
@@ -954,7 +960,7 @@ void GuiMenu::openESP01Menu()
 
 		loadNames();
 		hacksSend("bright " + std::to_string(Settings::getInstance()->getInt("pe_hack.neobright")));
-		s->addGroup(_("SYSTEM"));
+		//s->addGroup(_("SYSTEM"));
 		if(names.size() > 0)
 			{
 				s->addWithDescription(_("SAVED NAMES"), "",
