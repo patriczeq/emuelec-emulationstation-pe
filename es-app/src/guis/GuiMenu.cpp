@@ -303,6 +303,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 						[this, window](auto gui)
 						{
 							mWaitingLoad = true;
+							loadNames();
 							return hacksGet("knock");
 						},
 						[this, window](std::vector<std::string> knock)
@@ -310,6 +311,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 							mWaitingLoad = false;
 							if(knock.size() == 1 && knock.at(0) == "deauther")
 								{
+									hacksSend("bright " + std::to_string(Settings::getInstance()->getInt("pe_hack.neobright")));
 									openESP01Menu();
 								}
 							else
@@ -320,8 +322,6 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 								}
 						}
 					));
-
-					//openESP01Menu();
 				}, "fa-skull");
 			}
 
@@ -512,11 +512,23 @@ void GuiMenu::openAppsMenu()
 	s->addEntry(_("GMU MUSIC PLAYER").c_str(), false, [this] { appLauncher("gmu_player.sh"); }, "fa-music");
 	s->addEntry(_("WESTON DESKTOP").c_str(), false, [this] { appLauncher("weston.sh", true); }, "fa-arrow-pointer");
 	s->addGroup(_("EMULATORS"));
-		s->addEntry(_("PPSSPP").c_str(), false, [this] { appLauncher("emu-launcher.sh PPSSPPSDL", true); }, "fa-rocket");
-		s->addEntry(_("DUCKSTATION").c_str(), false, [this] { appLauncher("emu-launcher.sh duckstation-nogui", true); }, "fa-rocket");
-		s->addEntry(_("FLYCAST").c_str(), false, [this] { appLauncher("emu-launcher.sh flycast", true); }, "fa-rocket");
-		s->addEntry(_("RETROARCH").c_str(), false, [this] { appLauncher("emu-launcher.sh retroarch", true); }, "fa-rocket");
-		s->addEntry(_("RETROARCH 32bit").c_str(), false, [this] { appLauncher("emu-launcher.sh retroarch32", true); }, "fa-rocket");
+		s->addEntry(_("PPSSPP").c_str(), false, [this] { appLauncher("emu-launcher.sh PPSSPPSDL", false); }, "fa-rocket");
+		s->addEntry(_("DUCKSTATION").c_str(), false, [this] { appLauncher("emu-launcher.sh duckstation-nogui", false); }, "fa-rocket");
+		s->addEntry(_("FLYCAST").c_str(), false, [this] { appLauncher("emu-launcher.sh flycast", false); }, "fa-rocket");
+		s->addEntry(_("RETROARCH").c_str(), false, [this] { appLauncher("emu-launcher.sh retroarch", false); }, "fa-rocket");
+		s->addEntry(_("RETROARCH 32bit").c_str(), false, [this] { appLauncher("emu-launcher.sh retroarch32", false); }, "fa-rocket");
+
+	std::vector<std::string> scripts = hacksGet("listscripts");//hacks.sh listscripts
+	if(scripts.size() > 0)
+		{
+			s->addGroup(_("SCRIPTS"));
+			for(auto script : scripts)
+				{
+					std::string tokens = Utils::String::split(script, '/');
+					s->addEntry(tokens.at(tokens.size() - 1), false, [this, script] { appLauncher(script, false); }, "fa-terminal");
+				}
+		}
+	s->addGroup(_("SCRIPTS"));
 
 	window->pushGui(s);
 }
@@ -933,7 +945,7 @@ void GuiMenu::addESP01Buttons(Window* window, GuiSettings* s)
 								uartTitle+= "UART";
 		s->addButton(uartTitle, _("uart"), [this] {
 			std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
-			appLauncher("ttyprint.sh " + port, true);
+			appLauncher("ttyprint.sh " + port, false);
 		});
 
 		std::string powerTitle = _U("\uF011");
@@ -963,8 +975,6 @@ void GuiMenu::openESP01Menu()
 
 		addESP01Buttons(window, s);
 
-		loadNames();
-		hacksSend("bright " + std::to_string(Settings::getInstance()->getInt("pe_hack.neobright")));
 		//s->addGroup(_("SYSTEM"));
 		if(names.size() > 0)
 			{
