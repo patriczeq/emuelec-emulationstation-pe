@@ -524,8 +524,7 @@ void GuiMenu::openAppsMenu()
 			s->addGroup(_("SCRIPTS"));
 			for(auto script : scripts)
 				{
-					std::string tokens = Utils::String::split(script, '/');
-					s->addEntry(tokens.at(tokens.size() - 1), false, [this, script] { appLauncher(script, false); }, "fa-terminal");
+					s->addEntry(Utils::FileSystem::getFileName(script), false, [this, script] { appLauncher(script, false); }, "fa-terminal");
 				}
 		}
 	s->addGroup(_("SCRIPTS"));
