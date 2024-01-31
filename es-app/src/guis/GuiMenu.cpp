@@ -527,7 +527,6 @@ void GuiMenu::openAppsMenu()
 					s->addEntry(Utils::FileSystem::getFileName(script), false, [this, script] { appLauncher(script, false); }, "fa-terminal");
 				}
 		}
-	s->addGroup(_("SCRIPTS"));
 
 	window->pushGui(s);
 }
