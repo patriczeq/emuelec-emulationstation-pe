@@ -1694,7 +1694,14 @@ void GuiMenu::updateNames()
 void GuiMenu::openIRlist()
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, "SELECT POWER-CODE");
+		/*
+		const std::string title,
+		const std::string customButton,
+		const std::function<void(GuiSettings*)>& func,
+		bool animate,
+		bool smallWindow
+		*/
+		auto s = new GuiSettings(window, "SELECT POWER-CODE", "", nullptr, true, true);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
