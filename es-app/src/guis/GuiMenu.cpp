@@ -371,13 +371,14 @@ if (!isKidUI)
 	// quit button
 #endif
 
-	std::string quitTitle = _U("\uF2f5");
-							quitTitle+= " ";
-							quitTitle+= _("QUIT");
+	std::string qTitle = _U("\uF2F5");
+							qTitle+= " ";
+							qTitle+= _("QUIT");
 
-	addButton(quitTitle, _("quit"), [this] {
+	addButton(qTitle, _("quit"), [this] {
 		openQuitMenu();
 	});
+
 
 	addChild(&mMenu);
 	addVersionInfo();
