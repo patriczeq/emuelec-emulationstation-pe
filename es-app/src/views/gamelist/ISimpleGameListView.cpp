@@ -259,7 +259,8 @@ bool ISimpleGameListView::input(InputConfig* config, Input input)
 
 	if (mYButton.isShortPressed(config, input))
 	{
-		showQuickSearch();
+		//showQuickSearch();
+		launchSelectedGame(true);
 		return true;
 	}
 
@@ -379,7 +380,7 @@ void ISimpleGameListView::showSelectedGameSaveSnapshots()
 	}
 }
 
-void ISimpleGameListView::launchSelectedGame()
+void ISimpleGameListView::launchSelectedGame(bool playertoo)
 {
 	// Don't launch game if transition is still running
 	if (ViewController::get()->isAnimationPlaying(0))
@@ -435,7 +436,47 @@ void ISimpleGameListView::launchSelectedGame()
 			else
 			{
 				Sound::getFromTheme(getTheme(), getName(), "launch")->play();
-				launch(cursor);
+				//playertoo
+				if(!playertoo)
+					{
+						launch(cursor);
+					}
+				else if(cursor->is2PSupported())
+					{
+						if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
+							{
+								mWindow->pushGui(new GuiMsgBox(mWindow, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));
+								return;
+							}
+						mWindow->pushGui(new GuiLoading<bool>(window, _("STARTING 1ST PLAYER SERVER"),
+							[this, cursor](auto gui)
+							{
+
+								SystemData* system 		= cursor->getSystem();
+								std::string platform 	= cursor->getName();
+								std::string name 			= cursor->getName();
+								std::string image			= cursor->getImagePath();
+
+								/*
+									myGame DATA
+									"platform=platform" "name=my game string" "image=path to"
+								*/
+
+								runSystemCommand("killall gamestream_encoder_server &", "", nullptr);
+								runSystemCommand("killall avahi-publish &", "", nullptr);
+								runSystemCommand("gamestream_encoder_server &", "", nullptr);
+								runSystemCommand("avahi-publish -s --domain=local --subtype=\"_ann._sub._oga-mp._udp\" \"oga-mp-broadcast\" \"_oga-mp._udp\" 1234 \"platform="+platform+"\" \"name="+name+"\" \"image="+image+"\" &", "", nullptr);
+
+								return false;
+							},
+							[this, cursor](bool s)
+							{
+								LaunchGameOptions options;
+								options.hostMP = true;
+								launch(cursor, options);
+							}
+						));
+					}
 			}
 		}
 		else if (cursor->getType() == FOLDER)
