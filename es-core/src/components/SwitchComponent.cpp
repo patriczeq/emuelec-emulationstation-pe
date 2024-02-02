@@ -19,7 +19,7 @@ SwitchComponent::SwitchComponent(Window* window, bool state) : GuiComponent(wind
 	mSize = mImage.getSize();
 }
 
-void SwitchComponent::setColor(unsigned int color) 
+void SwitchComponent::setColor(unsigned int color)
 {
 	mImage.setColorShift(color);
 }
@@ -59,7 +59,7 @@ bool SwitchComponent::input(InputConfig* config, Input input)
 void SwitchComponent::render(const Transform4x4f& parentTrans)
 {
 	Transform4x4f trans = parentTrans * getTransform();
-	
+
 	mImage.render(trans);
 
 	renderChildren(trans);
@@ -110,7 +110,7 @@ std::vector<HelpPrompt> SwitchComponent::getHelpPrompts()
 	return prompts;
 }
 
-bool SwitchComponent::changed() 
+bool SwitchComponent::changed()
 {
 	return mInitialState != mState;
 }

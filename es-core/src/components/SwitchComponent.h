@@ -20,7 +20,7 @@ public:
 	void setState(bool state);
 	std::string getValue() const;
 	void setValue(const std::string& statestring) override;
-	bool changed(); 
+	bool changed();
 
 	virtual std::vector<HelpPrompt> getHelpPrompts() override;
 
@@ -35,9 +35,9 @@ private:
 
 	ImageComponent mImage;
 	bool mState;
-	bool mInitialState; 
+	bool mInitialState;
 
-	std::function<void()> mOnChangedCallback; 
+	std::function<void()> mOnChangedCallback;
 };
 
 #endif // ES_CORE_COMPONENTS_SWITCH_COMPONENT_H

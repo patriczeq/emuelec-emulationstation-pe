@@ -367,9 +367,17 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 #ifdef _ENABLEEMUELEC
 if (!isKidUI)
 #endif
+	//addEntry(_("QUIT").c_str(), true, [this] { openQuitMenu(); }, "fa-sign-out");
+	// quit button
+	std::string quitTitle = _U("\uF2f5");
+							quitTitle+= " ";
+							quitTitle+= _("QUIT");
 
-	addEntry(_("QUIT").c_str(), true, [this] { openQuitMenu(); }, "fa-sign-out");
+	addButton(quitTitle, _("quit"), [this] {
+		openQuitMenu();
+	});
 #endif
+
 
 	addChild(&mMenu);
 	addVersionInfo();
@@ -933,14 +941,14 @@ void GuiMenu::addESP01Buttons(Window* window, GuiSettings* s)
 	{
 		std::string stopTitle = _U("\uF256");
 								stopTitle+= " ";
-								stopTitle+= "STOP";
+								stopTitle+= _("STOP");
 
 		s->addButton(stopTitle, _("stop"), [this] {
 			hacksSend("stop");
 		});
 		std::string uartTitle = _U("\uF120");
 								uartTitle+= " ";
-								uartTitle+= "UART";
+								uartTitle+= _("UART");
 		s->addButton(uartTitle, _("uart"), [this] {
 			std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
 			appLauncher("ttyprint.sh " + port, false);
@@ -948,7 +956,7 @@ void GuiMenu::addESP01Buttons(Window* window, GuiSettings* s)
 
 		std::string powerTitle = _U("\uF011");
 								powerTitle+= " ";
-								powerTitle+= "POWER";
+								powerTitle+= _("POWER");
 		s->addButton(powerTitle, _("power"), [this, window, powerTitle] {
 				auto p = new GuiSettings(window, powerTitle);
 				p->addEntry(_("REBOOT ESP01"), false, [this] {
@@ -1042,17 +1050,21 @@ void GuiMenu::openESP01Menu()
 			{
 				auto enableDBSaving = std::make_shared<SwitchComponent>(mWindow);
 				enableDBSaving->setState(enableScanDBsaving);
-				/*s->forceSaveToggle(_("STORE SCAN RESULTS"), enableDBSaving, [this, enableDBSaving]{
+				enableDBSaving->setOnChangedCallback([this, enableDBSaving]{
 					enableScanDBsaving = enableDBSaving->getState();
-				}, "fa-floppy-disk");*/
-				s->addEntry(_("DISABLE STORE SCAN RESULTS"), false, [this, window] {
+				});
+				s->addWithLabel(_("STORE SCAN RESULTS"), enableDBSaving, false, "fa-floppy-disk");
+
+				/*s->addEntry(_("DISABLE STORE SCAN RESULTS"), false, [this, window] {
 					enableScanDBsaving = !enableScanDBsaving;
 					window->pushGui(new GuiMsgBox(window, enableScanDBsaving ? _("ENABLED") : _("DISABLED"),_("OK"), nullptr));
 				}, "fa-ban");
 
 				s->addSaveFunc([this, enableDBSaving] {
 					enableScanDBsaving = enableDBSaving->getState();
-				});
+				});*/
+
+
 			}
 			s->addEntry(_("SCAN ALL"), true, [this, window] {
 				if(stalist.size() > 0 && scanlist.size() > 0)
