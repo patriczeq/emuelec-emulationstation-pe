@@ -68,6 +68,19 @@ MenuComponent::MenuComponent(Window* window,
 			}
 			return true;
 		}
+
+		if(callback_X != nullptr && config->isMappedLike("x", input))
+			{
+				callback_X();
+				return true;
+			}
+
+		if(callback_Y != nullptr && config->isMappedLike("y", input))
+			{
+				callback_Y();
+				return true;
+			}
+
 		return false;
 	});
 

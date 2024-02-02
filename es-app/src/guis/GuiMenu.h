@@ -637,6 +637,15 @@ private:
 		{
 			mMenu.addButton(label, helpText, callback);
 		}
+	void mapXcallback(const std::function<void()>& callback)
+		{
+			mMenu.mapXcallback(callback);
+		}
+
+	void mapYcallback(const std::function<void()>& callback)
+		{
+			mMenu.mapYcallback(callback);
+		}
 	void addVersionInfo();
 	void openCollectionSystemSettings();
 	void openConfigInput();

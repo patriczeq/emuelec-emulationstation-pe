@@ -219,6 +219,10 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 	// SYSTEM SETTINGS >
 	// QUIT >
 
+	mapXcallback([this] {
+		openQuitMenu();
+	});
+
 	std::string qTitle = _U("\uF2F5");
 							qTitle+= " ";
 							qTitle+= _("QUIT");
