@@ -21,6 +21,16 @@ public:
 	void save();
 	void close();
 
+	inline void mapXcallback(const std::function<void()>& callback)
+		{
+			mMenu.mapXcallback(callback);
+		}
+
+	inline void mapYcallback(const std::function<void()>& callback)
+		{
+			mMenu.mapYcallback(callback);
+		}
+
 	inline void setUpdateType(ComponentListFlags::UpdateType updateType)
 	{
 		mMenu.setUpdateType(updateType);

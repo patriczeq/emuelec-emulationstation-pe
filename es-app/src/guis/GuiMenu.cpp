@@ -945,6 +945,15 @@ void GuiMenu::openESP01Settings()
 
 void GuiMenu::addESP01Buttons(Window* window, GuiSettings* s)
 	{
+		// BTN map
+		s->mapXcallback([this] {
+			hacksSend("stop");
+		});
+		s->mapYcallback([this] {
+			std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+			appLauncher("ttyprint.sh " + port, false);
+		});
+
 		std::string stopTitle = _U("\uF256");
 								stopTitle+= " ";
 								stopTitle+= _("STOP");
