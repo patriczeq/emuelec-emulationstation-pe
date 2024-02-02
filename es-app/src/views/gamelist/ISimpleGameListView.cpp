@@ -29,6 +29,7 @@
 
 #include "utils/FileSystemUtil.h"
 #include "AudioManager.h"
+#include "GuiLoading.h"
 
 ISimpleGameListView::ISimpleGameListView(Window* window, FolderData* root, bool temporary) : IGameListView(window, root),
 	mHeaderText(window), mHeaderImage(window), mBackground(window), mFolderPath(window), mOnExitPopup(nullptr),
