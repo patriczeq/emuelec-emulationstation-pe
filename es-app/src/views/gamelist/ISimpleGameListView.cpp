@@ -476,7 +476,7 @@ void ISimpleGameListView::launchSelectedGame(bool playertoo)
 							{
 								LaunchGameOptions options;
 								options.hostMP = true;
-								launch(cursor, options);
+								ViewController::get()->launch(cursor, options);
 							}
 						));
 					}
