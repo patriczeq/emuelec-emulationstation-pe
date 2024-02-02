@@ -27,6 +27,7 @@
 #include "guis/GuiImageViewer.h"
 #include "guis/GuiGameAchievements.h"
 
+#include "platform.h"
 #include "utils/FileSystemUtil.h"
 #include "AudioManager.h"
 #include "guis/GuiLoading.h"
@@ -449,7 +450,8 @@ void ISimpleGameListView::launchSelectedGame(bool playertoo)
 								mWindow->pushGui(new GuiMsgBox(mWindow, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));
 								return;
 							}
-						mWindow->pushGui(new GuiLoading<bool>(window, _("STARTING 1ST PLAYER SERVER"),
+
+						mWindow->pushGui(new GuiLoading<bool>(mWindow, _("STARTING 1ST PLAYER SERVER"),
 							[this, cursor](auto gui)
 							{
 
