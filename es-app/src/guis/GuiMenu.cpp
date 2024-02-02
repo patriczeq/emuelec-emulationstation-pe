@@ -219,6 +219,13 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 	// SYSTEM SETTINGS >
 	// QUIT >
 
+	std::string qTitle = _U("\uF2F5");
+							qTitle+= " ";
+							qTitle+= _("QUIT");
+
+	addButton(qTitle, _("quit"), [this] {
+		openQuitMenu();
+	});
 	// KODI
 #ifdef _ENABLE_KODI_
 	if (SystemConf::getInstance()->getBool("kodi.enabled", true) && ApiSystem::getInstance()->isScriptingSupported(ApiSystem::KODI))
@@ -365,19 +372,13 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 	addEntry(_("QUIT").c_str(), !Settings::getInstance()->getBool("ShowOnlyExit"), [this] {openQuitMenu(); }, "fa-sign-out");
 #else
 #ifdef _ENABLEEMUELEC
-if (!isKidUI)
+//if (!isKidUI)
 #endif
 	//addEntry(_("QUIT").c_str(), true, [this] { openQuitMenu(); }, "fa-sign-out");
 	// quit button
 #endif
 
-	std::string qTitle = _U("\uF2F5");
-							qTitle+= " ";
-							qTitle+= _("QUIT");
 
-	addButton(qTitle, _("quit"), [this] {
-		openQuitMenu();
-	});
 
 
 	addChild(&mMenu);
