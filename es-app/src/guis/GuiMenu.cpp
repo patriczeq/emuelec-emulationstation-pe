@@ -220,7 +220,9 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 	// QUIT >
 
 	mapXcallback([this] {
-		openQuitMenu();
+		mWindow->pushGui(new GuiMsgBox(mWindow, _("REALLY SHUTDOWN?"),
+			_("YES"), [] { quitES(QuitMode::SHUTDOWN); },
+			_("NO"), nullptr));
 	});
 
 	std::string qTitle = _U("\uF2F5");
