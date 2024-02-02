@@ -1715,7 +1715,7 @@ void GuiMenu::openIRlist()
 		bool animate,
 		bool smallWindow
 		*/
-		auto s = new GuiSettings(window, "SELECT POWER-CODE", "", nullptr, true, true);
+		auto s = new GuiSettings(window, _("SEND CUSTOM POWER-CODE"));
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
