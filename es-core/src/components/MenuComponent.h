@@ -97,8 +97,8 @@ private:
 	NinePatchComponent mBackground;
 	ComponentGrid mGrid;
 
-	std::function<void()>& callback_X = nullptr;
-	std::function<void()>& callback_Y = nullptr;
+	std::function<void()> callback_X = nullptr;
+	std::function<void()> callback_Y = nullptr;
 
 	std::shared_ptr<ComponentGrid> mHeaderGrid;
 	std::shared_ptr<TextComponent> mTitle;
