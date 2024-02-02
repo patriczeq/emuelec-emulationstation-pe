@@ -633,7 +633,10 @@ public:
 	static std::vector<AVAHIserviceDetail> getAvahiService(std::string service);
 private:
 	void addEntry(std::string name, bool add_arrow, const std::function<void()>& func, const std::string iconName = "");
-
+	void addButton(const std::string& label, const std::string& helpText, const std::function<void()>& callback)
+		{
+			mMenu.addButton(label, helpText, callback);
+		}
 	void addVersionInfo();
 	void openCollectionSystemSettings();
 	void openConfigInput();

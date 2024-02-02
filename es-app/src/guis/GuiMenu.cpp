@@ -369,6 +369,8 @@ if (!isKidUI)
 #endif
 	//addEntry(_("QUIT").c_str(), true, [this] { openQuitMenu(); }, "fa-sign-out");
 	// quit button
+#endif
+
 	std::string quitTitle = _U("\uF2f5");
 							quitTitle+= " ";
 							quitTitle+= _("QUIT");
@@ -376,8 +378,6 @@ if (!isKidUI)
 	addButton(quitTitle, _("quit"), [this] {
 		openQuitMenu();
 	});
-#endif
-
 
 	addChild(&mMenu);
 	addVersionInfo();
