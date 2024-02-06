@@ -43,7 +43,7 @@ GuiSettings::GuiSettings(Window* window,
 
 	if (animate)
 	{
-		if (Renderer::isSmallScreen())
+		if (Renderer::isSmallScreen() && !small)
 			mMenu.animateTo((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, (Renderer::getScreenHeight() - mMenu.getSize().y()) / 2);
 		else
 			mMenu.animateTo(
@@ -52,7 +52,7 @@ GuiSettings::GuiSettings(Window* window,
 	}
 	else
 	{
-		if (Renderer::isSmallScreen())
+		if (Renderer::isSmallScreen() && !small)
 			mMenu.setPosition((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, (Renderer::getScreenHeight() - mMenu.getSize().y()) / 2);
 		else
 			mMenu.setPosition((mSize.x() - mMenu.getSize().x()) / 2, Renderer::getScreenHeight() * 0.15f);
