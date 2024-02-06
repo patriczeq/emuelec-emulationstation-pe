@@ -1724,13 +1724,14 @@ void GuiMenu::openIRlist()
 	{
 		Window* window = mWindow;
 		/*
-		const std::string title,
-		const std::string customButton,
-		const std::function<void(GuiSettings*)>& func,
-		bool animate,
-		bool smallWindow
+		Window* window,
+			const std::string title,
+			const std::string customButton = "",
+			const std::function<void(GuiSettings*)>& func = nullptr,
+			bool animate = false, bool small = false
 		*/
-		auto s = new GuiSettings(window, _("SEND CUSTOM POWER-CODE"));
+
+		auto s = new GuiSettings(window, _("SEND CUSTOM POWER-CODE"), "", nullptr, true, true);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;

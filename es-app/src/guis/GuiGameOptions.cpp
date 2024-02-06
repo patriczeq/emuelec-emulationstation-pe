@@ -591,7 +591,15 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 
 	if (Renderer::isSmallScreen())
 	{
-		mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });
+
+		//mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });
+		if(SystemConf::getInstance()->get("pe_backbtn.disabled") != "1")
+			{
+				std::string backLabel = _U("\uf060");
+										backLabel+= " ";
+										backLabel+= _("BACK");
+				mMenu.addButton(backLabel, _("go back"), [this] { close(); });
+			}
 
 		mMenu.setMaxHeight(Renderer::getScreenHeight() * 0.85f);
 		setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());

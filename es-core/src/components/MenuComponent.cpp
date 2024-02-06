@@ -10,11 +10,12 @@
 
 MenuComponent::MenuComponent(Window* window,
 	const std::string& title, const std::shared_ptr<Font>& titleFont,
-	const std::string& subTitle)
+	const std::string& subTitle, bool small)
 	: GuiComponent(window),
 	mBackground(window), mGrid(window, Vector2i(1, 3))
 {
 	mMaxHeight = 0;
+	mSmall = small;
 
 	auto theme = ThemeData::getMenuTheme();
 
@@ -7783,7 +7784,7 @@ float MenuComponent::getButtonGridHeight() const
 void MenuComponent::updateSize()
 {
 	// GPI
-	if (Renderer::isSmallScreen())
+	if (Renderer::isSmallScreen() && !mSmall)
 	{
 		setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
 		return;

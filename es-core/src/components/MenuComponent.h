@@ -23,7 +23,7 @@ class MenuComponent : public GuiComponent
 public:
 	MenuComponent(Window* window,
 		const std::string& title, const std::shared_ptr<Font>& titleFont = Font::get(FONT_SIZE_LARGE),
-		const std::string& subTitle = "");
+		const std::string& subTitle = "", bool small = false);
 
 	void onSizeChanged() override;
 
@@ -91,9 +91,13 @@ public:
 		{
 			callback_Y = callback;
 		}
+	void setSmall(bool small)
+		{
+			mSmall = small;
+		}
 private:
 	void updateGrid();
-
+	bool mSmall = false;
 	NinePatchComponent mBackground;
 	ComponentGrid mGrid;
 

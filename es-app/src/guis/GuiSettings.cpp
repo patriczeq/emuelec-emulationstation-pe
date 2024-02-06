@@ -16,8 +16,10 @@ GuiSettings::GuiSettings(Window* window,
 	const std::string title,
 	const std::string customButton,
 	const std::function<void(GuiSettings*)>& func,
-	bool animate) : GuiComponent(window), mMenu(window, title)
+	bool animate,
+	bool small) : GuiComponent(window), mMenu(window, title)
 {
+	mMenu.setSmall(small);
 	addChild(&mMenu);
 
 	mCloseButton = "start";
