@@ -7778,10 +7778,10 @@ float MenuComponent::getHeaderGridHeight() const
 float MenuComponent::getButtonGridHeight() const
 {
 	auto menuTheme = ThemeData::getMenuTheme();
-	if(mButtons.size() == 0)
+	/*if(mButtons.size() == 0)
 		{
 			return 0.0;
-		}
+		}*/
 	return (mButtonGrid ? mButtonGrid->getSize().y() : menuTheme->Text.font->getHeight() + BUTTON_GRID_VERT_PADDING);
 }
 
@@ -7799,7 +7799,7 @@ void MenuComponent::updateSize()
 	float height = TITLE_HEIGHT + mList->getTotalRowHeight() + getButtonGridHeight() + 2;
 	if(height > maxHeight)
 	{
-		height = TITLE_HEIGHT + getButtonGridHeight();
+		height = TITLE_HEIGHT + (mButtons.size() ? getButtonGridHeight() : 0);
 		int i = 0;
 		while(i < mList->size())
 		{
