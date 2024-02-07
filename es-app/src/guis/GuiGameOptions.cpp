@@ -589,7 +589,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 
 }
 
-	if (Renderer::isSmallScreen())
+	/*if (Renderer::isSmallScreen())
 	{
 
 		//mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });
@@ -606,7 +606,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 		mMenu.animateTo(Vector2f((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, (Renderer::getScreenHeight() - mMenu.getSize().y()) / 2));
 	}
 	else
-	{
+	{*/
 		float w = Math::min(Renderer::getScreenWidth() * 0.5, ThemeData::getMenuTheme()->Text.font->sizeText("S").x() * 33.0f);
 		w = Math::max(w, Renderer::getScreenWidth() / 3.0f);
 
@@ -618,7 +618,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 		mMenu.animateTo(
 			Vector2f(Renderer::getScreenWidth(), -1),
 			Vector2f(Renderer::getScreenWidth() - w -1, -1), AnimateFlags::OPACITY | AnimateFlags::POSITION);
-	}
+	//}
 }
 
 GuiGameOptions::~GuiGameOptions()

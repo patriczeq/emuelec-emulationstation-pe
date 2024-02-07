@@ -54,10 +54,11 @@ GuiSettings::GuiSettings(Window* window,
 			}
 		else
 			{
-				mMenu.animateTo(
+				mMenu.animateTo(Renderer::getScreenWidth() * 0.15f, Renderer::getScreenHeight() * 0.15f);
+				/*mMenu.animateTo(
 					Vector2f((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, Renderer::getScreenHeight() * 0.5),
 					Vector2f((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, Renderer::getScreenHeight() * 0.15f)
-				);
+				);*/
 			}
 	}
 	else
