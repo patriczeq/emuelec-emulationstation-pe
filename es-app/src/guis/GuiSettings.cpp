@@ -68,7 +68,8 @@ GuiSettings::GuiSettings(Window* window,
 			}
 		else
 			{
-				mMenu.setPosition((mSize.x() - mMenu.getSize().x()) / 2, Renderer::getScreenHeight() * 0.15f);
+				//mMenu.setPosition((mSize.x() - mMenu.getSize().x()) / 2, Renderer::getScreenHeight() * 0.15f);
+				mMenu.setPosition(Renderer::getScreenWidth() * 0.15f, Renderer::getScreenHeight() * 0.15f);
 			}
 	}
 }
