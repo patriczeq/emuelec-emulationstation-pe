@@ -7778,7 +7778,7 @@ float MenuComponent::getHeaderGridHeight() const
 float MenuComponent::getButtonGridHeight() const
 {
 	auto menuTheme = ThemeData::getMenuTheme();
-	if(mButtonGrid.size() == 0)
+	if(mButtons.size() == 0)
 		{
 			return 0.0;
 		}
