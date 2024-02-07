@@ -133,14 +133,14 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 			oplaunch = _("OPEN");
 		}
 
-		if(isVideo)
+		if(isVideo || isAudio)
 			{
 				mMenu.addEntry(oplaunch, false, [window, _path, this]
 					{
 						std::string cmd = "fbterm.sh mplayer_video \"" + _path + "\" \"mpv\"";
 						ApiSystem::getInstance()->launchApp(window, cmd);
 						this->close();
-					}, isImageViewer ? "fa-image" : "fa-gamepad");
+					}, isVideo ? "fa-clapperboard" : "fa-play");
 			}
 		else
 			{
@@ -148,7 +148,7 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 					{
 						ViewController::get()->launch(game);
 						this->close();
-					}, isImageViewer ? "fa-image" : "fa-gamepad");
+					}, isImageViewer ? "fa-image" : "fa-play");
 			}
 
 
@@ -568,15 +568,15 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 					{
 						GuiMenu::popGameConfigurationGui(mWindow, game);
 						close();
-					});
+					}, "fa-gear");
 				}
 			}
 		}
 
 		if (game->getType() == FOLDER)
-			mMenu.addEntry(_("EDIT FOLDER METADATA"), false, std::bind(&GuiGameOptions::openMetaDataEd, this));
+			mMenu.addEntry(_("EDIT FOLDER METADATA"), false, std::bind(&GuiGameOptions::openMetaDataEd, this), "fa-file-signature");
 		else
-			mMenu.addEntry(_("EDIT THIS GAME'S METADATA"), false, std::bind(&GuiGameOptions::openMetaDataEd, this));
+			mMenu.addEntry(_("EDIT THIS GAME'S METADATA"), false, std::bind(&GuiGameOptions::openMetaDataEd, this), "fa-file-signature");
 	}
 	else if (game->hasKeyboardMapping())
 	{

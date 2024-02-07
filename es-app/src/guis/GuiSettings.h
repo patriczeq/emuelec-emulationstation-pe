@@ -15,7 +15,7 @@ public:
 		const std::string title,
 		const std::string customButton = "",
 		const std::function<void(GuiSettings*)>& func = nullptr,
-		bool animate = false, bool small = false);
+		bool animate = false);
 	virtual ~GuiSettings(); // just calls save();
 
 	void save();

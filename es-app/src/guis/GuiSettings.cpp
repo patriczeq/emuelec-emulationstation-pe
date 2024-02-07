@@ -16,10 +16,8 @@ GuiSettings::GuiSettings(Window* window,
 	const std::string title,
 	const std::string customButton,
 	const std::function<void(GuiSettings*)>& func,
-	bool animate,
-	bool small) : GuiComponent(window), mMenu(window, title)
+	bool animate) : GuiComponent(window), mMenu(window, title)
 {
-	mMenu.setSmall(small);
 	addChild(&mMenu);
 
 	mCloseButton = "start";
@@ -41,37 +39,21 @@ GuiSettings::GuiSettings(Window* window,
 
 	setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
 
-	/**
-		setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
-		mMenu.setPosition((mSize.x() - mMenu.getSize().x()) / 2, Renderer::getScreenHeight() * 0.15f);
-	*/
-
 	if (animate)
 	{
-		if (Renderer::isSmallScreen() && !small)
-			{
-				mMenu.animateTo((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, (Renderer::getScreenHeight() - mMenu.getSize().y()) / 2);
-			}
+		if (Renderer::isSmallScreen())
+			mMenu.animateTo((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, (Renderer::getScreenHeight() - mMenu.getSize().y()) / 2);
 		else
-			{
-				mMenu.animateTo(Renderer::getScreenWidth() * 0.15f, Renderer::getScreenHeight() * 0.15f);
-				/*mMenu.animateTo(
-					Vector2f((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, Renderer::getScreenHeight() * 0.5),
-					Vector2f((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, Renderer::getScreenHeight() * 0.15f)
-				);*/
-			}
+			mMenu.animateTo(
+				Vector2f((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, Renderer::getScreenHeight() * 0.5),
+				Vector2f((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, Renderer::getScreenHeight() * 0.15f));
 	}
 	else
 	{
-		if (Renderer::isSmallScreen() && !small)
-			{
-				mMenu.setPosition((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, (Renderer::getScreenHeight() - mMenu.getSize().y()) / 2);
-			}
+		if (Renderer::isSmallScreen())
+			mMenu.setPosition((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, (Renderer::getScreenHeight() - mMenu.getSize().y()) / 2);
 		else
-			{
-				//mMenu.setPosition((mSize.x() - mMenu.getSize().x()) / 2, Renderer::getScreenHeight() * 0.15f);
-				mMenu.setPosition(Renderer::getScreenWidth() * 0.15f, Renderer::getScreenHeight() * 0.15f);
-			}
+			mMenu.setPosition((mSize.x() - mMenu.getSize().x()) / 2, Renderer::getScreenHeight() * 0.15f);
 	}
 }
 
