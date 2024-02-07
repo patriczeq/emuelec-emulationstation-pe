@@ -7794,7 +7794,9 @@ void MenuComponent::updateSize()
 		return;
 	}
 
-	const float maxHeight = mMaxHeight <= 0 ? Renderer::getScreenHeight() * 0.75f : mMaxHeight;
+	//const float maxHeight = mMaxHeight <= 0 ? Renderer::getScreenHeight() * 0.75f : mMaxHeight;
+	// fullscreen list
+	const float maxHeight = Renderer::getScreenHeight() - ((mButtons.size() ? getButtonGridHeight() : 0) + TITLE_HEIGHT);
 
 	float height = TITLE_HEIGHT + mList->getTotalRowHeight() + getButtonGridHeight() + 2;
 	if(height > maxHeight)
