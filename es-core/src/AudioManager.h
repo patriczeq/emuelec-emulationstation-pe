@@ -67,6 +67,7 @@ public:
 	void playMySong(std::string song);
 	void playNext();
 	bool isPlaying(std::string song);
+	bool isPlaying();
 
 	std::vector<std::string> myPlaylist;
 

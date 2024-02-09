@@ -53,17 +53,17 @@ class ScreenScraperRequest : public ScraperHttpRequest
 public:
 	// ctor for a GetGameList request
 	ScreenScraperRequest(
-		std::queue< std::unique_ptr<ScraperRequest> >& requestsWrite, 
-		std::vector<ScraperSearchResult>& resultsWrite, 
-		const std::string& url, 
-		const std::string& fileName) 
-		: ScraperHttpRequest(resultsWrite, url), mRequestQueue(&requestsWrite) 
+		std::queue< std::unique_ptr<ScraperRequest> >& requestsWrite,
+		std::vector<ScraperSearchResult>& resultsWrite,
+		const std::string& url,
+		const std::string& fileName)
+		: ScraperHttpRequest(resultsWrite, url), mRequestQueue(&requestsWrite)
 	{
 		mFileName = fileName;
 	}
 
 	// Settings for the scraper
-	static const struct ScreenScraperConfig 
+	static const struct ScreenScraperConfig
 	{
 		ScreenScraperConfig() {};
 
@@ -71,7 +71,7 @@ public:
 		std::string getUserInfoUrl() const;
 
 		// Access to the API
-		const std::string API_URL_BASE = "https://www.screenscraper.fr/api2";
+		const std::string API_URL_BASE = "https://api.screenscraper.fr/api2";
 		std::string region = "US";
 
 	} configuration;
@@ -81,7 +81,7 @@ public:
 protected:
 	bool process(HttpReq* request, std::vector<ScraperSearchResult>& results) override;
 	std::string ensureUrl(const std::string url);
-	
+
 	void processGame(const pugi::xml_document& xmldoc, std::vector<ScraperSearchResult>& results);
 	bool isGameRequest() { return !mRequestQueue; }
 

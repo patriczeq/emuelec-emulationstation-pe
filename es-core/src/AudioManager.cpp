@@ -398,6 +398,10 @@ bool AudioManager::isPlaying(std::string song)
 	{
 		return song == mCurrentMusicPath;
 	}
+bool AudioManager::isPlaying()
+	{
+		return !mCurrentMusicPath.empty() && mCurrentMusic != NULL;
+	}
 void AudioManager::playMySong(std::string song)
 	{
 		if (!mInitialized)
