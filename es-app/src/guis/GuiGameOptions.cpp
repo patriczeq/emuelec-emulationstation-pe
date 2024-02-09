@@ -35,7 +35,7 @@
 #endif
 
 GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(window),
-	mMenu(window, ""), mReloadAll(false)
+	mMenu(window, game->getName()), mReloadAll(false)
 {
 	mHasAdvancedGameOptions = false;
 
@@ -66,52 +66,7 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 
 	//ThemeData::getMenuTheme()->Text.font->sizeText("S")
 
-	mMenu.setTitle(isAudio ? _("MEDIA PLAYER") : game->getName(), ThemeData::getMenuTheme()->Title.font); //  titleFont
 
-	addChild(&mMenu);
-
-	if(isAudio && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
-		{
-
-			// Header controls
-			if(AudioManager::getInstance()->isPlaying()) // is Playing something?
-				{
-					mMenu.addGroup(_("MUSIC CONTROLS"));
-
-					mMenu.addEntry([]{return AudioManager::getInstance()->isPaused() ? _("PLAY") : _("RESUME")}, false, [this, mMenu]
-						{
-							if(AudioManager::getInstance()->isPaused())
-								{
-									AudioManager::getInstance()->play();
-								}
-							else
-								{
-									AudioManager::getInstance()->pause();
-								}
-						}, "fa-play");
-
-				}
-
-			mMenu.addEntry(_("PLAY AUDIO FILE"), false, [_path, this]
-				{
-					AudioManager::getInstance()->playMySong(_path);
-					this->close();
-				}, "fa-play");
-			mMenu.addEntry(_("ADD TO PLAYLIST"), false, [_path, this]
-				{
-					AudioManager::getInstance()->addToPlaylist(_path);
-					this->close();
-				}, "fa-circle-plus");
-
-			mMenu.addEntry(_("CAST"), false, [_path, this]
-				{
-					GuiMenu::loadChromecast(mWindow, _path);
-					this->close();
-				}, "fa-chromecast");
-
-
-			//header playlist
-		}
 
 if(game->getType() == FOLDER && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
 {
