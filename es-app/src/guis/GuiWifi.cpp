@@ -31,10 +31,7 @@ GuiWifi::GuiWifi(Window* window, const std::string title, std::string data, cons
 
 	mMenu.addButton(_("REFRESH"), "refresh", [&] { onRefresh(); });
 	mMenu.addButton(_("INPUT MANUALLY"), "manual input", [&] { onManualInput(); });
-	if(SystemConf::getInstance()->get("pe_backbtn.disabled") != "1")
-		{
-				mMenu.addButton(_("BACK"), "back", [&] { delete this; });
-		}
+	mMenu.addButton(_("BACK"), "back", [&] { delete this; });
 
 	if (Renderer::isSmallScreen())
 		mMenu.setPosition((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, (Renderer::getScreenHeight() - mMenu.getSize().y()) / 2);
