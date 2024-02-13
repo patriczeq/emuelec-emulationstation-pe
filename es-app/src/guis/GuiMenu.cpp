@@ -7455,9 +7455,18 @@ void GuiMenu::YouTube()
 		std::string Title = _U("\uf16a");
 								Title+= " YouTube";
 		auto s = new GuiSettings(mWindow, Title);
-		s->addEntry(_("SEARCH"), true, [this](){
+		/*s->addEntry(_("SEARCH"), true, [this](){
 			YouTubeSearchMenu();
-		}, "fa-search");
+		}, "fa-search");*/
+
+		std::string qTitle = _U("\uF002");
+								qTitle+= " ";
+								qTitle+= _("SEARCH");
+
+		s->addButton(qTitle, _("search"), [this] {
+			YouTubeSearchMenu();
+		});
+
 		s->addGroup(_("RECENTLY PLAYED"));
 		for(auto link : YouTubeLastPlayed)
 			{
@@ -7495,13 +7504,13 @@ void GuiMenu::YouTubeSearchMenu()
 	{
 		Window *window = mWindow;
 		std::string Title = _U("\uf16a");
-								Title+= " YouTube Search";
+								Title+= " YouTube";
 		auto s = new GuiSettings(mWindow, Title);
 		s->addEntry(_("NEW SEARCH"), true, [this, window, Title]() {
 			if (Settings::getInstance()->getBool("UseOSK"))
-				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, Title, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
+				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, Title + " search", "", [this](const std::string& value) { YTJsonSearch(value); }, false));
 			else
-				mWindow->pushGui(new GuiTextEditPopup(window, Title, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
+				mWindow->pushGui(new GuiTextEditPopup(window, Title + " search", "", [this](const std::string& value) { YTJsonSearch(value); }, false));
 		}, "fa-search");
 		s->addGroup(_("SEARCH HISTORY").c_str());
 		for(auto item : YouTubeSearchHistory)

@@ -31,7 +31,10 @@ GuiWifi::GuiWifi(Window* window, const std::string title, std::string data, cons
 
 	mMenu.addButton(_("REFRESH"), "refresh", [&] { onRefresh(); });
 	mMenu.addButton(_("INPUT MANUALLY"), "manual input", [&] { onManualInput(); });
-	mMenu.addButton(_("BACK"), "back", [&] { delete this; });
+	if(SystemConf::getInstance()->get("pe_backbtn.disabled") != "1")
+		{
+				mMenu.addButton(_("BACK"), "back", [&] { delete this; });
+		}
 
 	if (Renderer::isSmallScreen())
 		mMenu.setPosition((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, (Renderer::getScreenHeight() - mMenu.getSize().y()) / 2);
@@ -62,9 +65,9 @@ void GuiWifi::load(std::vector<std::string> ssids)
 void GuiWifi::onManualInput()
 {
 	if (Settings::getInstance()->getBool("UseOSK"))
-		mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, mTitle, mInitialData, [this](const std::string& value) { onSave(value); }, false));
+		mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, mTitle, /*mInitialData*/"", [this](const std::string& value) { onSave(value); }, false));
 	else
-		mWindow->pushGui(new GuiTextEditPopup(mWindow, mTitle, mInitialData, [this](const std::string& value) { onSave(value); }, false));
+		mWindow->pushGui(new GuiTextEditPopup(mWindow, mTitle, /*mInitialData*/"", [this](const std::string& value) { onSave(value); }, false));
 }
 
 void GuiWifi::onSave(const std::string& value)
