@@ -468,8 +468,8 @@ bool InputManager::parseEvent(const SDL_Event& ev, Window* window)
 //			Scripting::fireEvent("quit", "shutdown");
 //			quitES(QuitMode::SHUTDOWN);
 //			/*LOG(LogError) << "no quit?";*/
-			return false;
-		}
+//			return false;
+//		}
 #endif
 
 #if !WIN32
