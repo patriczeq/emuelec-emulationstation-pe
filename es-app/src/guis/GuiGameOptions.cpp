@@ -52,6 +52,8 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 		mMenu.setTitleImage(image, true);
 	}
 
+	addChild(&mMenu);
+
 	bool isImageViewer = game->getSourceFileData()->getSystem()->hasPlatformId(PlatformIds::IMAGEVIEWER);
 	const std::string _path = game->getPath();
 	bool isAudio = Utils::FileSystem::isAudio(_path);
@@ -63,9 +65,6 @@ GuiGameOptions::GuiGameOptions(Window* window, FileData* game) : GuiComponent(wi
 	bool hasVideo = Utils::FileSystem::exists(game->getMetadata(MetaDataId::Video));
 	bool hasAlternateMedias = game->getSourceFileData()->getFileMedias().size() > 0;
 	bool hasCheevos = game->hasCheevos();
-
-	//ThemeData::getMenuTheme()->Text.font->sizeText("S")
-
 
 
 if(game->getType() == FOLDER && SystemConf::getInstance()->get("pe_femusic.enabled") == "1")
@@ -154,6 +153,9 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 
 
 		if(!isAudio && !isVideo && !isImageViewer){
+
+			// PLAYERTOO
+			// TODO: only if supported!
 
 			if(game->is2PSupported())
 				{
