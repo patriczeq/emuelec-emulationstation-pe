@@ -5,8 +5,8 @@
 #include "LocaleES.h"
 #include "SystemConf.h"
 
-#define OSK_WIDTH (Renderer::isSmallScreen() ? Renderer::getScreenWidth() : Renderer::getScreenWidth() * 0.78f)
-#define OSK_HEIGHT (Renderer::isSmallScreen() ? Renderer::getScreenHeight() : Renderer::getScreenHeight() * 0.60f)
+#define OSK_WIDTH (/*Renderer::isSmallScreen() ? Renderer::getScreenWidth() : */Renderer::getScreenWidth() * 0.78f)
+#define OSK_HEIGHT (/*Renderer::isSmallScreen() ? Renderer::getScreenHeight() : */Renderer::getScreenHeight() * 0.60f)
 
 #define OSK_PADDINGX (Renderer::getScreenWidth() * 0.02f)
 #define OSK_PADDINGY (Renderer::getScreenWidth() * 0.01f)
@@ -265,9 +265,9 @@ GuiTextEditPopupKeyboard::GuiTextEditPopupKeyboard(Window* window, const std::st
 	// If multiline, set all diminsions back to default, else draw size for keyboard.
 	if (mMultiLine)
 	{
-		if (Renderer::isSmallScreen())
+		/*if (Renderer::isSmallScreen())
 			setSize(OSK_WIDTH, Renderer::getScreenHeight());
-		else
+		else*/
 			setSize(OSK_WIDTH, mTitle->getFont()->getHeight() + textHeight + mKeyboardGrid->getSize().y() + 40);
 
 		setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2);
