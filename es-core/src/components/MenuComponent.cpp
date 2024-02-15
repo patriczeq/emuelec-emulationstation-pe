@@ -135,11 +135,14 @@ void MenuComponent::addMenuIcon(Window* window, ComponentListRow& row, const std
 		label = _U("\uf028");
 	else if (iconName == "keyboard")
 		label = _U("\uf11c");
-	else if (iconName == "joystick")else if(iconName == "fa-0"){
-  label = _U("\u30"); }
+	else if (iconName == "joystick")
+		label = _U("\uf11b");
+	else if (iconName == "mouse")
+		label = _U("\uf124");
+	else if (iconName == "unknown")
+		label = _U("\uf1de");
 
-
-	else if(iconName == "fa-0"){
+		else if(iconName == "fa-0"){
 	  label = _U("\u0030"); }
 
 	else if(iconName == "fa-1"){
