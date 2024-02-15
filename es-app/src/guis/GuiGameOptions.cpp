@@ -607,6 +607,11 @@ if (game->getType() == GAME || game->getType() == FOLDER)
 	}
 	else
 	{*/
+	std::string backLabel = _U("\ue0fd");
+							backLabel+= " ";
+							backLabel+= _("BACK");
+	mMenu.addButton(backLabel, _("go back"), [this] { close(); });
+	
 		float w = Math::min(Renderer::getScreenWidth() * 0.5, ThemeData::getMenuTheme()->Text.font->sizeText("S").x() * 33.0f);
 		w = Math::max(w, Renderer::getScreenWidth() / 3.0f);
 

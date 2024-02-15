@@ -45,7 +45,7 @@ public:
 		mImage = std::make_shared<WebImageComponent>(mWindow);
 
 		setEntry(mImage, Vector2i(0, 0), false, false, Vector2i(1, 4));
-				
+
 		std::string desc = mGameInfo.Description;
 		desc += _U(" - ") + _("Points") + ": " + mGameInfo.Points;
 		if (!mGameInfo.DateEarned.empty())
@@ -73,7 +73,7 @@ public:
 
 		setColWidthPerc(0, (height - IMAGESPACER) / WINDOW_WIDTH);
 		setColWidthPerc(1, IMAGESPACER / WINDOW_WIDTH);
-	
+
 		mImage->setMaxSize(height - IMAGESPACER, height - IMAGESPACER);
 		mImage->setImage(mGameInfo.getBadgeUrl());
 
@@ -96,7 +96,7 @@ private:
 };
 
 
-GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra) : 
+GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress ra) :
 	GuiSettings(window, "", "", nullptr)
 {
 	// Required for WebImageComponent
@@ -111,7 +111,7 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 	{
 		auto file = mFile;
 		mMenu.addButton(_("LAUNCH"), _("LAUNCH"), [this, file]
-		{ 			
+		{
 			Window* window = mWindow;
 			while (window->peekGui() && window->peekGui() != ViewController::get())
 				delete window->peekGui();
@@ -119,8 +119,12 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 			ViewController::get()->launch(file);
 		});
 	}
+	std::string backLabel = _U("\ue0fd");
+							backLabel+= " ";
+							backLabel+= _("BACK");
+	mMenu.addButton(backLabel, _("go back"), [this] { close(); });
 
-	mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });
+	//mMenu.addButton(_("BACK"), _("go back"), [this] { close(); });
 
 	int totalPoints = 0;
 	int userPoints = 0;
@@ -167,7 +171,7 @@ GuiGameAchievements::GuiGameAchievements(Window* window, GameInfoAndUserProgress
 		addRow(row);
 	}
 
-	centerWindow();	
+	centerWindow();
 }
 
 void GuiGameAchievements::centerWindow()

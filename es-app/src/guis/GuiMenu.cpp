@@ -2195,7 +2195,7 @@ const std::string cmd = "espscansta " + std::to_string(Settings::getInstance()->
 stalist = StationsList(hacksGet(cmd));
 return stalist;
 */
-
+/*
 void GuiMenu::addESP01ScanButtons(Window* window, GuiSettings* s, uint8_t type){
 	s->mapYcallback([this, s, type] {
 		s->close();
@@ -2232,7 +2232,7 @@ void GuiMenu::addESP01ScanButtons(Window* window, GuiSettings* s, uint8_t type){
 			}
 	});
 }
-
+*/
 void GuiMenu::scanSTA(bool apsta)
 	{
 		Window* window = mWindow;
@@ -2295,7 +2295,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 		auto s = new GuiSettings(window, wTitle);
 
 		//addESP01Buttons(window, s);
-		addESP01ScanButtons(window, s, 2);
+		//addESP01ScanButtons(window, s, 2);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -2536,7 +2536,7 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations, bool all)
 								Title+= _("SCAN LIST");
 		auto s = new GuiSettings(window, Title);
 
-		addESP01ScanButtons(window, s, 0);
+		//addESP01ScanButtons(window, s, 0);
 
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
@@ -2653,7 +2653,7 @@ void GuiMenu::openBSSIDSMenu(std::vector<AccessPoint> bssids)
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		addESP01ScanButtons(window, s, 0);
+		//addESP01ScanButtons(window, s, 0);
 
 		if (bssids.size() > 0)
 		{
