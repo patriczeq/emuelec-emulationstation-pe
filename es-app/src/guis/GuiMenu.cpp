@@ -1048,7 +1048,7 @@ void GuiMenu::openESP01Menu()
 						hacksSend("sleep");
 					}, "fa-moon");
 					window->pushGui(p);
-			}, "fa-power-off")
+			}, "fa-power-off");
 
 			/*s->addEntry(_("STOP ALL JOBS"), false, [this] {
 				hacksSend("stop");
