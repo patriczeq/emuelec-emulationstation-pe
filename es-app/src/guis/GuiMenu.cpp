@@ -2562,7 +2562,7 @@ void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 	{
 		sta.name = getName("STA", sta.mac).name;
 		Window* window = mWindow;
-		std::string windowName = _U("\ue1f0")
+		std::string windowName = _U("\ue1f0");
 								windowName+= ": ";
 								windowName+= (sta.name.empty() ? sta.mac : sta.name);
 
