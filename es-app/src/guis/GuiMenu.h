@@ -743,6 +743,31 @@ private:
 				}
 			return output;
 		}
+	std::string wifiSignalIcon(std::string in)
+		{
+			return wifiSignalIcon(stoi(in));
+		}
+	std::string wifiSignalIcon(int in)
+		{
+			if(in >= -55)
+				{
+					return "fa-signal-bars";
+				}
+			else if(in >= -66)
+				{
+					return "fa-signal-bars-good";
+				}
+			else if(in >= -77)
+				{
+					return "fa-signal-bars-fair";
+				}
+			else if(in >= -88)
+				{
+					return "fa-signal-bars-weak";
+				}
+			return "fa-signal-bars-slash";
+		}
+
 	std::string wifiSignalGlyph(std::string in)
 		{
 			return wifiSignalGlyph(stoi(in));

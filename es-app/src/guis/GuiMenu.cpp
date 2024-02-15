@@ -1280,10 +1280,11 @@ void GuiMenu::openScanDatabase()
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
+		std::string STAicon = _U("\ue1f0");
 		for(auto ap : ScanDB)
 			{
 				s->addWithDescription(ap.ssid.empty() ? ap.bssid : ssidFix(ap.ssid), ap.bssid + " " + _U("\uf5ab") + " " + ap.vendor,
-					std::make_shared<TextComponent>(window, ap.sta.size() > 0 ? (_U("\ue1f0") + " " + std::to_string(ap.sta.size())) : "", font, color),
+					std::make_shared<TextComponent>(window, ap.sta.size() > 0 ? (STAicon + " " + std::to_string(ap.sta.size())) : "", font, color),
 					[this, ap]
 				{
 					openScanDBItem(ap);
@@ -2554,12 +2555,14 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations, bool all)
 				std::string _title 			= ap.ssid.empty() ? ap.bssid : ssidFix(ap.ssid);
 				std::string _subtitle 	= std::to_string(ap.pkts) + "pkts, " + ap.bssid +  " " + _U("\uf5ab") + " " + sta.vendor;
 
+				std::string STAicon = _U("\ue1f0");
+
 				s->addWithDescription(_title, _subtitle,
-					std::make_shared<TextComponent>(window, (!ap.rssi.empty() ? (wifiSignalGlyph(ap.rssi) + " " + ap.rssi + "dBm") : "") + (ap.stations > 0 ? (" " + _U("\ue1f0") + " " + std::to_string(ap.stations)) : ""),	font, color),
+					std::make_shared<TextComponent>(window, (!ap.rssi.empty() ? (ap.rssi + "dBm ") : "") + (ap.stations > 0 ? (STAicon + " " + std::to_string(ap.stations)) : ""),	font, color),
 					[this, stations, ap]
 				{
 					openSTAmenu(stations, ap.bssid, ap.ssid);
-				}, "fa-router");
+				}, ap.rssi.empty() ? "fa-router" : wifiSignalIcon(ap.rssi));
 			}
 
 		window->pushGui(s);
@@ -2670,11 +2673,11 @@ void GuiMenu::openBSSIDSMenu(std::vector<AccessPoint> bssids)
 				if(!ap.bssid.empty())
 					{
 						s->addWithDescription(ssidFix(ap.ssid), ap.bssid + " " + _U("\uf5ab") + " " + ap.vendor,
-							std::make_shared<TextComponent>(window,ap.rssi + "dBm " + wifiSignalGlyph(ap.rssi), 	font, color),
+							std::make_shared<TextComponent>(window,ap.rssi + "dBm", 	font, color),
 							[this, ap]
 						{
 							openDEAUTHMenu(ap);
-						}, "fa-router");
+						}, wifiSignalIcon(ap.rssi));
 					}
 			}
 		}
