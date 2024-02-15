@@ -730,7 +730,19 @@ private:
 	std::string macVendor(std::string mac);
 	std::string encString(std::string id);
 
-
+	std::string ssidFix(std::string ssid)
+		{
+			std::string output;
+			if(ssid == "*HIDDEN*")
+				{
+					output = _U("\uf070");
+				}
+			else
+				{
+					output = ssid;
+				}
+			return output;
+		}
 	std::string wifiSignalGlyph(std::string in)
 		{
 			return wifiSignalGlyph(stoi(in));
