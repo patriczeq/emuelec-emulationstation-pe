@@ -951,10 +951,7 @@ void GuiMenu::addESP01Buttons(Window* window, GuiSettings* s)
 		s->mapXcallback([this] {
 			hacksSend("stop");
 		});
-		s->mapYcallback([this] {
-			std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
-			appLauncher("ttyprint.sh " + port, false);
-		});
+
 
 		std::string stopTitle = _U("\uE12E");// X - hand, _U("\uF256");
 								stopTitle+= "  ";
@@ -962,6 +959,11 @@ void GuiMenu::addESP01Buttons(Window* window, GuiSettings* s)
 
 		s->addButton(stopTitle, _("stop"), [this] {
 			hacksSend("stop");
+		});
+
+		s->mapYcallback([this] {
+			std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+			appLauncher("ttyprint.sh " + port, false);
 		});
 
 		std::string uartTitle = _U("\uE12f"); // Y - console, _U("\uF120");
@@ -2194,6 +2196,41 @@ stalist = StationsList(hacksGet(cmd));
 return stalist;
 */
 
+void GuiMenu::addESP01ScanButtons(Window* window, GuiSettings* s, uint8_t type){
+	s->mapYcallback([this, type] {
+		if(type == 0) // all
+			{
+				scanBSSIDS(true);
+			}
+		else if(type == 1) // aps
+			{
+				scanBSSIDS();
+			}
+		else if(type == 2) // sta
+			{
+				scanSTA();
+			}
+	});
+
+	std::string reloadTitle = _U("\uE12f"); // Y - console, _U("\uF120");
+							reloadTitle+= "  ";
+							reloadTitle+= _("RELOAD");
+	s->addButton(reloadTitle, _("reload"), [this, type] {
+		if(type == 0) // all
+			{
+				scanBSSIDS(true);
+			}
+		else if(type == 1) // aps
+			{
+				scanBSSIDS();
+			}
+		else if(type == 2) // sta
+			{
+				scanSTA();
+			}
+	});
+}
+
 void GuiMenu::scanSTA(bool apsta)
 	{
 		Window* window = mWindow;
@@ -2241,11 +2278,11 @@ void GuiMenu::scanSTA(bool apsta)
 		));
 	}
 
-
 void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, std::string ssid)
 	{
 		Window* window = mWindow;
 		std::string wTitle = _("STATIONS LIST") + " ("+std::to_string(stations.size())+ ")";
+
 		if(bssid != "")
 			{
 				wTitle = _U("\ue012");
@@ -2255,8 +2292,8 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 
 		auto s = new GuiSettings(window, wTitle);
 
-		addESP01Buttons(window, s);
-
+		//addESP01Buttons(window, s);
+		addESP01ScanButtons(window, s, 2);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -2422,6 +2459,27 @@ std::vector<AccessPoint> GuiMenu::APSTAList(std::vector<WifiStation> stations, b
 		if(all)
 			{
 				list = scanlist;
+
+				for(auto station : stations)
+					{
+						bool found = false;
+						for(auto ap : list)
+							{
+								if(station.ap.bssid == ap.bssid)
+									{
+										found = true;
+										break;
+									}
+							}
+						if(!found)
+							{
+								// FakeAP
+								AccessPoint AP;
+								AP.bssid  = station.ap.bssid;
+								AP.vendor = macVendor(station.ap.bssid);
+								list.push_back(AP);
+							}
+					}
 			}
 
 		if(!all)
@@ -2475,6 +2533,9 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations, bool all)
 								Title+= " ";
 								Title+= _("SCAN LIST");
 		auto s = new GuiSettings(window, Title);
+
+		addESP01ScanButtons(window, s, 0);
+
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -2589,6 +2650,8 @@ void GuiMenu::openBSSIDSMenu(std::vector<AccessPoint> bssids)
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
+
+		addESP01ScanButtons(window, s, 0);
 
 		if (bssids.size() > 0)
 		{
@@ -7461,7 +7524,7 @@ void GuiMenu::YouTube()
 		std::string sTitle = _U("\uE12f"); //Y... lupa _U("\uF002");
 								sTitle+= "  ";
 								sTitle+= _("SEARCH");
-		std::string shTitle = _U("\uE12f"); //X... lupa _U("\uF002");
+		std::string shTitle = _U("\uE12E"); //X... lupa _U("\uF002");
 								shTitle+= "  ";
 								shTitle+= _("SEARCH HISTORY");
 		if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
@@ -7656,7 +7719,11 @@ void GuiMenu::YTResults(std::vector<YoutubeLink> links, std::string search)
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 		Window *window = mWindow;
-		auto s = new GuiSettings(mWindow, _("YouTube"));
+
+		std::string Title = _U("\uf16a");
+								Title+= " YouTube";
+
+		auto s = new GuiSettings(mWindow, Title);
 		if(!search.empty())
 			{
 				s->setSubTitle(search);

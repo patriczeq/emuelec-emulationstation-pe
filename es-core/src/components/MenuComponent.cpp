@@ -7667,7 +7667,7 @@ void MenuComponent::addEntryLabel(const std::string& name, const std::string& la
 */
 void MenuComponent::setTitle(const std::string& title, const std::shared_ptr<Font>& font)
 {
-	mTitle->setText(Utils::String::toUpper(title));
+	mTitle->setText(title/*Utils::String::toUpper(title)*/);
 
 	if (font != nullptr)
 		mTitle->setFont(font);
