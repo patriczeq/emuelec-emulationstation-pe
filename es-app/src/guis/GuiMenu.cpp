@@ -972,19 +972,6 @@ void GuiMenu::addESP01Buttons(Window* window, GuiSettings* s)
 			appLauncher("ttyprint.sh " + port, false);
 		});
 
-		std::string powerTitle = _U("\uF011");
-								powerTitle+= " ";
-								powerTitle+= _("POWER");
-		s->addButton(powerTitle, _("power"), [this, window, powerTitle] {
-				auto p = new GuiSettings(window, powerTitle);
-				p->addEntry(_("REBOOT ESP01"), false, [this] {
-					hacksSend("reboot");
-				}, "fa-refresh");
-				p->addEntry(_("SLEEP ESP01"), false, [this] {
-					hacksSend("sleep");
-				}, "fa-moon");
-				window->pushGui(p);
-		});
 	}
 
 void GuiMenu::openESP01Menu()
@@ -1047,6 +1034,21 @@ void GuiMenu::openESP01Menu()
 					));
 				}, "fa-warehouse");
 			}
+
+			// power management
+			s->addEntry(_("POWER"), true, [this, window]{
+				std::string powerTitle = _U("\uF011");
+										powerTitle+= " ";
+										powerTitle+= _("POWER");
+				auto p = new GuiSettings(window, powerTitle);
+					p->addEntry(_("REBOOT ESP01"), false, [this] {
+						hacksSend("reboot");
+					}, "fa-refresh");
+					p->addEntry(_("SLEEP ESP01"), false, [this] {
+						hacksSend("sleep");
+					}, "fa-moon");
+					window->pushGui(p);
+			}, "fa-power-off")
 
 			/*s->addEntry(_("STOP ALL JOBS"), false, [this] {
 				hacksSend("stop");
@@ -7444,11 +7446,7 @@ void GuiMenu::openTraceroute(std::string addr, std::vector<TraceRouteHop> hops)
 void GuiMenu::YouTube()
 	{
 		YouTubeLoad();
-		if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
-			{
-				mWindow->pushGui(new GuiMsgBox(mWindow, _("YOU ARE NOT CONNECTED TO A NETWORK"), _("OK"), nullptr));
-				return;
-			}
+
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
@@ -7460,17 +7458,42 @@ void GuiMenu::YouTube()
 			YouTubeSearchMenu();
 		}, "fa-search");*/
 
-		std::string qTitle = _U("\uE12f"); //Y... lupa _U("\uF002");
-								qTitle+= "  ";
-								qTitle+= _("SEARCH");
+		std::string sTitle = _U("\uE12f"); //Y... lupa _U("\uF002");
+								sTitle+= "  ";
+								sTitle+= _("SEARCH");
+		std::string shTitle = _U("\uE12f"); //X... lupa _U("\uF002");
+								shTitle+= "  ";
+								shTitle+= _("SEARCH HISTORY");
+		if (ApiSystem::getInstance()->getIpAdress() == "NOT CONNECTED")
+			{
+				std::string sTitle = _U("\uE12f"); //Y... lupa _U("\uF002");
+										sTitle+= "  ";
+										sTitle+= _("NETWORK SETTINGS");
+				s->addButton(sTitle, _("network settings"), [this] {
+					openNetworkSettings();
+				});
 
-		s->addButton(qTitle, _("search"), [this] {
-			YouTubeSearchMenu();
-		});
+				s->mapYcallback([this] {
+					openNetworkSettings();
+				});
+			}
+		else
+			{
+				s->addButton(sTitle, _("search"), [this] {
+					YouTubeSearchKeyboard();
+				});
 
-		s->mapYcallback([this] {
-			YouTubeSearchMenu();
-		});
+				s->addButton(shTitle, _("search history"), [this] {
+					YouTubeSearchMenu();
+				});
+
+				s->mapYcallback([this] {
+					YouTubeSearchKeyboard();
+				});
+				s->mapXcallback([this] {
+					YouTubeSearchMenu();
+				});
+			}
 
 		s->addGroup(_("RECENTLY PLAYED"));
 		for(auto link : YouTubeLastPlayed)
@@ -7504,33 +7527,35 @@ void GuiMenu::YouTubeLoad()
 					YouTubeLastPlayed.push_back(YoutubeLink(json));
 				}
 	}
+void GuiMenu::YouTubeSearchKeyboard(){
+	Window *window = mWindow;
+	std::string sTitle = _U("\uF002");
+							sTitle+= " ";
+							sTitle+= _("SEARCH");
+	if (Settings::getInstance()->getBool("UseOSK"))
+		mWindow->pushGui(new GuiTextEditPopupKeyboard(window, sTitle, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
+	else
+		mWindow->pushGui(new GuiTextEditPopup(window, sTitle, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
+}
 
 void GuiMenu::YouTubeSearchMenu()
 	{
 		Window *window = mWindow;
 		std::string Title = _U("\uf16a");
-								Title+= " YouTube";
+								Title+= " ";
+								Title+= _("SEARCH HISTORY");
 		auto s = new GuiSettings(mWindow, Title);
 
 		std::string qTitle = _U("\uE12f"); //Y... lupa _U("\uF002");
 								qTitle+= "  ";
 								qTitle+= _("NEW SEARCH");
 
-		std::string sTitle = _U("\uF002");
-								sTitle+= " ";
-								sTitle+= _("SEARCH");
-		s->addButton(qTitle, _("search"), [this, window, sTitle] {
-			if (Settings::getInstance()->getBool("UseOSK"))
-				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, sTitle, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
-			else
-				mWindow->pushGui(new GuiTextEditPopup(window, sTitle, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
+		s->addButton(qTitle, _("search"), [this] {
+			YouTubeSearchKeyboard();
 		});
 
-		s->mapYcallback([this, window, sTitle] {
-			if (Settings::getInstance()->getBool("UseOSK"))
-				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, sTitle, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
-			else
-				mWindow->pushGui(new GuiTextEditPopup(window, sTitle, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
+		s->mapYcallback([this] {
+			YouTubeSearchKeyboard();
 		});
 
 		/*s->addEntry(_("NEW SEARCH"), true, [this, window, Title]() {
@@ -7539,7 +7564,7 @@ void GuiMenu::YouTubeSearchMenu()
 			else
 				mWindow->pushGui(new GuiTextEditPopup(window, Title + " search", "", [this](const std::string& value) { YTJsonSearch(value); }, false));
 		}, "fa-search");*/
-		s->addGroup(_("SEARCH HISTORY").c_str());
+
 		for(auto item : YouTubeSearchHistory)
 			{
 				s->addEntry(item, false, [this, window, item]() {
@@ -7555,7 +7580,7 @@ void GuiMenu::YTJsonSearch(std::string q, int maxResults)
 		Window* window = mWindow;
 		//std::vector<std::string> r = ApiSystem::getInstance()->getScriptResults("youtube.sh shistory \"" + q + "\"");
 
-		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING..."),
+		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("SEARCHING...") + "\n" + q,
 			[this, window, q, maxResults](auto gui)
 			{
 				mWaitingLoad = true;

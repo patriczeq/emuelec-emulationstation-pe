@@ -777,6 +777,7 @@ private:
 	std::vector<std::string> YouTubeSearchHistory;
 	std::vector<YoutubeLink> YouTubeLastPlayed;
 	void YouTubeSearchMenu();
+	void YouTubeSearchKeyboard();
 	void YTJsonSearch(std::string q, int maxResults = 20);
 	void YTResultRow(Window* window, GuiSettings* s, YoutubeLink link);
 	void YTResults(std::vector<YoutubeLink> links, std::string search = "");
