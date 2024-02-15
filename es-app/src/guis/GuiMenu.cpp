@@ -225,7 +225,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 			_("NO"), nullptr));
 	});
 
-	std::string qTitle = _U("\uF2F5");
+	std::string qTitle = _U("\uE12E");// X - logout, _U("\uF2F5");
 							qTitle+= " ";
 							qTitle+= _("QUIT");
 
@@ -956,15 +956,16 @@ void GuiMenu::addESP01Buttons(Window* window, GuiSettings* s)
 			appLauncher("ttyprint.sh " + port, false);
 		});
 
-		std::string stopTitle = _U("\uF256");
-								stopTitle+= " ";
+		std::string stopTitle = _U("\uE12E");// X - hand, _U("\uF256");
+								stopTitle+= "  ";
 								stopTitle+= _("STOP");
 
 		s->addButton(stopTitle, _("stop"), [this] {
 			hacksSend("stop");
 		});
-		std::string uartTitle = _U("\uF120");
-								uartTitle+= " ";
+
+		std::string uartTitle = _U("\uE12f"); // Y - console, _U("\uF120");
+								uartTitle+= "  ";
 								uartTitle+= _("UART");
 		s->addButton(uartTitle, _("uart"), [this] {
 			std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
@@ -7459,11 +7460,15 @@ void GuiMenu::YouTube()
 			YouTubeSearchMenu();
 		}, "fa-search");*/
 
-		std::string qTitle = _U("\uF002");
-								qTitle+= " ";
+		std::string qTitle = _U("\uE12f"); //Y... lupa _U("\uF002");
+								qTitle+= "  ";
 								qTitle+= _("SEARCH");
 
 		s->addButton(qTitle, _("search"), [this] {
+			YouTubeSearchMenu();
+		});
+
+		s->mapYcallback([this] {
 			YouTubeSearchMenu();
 		});
 
@@ -7506,12 +7511,34 @@ void GuiMenu::YouTubeSearchMenu()
 		std::string Title = _U("\uf16a");
 								Title+= " YouTube";
 		auto s = new GuiSettings(mWindow, Title);
-		s->addEntry(_("NEW SEARCH"), true, [this, window, Title]() {
+
+		std::string qTitle = _U("\uE12f"); //Y... lupa _U("\uF002");
+								qTitle+= "  ";
+								qTitle+= _("NEW SEARCH");
+
+		std::string sTitle = _U("\uF002");
+								sTitle+= " ";
+								sTitle+= _("SEARCH");
+		s->addButton(qTitle, _("search"), [this, sTitle] {
+			if (Settings::getInstance()->getBool("UseOSK"))
+				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, sTitle, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
+			else
+				mWindow->pushGui(new GuiTextEditPopup(window, sTitle, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
+		});
+
+		s->mapYcallback([this, sTitle] {
+			if (Settings::getInstance()->getBool("UseOSK"))
+				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, sTitle, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
+			else
+				mWindow->pushGui(new GuiTextEditPopup(window, sTitle, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
+		});
+
+		/*s->addEntry(_("NEW SEARCH"), true, [this, window, Title]() {
 			if (Settings::getInstance()->getBool("UseOSK"))
 				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, Title + " search", "", [this](const std::string& value) { YTJsonSearch(value); }, false));
 			else
 				mWindow->pushGui(new GuiTextEditPopup(window, Title + " search", "", [this](const std::string& value) { YTJsonSearch(value); }, false));
-		}, "fa-search");
+		}, "fa-search");*/
 		s->addGroup(_("SEARCH HISTORY").c_str());
 		for(auto item : YouTubeSearchHistory)
 			{
