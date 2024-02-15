@@ -2562,8 +2562,9 @@ void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 	{
 		sta.name = getName("STA", sta.mac).name;
 		Window* window = mWindow;
-		std::string windowName = _U("\ue1f0") + ": ";
-								windowName = windowName + (sta.name.empty() ? sta.mac : sta.name);
+		std::string windowName = _U("\ue1f0")
+								windowName+= ": ";
+								windowName+= (sta.name.empty() ? sta.mac : sta.name);
 
 		auto s = new GuiSettings(window, windowName);
 		auto theme = ThemeData::getMenuTheme();
@@ -2676,7 +2677,10 @@ void GuiMenu::openBSSIDSMenu(std::vector<AccessPoint> bssids)
 void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 	{
 		Window* window = mWindow;
-		auto s = new GuiSettings(window, _U("\uf8da") + (ap.ssid.empty() ? ap.bssid : ap.ssid));
+		std::string windowName = _U("\uf8da");
+								windowName+= ": ";
+								windowName+= (ap.ssid.empty() ? ap.bssid : ap.ssid);
+		auto s = new GuiSettings(window, windowName);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
