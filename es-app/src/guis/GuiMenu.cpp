@@ -7519,14 +7519,14 @@ void GuiMenu::YouTubeSearchMenu()
 		std::string sTitle = _U("\uF002");
 								sTitle+= " ";
 								sTitle+= _("SEARCH");
-		s->addButton(qTitle, _("search"), [this, sTitle] {
+		s->addButton(qTitle, _("search"), [this, window, sTitle] {
 			if (Settings::getInstance()->getBool("UseOSK"))
 				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, sTitle, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
 			else
 				mWindow->pushGui(new GuiTextEditPopup(window, sTitle, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
 		});
 
-		s->mapYcallback([this, sTitle] {
+		s->mapYcallback([this, window, sTitle] {
 			if (Settings::getInstance()->getBool("UseOSK"))
 				mWindow->pushGui(new GuiTextEditPopupKeyboard(window, sTitle, "", [this](const std::string& value) { YTJsonSearch(value); }, false));
 			else
