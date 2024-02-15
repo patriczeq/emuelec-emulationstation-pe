@@ -731,7 +731,39 @@ private:
 	std::string encString(std::string id);
 
 
+	std::string wifiSignalGlyph(std::string in)
+		{
+			return wifiSignalGlyph(in.toInt());
+		}
+	std::string wifiSignalGlyph(int in)
+		{
+			/*
 
+    -55 or higher: 4 bars
+    -56 to -66: 3 bars
+    -67 to -77: 2 bars
+    -78 to -88: 1 bar
+    -89 or lower: 0 bars
+
+			*/
+			if(in >= -55)
+				{
+					return _U("\uf690");
+				}
+			else if(in >= -66)
+				{
+					return _U("\uf693");
+				}
+			else if(in >= -77)
+				{
+					return _U("\uf692");
+				}
+			else if(in >= -88)
+				{
+					return _U("\uf691");
+				}
+			return _U("\uf694");
+		}
 	void openESP01Menu();
 	void addESP01Buttons(Window* window, GuiSettings* s);
 	//void addESP01ScanButtons(Window* window, GuiSettings* s, uint8_t type = 0);
