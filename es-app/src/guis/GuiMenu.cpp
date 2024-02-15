@@ -219,17 +219,31 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 	// SYSTEM SETTINGS >
 	// QUIT >
 
+
+	std::string qTitle = _U("\ue12f");// Y - logout, _U("\uF2F5");
+							qTitle+= " ";
+							qTitle+= _("QUIT");
+
+	std::string sTitle = _U("\ue12e");// X - logout, _U("\uF2F5");
+							sTitle+= " ";
+							sTitle+= _("SHUTDOWN");
+
+	addButton(qTitle, _("quit"), [this] {
+		openQuitMenu();
+	});
+	addButton(sTitle, _("shutdown"), [this] {
+		mWindow->pushGui(new GuiMsgBox(mWindow, _("REALLY SHUTDOWN?"),
+			_("YES"), [] { quitES(QuitMode::SHUTDOWN); },
+			_("NO"), nullptr));
+	});
+
 	mapXcallback([this] {
 		mWindow->pushGui(new GuiMsgBox(mWindow, _("REALLY SHUTDOWN?"),
 			_("YES"), [] { quitES(QuitMode::SHUTDOWN); },
 			_("NO"), nullptr));
 	});
 
-	std::string qTitle = _U("\uE12E");// X - logout, _U("\uF2F5");
-							qTitle+= " ";
-							qTitle+= _("QUIT");
-
-	addButton(qTitle, _("quit"), [this] {
+	mapYcallback([this] {
 		openQuitMenu();
 	});
 	// KODI
@@ -1283,7 +1297,7 @@ void GuiMenu::openScanDatabase()
 		std::string STAicon = _U("\ue1f0");
 		for(auto ap : ScanDB)
 			{
-				s->addWithDescription(ap.ssid.empty() ? ap.bssid : ssidFix(ap.ssid), ap.bssid + " " + _U("\uf5ab") + " " + ap.vendor,
+				s->addWithDescription(ap.ssid.empty() ? ap.bssid : ssidFix(ap.ssid), ap.bssid + " / " + ap.vendor,
 					std::make_shared<TextComponent>(window, ap.sta.size() > 0 ? (STAicon + " " + std::to_string(ap.sta.size())) : "", font, color),
 					[this, ap]
 				{
@@ -1297,7 +1311,7 @@ void GuiMenu::openScanDatabase()
 void GuiMenu::openScanDBItem(ScanDB_AP ap)
 	{
 		Window* window = mWindow;
-		std::string Title = _U("\ue012");
+		std::string Title = _U("\uf8da");
 								Title += " ";
 								Title	+= _("DB: ");
 								Title += ap.bssid;
@@ -1358,7 +1372,7 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 void GuiMenu::openScanDBItem(ScanDB_STA sta)
 	{
 		Window* window = mWindow;
-		std::string Title = _U("\uf1eb");
+		std::string Title = _U("\ue1f0");
 								Title += " ";
 								Title	+= _("DB: ");
 								Title += (sta.name.empty() ? sta.mac : sta.name);
@@ -2288,9 +2302,9 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 
 		if(bssid != "")
 			{
-				wTitle = _U("\ue012");
+				wTitle = _U("\uf7c0");
 				wTitle+= " ";
-				wTitle+= bssid;
+				wTitle+= ssid.empty() ? bssid : ssid;
 			}
 
 		auto s = new GuiSettings(window, wTitle);
@@ -2440,14 +2454,14 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 										_subtitle = sta.ap.bssid + " " + _U("\uf5ab") + " " + sta.vendor;*/
 
 										_title 		= (sta.name.empty() ? sta.mac : sta.name) + " " + _U("\uf5ab") + " " + sta.vendor;
-										_subtitle = ssidFix(sta.ap.ssid) + " " + _U("\uf8da") + " " + sta.ap.bssid + " " + _U("\uf5ab") + " " + sta.ap.vendor;
+										_subtitle = ssidFix(sta.ap.ssid) + " / " + sta.ap.bssid + " / " + sta.ap.vendor;
 									}
 								else
 									{
 										/*_title 			= (sta.name.empty() ? sta.mac : sta.name);
 										_subtitle		= sta.pkts + "pkts " + _U("\uf5ab") + " " + sta.vendor;*/
 										_title 		= (sta.name.empty() ? sta.mac : sta.name);
-										_subtitle		= sta.pkts + "pkts " + _U("\uf5ab") + " " + sta.vendor;
+										_subtitle		= sta.pkts + "pkts / " + sta.vendor;
 									}
 
 								s->addWithDescription(_title, _subtitle,
@@ -2553,12 +2567,12 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations, bool all)
 		for(auto ap : aps)
 			{
 				std::string _title 			= ap.ssid.empty() ? ap.bssid : ssidFix(ap.ssid);
-				std::string _subtitle 	= std::to_string(ap.pkts) + "pkts, " + ap.bssid +  " " + _U("\uf5ab") + " " + ap.vendor;
+				std::string _subtitle 	= ap.bssid +  " / " + ap.vendor;
 
 				std::string STAicon = _U("\ue1f0");
 
 				s->addWithDescription(_title, _subtitle,
-					std::make_shared<TextComponent>(window, (!ap.rssi.empty() ? (ap.rssi + "dBm ") : "") + (ap.stations > 0 ? (STAicon + " " + std::to_string(ap.stations)) : ""),	font, color),
+					std::make_shared<TextComponent>(window, (!ap.rssi.empty() ? (ap.rssi + "dBm ") : "") + (ap.stations > 0 ? (" " + STAicon + " " + std::to_string(ap.stations)) : ""),	font, color),
 					[this, stations, ap]
 				{
 					openSTAmenu(stations, ap.bssid, ap.ssid);
@@ -2646,7 +2660,7 @@ void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 		// -------------------------------------------------------------------------------------
 
 		s->addGroup(_("STATION HACKS"));
-			s->addEntry(_("DEAUTH STATION"), true, [this, window, sta]() {
+			s->addEntry(_("DEAUTH STATION"), false, [this, window, sta]() {
 				std::string msg = _("DEAUTH STATION") +":\n\n" + sta.mac + "\n"+ sta.vendor + "\n";
 				window->pushGui(new GuiMsgBox(window, msg,
 					_("YES"), [this, window, sta] {
@@ -2737,7 +2751,7 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 
 		// -------------------------------------------------------------------------------------
 
-			s->addEntry(_("DEAUTH"), true, [this, window, ap]() {
+			s->addEntry(_("DEAUTH"), false, [this, window, ap]() {
 					std::string msg = _("DEAUTH") +"\n";
 											msg+= ap.ssid.empty() ? "" : (ap.ssid + "\n");
 											msg+= ap.bssid + "\n";
@@ -2747,7 +2761,7 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 						}, _("CANCEL"),nullptr));
 				},"fa-chain-broken");
 
-			s->addEntry(_("CLONE BSSID, DEAUTH"), true, [this, window, ap]() {
+			s->addEntry(_("CLONE BSSID, DEAUTH"), false, [this, window, ap]() {
 					std::string msg = _("CLONE BSSID, DEAUTH") +"\n";
 											msg+= ap.ssid.empty() ? "" : (ap.ssid + "\n");
 											msg+= ap.bssid + "\n";
@@ -2758,7 +2772,7 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 				},"fa-clone");
 			if(!ap.ssid.empty())
 			{
-				s->addEntry(_("FAKE AP, DEAUTH"), true, [this, window, ap]() {
+				s->addEntry(_("FAKE AP, DEAUTH"), false, [this, window, ap]() {
 						std::string msg = _("FAKE AP, DEAUTH") +"\n";
 												msg+= ap.ssid.empty() ? "" : (ap.ssid + "\n");
 												msg+= ap.bssid + "\n";
