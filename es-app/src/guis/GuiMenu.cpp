@@ -1359,11 +1359,11 @@ void GuiMenu::openScanDBItem(ScanDB_AP ap)
 				for(auto sta : ap.sta)
 					{
 						s->addWithDescription((sta.name.empty() ? sta.mac : (sta.name + " (" + sta.mac + ")")), sta.vendor,
-							std::make_shared<TextComponent>(window, wifiSignalGlyph(sta.rssi) + " " + sta.rssi + "dBm", font, color),
+							std::make_shared<TextComponent>(window, sta.rssi + "dBm", font, color),
 							[this, sta]
 						{
 							openScanDBItem(sta);
-						}, "fa-mobile-signal-out");
+						}, wifiSignalIcon(sta.rssi));
 					}
 			}
 
@@ -1401,7 +1401,7 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 			s->addWithLabel(_("CHANNEL"), 		std::make_shared<TextComponent>(window, apCH, font, color));
 			s->addWithLabel(_("LAST SEEN"), 	std::make_shared<TextComponent>(window, sta.lastSeenDate + " " + sta.lastSeenTime, font, color));
 		s->addGroup(_("STATION HACKS"));
-				s->addEntry(_("DEAUTH STATION"), true, [this, window, sta, apCH]() {
+				s->addEntry(_("DEAUTH STATION"), false, [this, window, sta, apCH]() {
 					std::string msg = _("DEAUTH STATION") +":\n\n" + sta.mac + "\n"+ sta.vendor + "\n";
 					window->pushGui(new GuiMsgBox(window, msg,
 						_("YES"), [this, sta, apCH] {
@@ -2456,7 +2456,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 										_subtitle = sta.ap.bssid + " " + _U("\uf5ab") + " " + sta.vendor;*/
 
 										_title 		= (sta.name.empty() ? sta.mac : sta.name) + " / " + sta.vendor;
-										_subtitle = ssidFix(sta.ap.ssid) + " / " + sta.ap.bssid + " / " + sta.ap.vendor;
+										_subtitle = (sta.ap.ssid.empty() ? "" : ssidFix(sta.ap.ssid) + " / ") + sta.ap.bssid + " / " + sta.ap.vendor;
 									}
 								else
 									{
@@ -2607,7 +2607,7 @@ void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 
 			if(!sta.name.empty())
 			{
-				s->addEntry(_("REMOVE NAME"), true, [this, window, s, sta]() {
+				s->addEntry(_("REMOVE NAME"), false, [this, window, s, sta]() {
 					window->pushGui(new GuiMsgBox(window, _("REMOVE NAME") + "?\n" + sta.name,
 						_("YES"), [this, sta, s] {
 							remName("STA", sta.mac);
@@ -2617,7 +2617,7 @@ void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 				}, "fa-trash");
 			}
 
-			s->addEntry(sta.name.empty() ? _("ADD NAME") : _("EDIT NAME"), true, [this, s, sta]() {
+			s->addEntry(sta.name.empty() ? _("ADD NAME") : _("EDIT NAME"), false, [this, s, sta]() {
 				if (Settings::getInstance()->getBool("UseOSK"))
 					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "NAME " + sta.mac, sta.name, [this, s, sta](const std::string& value) {
 						HackName n;
