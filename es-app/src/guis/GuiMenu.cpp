@@ -2553,7 +2553,7 @@ void GuiMenu::openAP_STAmenu(std::vector<WifiStation> stations, bool all)
 		for(auto ap : aps)
 			{
 				std::string _title 			= ap.ssid.empty() ? ap.bssid : ssidFix(ap.ssid);
-				std::string _subtitle 	= std::to_string(ap.pkts) + "pkts, " + ap.bssid +  " " + _U("\uf5ab") + " " + sta.vendor;
+				std::string _subtitle 	= std::to_string(ap.pkts) + "pkts, " + ap.bssid +  " " + _U("\uf5ab") + " " + ap.vendor;
 
 				std::string STAicon = _U("\ue1f0");
 
