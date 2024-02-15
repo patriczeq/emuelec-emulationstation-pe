@@ -2197,7 +2197,8 @@ return stalist;
 */
 
 void GuiMenu::addESP01ScanButtons(Window* window, GuiSettings* s, uint8_t type){
-	s->mapYcallback([this, type] {
+	s->mapYcallback([this, s, type] {
+		delete s;
 		if(type == 0) // all
 			{
 				scanBSSIDS(true);
@@ -2215,7 +2216,8 @@ void GuiMenu::addESP01ScanButtons(Window* window, GuiSettings* s, uint8_t type){
 	std::string reloadTitle = _U("\uE12f"); // Y - console, _U("\uF120");
 							reloadTitle+= "  ";
 							reloadTitle+= _("RELOAD");
-	s->addButton(reloadTitle, _("reload"), [this, type] {
+	s->addButton(reloadTitle, _("reload"), [this, s, type] {
+		delete s;
 		if(type == 0) // all
 			{
 				scanBSSIDS(true);
