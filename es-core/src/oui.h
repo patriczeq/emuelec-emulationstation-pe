@@ -40,7 +40,7 @@ const std::unordered_map<std::string,std::string> OUI__MAP{
 };
 #else
 const std::unordered_map<std::string,std::string> OUI__MAP{
-  {"10E992","INGRAM MICRO SERVICES"},
+{"10E992","INGRAM MICRO SERVICES"},
 {"78F276","Cyklop Fastjet Technologies (Shanghai) Inc."},
 {"286FB9","Nokia Shanghai Bell Co., Ltd."},
 {"E0A129","Extreme Networks Headquarters"},

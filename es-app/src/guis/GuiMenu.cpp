@@ -982,8 +982,8 @@ void GuiMenu::addESP01Buttons(Window* window, GuiSettings* s)
 
 		std::string uartTitle = _U("\uE12f"); // Y - console, _U("\uF120");
 								uartTitle+= "  ";
-								uartTitle+= _("UART");
-		s->addButton(uartTitle, _("uart"), [this] {
+								uartTitle+= _("CONSOLE");
+		s->addButton(uartTitle, _("console"), [this] {
 			std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
 			appLauncher("ttyprint.sh " + port, false);
 		});
@@ -2309,7 +2309,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 
 		auto s = new GuiSettings(window, wTitle);
 
-		//addESP01Buttons(window, s);
+		addESP01Buttons(window, s);
 		//addESP01ScanButtons(window, s, 2);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
@@ -2357,8 +2357,8 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 					s->addWithLabel(_("BSSID"), 	std::make_shared<TextComponent>(window, ap.bssid, 	font, color));
 					s->addWithLabel(_("VENDOR"), 	std::make_shared<TextComponent>(window, ap.vendor, 	font, color));
 					if(!ap.ssid.empty()){s->addWithLabel(_("SSID"), 	std::make_shared<TextComponent>(window, ssidFix(ap.ssid), 	font, color));}
-					if(!ap.channel.empty()){s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, ap.channel, 	font, color));}
-					if(!ap.enc.empty()){s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, ap.enc, 	font, color));}
+					//if(!ap.channel.empty()){s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, ap.channel, 	font, color));}
+					//if(!ap.enc.empty()){s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, ap.enc, 	font, color));}
 					if(ap.stations > 0)
 						{
 							s->addEntry(_("AP MENU"), true, [this, window, ap]() {
@@ -2367,6 +2367,8 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 						}
 					else
 						{
+							if(!ap.channel.empty()){s->addWithLabel(_("CHANNEL"), 	std::make_shared<TextComponent>(window, ap.channel, 	font, color));}
+							if(!ap.enc.empty()){s->addWithLabel(_("ENCRYPTION"), 	std::make_shared<TextComponent>(window, ap.enc, 	font, color));}
 							std::string name = getName("AP", ap.bssid).name;
 							s->addGroup(_("TOOLS"));
 							if(name.empty())
@@ -2453,7 +2455,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 										/*_title 		=  (sta.name.empty() ? sta.mac : sta.name) + (sta.ap.ssid.empty() ? "" : ( " " + _U("\uf8da") + " " + sta.ap.ssid));
 										_subtitle = sta.ap.bssid + " " + _U("\uf5ab") + " " + sta.vendor;*/
 
-										_title 		= (sta.name.empty() ? sta.mac : sta.name) + " " + _U("\uf5ab") + " " + sta.vendor;
+										_title 		= (sta.name.empty() ? sta.mac : sta.name) + " / " + sta.vendor;
 										_subtitle = ssidFix(sta.ap.ssid) + " / " + sta.ap.bssid + " / " + sta.ap.vendor;
 									}
 								else
@@ -2465,11 +2467,11 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 									}
 
 								s->addWithDescription(_title, _subtitle,
-									std::make_shared<TextComponent>(window, wifiSignalGlyph(sta.rssi) + " " + sta.rssi + "dBm", 	font, color),
+									std::make_shared<TextComponent>(window, sta.rssi + "dBm", font, color),
 									[this, sta, lessAPinfo]
 								{
 									openSTADetail(sta, lessAPinfo);
-								}, "fa-mobile-signal-out");
+								}, wifiSignalIcon(sta.rssi));
 							}
 					}
 			}
@@ -2686,7 +2688,7 @@ void GuiMenu::openBSSIDSMenu(std::vector<AccessPoint> bssids)
 			{
 				if(!ap.bssid.empty())
 					{
-						s->addWithDescription(ssidFix(ap.ssid), ap.bssid + " " + _U("\uf5ab") + " " + ap.vendor,
+						s->addWithDescription(ssidFix(ap.ssid), ap.bssid + " / " + ap.vendor,
 							std::make_shared<TextComponent>(window,ap.rssi + "dBm", 	font, color),
 							[this, ap]
 						{
