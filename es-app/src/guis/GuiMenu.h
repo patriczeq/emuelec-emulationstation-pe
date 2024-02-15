@@ -733,7 +733,7 @@ private:
 
 	std::string wifiSignalGlyph(std::string in)
 		{
-			return wifiSignalGlyph(atoi(in));
+			return wifiSignalGlyph(stoi(in));
 		}
 	std::string wifiSignalGlyph(int in)
 		{
