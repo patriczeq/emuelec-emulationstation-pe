@@ -633,13 +633,6 @@ void Window::render()
 		bottom->render(transform);
 		if (bottom != top)
 		{
-      if(mGuiStack.size() > 1)
-        {
-          bottom->setOpacity(100);
-          Vector2f osize = bottom->getSize();
-          bottom->setSize(osize.x() / 4 , osize.y() / 4);
-          //bottom->setScale(4.0);
-        }
 			if ((top->getTag() == "GuiLoading") && mGuiStack.size() > 2)
 			{
 				mBackgroundOverlay->render(transform);
@@ -663,6 +656,14 @@ void Window::render()
 				top->render(transform);
 			}
 		}
+
+    if(mGuiStack.size() > 1)
+      {
+        mGuiStack.front()->setOpacity(50);
+        Vector2f osize = mGuiStack.front()->getSize();
+        mGuiStack.front()->setSize(osize.x() / 4 , osize.y() / 4);
+        //bottom->setScale(4.0);
+      }
 	}
 
 	renderSindenBorders();
