@@ -648,22 +648,28 @@ void Window::render()
 				if ((top->isKindOf<GuiMsgBox>() || top->getTag() == "popup") && mGuiStack.size() > 2)
 				{
 					auto& middle = mGuiStack.at(mGuiStack.size() - 2);
-					if (middle != bottom)
-						middle->render(transform);
-				}
+					if (middle != bottom){
+						//middle->render(transform);
+            middle->setOpacity(50);
+            Vector2f osize = middle->getSize();
+            middle->setSize(osize.x() / 4 , osize.y() / 4);
+            middle->render(transform);
+          }
+        }
+
 
 				mBackgroundOverlay->render(transform);
 				top->render(transform);
 			}
 		}
 
-    if(mGuiStack.size() > 1)
+    /*if(mGuiStack.size() > 1)
       {
         mGuiStack.front()->setOpacity(50);
         Vector2f osize = mGuiStack.front()->getSize();
         mGuiStack.front()->setSize(osize.x() / 4 , osize.y() / 4);
         //bottom->setScale(4.0);
-      }
+      }*/
 	}
 
 	renderSindenBorders();
