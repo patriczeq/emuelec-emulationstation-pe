@@ -396,6 +396,8 @@ bool ApiSystem::ping()
 
 bool ApiSystem::canUpdate(std::vector<std::string>& output)
 {
+	// disable updates
+	return false;
 	LOG(LogDebug) << "ApiSystem::canUpdate";
 
 	FILE *pipe = popen("batocera-config canupdate", "r");

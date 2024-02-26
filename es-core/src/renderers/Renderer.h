@@ -31,6 +31,8 @@ namespace Renderer
 
 	} // Blend::
 
+	
+
 	namespace Texture
 	{
 		enum Type
@@ -58,19 +60,19 @@ namespace Renderer
 
 	struct Vertex
 	{
-		Vertex() 
+		Vertex()
 			: saturation(1.0f), customShader(nullptr)
-		{ 
+		{
 
 		}
 
-		Vertex(const Vector2f& _pos, const Vector2f& _tex, const unsigned int _col) 
+		Vertex(const Vector2f& _pos, const Vector2f& _tex, const unsigned int _col)
 			: pos(_pos)
 			, tex(_tex)
-			, col(_col) 
+			, col(_col)
 			, saturation(1.0f)
 			, customShader(nullptr)
-		{ 
+		{
 
 		}
 
@@ -120,7 +122,7 @@ namespace Renderer
 
 		virtual size_t		 getTotalMemUsage() { return (size_t) -1; };
 	};
-	
+
 	std::vector<std::string> getRendererNames();
 
  	bool        init            ();
@@ -147,7 +149,7 @@ namespace Renderer
 	Vector2i    physicalScreenToRotatedScreen(int x, int y);
 
 	// API specific
-	inline static unsigned int convertColor (const unsigned int _color) { return ((_color & 0xFF000000) >> 24) | ((_color & 0x00FF0000) >> 8) | ((_color & 0x0000FF00) << 8) | ((_color & 0x000000FF) << 24); } 
+	inline static unsigned int convertColor (const unsigned int _color) { return ((_color & 0xFF000000) >> 24) | ((_color & 0x00FF0000) >> 8) | ((_color & 0x0000FF00) << 8) | ((_color & 0x000000FF) << 24); }
 	// convertColor
 
 	unsigned int getWindowFlags    ();
@@ -182,7 +184,7 @@ namespace Renderer
 
 	void		drawRoundRect(float x, float y, float w, float h, float radius, unsigned int color, const Blend::Factor _srcBlendFactor = Blend::SRC_ALPHA, const Blend::Factor _dstBlendFactor = Blend::ONE_MINUS_SRC_ALPHA);
 	void		enableRoundCornerStencil(float x, float y, float size_x, float size_y, float radius);
-	
+
 	void		drawTriangleFan(const Vertex* _vertices, const unsigned int _numVertices, const Blend::Factor _srcBlendFactor = Blend::SRC_ALPHA, const Blend::Factor _dstBlendFactor = Blend::ONE_MINUS_SRC_ALPHA);
 
 	void		setStencil(const Vertex* _vertices, const unsigned int _numVertices);
@@ -192,7 +194,7 @@ namespace Renderer
 
 	Rect		getScreenRect(const Transform4x4f& transform, const Vector3f& size, bool viewPort = false);
 	Rect		getScreenRect(const Transform4x4f& transform, const Vector2f& size, bool viewPort = false);
-	
+
 	void		activateWindow();
 
 	Vector2i	setScreenMargin(int marginX, int marginY);

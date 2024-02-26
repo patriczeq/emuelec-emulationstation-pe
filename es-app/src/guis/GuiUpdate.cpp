@@ -41,7 +41,7 @@ public:
 			auto pos = info.find(">>>");
 			if (pos != std::string::npos)
 			{
-				std::string percent(info.substr(pos));		
+				std::string percent(info.substr(pos));
 				percent = Utils::String::replace(percent, ">", "");
 				percent = Utils::String::replace(percent, "%", "");
 				percent = Utils::String::replace(percent, " ", "");
@@ -95,20 +95,20 @@ GuiUpdate::GuiUpdate(Window* window) : GuiComponent(window), mBusyAnim(window)
 
 	setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
 
-	mState = 0;	
+	mState = 0;
     mLoading = true;
     mPingHandle = new std::thread(&GuiUpdate::threadPing, this);
     mBusyAnim.setSize(mSize);
 }
 
 GuiUpdate::~GuiUpdate()
-{	
+{
 	mPingHandle->join();
 	delete mPingHandle;
 }
 
 void GuiUpdate::threadPing()
-{	
+{
 	if (ApiSystem::getInstance()->ping())
 	{
 		std::vector<std::string> msgtbl;
@@ -165,7 +165,7 @@ void GuiUpdate::update(int deltaTime)
 
 			std::string message = _("REALLY UPDATE?");
 
-			if (!mUpdateVersion.empty()) 
+			if (!mUpdateVersion.empty())
 			{
 				std::string versionExtra = ApiSystem::getInstance()->getVersion(true);
 				if (versionExtra == "none")
@@ -183,23 +183,23 @@ void GuiUpdate::update(int deltaTime)
 
 				}, _("NO"), [this] { mState = -1; }));
 			}
-		}		
+		}
 		break;
 
 		case 3:
-		
+
 			mState = 0;
-			window->pushGui(new GuiMsgBox(window, _("NETWORK CONNECTION NEEDED"), _("OK"), [this] 
+			window->pushGui(new GuiMsgBox(window, _("NETWORK CONNECTION NEEDED"), _("OK"), [this]
 			{
 				mState = -1;
-			}));			
-		
+			}));
+
 			break;
 
 		case 6:
 
 			mState = 0;
-			window->pushGui(new GuiMsgBox(window, _("NO UPDATE AVAILABLE"), _("OK"), [this] 
+			window->pushGui(new GuiMsgBox(window, _("NO UPDATE AVAILABLE"), _("OK"), [this]
 			{
 				mState = -1;
 			}));
@@ -234,4 +234,3 @@ std::vector<HelpPrompt> GuiUpdate::getHelpPrompts()
 {
 	return std::vector<HelpPrompt>();
 }
-

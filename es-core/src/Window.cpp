@@ -633,6 +633,13 @@ void Window::render()
 		bottom->render(transform);
 		if (bottom != top)
 		{
+      if(mGuiStack.size() > 1)
+        {
+          bottom->setOpacity(100);
+          Vector2f osize = bottom->getSize();
+          bottom->setSize(osize->x() / 4 , osize->y() / 4);
+          bottom->setScale(4.0);
+        }
 			if ((top->getTag() == "GuiLoading") && mGuiStack.size() > 2)
 			{
 				mBackgroundOverlay->render(transform);
