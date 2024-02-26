@@ -649,10 +649,6 @@ void Window::render()
 				{
 					auto& middle = mGuiStack.at(mGuiStack.size() - 2);
 					if (middle != bottom){
-						//middle->render(transform);
-            middle->setOpacity(50);
-            Vector2f osize = middle->getSize();
-            middle->setSize(osize.x() / 4 , osize.y() / 4);
             middle->render(transform);
           }
         }
