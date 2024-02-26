@@ -637,7 +637,7 @@ void Window::render()
         {
           bottom->setOpacity(100);
           Vector2f osize = bottom->getSize();
-          bottom->setSize(osize->x() / 4 , osize->y() / 4);
+          bottom->setSize(osize.x() / 4 , osize.y() / 4);
           bottom->setScale(4.0);
         }
 			if ((top->getTag() == "GuiLoading") && mGuiStack.size() > 2)
