@@ -747,13 +747,25 @@ private:
 
 					return input;
 				}
-			// basic fix to [ AABBCCDDEEFF ]
-			return 	input.at(0) + input.at(1) + ":" +
-							input.at(2) + input.at(3) + ":" +
-							input.at(4) + input.at(5) + ":" +
-							input.at(6) + input.at(7) + ":" +
-							input.at(8) + input.at(9) + ":" +
-							input.at(10) + input.at(11);
+
+			std::string output = input.at(0);
+									output+= input.at(1);
+									output+= ":";
+									output = input.at(2);
+									output+= input.at(3);
+									output+= ":";
+									output = input.at(4);
+									output+= input.at(5);
+									output+= ":";
+									output = input.at(6);
+									output+= input.at(7);
+									output+= ":";
+									output = input.at(8);
+									output+= input.at(9);
+									output+= ":";
+									output = input.at(10);
+									output+= input.at(11);
+			return output;
 		}
 	// Names
 	void loadNames();
