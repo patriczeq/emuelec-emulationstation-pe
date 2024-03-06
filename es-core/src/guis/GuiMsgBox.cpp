@@ -9,22 +9,25 @@
 
 #define HORIZONTAL_PADDING_PX  (Renderer::getScreenWidth()*0.01)
 
-GuiMsgBox::GuiMsgBox(Window* window, const std::string& text, const std::string& name1, const std::function<void()>& func1, GuiMsgBoxIcon icon) 
+GuiMsgBox::GuiMsgBox(Window* window, const std::string& text, const std::string& name1, const std::function<void()>& func1, GuiMsgBoxIcon icon,
+std::string relIcon)
 	: GuiMsgBox(window, text, name1, func1, "", nullptr, "", nullptr, icon) { }
 
 GuiMsgBox::GuiMsgBox(Window* window, const std::string& text,
 	const std::string& name1, const std::function<void()>& func1,
 	const std::string& name2, const std::function<void()>& func2,
-	GuiMsgBoxIcon icon)
+	GuiMsgBoxIcon icon,
+	std::string relIcon)
 	: GuiMsgBox(window, text, name1, func1, name2, func2, "", nullptr, icon) { }
 
-GuiMsgBox::GuiMsgBox(Window* window, const std::string& text, 
+GuiMsgBox::GuiMsgBox(Window* window, const std::string& text,
 	const std::string& name1, const std::function<void()>& func1,
-	const std::string& name2, const std::function<void()>& func2, 
+	const std::string& name2, const std::function<void()>& func2,
 	const std::string& name3, const std::function<void()>& func3,
-	GuiMsgBoxIcon icon) : GuiComponent(window),
+	GuiMsgBoxIcon icon,
+	std::string relIcon) : GuiComponent(window),
 	mBackground(window, ":/frame.png"), mGrid(window, Vector2i(2, 2))
-	
+
 {
 	auto theme = ThemeData::getMenuTheme();
 
@@ -37,7 +40,7 @@ GuiMsgBox::GuiMsgBox(Window* window, const std::string& text,
 
 	float width = Renderer::getScreenWidth() * 0.6f; // max width
 	float minWidth = Renderer::getScreenWidth() * 0.3f; // minimum width
-	
+
 	mImage = nullptr;
 
 	std::string imageFile;
@@ -71,20 +74,25 @@ GuiMsgBox::GuiMsgBox(Window* window, const std::string& text,
 		break;
 	}
 
-	if (!imageFile.empty() && ResourceManager::getInstance()->fileExists(imageFile) && !Renderer::isSmallScreen())
+	if(!relIcon.empty())
+		{
+			imageFile = ":/fa-svg/" + relIcon + ".svg";
+		}
+
+	if (!imageFile.empty() && ResourceManager::getInstance()->fileExists(imageFile) /*&& !Renderer::isSmallScreen()*/)
 	{
 		mImage = std::make_shared<ImageComponent>(window);
 		mImage->setImage(imageFile);
 		mImage->setIsLinear(true);
 		mImage->setColorShift(theme->Text.color);
-		mImage->setMaxSize(theme->Text.font->getLetterHeight() * 2.0f, theme->Text.font->getLetterHeight() * 2.0f);		
+		mImage->setMaxSize(theme->Text.font->getLetterHeight() * 2.0f, theme->Text.font->getLetterHeight() * 2.0f);
 
 		mGrid.setEntry(mImage, Vector2i(0, 0), false, false);
 	}
 
 	mMsg = std::make_shared<TextComponent>(mWindow, text, ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color, mImage == nullptr || Renderer::isSmallScreen() ? ALIGN_CENTER : ALIGN_LEFT); // CENTER
 	mMsg->setPadding(Vector4f(Renderer::getScreenWidth()*0.015f, 0, Renderer::getScreenWidth()*0.015f, 0));
-	
+
 	mGrid.setEntry(mMsg, Vector2i(mImage == nullptr ? 0 : 1, 0), false, false, Vector2i(mImage == nullptr ? 2 : 1, 1));
 
 	// create the buttons
@@ -129,12 +137,12 @@ GuiMsgBox::GuiMsgBox(Window* window, const std::string& text,
 
 		width = Math::max(width, minWidth);
 	}
-	
+
 	// now that we know width, we can find height
 	mMsg->setSize(width, 0); // mMsg->getSize.y() now returns the proper length
-	
+
 	float msgHeight = Math::max(Font::get(FONT_SIZE_LARGE)->getHeight(), mMsg->getSize().y()*1.225f);
-	
+
 	if (msgHeight + mButtonGrid->getSize().y() > Renderer::getScreenHeight())
 	{
 		setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
@@ -165,7 +173,7 @@ GuiMsgBox::GuiMsgBox(Window* window, const std::string& text,
 bool GuiMsgBox::input(InputConfig* config, Input input)
 {
 	// special case for when GuiMsgBox comes up to report errors before anything has been configured
-	if(config->getDeviceId() == DEVICE_KEYBOARD && !config->isConfigured() && input.value && 
+	if(config->getDeviceId() == DEVICE_KEYBOARD && !config->isConfigured() && input.value &&
 		(input.id == SDLK_RETURN || input.id == SDLK_ESCAPE || input.id == SDLK_SPACE))
 	{
 		mAcceleratorFunc();
@@ -173,7 +181,7 @@ bool GuiMsgBox::input(InputConfig* config, Input input)
 	}
 
 	/* when it's not configured, allow to remove the message box too to allow the configdevice window a chance */
-	if(mAcceleratorFunc && ((config->isMappedTo(BUTTON_BACK, input) && input.value != 0) || (config->isConfigured() == false && input.type == TYPE_BUTTON))) 
+	if(mAcceleratorFunc && ((config->isMappedTo(BUTTON_BACK, input) && input.value != 0) || (config->isConfigured() == false && input.type == TYPE_BUTTON)))
 	{
 		mAcceleratorFunc();
 		return true;
@@ -195,7 +203,7 @@ void GuiMsgBox::onSizeChanged()
 	}
 
 	mGrid.setRowHeightPerc(1, mButtonGrid->getSize().y() / mSize.y());
-			
+
 	mMsg->setSize(mSize.x() - HORIZONTAL_PADDING_PX*2, mGrid.getRowHeight(0));
 	mGrid.onSizeChanged();
 

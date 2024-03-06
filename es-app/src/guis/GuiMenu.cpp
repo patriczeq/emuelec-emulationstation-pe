@@ -1172,7 +1172,7 @@ void GuiMenu::openESP01Menu()
 						}, _("NO"),nullptr));
 				}, "fa-skull");
 
-				s->addEntry(_("F0LL0W WH1T3 R4881T"), true, [this] {
+				s->addEntry(_("FOLLOW THE WHITE RABBIT"), true, [this] {
 					openRabbitTargets();
 				}, "fa-rabbit");
 
@@ -1220,7 +1220,7 @@ void GuiMenu::openRabbitTargets()
 	{
 		Window* window = mWindow;
 		std::string Title = _U("\uf708");
-								Title += " F0LL0W WH1T3 R4881T";
+								Title += " F0LL0W TH3 WH1T3 R4881T";
 		auto s = new GuiSettings(window, Title);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
@@ -1236,13 +1236,11 @@ void GuiMenu::openRabbitTargets()
 				mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, oskTitle, "", [this, window](const std::string& value) {
 					if(!isMac(value))
 						{
-							window->pushGui(new GuiMsgBox(window, _("BAD MAC ADDRESS") + "\n" + value + "\n?", _("OK"),nullptr));
+							window->pushGui(new GuiMsgBox(window, _("BAD MAC ADDRESS") + "\n" + value, _("OK"),nullptr));
 						}
 					else
 						{
-							hacksSend("rabbit " + macAddr(value));
-							std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
-							appLauncher("ttyprint.sh " + port, false);
+							huntRabbit(value);
 						}
 				}, false));
 			}
@@ -1251,13 +1249,11 @@ void GuiMenu::openRabbitTargets()
 				mWindow->pushGui(new GuiTextEditPopup(mWindow, oskTitle, "", [this, window](const std::string& value) {
 					if(!isMac(value))
 						{
-							window->pushGui(new GuiMsgBox(window, _("BAD MAC ADDRESS") + "\n" + value + "\n?", _("OK"),nullptr));
+							window->pushGui(new GuiMsgBox(window, _("BAD MAC ADDRESS") + "\n" + value, _("OK"),nullptr));
 						}
 					else
 						{
-							hacksSend("rabbit " + macAddr(value));
-							std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
-							appLauncher("ttyprint.sh " + port, false);
+							huntRabbit(value);
 						}
 				}, false));
 			}
@@ -1265,7 +1261,7 @@ void GuiMenu::openRabbitTargets()
 
 		if(stalist.size() > 0)
 			{
-				s->addGroup(_("STATIONS LIST"));
+				s->addGroup(_("STATIONS LIST") + " (" + stalist.size() + ")");
 				for (auto sta : stalist)
 					{
 						sta.name = getName("STA", sta.mac).name;
@@ -1276,12 +1272,7 @@ void GuiMenu::openRabbitTargets()
 							std::make_shared<TextComponent>(window, sta.rssi + "dBm", font, color),
 							[this, window, sta]
 						{
-							window->pushGui(new GuiMsgBox(window, _("DEAUTH AND FOLLOW") + "\n" + sta.mac + "\n?",
-								_("YES"), [this, window, sta] {
-									hacksSend("rabbit " + macAddr(sta.mac));
-									std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
-									appLauncher("ttyprint.sh " + port, false);
-								}, _("NO"),nullptr));
+							huntRabbit(sta.mac);
 						}, wifiSignalIcon(sta.rssi));
 					}
 			}
@@ -1289,7 +1280,19 @@ void GuiMenu::openRabbitTargets()
 
 		window->pushGui(s);
 	}
-
+void GuiMenu::huntRabbit(std::string mac)
+	{
+		std::string fixMac = macAddr(mac);
+		std::string msg = "FOLLOW THE ";
+								msg+= fixMac;
+								msg+= " RABBIT?\n";
+		mWindow->pushGui(new GuiMsgBox(mWindow, _("DEAUTH AND FOLLOW") + "\n" + fixMac + "\n?",
+			_("YES"), [this, window, fixMac] {
+				hacksSend("rabbit " + fixMac);
+				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+				appLauncher("ttyprint.sh " + port, false);
+			}, _("NO"),nullptr, ICON_AUTOMATIC, "fa-rabbit"));
+	}
 // SCAN DATABASE
 //std::vector<ScanDB_AP> ScanDB;
 //std::vector<ScanDB_STA>
@@ -1489,6 +1492,9 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 							runSystemCommand("hacks.sh " + port + " deauthsta " + sta.mac + " " + sta.bssid + " " + apCH, "", nullptr);
 						}, _("CANCEL"),nullptr));
 					}, "fa-chain-broken");
+				s->addEntry(_("FOLLOW THE WHITE RABBIT"), false, [this, window, sta]() {
+						huntRabbit(sta.mac);
+					}, "fa-rabbit");
 		s->addGroup(_("MANAGEMENT"));
 			s->addEntry(_("REMOVE FROM DATABASE"), false, [this, window, sta]() {
 				window->pushGui(new GuiMsgBox(window, _("REMOVE") + "\n" + sta.mac + "\nFROM SCAN DB?",
@@ -2749,6 +2755,9 @@ void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 						hacksSend("deauthsta " + sta.mac);
 					}, _("CANCEL"),nullptr));
 				}, "fa-chain-broken");
+			s->addEntry(_("FOLLOW THE WHITE RABBIT"), false, [this, window, sta]() {
+					huntRabbit(sta.mac);
+				}, "fa-rabbit");
 
 		window->pushGui(s);
 	}
