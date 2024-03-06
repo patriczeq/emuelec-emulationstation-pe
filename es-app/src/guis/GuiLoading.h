@@ -76,9 +76,9 @@ public:
 		mBusyAnim.render(trans);
 	}
 
-	bool input(InputConfig *config, Input input)
+	bool input(InputConfig *config, Input input) override
 	{
-		if((config->isMappedTo(BUTTON_BACK, input) && input.value != 0 && mCancell != nullptr)
+		if(config->isMappedTo(BUTTON_BACK, input) && input.value != 0 && mCancell != nullptr)
 		{
 			mCancell();
 			// run cancell call
