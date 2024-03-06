@@ -1229,24 +1229,26 @@ void GuiMenu::openRabbitTargets()
 		addESP01Buttons(window, s);
 
 		s->addEntry(_("MANUAL INPUT"), false, [this] {
+			std::string oskTitle = _U("\uf708");
+									oskTitle+= " RABBIT MAC ADDR";
 			if (Settings::getInstance()->getBool("UseOSK"))
 			{
-				mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "RABBIT MAC", "", [this](const std::string& value) {
+				mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, oskTitle, "", [this](const std::string& value) {
 					hacksSend("rabbithunt " + value);
 				}, false));
 			}
 			else
 			{
-				mWindow->pushGui(new GuiTextEditPopup(mWindow, "RABBIT MAC", "", [this](const std::string& value) {
+				mWindow->pushGui(new GuiTextEditPopup(mWindow, oskTitle, "", [this](const std::string& value) {
 					hacksSend("rabbithunt " + value);
 				}, false));
 			}
 		}, "fa-keyboard");
 
-		if(stations.size() > 0)
+		if(stalist.size() > 0)
 			{
 				s->addGroup(_("STATIONS LIST"));
-				for (auto sta : stations)
+				for (auto sta : stalist)
 					{
 						sta.name = getName("STA", sta.mac).name;
 						std::string _title			= (sta.name.empty() ? sta.mac : sta.name) + " / " + sta.vendor;
@@ -1254,7 +1256,7 @@ void GuiMenu::openRabbitTargets()
 
 						s->addWithDescription(_title, _subtitle,
 							std::make_shared<TextComponent>(window, sta.rssi + "dBm", font, color),
-							[this, sta]
+							[this, window, sta]
 						{
 							window->pushGui(new GuiMsgBox(window, _("DEAUTH AND FOLLOW") + "\n" + sta.mac + "\n?",
 								_("YES"), [this, window, sta] {
