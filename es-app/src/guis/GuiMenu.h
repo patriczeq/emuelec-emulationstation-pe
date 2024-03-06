@@ -721,7 +721,7 @@ private:
 					bool pass = false;
 					for(auto bb : bytes)
 						{
-							if(input.at(b) == bb)
+							if(input.at(b) == bb.at(0))
 								{
 									pass = true;
 									break;
