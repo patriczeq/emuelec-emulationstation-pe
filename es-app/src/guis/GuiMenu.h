@@ -688,7 +688,73 @@ private:
 	std::vector<AccessPoint> AccessPointList(std::vector<std::string> bssids);
 	WifiStation rawToSTA(std::string raw);
 	std::vector<WifiStation> StationsList(std::vector<std::string> stations);
+	bool isMac(std::strin input)
+		{
+			input = Utils::String::toUpper(input);
+			input = Utils::String::replace(input, " ", "");
+			input = Utils::String::replace(input, ":", "");
+			input = Utils::String::replace(input, "-", "");
+			if(input.length() != 12)
+				{
+					return false;
+				}
+			std::vector<std::string> bytes;
+			bytes.push_back("0");
+			bytes.push_back("1");
+			bytes.push_back("2");
+			bytes.push_back("3");
+			bytes.push_back("4");
+			bytes.push_back("5");
+			bytes.push_back("6");
+			bytes.push_back("7");
+			bytes.push_back("8");
+			bytes.push_back("9");
+			bytes.push_back("A");
+			bytes.push_back("B");
+			bytes.push_back("C");
+			bytes.push_back("D");
+			bytes.push_back("E");
+			bytes.push_back("F");
 
+			for(uit8_t b = 0; b < 12; b++)
+				{
+					bool pass = false;
+					for(auto bb : bytes)
+						{
+							if(b == bb)
+								{
+									pass = true;
+									break;
+								}
+						}
+					if(!pass)
+						{
+							return false;
+						}
+				}
+
+			return true;
+		}
+	std::string macAddr(std::string input)
+		{
+			input = Utils::String::toUpper(input);
+			input = Utils::String::replace(input, " ", "");
+			input = Utils::String::replace(input, ":", "");
+			input = Utils::String::replace(input, "-", "");
+
+			if(input.length() != 12)
+				{
+
+					return input;
+				}
+			// basic fix to [ AABBCCDDEEFF ]
+			return 	input.at(0) + input.at(1) + ":" +
+							input.at(2) + input.at(3) + ":" +
+							input.at(4) + input.at(5) + ":" +
+							input.at(6) + input.at(7) + ":" +
+							input.at(8) + input.at(9) + ":" +
+							input.at(10) + input.at(11);
+		}
 	// Names
 	void loadNames();
 	//STA;00:00:00:00:00:00;STANAME;CHANNEL;BSSID

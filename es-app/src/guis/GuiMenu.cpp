@@ -1234,13 +1234,31 @@ void GuiMenu::openRabbitTargets()
 			if (Settings::getInstance()->getBool("UseOSK"))
 			{
 				mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, oskTitle, "", [this](const std::string& value) {
-					hacksSend("rabbithunt " + value);
+					if(!isMac(value))
+						{
+							window->pushGui(new GuiMsgBox(window, _("BAD MAC ADDRESS") + "\n" + value + "\n?", _("OK"),nullptr));
+						}
+					else
+						{
+							hacksSend("rabbit " + macAddr(value));
+							std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+							appLauncher("ttyprint.sh " + port, false);
+						}
 				}, false));
 			}
 			else
 			{
 				mWindow->pushGui(new GuiTextEditPopup(mWindow, oskTitle, "", [this](const std::string& value) {
-					hacksSend("rabbithunt " + value);
+					if(!isMac(value))
+						{
+							window->pushGui(new GuiMsgBox(window, _("BAD MAC ADDRESS") + "\n" + value + "\n?", _("OK"),nullptr));
+						}
+					else
+						{
+							hacksSend("rabbit " + macAddr(value));
+							std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+							appLauncher("ttyprint.sh " + port, false);
+						}
 				}, false));
 			}
 		}, "fa-keyboard");
@@ -1260,7 +1278,9 @@ void GuiMenu::openRabbitTargets()
 						{
 							window->pushGui(new GuiMsgBox(window, _("DEAUTH AND FOLLOW") + "\n" + sta.mac + "\n?",
 								_("YES"), [this, window, sta] {
-									hacksSend("rabbithunt " + sta.mac);
+									hacksSend("rabbit " + macAddr(sta.mac));
+									std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+									appLauncher("ttyprint.sh " + port, false);
 								}, _("NO"),nullptr));
 						}, wifiSignalIcon(sta.rssi));
 					}
