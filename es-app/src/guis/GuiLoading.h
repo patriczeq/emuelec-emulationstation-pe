@@ -27,7 +27,7 @@ class GuiLoading : public GuiComponent, public IGuiLoadingHandler
 {
 public:
 	GuiLoading(Window *window, const std::string title, const std::function<T(IGuiLoadingHandler*)> &func, const std::function<void(T)> &func2 = nullptr, const std::function<void(T)> &cancell = nullptr)
-		: GuiComponent(window), mBusyAnim(window), mFunc(func), mFunc2(func2), mCancell(cancell)
+		: GuiComponent(window), mBusyAnim(window), mFunc(func), mFunc2(func2)
 	{
 		setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
 		setTag("GuiLoading");
@@ -39,6 +39,11 @@ public:
 		mHandle = new std::thread(&GuiLoading::threadLoading, this);
 		mBusyAnim.setText(title);
 		mBusyAnim.setSize(mSize);
+
+		if(cancell != nullptr)
+			{
+				mCancell = cancell;
+			}
 
 		mBusyAnim.setOpacity(0);
 		auto fadeFunc = [this](float t) { mBusyAnim.setOpacity((unsigned char) (Math::easeOutCubic(t) * 255.0f)); };
