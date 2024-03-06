@@ -688,7 +688,7 @@ private:
 	std::vector<AccessPoint> AccessPointList(std::vector<std::string> bssids);
 	WifiStation rawToSTA(std::string raw);
 	std::vector<WifiStation> StationsList(std::vector<std::string> stations);
-	bool isMac(std::strin input)
+	bool isMac(std::string input)
 		{
 			input = Utils::String::toUpper(input);
 			input = Utils::String::replace(input, " ", "");
