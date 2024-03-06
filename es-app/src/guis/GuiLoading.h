@@ -26,12 +26,12 @@ template<typename T>
 class GuiLoading : public GuiComponent, public IGuiLoadingHandler
 {
 public:
-	GuiLoading(Window *window, const std::string title, const std::function<T(IGuiLoadingHandler*)> &func, const std::function<void(T)> &func2 = nullptr)
-		: GuiComponent(window), mBusyAnim(window), mFunc(func), mFunc2(func2)
+	GuiLoading(Window *window, const std::string title, const std::function<T(IGuiLoadingHandler*)> &func, const std::function<void(T)> &func2 = nullptr, const std::function<void(T)> &cancell = nullptr)
+		: GuiComponent(window), mBusyAnim(window), mFunc(func), mFunc2(func2), mCancell(cancell)
 	{
 		setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
 		setTag("GuiLoading");
-	
+
 		mText = title;
 		mTextChanged = false;
 
@@ -44,7 +44,7 @@ public:
 		auto fadeFunc = [this](float t) { mBusyAnim.setOpacity((unsigned char) (Math::easeOutCubic(t) * 255.0f)); };
 		setAnimation(new LambdaAnimation(fadeFunc, 450), 0, [this] { mBusyAnim.setOpacity(255); });
 	}
-	
+
 	~GuiLoading()
 	{
 		mRunning = false;
@@ -52,7 +52,7 @@ public:
 	}
 
 	void setText(const std::string& text) override
-	{		
+	{
 		mTextMutex.lock();
 
 		if (mText != text)
@@ -78,9 +78,14 @@ public:
 
 	bool input(InputConfig *config, Input input) override
 	{
-		return false;	
+		if((config->isMappedTo(BUTTON_BACK, input) && input.value != 0 && mCancell != nullptr)
+		{
+			mCancell();
+			// run cancell call
+		}
+		return false;
 	}
-	
+
 	void update(int deltaTime) override
 	{
 		GuiComponent::update(deltaTime);
@@ -105,7 +110,7 @@ public:
 				delete this;
 		}
 	}
-	
+
 private:
 	void threadLoading()
 	{
@@ -137,6 +142,7 @@ private:
 
     const std::function<T(IGuiLoadingHandler*)> mFunc;
     const std::function<void(T)> mFunc2;
+		const std::function<void()> mCancell = nullptr;
     T result;
 };
 

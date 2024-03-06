@@ -1695,7 +1695,7 @@ void GuiMenu::updateNames()
 								if(sta.mac == name.id &&
 										(
 											(!sta.ap.bssid.empty() && sta.ap.bssid != name.bssid) ||
-											(!sta.ap.channel.empty() && sta.ap.channel	!= name.channel)
+											(!sta.ap.channel.empty() && sta.ap.channel != name.channel)
 										)
 									)
 									{
@@ -2032,6 +2032,9 @@ void GuiMenu::scanBSSIDS(bool all)
 				{
 					window->pushGui(new GuiMsgBox(window, _("NO AP FOUND!"),_("OK"),nullptr));
 				}
+			},
+			[this]{
+				hacksSend("stop");
 			}
 		));
 	}

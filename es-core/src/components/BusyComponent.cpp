@@ -51,6 +51,7 @@ void BusyComponent::setBackgroundVisible(bool visible)
 	mBackground.setVisible(visible);
 }
 
+
 void BusyComponent::update(int deltaTime)
 {
 	GuiComponent::update(deltaTime);
