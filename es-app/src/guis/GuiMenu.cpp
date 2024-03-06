@@ -1287,7 +1287,7 @@ void GuiMenu::huntRabbit(std::string mac)
 								msg+= fixMac;
 								msg+= " RABBIT?\n";
 		mWindow->pushGui(new GuiMsgBox(mWindow, _("DEAUTH AND FOLLOW") + "\n" + fixMac + "\n?",
-			_("YES"), [this, window, fixMac] {
+			_("YES"), [this, fixMac] {
 				hacksSend("rabbit " + fixMac);
 				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
 				appLauncher("ttyprint.sh " + port, false);
