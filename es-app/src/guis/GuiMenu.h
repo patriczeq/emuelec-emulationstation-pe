@@ -716,7 +716,7 @@ private:
 			bytes.push_back("E");
 			bytes.push_back("F");
 
-			for(uit8_t b = 0; b < 12; b++)
+			for(int b = 0; b < 12; b++)
 				{
 					bool pass = false;
 					for(auto bb : bytes)
