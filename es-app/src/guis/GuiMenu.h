@@ -748,7 +748,8 @@ private:
 					return input;
 				}
 
-			std::string output = input.at(0);
+			std::string output;
+									output+= input.at(0);
 									output+= input.at(1);
 									output+= ":";
 									output = input.at(2);
