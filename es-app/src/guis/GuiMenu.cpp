@@ -1152,7 +1152,8 @@ void GuiMenu::openESP01Menu()
 				}, "fa-rss");
 
 
-		s->addGroup(_("WIFI DEAUTH/BEACONS"));
+		s->addGroup(_("WIFI"));
+/*---------------------------------------------------------------------------------------------------------------------------*/
 			s->addEntry(_("SEND RANDOM BEACONS"), false, [this] {
 					hacksSend("beacon");
 				}, "fa-tower-broadcast");
@@ -1171,7 +1172,12 @@ void GuiMenu::openESP01Menu()
 						}, _("NO"),nullptr));
 				}, "fa-skull");
 
-		s->addGroup(_("IR ATTACKS"));
+				s->addEntry(_("F0LL0W WH1T3 R4881T"), true, [this] {
+					openRabbitTargets();
+				}, "fa-rabbit");
+
+		s->addGroup(_("IR"));
+/*---------------------------------------------------------------------------------------------------------------------------*/
 			s->addEntry(_("IR POWER-OFF"), false, [this] {
 				//set space
 				std::string space = Settings::getInstance()->getString("pe_hack.irspace");
@@ -1205,6 +1211,58 @@ void GuiMenu::openESP01Menu()
 			s->addEntry(_("SEND CUSTOM POWER-CODE"), true, [this] {
 				openIRlist();
 			}, "fa-list");
+
+
+		window->pushGui(s);
+	}
+
+void GuiMenu::openRabbitTargets()
+	{
+		Window* window = mWindow;
+		std::string Title = _U("\uf708");
+								Title += " F0LL0W WH1T3 R4881T";
+		auto s = new GuiSettings(window, Title);
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		addESP01Buttons(window, s);
+
+		s->addEntry(_("MANUAL INPUT"), false, [this] {
+			if (Settings::getInstance()->getBool("UseOSK"))
+			{
+				mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "RABBIT MAC", "", [this](const std::string& value) {
+					hacksSend("rabbithunt " + value);
+				}, false));
+			}
+			else
+			{
+				mWindow->pushGui(new GuiTextEditPopup(mWindow, "RABBIT MAC", "", [this](const std::string& value) {
+					hacksSend("rabbithunt " + value);
+				}, false));
+			}
+		}, "fa-keyboard");
+
+		if(stations.size() > 0)
+			{
+				s->addGroup(_("STATIONS LIST"));
+				for (auto sta : stations)
+					{
+						sta.name = getName("STA", sta.mac).name;
+						std::string _title			= (sta.name.empty() ? sta.mac : sta.name) + " / " + sta.vendor;
+						std::string _subtitle 	= (sta.ap.ssid.empty() ? "" : ssidFix(sta.ap.ssid) + " / ") + sta.ap.bssid + " / " + sta.ap.vendor;
+
+						s->addWithDescription(_title, _subtitle,
+							std::make_shared<TextComponent>(window, sta.rssi + "dBm", font, color),
+							[this, sta]
+						{
+							window->pushGui(new GuiMsgBox(window, _("DEAUTH AND FOLLOW") + "\n" + sta.mac + "\n?",
+								_("YES"), [this, window, sta] {
+									hacksSend("rabbithunt " + sta.mac);
+								}, _("NO"),nullptr));
+						}, wifiSignalIcon(sta.rssi));
+					}
+			}
 
 
 		window->pushGui(s);

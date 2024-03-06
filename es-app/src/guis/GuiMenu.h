@@ -817,6 +817,7 @@ private:
 	std::vector<AccessPoint> APSTAList(std::vector<WifiStation> stations, bool all = false);
 	void openSTADetail(WifiStation sta, bool lessAPinfo = false);
 
+	void openRabbitTargets();
 
 
 	void openIRlist();
