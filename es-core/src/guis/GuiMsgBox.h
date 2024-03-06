@@ -12,6 +12,7 @@ class ImageComponent;
 
 enum GuiMsgBoxIcon
 {
+	ICON_NONE,
 	ICON_AUTOMATIC,
 	ICON_INFORMATION,
 	ICON_QUESTION,
@@ -27,19 +28,19 @@ public:
 		const std::string& name1, const std::function<void()>& func1,
 		const std::string& name2, const std::function<void()>& func2,
 		const std::string& name3, const std::function<void()>& func3,
-		GuiMsgBoxIcon icon = ICON_AUTOMATIC,
+		GuiMsgBoxIcon icon = ICON_NONE,
 		std::string relIcon = "");
 
 
 	GuiMsgBox(Window* window, const std::string& text,
 		const std::string& name1, const std::function<void()>& func1,
 		const std::string& name2, const std::function<void()>& func2,
-		GuiMsgBoxIcon icon = ICON_AUTOMATIC,
+		GuiMsgBoxIcon icon = ICON_NONE,
 		std::string relIcon = "");
 
 	GuiMsgBox(Window* window, const std::string& text,
 		const std::string& name1 = "OK", const std::function<void()>& func1 = nullptr,
-		GuiMsgBoxIcon icon = ICON_AUTOMATIC,
+		GuiMsgBoxIcon icon = ICON_NONE,
 		std::string relIcon = "");
 
 	bool input(InputConfig* config, Input input) override;

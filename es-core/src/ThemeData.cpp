@@ -22,7 +22,7 @@ std::vector<std::string> ThemeData::sSupportedFeatures { { "video" }, { "carouse
 
 std::map<std::string, std::map<std::string, ThemeData::ElementPropertyType>> ThemeData::sElementMap {
 
-	{ "splash", {		
+	{ "splash", {
 		{ "backgroundColor", COLOR } } },
 
 	{ "control", { // Using "control" in themes.xml does affect the original type of the control when overriding common properties for multiple md_
@@ -50,14 +50,14 @@ std::map<std::string, std::map<std::string, ThemeData::ElementPropertyType>> The
 	{ "image", {
 		{ "pos", NORMALIZED_PAIR },
 		{ "size", NORMALIZED_PAIR },
-		
+
 		{ "x", FLOAT },
 		{ "y", FLOAT },
 		{ "h", FLOAT },
 		{ "w", FLOAT },
 		{ "scale", FLOAT },
 		{ "scaleOrigin", NORMALIZED_PAIR },
-		
+
 		{ "padding", NORMALIZED_RECT },
 
 		{ "offset", NORMALIZED_PAIR },
@@ -79,7 +79,7 @@ std::map<std::string, std::map<std::string, ThemeData::ElementPropertyType>> The
 		{ "visible", BOOLEAN },
 		{ "reflexion", NORMALIZED_PAIR },
 		{ "reflexionOnFrame", BOOLEAN },
-		{ "horizontalAlignment", STRING },		
+		{ "horizontalAlignment", STRING },
 		{ "verticalAlignment", STRING },
 		{ "roundCorners", FLOAT },
 		{ "opacity", FLOAT },
@@ -216,7 +216,7 @@ std::map<std::string, std::map<std::string, ThemeData::ElementPropertyType>> The
 		{ "scrollbarColor", COLOR },
 		{ "scrollbarSize", FLOAT },
 		{ "scrollbarCorner", FLOAT },
-		{ "scrollbarAlignment", STRING },		
+		{ "scrollbarAlignment", STRING },
 
 		{ "glowColor", COLOR },
 		{ "glowSize", FLOAT },
@@ -246,7 +246,7 @@ std::map<std::string, std::map<std::string, ThemeData::ElementPropertyType>> The
 		{ "opacity", FLOAT },
 		{ "rotation", FLOAT },
 		{ "rotationOrigin", NORMALIZED_PAIR },
-		
+
 		{ "padding", NORMALIZED_RECT },
 
 		{ "path", PATH },
@@ -325,12 +325,12 @@ std::map<std::string, std::map<std::string, ThemeData::ElementPropertyType>> The
 		{ "horizontalAlignment", STRING },
 
 		// Controllers
-		{ "imagePath", PATH },		
+		{ "imagePath", PATH },
 		{ "gunPath", PATH },
 		{ "color", COLOR },
 		{ "activityColor", COLOR },
 		{ "hotkeyColor", COLOR },
-		
+
 		// Wifi
 		{ "networkIcon", PATH },
 
@@ -346,7 +346,7 @@ std::map<std::string, std::map<std::string, ThemeData::ElementPropertyType>> The
 		{ "zIndex", FLOAT } } },
 	{ "batteryIndicator", {
 		{ "pos", NORMALIZED_PAIR },
-		{ "size", NORMALIZED_PAIR },	
+		{ "size", NORMALIZED_PAIR },
 
 		// Common
 		{ "itemSpacing", FLOAT },
@@ -426,7 +426,7 @@ std::map<std::string, std::map<std::string, ThemeData::ElementPropertyType>> The
 		{ "color", COLOR },
 		{ "snapshotSource", STRING }, // image, thumbnail, marquee
 		{ "defaultSnapshot", PATH },
-		{ "loops", FLOAT }, // Number of loops to do -1 (default) is infinite 
+		{ "loops", FLOAT }, // Number of loops to do -1 (default) is infinite
 		{ "audio", BOOLEAN },
 		{ "linearSmooth", BOOLEAN },
 		{ "saturation", FLOAT },
@@ -449,8 +449,8 @@ std::map<std::string, std::map<std::string, ThemeData::ElementPropertyType>> The
 		{ "logoPos", NORMALIZED_PAIR },
 		{ "logoAlignment", STRING },
 		{ "maxLogoCount", FLOAT },
-		{ "systemInfoDelay", FLOAT },	
-		{ "systemInfoCountOnly", BOOLEAN },		
+		{ "systemInfoDelay", FLOAT },
+		{ "systemInfoCountOnly", BOOLEAN },
 		{ "defaultTransition", STRING },
 		{ "minLogoOpacity", FLOAT },
 		{ "transitionSpeed", FLOAT },
@@ -491,9 +491,9 @@ std::map<std::string, std::map<std::string, ThemeData::ElementPropertyType>> The
 		{ "color", COLOR } } },
 	{ "menuGroup", {
 		{ "fontPath", PATH },
-		{ "fontSize", FLOAT },		
-		{ "lineSpacing", FLOAT },		
-		{ "alignment", STRING },			
+		{ "fontSize", FLOAT },
+		{ "lineSpacing", FLOAT },
+		{ "alignment", STRING },
 		{ "backgroundColor", COLOR },
 		{ "separatorColor", COLOR },
 		{ "visible", BOOLEAN },
@@ -508,7 +508,7 @@ std::map<std::string, std::map<std::string, ThemeData::ElementPropertyType>> The
 		{ "scrollbarSize", FLOAT },
 		{ "scrollbarCorner", FLOAT },
 		{ "scrollbarAlignment", STRING } } },
-	{ "menuIcons", { 		
+	{ "menuIcons", {
 		{ "iconSystem", PATH },
 		{ "iconUpdates", PATH },
 		{ "iconControllers", PATH },
@@ -566,7 +566,7 @@ std::string ThemeData::resolvePlaceholders(const char* in)
 }
 
 ThemeData::ThemeData()
-{	
+{
 	mPerGameOverrideTmp = false;
 	mColorset = Settings::getInstance()->getString("ThemeColorSet");
 	mIconset = Settings::getInstance()->getString("ThemeIconSet");
@@ -601,7 +601,7 @@ void ThemeData::loadFile(const std::string system, std::map<std::string, std::st
 
 	if (fromFile && !Utils::FileSystem::exists(path))
 		throw error << "File does not exist!";
-	
+
 	mVersion = 0;
 	mViews.clear();
 
@@ -620,7 +620,7 @@ void ThemeData::loadFile(const std::string system, std::map<std::string, std::st
 		else if (var.second == "true" || var.second == "false")
 			mEvaluatorVariables[var.first] = var.second == "true" ? 1 : 0;
 		else
-			mEvaluatorVariables[var.first] = var.second;		
+			mEvaluatorVariables[var.first] = var.second;
 	}
 
 	pugi::xml_document doc;
@@ -642,7 +642,7 @@ void ThemeData::loadFile(const std::string system, std::map<std::string, std::st
 
 	parseVariables(root);
 	parseTheme(root);
-	
+
 	std::string themeName = Utils::String::toLower(Settings::getInstance()->getString("ThemeSet"));
 	if (themeName.find("next-pixel") != std::string::npos || themeName.find("alekfull") != std::string::npos)
 	{
@@ -792,7 +792,7 @@ bool ThemeData::parseSubset(const pugi::xml_node& node)
 			mSubsets.push_back(subSet);
 		}
 	}
-	
+
 	if (subsetAttr == "colorset")
 	{
 		std::string perSystemSetName = Settings::getInstance()->getString("subset." + mSystemThemeFolder + ".colorset");
@@ -917,7 +917,7 @@ void ThemeData::parseInclude(const pugi::xml_node& node)
 	parseTheme(theme);
 
 	mPaths.pop_back();
-	*/	
+	*/
 }
 
 void ThemeData::parseFeature(const pugi::xml_node& node)
@@ -993,7 +993,7 @@ void ThemeData::parseVariables(const pugi::xml_node& root)
 {
 	// ThemeException error;
 	// error.setFiles(mPaths);
-    
+
 	for (pugi::xml_node variables = root.child("variables"); variables; variables = variables.next_sibling("variables"))
 	{
 		if (!parseFilterAttributes(variables))
@@ -1024,7 +1024,7 @@ void ThemeData::parseViewElement(const pugi::xml_node& node)
 		off = nameAttr.find_first_of(delim, prevOff);
 
 		if (std::find(sSupportedViews.cbegin(), sSupportedViews.cend(), viewKey) != sSupportedViews.cend())
-		{	
+		{
 			ThemeView& view = mViews.insert(std::pair<std::string, ThemeView>(viewKey, ThemeView())).first->second;
 			parseView(node, view);
 
@@ -1047,7 +1047,7 @@ bool ThemeData::parseFilterAttributes(const pugi::xml_node& node)
 
 	if (!parseLanguage(node))
 		return false;
-	
+
 	if (node.attribute("if"))
 	{
 		std::string ifAttribute = node.attribute("if").as_string();
@@ -1288,15 +1288,15 @@ void ThemeData::parseViews(const pugi::xml_node& root)
 
 	// parse views
 	for (pugi::xml_node node = root.child("view"); node; node = node.next_sibling("view"))
-		parseViewElement(node);	
+		parseViewElement(node);
 }
 
 void ThemeData::parseCustomViewBaseClass(const pugi::xml_node& root, ThemeView& view, std::string baseClass)
-{	
+{
 	auto baseviewit = mViews.find(baseClass);
 	if (baseviewit == mViews.cend())
 		return;
-	
+
 	// Avoid recursion
 	if (std::find(view.baseTypes.cbegin(), view.baseTypes.cend(), baseClass) != view.baseTypes.cend())
 		return;
@@ -1310,12 +1310,12 @@ void ThemeData::parseCustomViewBaseClass(const pugi::xml_node& root, ThemeView& 
 
 	for (auto& element : baseView.elements)
 	{
-		view.elements.erase(element.first);			
+		view.elements.erase(element.first);
 		view.elements.insert(std::pair<std::string, ThemeElement>(element.first, element.second));
 
 		if (std::find(view.orderedKeys.cbegin(), view.orderedKeys.cend(), element.first) == view.orderedKeys.cend())
 			view.orderedKeys.push_back(element.first);
-	}	
+	}
 }
 
 void ThemeData::parseCustomView(const pugi::xml_node& node, const pugi::xml_node& root)
@@ -1374,21 +1374,21 @@ void ThemeData::parseView(const pugi::xml_node& root, ThemeView& view, bool over
 	for(pugi::xml_node node = root.first_child(); node; node = node.next_sibling())
 	{
 		if(!node.attribute("name"))
-		{		
+		{
 			LOG(LogWarning) << "Element of type \"" << node.name() << "\" missing \"name\" attribute!";
 			continue;
-		}		
+		}
 
 		auto elemTypeIt = sElementMap.find(node.name());
 		if(elemTypeIt == sElementMap.cend())
-		{		
+		{
 			LOG(LogWarning) << "Unknown element of type \"" << node.name() << "\"!";
 			continue;
-		}		
+		}
 
 		if (!parseFilterAttributes(node))
 			continue;
-		
+
 		const char* delim = " \t\r\n,";
 		const std::string nameAttr = node.attribute("name").as_string();
 		size_t prevOff = nameAttr.find_first_not_of(delim, 0);
@@ -1404,7 +1404,7 @@ void ThemeData::parseView(const pugi::xml_node& root, ThemeView& view, bool over
 
 			if (std::find(view.orderedKeys.cbegin(), view.orderedKeys.cend(), elemKey) == view.orderedKeys.cend())
 				view.orderedKeys.push_back(elemKey);
-		}		
+		}
 	}
 }
 
@@ -1438,7 +1438,7 @@ bool ThemeData::parseRegion(const pugi::xml_node& node)
 	if (!node.attribute("region"))
 		return true;
 
-	const std::string nameAttr = Utils::String::toLower(node.attribute("region").as_string());	
+	const std::string nameAttr = Utils::String::toLower(node.attribute("region").as_string());
 	if (nameAttr.empty() || nameAttr == "default")
 		return true;
 
@@ -1454,7 +1454,7 @@ bool ThemeData::parseRegion(const pugi::xml_node& node)
 		mSubsets.push_back(Subset("region", nameAttr, nameAttr, "region"));
 
 	const char* delim = " \t\r\n,";
-	
+
 	size_t prevOff = nameAttr.find_first_not_of(delim, 0);
 	size_t off = nameAttr.find_first_of(delim, prevOff);
 	while (off != std::string::npos || prevOff != std::string::npos)
@@ -1731,7 +1731,7 @@ std::string ThemeData::getViewDisplayName(const std::string& view)
 
 		return viewIt->second.displayName;
 	}
-	
+
 	return view;
 }
 
@@ -1761,7 +1761,7 @@ const ThemeData::ThemeElement* ThemeData::getElement(const std::string& view, co
 
 	if(elemIt->second.type != expectedType && !expectedType.empty())
 	{
-		LOG(LogWarning) << " requested mismatched theme type for [" << view << "." << element << "] - expected \"" 
+		LOG(LogWarning) << " requested mismatched theme type for [" << view << "." << element << "] - expected \""
 			<< expectedType << "\", got \"" << elemIt->second.type << "\"";
 		return NULL;
 	}
@@ -1834,12 +1834,12 @@ std::vector<GuiComponent*> ThemeData::makeExtras(const std::shared_ptr<ThemeData
 	auto viewIt = theme->mViews.find(view);
 	if(viewIt == theme->mViews.cend())
 		return comps;
-	
+
 	for(auto it = viewIt->second.orderedKeys.cbegin(); it != viewIt->second.orderedKeys.cend(); it++)
 	{
 		ThemeElement& elem = viewIt->second.elements.at(*it);
 		if(elem.extra)
-		{			
+		{
 			if (type != ExtraImportType::ALL_EXTRAS)
 			{
 				bool take = false;
@@ -1879,7 +1879,7 @@ std::vector<GuiComponent*> ThemeData::makeExtras(const std::shared_ptr<ThemeData
 std::map<std::string, ThemeSet> ThemeData::getThemeSets()
 {
 	std::vector<std::string> paths =
-	{ 
+	{
 		Paths::getUserThemesPath(),
 		Paths::getThemesPath(),
 		Paths::getUserEmulationStationPath() + "/themes"
@@ -1893,7 +1893,7 @@ std::map<std::string, ThemeSet> ThemeData::getThemeSets()
 
 	std::map<std::string, ThemeSet> sets;
 
-	for (auto path : VectorHelper::distinct(paths, [](auto x) { return x; }))	
+	for (auto path : VectorHelper::distinct(paths, [](auto x) { return x; }))
 	{
 		if (!Utils::FileSystem::isDirectory(path))
 			continue;
@@ -1976,7 +1976,7 @@ ThemeData::ThemeMenu::ThemeMenu(ThemeData* theme)
 			Background.scrollbarSize = elem->get<float>("scrollbarSize");
 
 		if (elem->has("scrollbarCorner"))
-			Background.scrollbarCorner = elem->get<float>("scrollbarCorner");		
+			Background.scrollbarCorner = elem->get<float>("scrollbarCorner");
 
 		if (elem->has("scrollbarAlignment"))
 			Background.scrollbarAlignment = elem->get<float>("scrollbarAlignment");
@@ -2006,7 +2006,7 @@ ThemeData::ThemeMenu::ThemeMenu(ThemeData* theme)
 
 	elem = theme->getElement("menu", "menutextsmall", "menuTextSmall");
 	if (elem)
-	{		
+	{
 		Group.visible = true;
 
 		if (elem->has("fontPath") || elem->has("fontSize"))
@@ -2036,7 +2036,7 @@ ThemeData::ThemeMenu::ThemeMenu(ThemeData* theme)
 		if (elem->has("color"))
 			Text.color = elem->get<unsigned int>("color");
 		if (elem->has("separatorColor"))
-		{			
+		{
 			Text.separatorColor = elem->get<unsigned int>("separatorColor");
 			Group.separatorColor = Text.separatorColor;
 		}
@@ -2117,7 +2117,7 @@ ThemeData::ThemeMenu::ThemeMenu(ThemeData* theme)
 	if (elem && elem->has("path") && ResourceManager::getInstance()->fileExists(elem->get<std::string>("path")))
 		Icons.knob = elem->get<std::string>("path");
 
-	
+
 	elem = theme->getElement("menu", "menuicons", "menuIcons");
 	if (elem)
 	{
@@ -2130,9 +2130,9 @@ ThemeData::ThemeMenu::ThemeMenu(ThemeData* theme)
 	}
 }
 
-void ThemeData::setDefaultTheme(ThemeData* theme) 
-{ 
-	mDefaultTheme = theme; 
+void ThemeData::setDefaultTheme(ThemeData* theme)
+{
+	mDefaultTheme = theme;
 	mMenuTheme = nullptr;
 };
 
@@ -2179,7 +2179,7 @@ std::vector<std::string> ThemeData::getSubSetNames(const std::string ofView)
 				{
 					auto viewIt = mViews.find(ofView);
 					if (viewIt != mViews.cend())
-					{					
+					{
 						for (auto applyTo : it.appliesTo)
 						{
 							if (viewIt->second.isOfType(applyTo))
@@ -2235,7 +2235,7 @@ std::shared_ptr<ThemeData> ThemeData::clone(const std::string& viewName)
 	theme->mVersion = mVersion;
 	theme->mDefaultView = mDefaultView;
 	theme->mDefaultTransition = mDefaultTransition;
-	theme->mVariables = mVariables;	
+	theme->mVariables = mVariables;
 	theme->mSubsets = mSubsets;
 	theme->mColorset = mColorset;
 	theme->mIconset = mIconset;
@@ -2254,7 +2254,7 @@ std::shared_ptr<ThemeData> ThemeData::clone(const std::string& viewName)
 	}
 	else
 		theme->mViews = mViews;
-	
+
 	return theme;
 }
 

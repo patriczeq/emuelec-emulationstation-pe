@@ -27,7 +27,7 @@ OSDComponent::OSDComponent(Window* window)
 	mCheckTime = 0;
 	showme = -1;
 
-	auto theme = ThemeData::getMenuTheme();	
+	auto theme = ThemeData::getMenuTheme();
 
 	auto font = theme->TextSmall.font;
 	if (Renderer::isSmallScreen())
@@ -36,7 +36,7 @@ OSDComponent::OSDComponent(Window* window)
 	Vector2f fullSize(
 		2 * PADDING_PX + font->sizeText("100%").x(),
 		2 * PADDING_PX + Renderer::getScreenHeight() * 0.20f);
-	
+
 	fullSize.y() = fullSize.x() * 2.5f;
 
 	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight() / 8);
@@ -52,7 +52,7 @@ OSDComponent::OSDComponent(Window* window)
 
 	mLabelCurr = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_LEFT);
 	mLabelTotal = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_RIGHT);
-	
+
 	int h = font->sizeText("100%").y();
 
 	mLabelCurr->setPosition(16, 0);
@@ -171,14 +171,14 @@ void OSDComponent::render(const Transform4x4f& parentTrans)
 	float y = 20;
 	float w = Renderer::getScreenWidth() - 32;
 	float h = 12;
-	
+
 	auto theme = ThemeData::getMenuTheme();
 	// progressbar
 	//void drawRoundRect(float x, float y, float width, float height, float radius, unsigned int color, const Blend::Factor _srcBlendFactor, const Blend::Factor _dstBlendFactor)
 	//void drawRect(const float _x, const float _y, const float _w, const float _h, const unsigned int _color, const Blend::Factor _srcBlendFactor, const Blend::Factor _dstBlendFactor)
 	Renderer::drawRect(x, y, w, h, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
 	float px = w * (float(currTime) / float(totalTime));
-	Renderer::drawRect(x, y, px, h, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
+	Renderer::drawRect(x, y, px, h, (theme->Text.selectorColor & 0xFFFFFF00) | opacity);
 	// pause sign
 	if(paused)
 	{
@@ -190,6 +190,6 @@ void OSDComponent::render(const Transform4x4f& parentTrans)
 		Renderer::drawRect(pauseCenter - pauseSpace - pauseW, pauseY, pauseW, pauseH, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
 		Renderer::drawRect(pauseCenter + pauseSpace, pauseY, pauseW, pauseH, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
 	}
-	
+
 
 }

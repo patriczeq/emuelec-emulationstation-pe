@@ -76,7 +76,7 @@ GuiMsgBox::GuiMsgBox(Window* window, const std::string& text,
 
 	if(!relIcon.empty())
 		{
-			imageFile = ":/fa-svg/" + relIcon + ".svg";
+			imageFile = ":/" + relIcon + ".svg";
 		}
 
 	if (!imageFile.empty() && ResourceManager::getInstance()->fileExists(imageFile) /*&& !Renderer::isSmallScreen()*/)

@@ -752,19 +752,19 @@ private:
 									output+= input.at(0);
 									output+= input.at(1);
 									output+= ":";
-									output = input.at(2);
+									output+= input.at(2);
 									output+= input.at(3);
 									output+= ":";
-									output = input.at(4);
+									output+= input.at(4);
 									output+= input.at(5);
 									output+= ":";
-									output = input.at(6);
+									output+= input.at(6);
 									output+= input.at(7);
 									output+= ":";
-									output = input.at(8);
+									output+= input.at(8);
 									output+= input.at(9);
 									output+= ":";
-									output = input.at(10);
+									output+= input.at(10);
 									output+= input.at(11);
 			return output;
 		}
