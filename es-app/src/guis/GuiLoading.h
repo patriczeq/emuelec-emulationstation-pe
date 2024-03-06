@@ -26,7 +26,7 @@ template<typename T>
 class GuiLoading : public GuiComponent, public IGuiLoadingHandler
 {
 public:
-	GuiLoading(Window *window, const std::string title, const std::function<T(IGuiLoadingHandler*)> &func, const std::function<void(T)> &func2 = nullptr, const std::function<void(T)> &cancell = nullptr)
+	GuiLoading(Window *window, const std::string title, const std::function<T(IGuiLoadingHandler*)> &func, const std::function<void(T)> &func2 = nullptr, const std::function<void()> &cancell = nullptr)
 		: GuiComponent(window), mBusyAnim(window), mFunc(func), mFunc2(func2)
 	{
 		setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
