@@ -26,7 +26,7 @@ template<typename T>
 class GuiLoading : public GuiComponent, public IGuiLoadingHandler
 {
 public:
-	GuiLoading(Window *window, const std::string title, const std::function<T(IGuiLoadingHandler*)> &func, const std::function<void(T)> &func2 = nullptr, const std::function<void()> &cancell = nullptr)
+	GuiLoading(Window *window, const std::string title, const std::function<T(IGuiLoadingHandler*)> &func, const std::function<void(T)> &func2 = nullptr)
 		: GuiComponent(window), mBusyAnim(window), mFunc(func), mFunc2(func2)
 	{
 		setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
@@ -39,11 +39,6 @@ public:
 		mHandle = new std::thread(&GuiLoading::threadLoading, this);
 		mBusyAnim.setText(title);
 		mBusyAnim.setSize(mSize);
-
-		if(cancell != nullptr)
-			{
-				mCancell = cancell;
-			}
 
 		mBusyAnim.setOpacity(0);
 		auto fadeFunc = [this](float t) { mBusyAnim.setOpacity((unsigned char) (Math::easeOutCubic(t) * 255.0f)); };
@@ -83,11 +78,6 @@ public:
 
 	bool input(InputConfig *config, Input input) override
 	{
-		if(config->isMappedTo(BUTTON_BACK, input) && input.value != 0 && mCancell != nullptr)
-		{
-			mCancell();
-			// run cancell call
-		}
 		return false;
 	}
 
@@ -147,7 +137,6 @@ private:
 
     const std::function<T(IGuiLoadingHandler*)> mFunc;
     const std::function<void(T)> mFunc2;
-		const std::function<void()> mCancell = nullptr;
     T result;
 };
 

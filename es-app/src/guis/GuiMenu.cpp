@@ -2032,9 +2032,6 @@ void GuiMenu::scanBSSIDS(bool all)
 				{
 					window->pushGui(new GuiMsgBox(window, _("NO AP FOUND!"),_("OK"),nullptr));
 				}
-			},
-			[this]{
-				hacksSend("stop");
 			}
 		));
 	}
