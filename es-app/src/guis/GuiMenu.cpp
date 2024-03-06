@@ -1233,7 +1233,7 @@ void GuiMenu::openRabbitTargets()
 									oskTitle+= " RABBIT MAC ADDR";
 			if (Settings::getInstance()->getBool("UseOSK"))
 			{
-				mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, oskTitle, "", [this](const std::string& value) {
+				mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, oskTitle, "", [this, window](const std::string& value) {
 					if(!isMac(value))
 						{
 							window->pushGui(new GuiMsgBox(window, _("BAD MAC ADDRESS") + "\n" + value + "\n?", _("OK"),nullptr));
@@ -1248,7 +1248,7 @@ void GuiMenu::openRabbitTargets()
 			}
 			else
 			{
-				mWindow->pushGui(new GuiTextEditPopup(mWindow, oskTitle, "", [this](const std::string& value) {
+				mWindow->pushGui(new GuiTextEditPopup(mWindow, oskTitle, "", [this, window](const std::string& value) {
 					if(!isMac(value))
 						{
 							window->pushGui(new GuiMsgBox(window, _("BAD MAC ADDRESS") + "\n" + value + "\n?", _("OK"),nullptr));
