@@ -1228,7 +1228,7 @@ void GuiMenu::openRabbitTargets()
 
 		addESP01Buttons(window, s);
 
-		s->addEntry(_("MANUAL INPUT"), false, [this] {
+		s->addEntry(_("MANUAL INPUT"), false, [this, window] {
 			std::string oskTitle = _U("\uf708");
 									oskTitle+= " RABBIT MAC ADDR";
 			if (Settings::getInstance()->getBool("UseOSK"))
