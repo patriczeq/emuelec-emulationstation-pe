@@ -1280,18 +1280,39 @@ void GuiMenu::openRabbitTargets()
 
 		window->pushGui(s);
 	}
-void GuiMenu::huntRabbit(std::string mac)
+void GuiMenu::huntRabbit(std::string mac, bool isAP, std::string ssid)
 	{
 		std::string fixMac = macAddr(mac);
-		std::string msg = "FOLLOW THE ";
-								msg+= fixMac;
-								msg+= " RABBIT?\n";
-		mWindow->pushGui(new GuiMsgBox(mWindow, _("DEAUTH AND FOLLOW") + "\n" + fixMac + "\n?",
-			_("YES"), [this, fixMac] {
-				hacksSend("rabbit " + fixMac);
-				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
-				appLauncher("ttyprint.sh " + port, false);
-			}, _("NO"),nullptr, ICON_AUTOMATIC, "fa-rabbit"));
+
+		Window* window = mWindow;
+		std::string Title = _U("\uf708");	// rabbit icon
+								Title+= " ";
+								Title+= isAP ? _U("\uf8da") : _U("\ue1f0");
+								Title += " " + (isAP ? (ssid.empty() ? fixMac : ssid) : fixMac);
+		auto s = new GuiSettings(window, Title);
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+
+		s->addEntry(_("FOLLOW THE WHITE RABBIT"), false, [this, fixMac]{ // pktsniff - RSSI, BSSID, CHANNEL
+			hacksSend("rabbit " + fixMac);
+			std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+			appLauncher("ttyprint.sh " + port, false);
+		}, "fa-rabbit");
+
+		s->addEntry(_("RABBIT HUNT"), false, [this, fixMac]{	// pktsniff + deauth (update BSSID + channel, rabbit can jump to another AP) - RSSI, BSSID, CHANNEL, JUMPS
+			hacksSend("rabbithunt " + fixMac);
+			std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+			appLauncher("ttyprint.sh " + port, false);
+		}, "fa-rabbit-running");
+
+		s->addEntry(_("MAD RABBIT"), false, [this, fixMac]{	// sent bad auth requests with rabbit mac to its AP
+			hacksSend("rabbitspam " + fixMac);
+			std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+			appLauncher("ttyprint.sh " + port, false);
+		}, "face-zany");
+
+		window->pushGui(s);
 	}
 // SCAN DATABASE
 //std::vector<ScanDB_AP> ScanDB;
