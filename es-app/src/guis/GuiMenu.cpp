@@ -1261,7 +1261,7 @@ void GuiMenu::openRabbitTargets()
 
 		if(stalist.size() > 0)
 			{
-				s->addGroup(_("STATIONS LIST") + " (" + stalist.size() + ")");
+				s->addGroup(_("STATIONS LIST") + " (" + std::to_string(stations.size()) + ")");
 				for (auto sta : stalist)
 					{
 						sta.name = getName("STA", sta.mac).name;
