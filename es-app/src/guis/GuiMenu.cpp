@@ -1271,7 +1271,7 @@ void GuiMenu::openRabbitTargets()
 							std::make_shared<TextComponent>(window, ap.rssi + "dBm", font, color),
 							[this, window, ap]
 						{
-							huntRabbit(ap.bssid);
+							huntRabbit(ap.bssid, ap.channel);
 						}, wifiSignalIcon(ap.rssi));
 					}
 			}
@@ -1289,7 +1289,7 @@ void GuiMenu::openRabbitTargets()
 							std::make_shared<TextComponent>(window, sta.rssi + "dBm", font, color),
 							[this, window, sta]
 						{
-							huntRabbit(sta.mac);
+							huntRabbit(sta.mac, sta.ap.channel);
 						}, wifiSignalIcon(sta.rssi));
 					}
 			}
@@ -1297,16 +1297,21 @@ void GuiMenu::openRabbitTargets()
 
 		window->pushGui(s);
 	}
-void GuiMenu::huntRabbit(std::string mac)
+void GuiMenu::huntRabbit(std::string mac, std::string channel)
 	{
 		std::string fixMac = macAddr(mac);
 		mWindow->pushGui(new GuiMsgBox(mWindow, _("FOLLOW") + "\n" + fixMac + "\n?",
-			_("YES"), [this, fixMac] {
-				hacksSend("rabbit " + fixMac);
+			_("YES"), [this, fixMac, channel] {
+				hacksSend("sniffmac " + fixMac + " " + channel + " 10000000");
 				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
 				appLauncher("ttyprint.sh " + port, false);
-			}, _("NO"), nullptr));
-
+			},
+			_("RSSI"), [this, fixMac] {
+				hacksSend("rssimon " + fixMac + " 10000000");
+				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+				appLauncher("ttyprint.sh " + port, false);
+			},
+			 _("NO"), nullptr));
 	}
 // SCAN DATABASE
 //std::vector<ScanDB_AP> ScanDB;
@@ -1507,8 +1512,8 @@ void GuiMenu::openScanDBItem(ScanDB_STA sta)
 							runSystemCommand("hacks.sh " + port + " deauthsta " + sta.mac + " " + sta.bssid + " " + apCH, "", nullptr);
 						}, _("CANCEL"),nullptr));
 					}, "fa-chain-broken");
-				s->addEntry(_("FOLLOW THE WHITE RABBIT"), false, [this, window, sta]() {
-						huntRabbit(sta.mac);
+				s->addEntry(_("FOLLOW THE WHITE RABBIT"), false, [this, window, sta, apCH]() {
+						huntRabbit(sta.mac, apCH);
 					}, "fa-rabbit");
 		s->addGroup(_("MANAGEMENT"));
 			s->addEntry(_("REMOVE FROM DATABASE"), false, [this, window, sta]() {
@@ -2030,7 +2035,7 @@ void GuiMenu::openWPSpwned(std::string raw)
 					},"fa-skull");
 			}
 			s->addEntry(_("FOLLOW THE WHITE RABBIT"), true, [this, ap]() {
-					huntRabbit(ap.bssid);
+					huntRabbit(ap.bssid, ap.channel);
 				},"fa-rabbit");
 		s->addGroup(_("TOOLS"));
 			s->addEntry(_("SAVE NETWORK"), false, [this, window, ap]() {
@@ -2543,7 +2548,7 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 										},"fa-skull");
 								}
 								s->addEntry(_("FOLLOW THE WHITE RABBIT"), true, [this, ap]() {
-										huntRabbit(ap.bssid);
+										huntRabbit(ap.bssid, ap.channel);
 									},"fa-rabbit");
 						}
 			}
@@ -2784,7 +2789,7 @@ void GuiMenu::openSTADetail(WifiStation sta, bool lessAPinfo)
 					}, _("CANCEL"),nullptr));
 				}, "fa-chain-broken");
 			s->addEntry(_("FOLLOW THE WHITE RABBIT"), false, [this, window, sta]() {
-					huntRabbit(sta.mac);
+					huntRabbit(sta.mac, sta.ap.channel);
 				}, "fa-rabbit");
 
 		window->pushGui(s);
@@ -2902,7 +2907,7 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 					},"fa-skull");
 			}
 			s->addEntry(_("FOLLOW THE WHITE RABBIT"), true, [this, ap]() {
-					huntRabbit(ap.bssid);
+					huntRabbit(ap.bssid, ap.channel);
 				},"fa-rabbit");
 
 
