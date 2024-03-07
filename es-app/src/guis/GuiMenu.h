@@ -897,7 +897,7 @@ private:
 	void openSTADetail(WifiStation sta, bool lessAPinfo = false);
 
 	void openRabbitTargets();
-	void huntRabbit(std::string mac, bool isAP = false, std::string ssid = "");
+	void huntRabbit(std::string mac);
 
 	void openIRlist();
 	void sendIRcode(int code = -1);

@@ -1259,6 +1259,23 @@ void GuiMenu::openRabbitTargets()
 			}
 		}, "fa-keyboard");
 
+		if(scanlist.size())
+			{
+				s->addGroup(_("ACCESSPOINTS LIST") + " (" + std::to_string(scanlist.size()) + ")");
+				for (auto ap : scanlist)
+					{
+						std::string _title			= (ap.ssid.empty() ? ap.bssid : ap.ssid);
+						std::string _subtitle 	= (ap.ssid.empty() ? "" : ap.bssid + " / ") + ap.vendor;
+
+						s->addWithDescription(_title, _subtitle,
+							std::make_shared<TextComponent>(window, ap.rssi + "dBm", font, color),
+							[this, window, ap]
+						{
+							huntRabbit(ap.bssid);
+						}, wifiSignalIcon(ap.rssi));
+					}
+			}
+
 		if(stalist.size() > 0)
 			{
 				s->addGroup(_("STATIONS LIST") + " (" + std::to_string(stalist.size()) + ")");
@@ -1280,39 +1297,16 @@ void GuiMenu::openRabbitTargets()
 
 		window->pushGui(s);
 	}
-void GuiMenu::huntRabbit(std::string mac, bool isAP, std::string ssid)
+void GuiMenu::huntRabbit(std::string mac)
 	{
 		std::string fixMac = macAddr(mac);
+		mWindow->pushGui(new GuiMsgBox(mWindow, _("FOLLOW") + "\n" + fixMac + "\n?",
+			_("YES"), [this, fixMac] {
+				hacksSend("rabbit " + fixMac);
+				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+				appLauncher("ttyprint.sh " + port, false);
+			}, _("NO"), nullptr));
 
-		Window* window = mWindow;
-		std::string Title = _U("\uf708");	// rabbit icon
-								Title+= " ";
-								Title+= isAP ? _U("\uf8da") : _U("\ue1f0");
-								Title += " " + (isAP ? (ssid.empty() ? fixMac : ssid) : fixMac);
-		auto s = new GuiSettings(window, Title);
-		auto theme = ThemeData::getMenuTheme();
-		std::shared_ptr<Font> font = theme->Text.font;
-		unsigned int color = theme->Text.color;
-
-		s->addEntry(_("FOLLOW THE WHITE RABBIT"), false, [this, fixMac]{ // pktsniff - RSSI, BSSID, CHANNEL
-			hacksSend("rabbit " + fixMac);
-			std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
-			appLauncher("ttyprint.sh " + port, false);
-		}, "fa-rabbit");
-
-		s->addEntry(_("RABBIT HUNT"), false, [this, fixMac]{	// pktsniff + deauth (update BSSID + channel, rabbit can jump to another AP) - RSSI, BSSID, CHANNEL, JUMPS
-			hacksSend("rabbithunt " + fixMac);
-			std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
-			appLauncher("ttyprint.sh " + port, false);
-		}, "fa-rabbit-running");
-
-		s->addEntry(_("MAD RABBIT"), false, [this, fixMac]{	// sent bad auth requests with rabbit mac to its AP
-			hacksSend("rabbitspam " + fixMac);
-			std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
-			appLauncher("ttyprint.sh " + port, false);
-		}, "face-zany");
-
-		window->pushGui(s);
 	}
 // SCAN DATABASE
 //std::vector<ScanDB_AP> ScanDB;
@@ -1699,6 +1693,9 @@ void GuiMenu::openName(HackName name)
 								runSystemCommand("hacks.sh " + port + " deauthsta " + name.id + " " + name.bssid + " " + name.channel, "", nullptr);
 							}, _("CANCEL"),nullptr));
 					}, "fa-chain-broken");
+					s->addEntry(_("FOLLOW THE WHITE RABBIT"), true, [this, name]() {
+							huntRabbit(name.id);
+						},"fa-rabbit");
 
 			}
 		else if(name.type == "AP")
@@ -1732,6 +1729,10 @@ void GuiMenu::openName(HackName name)
 									hacksSend("deauthapcaptive " + name.id);
 								}, _("CANCEL"),nullptr));
 						},"fa-skull");
+					s->addEntry(_("FOLLOW THE WHITE RABBIT"), true, [this, name]() {
+							huntRabbit(name.id);
+						},"fa-rabbit");
+
 			if(!name.password.empty())
 				{
 					s->addGroup(_("TOOLS"));
@@ -2028,6 +2029,9 @@ void GuiMenu::openWPSpwned(std::string raw)
 							}, _("CANCEL"),nullptr));
 					},"fa-skull");
 			}
+			s->addEntry(_("FOLLOW THE WHITE RABBIT"), true, [this, ap]() {
+					huntRabbit(ap.bssid);
+				},"fa-rabbit");
 		s->addGroup(_("TOOLS"));
 			s->addEntry(_("SAVE NETWORK"), false, [this, window, ap]() {
 				HackName n;
@@ -2538,6 +2542,9 @@ void GuiMenu::openSTAmenu(std::vector<WifiStation> stations, std::string bssid, 
 												}, _("CANCEL"),nullptr));
 										},"fa-skull");
 								}
+								s->addEntry(_("FOLLOW THE WHITE RABBIT"), true, [this, ap]() {
+										huntRabbit(ap.bssid);
+									},"fa-rabbit");
 						}
 			}
 		bool lessAPinfo = bssid != "";
@@ -2894,6 +2901,9 @@ void GuiMenu::openDEAUTHMenu(AccessPoint ap)
 							}, _("CANCEL"),nullptr));
 					},"fa-skull");
 			}
+			s->addEntry(_("FOLLOW THE WHITE RABBIT"), true, [this, ap]() {
+					huntRabbit(ap.bssid);
+				},"fa-rabbit");
 
 
 
