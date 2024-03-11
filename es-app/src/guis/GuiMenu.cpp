@@ -843,7 +843,7 @@ void GuiMenu::openESP01Settings()
 
 		auto esp_in_menu = std::make_shared<SwitchComponent>(mWindow);
 		esp_in_menu->setState(SystemConf::getInstance()->get("pe_hack.esp_in_menu") == "1");
-		s->addWithLabel(_("DEAUTHER IN MAIN MENU"), sta_cat);
+		s->addWithLabel(_("DEAUTHER IN MAIN MENU"), esp_in_menu);
 		s->addSaveFunc([esp_in_menu] {
 			if (esp_in_menu->changed()) {
 				bool enabled = esp_in_menu->getState();
