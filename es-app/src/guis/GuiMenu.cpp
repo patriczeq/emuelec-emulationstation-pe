@@ -220,32 +220,37 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 	// QUIT >
 
 
-	std::string qTitle = _U("\ue12f");// Y - logout, _U("\uF2F5");
+	/*std::string qTitle = _U("\ue12f");// Y - logout, _U("\ue12f");
 							qTitle+= " ";
-							qTitle+= _("QUIT");
+							qTitle+= _("QUIT");*/
 
 	std::string sTitle = _U("\ue12e");// X - logout, _U("\uF2F5");
 							sTitle+= " ";
-							sTitle+= _("SHUTDOWN");
+							sTitle+= _("QUIT");
 
-	addButton(qTitle, _("quit"), [this] {
+	/*addButton(qTitle, _("quit"), [this] {
 		openQuitMenu();
-	});
-	addButton(sTitle, _("shutdown"), [this] {
+	});*/
+	addButton(sTitle, _("quit"), [this] {
 		mWindow->pushGui(new GuiMsgBox(mWindow, _("REALLY SHUTDOWN?"),
 			_("YES"), [] { quitES(QuitMode::SHUTDOWN); },
 			_("NO"), nullptr));
 	});
 
 	mapXcallback([this] {
-		mWindow->pushGui(new GuiMsgBox(mWindow, _("REALLY SHUTDOWN?"),
-			_("YES"), [] { quitES(QuitMode::SHUTDOWN); },
-			_("NO"), nullptr));
-	});
-
-	mapYcallback([this] {
 		openQuitMenu();
+		/*mWindow->pushGui(new GuiMsgBox(mWindow, _("REALLY SHUTDOWN?"),
+			_("YES"), [] { quitES(QuitMode::SHUTDOWN); },
+			_("NO"), nullptr));*/
 	});
+	if(SystemConf::getInstance()->get("pe_hack.enabled") == "1")
+		{
+			mapYcallback([this] {
+				ESP01MenuLoader();
+				//openQuitMenu();
+			});
+		}
+
 	// KODI
 #ifdef _ENABLE_KODI_
 	if (SystemConf::getInstance()->getBool("kodi.enabled", true) && ApiSystem::getInstance()->isScriptingSupported(ApiSystem::KODI))
@@ -318,37 +323,10 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		}, "iconSound");*/
 
 		// pe-hacks
-		if(SystemConf::getInstance()->get("pe_hack.enabled") == "1")
+		if(SystemConf::getInstance()->get("pe_hack.enabled") == "1" && SystemConf::getInstance()->get("pe_hack.esp_in_menu") == "1")
 			{
-				addEntry("H4CK TH3 FK1N W0RLD", true, [this, window] {
-					// prepare port - set baudrate
-					std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
-					std::string baud = Settings::getInstance()->getString("pe_hack.uart_baud");
-					runSystemCommand("hacks.sh " + port + " -b " + baud, "", nullptr);
-
-					mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("Connecting..."),
-						[this, window](auto gui)
-						{
-							mWaitingLoad = true;
-							loadNames();
-							return hacksGet("knock");
-						},
-						[this, window](std::vector<std::string> knock)
-						{
-							mWaitingLoad = false;
-							if(knock.size() == 1 && knock.at(0) == "deauther")
-								{
-									hacksSend("bright " + std::to_string(Settings::getInstance()->getInt("pe_hack.neobright")));
-									openESP01Menu();
-								}
-							else
-								{
-									window->pushGui(new GuiMsgBox(window, _("FAILED TO CONNECT!"),_("OPEN ANYWAY"),[this]{
-										openESP01Menu();
-									},_("CANCEL"), nullptr));
-								}
-						}
-					));
+				addEntry("H4CK TH3 FK1N W0RLD", true, [this] {
+					ESP01MenuLoader();
 				}, "fa-skull");
 			}
 
@@ -810,7 +788,7 @@ void GuiMenu::openESP01Settings()
 	{
 		Window* window = mWindow;
 		auto s = new GuiSettings(window, "DEAUTHER SETTINGS");
-		s->addEntry(_("START OTA AP"), false, [this, window] {
+		/*s->addEntry(_("START OTA AP"), false, [this, window] {
 			mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("PREPARING OTA AP..."),
 				[this, window](auto gui)
 				{
@@ -832,7 +810,47 @@ void GuiMenu::openESP01Settings()
 					//ESP01_OTA_SERVER;OTA.8266;https://192.168.4.1/update
 				}
 			));
-		}, "fa-cloud-arrow-up");
+		}, "fa-cloud-arrow-up");*/
+
+		/*auto s = new GuiSettings(window, Title);
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+		std::string oskTitle = _("CUSTOM TITLE");
+		std::string currTitle = SystemConf::getInstance()->get("pe_hack.deauth_title");
+		std::string currIcon = SystemConf::getInstance()->get("pe_hack.deauth_icon");
+		s->addWithDescription(oskTitle, "",
+			std::make_shared<TextComponent>(window, currTitle, font, color),
+			[this, window]
+		{
+			if (Settings::getInstance()->getBool("UseOSK"))
+			{
+				mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, oskTitle, currTitle, [this, window](const std::string& value) {
+					Settings::getInstance()->setString("pe_hack.deauth_title", value);
+				}, false));
+			}
+			else
+			{
+				mWindow->pushGui(new GuiTextEditPopup(mWindow, oskTitle, currTitle, [this, window](const std::string& value) {
+					Settings::getInstance()->setString("pe_hack.deauth_title", value);
+				}, false));
+			}
+		}, "fa-pen-to-square");
+
+		s->addEntry("Icon", true, [this]{
+
+		}, SystemConf::getInstance()->get("pe_hack.deauth_icon") == "" ? "fa-skull" : SystemConf::getInstance()->get("pe_hack.deauth_icon"));*/
+
+		auto esp_in_menu = std::make_shared<SwitchComponent>(mWindow);
+		esp_in_menu->setState(SystemConf::getInstance()->get("pe_hack.esp_in_menu") == "1");
+		s->addWithLabel(_("DEAUTHER IN MAIN MENU"), sta_cat);
+		s->addSaveFunc([esp_in_menu] {
+			if (esp_in_menu->changed()) {
+				bool enabled = esp_in_menu->getState();
+				SystemConf::getInstance()->set("pe_hack.esp_in_menu", enabled ? "1" : "0");
+				SystemConf::getInstance()->saveSystemConf();
+			}
+		});
 
 		// ----------------------------------------------------------- MAIN SETTINGS
 		s->addGroup(_("UART"));
@@ -989,7 +1007,38 @@ void GuiMenu::addESP01Buttons(Window* window, GuiSettings* s)
 		});
 
 	}
+void GuiMenu::ESP01MenuLoader()
+	{
+		Window* window = mWindow;
+		// prepare port - set baudrate
+		std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+		std::string baud = Settings::getInstance()->getString("pe_hack.uart_baud");
+		runSystemCommand("hacks.sh " + port + " -b " + baud, "", nullptr);
 
+		mWindow->pushGui(new GuiLoading<std::vector<std::string>>(window, _("Connecting..."),
+			[this, window](auto gui)
+			{
+				mWaitingLoad = true;
+				loadNames();
+				return hacksGet("knock");
+			},
+			[this, window](std::vector<std::string> knock)
+			{
+				mWaitingLoad = false;
+				if(knock.size() == 1 && knock.at(0) == "deauther")
+					{
+						hacksSend("bright " + std::to_string(Settings::getInstance()->getInt("pe_hack.neobright")));
+						openESP01Menu();
+					}
+				else
+					{
+						window->pushGui(new GuiMsgBox(window, _("FAILED TO CONNECT!"),_("OPEN ANYWAY"),[this]{
+							openESP01Menu();
+						},_("CANCEL"), nullptr));
+					}
+			}
+		));
+	}
 void GuiMenu::openESP01Menu()
 	{
   	Window* window = mWindow;
@@ -1302,15 +1351,16 @@ void GuiMenu::huntRabbit(std::string mac, std::string channel)
 		std::string fixMac = macAddr(mac);
 		mWindow->pushGui(new GuiMsgBox(mWindow, _("FOLLOW") + "\n" + fixMac + "\n?",
 			_("YES"), [this, fixMac, channel] {
-				hacksSend("sniffmac " + fixMac + " " + channel + " 10000000");
+				appLauncher("mon.sh " + port + " " + fixMac, false);
+				/*hacksSend("sniffmac " + fixMac + (channel == "0" ? "" : " " + channel) + " 10000000");
 				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
-				appLauncher("ttyprint.sh " + port, false);
+				appLauncher("ttyprint.sh " + port, false);*/
 			},
-			_("RSSI"), [this, fixMac] {
+			/*_("RSSI"), [this, fixMac] {
 				hacksSend("rssimon " + fixMac + " 10000000");
 				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
 				appLauncher("ttyprint.sh " + port, false);
-			},
+			},*/
 			 _("NO"), nullptr));
 	}
 // SCAN DATABASE

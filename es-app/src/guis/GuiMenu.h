@@ -880,6 +880,7 @@ private:
 				}
 			return _U("\uf694");
 		}
+	void ESP01MenuLoader();
 	void openESP01Menu();
 	void addESP01Buttons(Window* window, GuiSettings* s);
 	//void addESP01ScanButtons(Window* window, GuiSettings* s, uint8_t type = 0);
