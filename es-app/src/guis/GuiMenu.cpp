@@ -1351,6 +1351,7 @@ void GuiMenu::huntRabbit(std::string mac, std::string channel)
 		std::string fixMac = macAddr(mac);
 		mWindow->pushGui(new GuiMsgBox(mWindow, _("FOLLOW") + "\n" + fixMac + "\n?",
 			_("YES"), [this, fixMac, channel] {
+				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
 				appLauncher("mon.sh " + port + " " + fixMac, false);
 				/*hacksSend("sniffmac " + fixMac + (channel == "0" ? "" : " " + channel) + " 10000000");
 				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
