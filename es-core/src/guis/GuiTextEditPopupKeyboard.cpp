@@ -270,7 +270,7 @@ GuiTextEditPopupKeyboard::GuiTextEditPopupKeyboard(Window* window, const std::st
 		else*/
 			setSize(OSK_WIDTH, mTitle->getFont()->getHeight() + textHeight + mKeyboardGrid->getSize().y() + 40);
 
-		setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - OSK_HEIGHT)/*(Renderer::getScreenHeight() - mSize.y()) / 2*/);
+		setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - (Renderer::getScreenHeight() - OSK_HEIGHT))/*(Renderer::getScreenHeight() - mSize.y()) / 2*/);
 	}
 	else
 	{
