@@ -270,14 +270,14 @@ GuiTextEditPopupKeyboard::GuiTextEditPopupKeyboard(Window* window, const std::st
 		else*/
 			setSize(OSK_WIDTH, mTitle->getFont()->getHeight() + textHeight + mKeyboardGrid->getSize().y() + 40);
 
-		setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - (Renderer::getScreenHeight() - OSK_HEIGHT))/*(Renderer::getScreenHeight() - mSize.y()) / 2*/);
+		setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - OSK_HEIGHT)/*(Renderer::getScreenHeight() - mSize.y()) / 2*/);
 	}
 	else
 	{
 		//setSize(OSK_WIDTH, mTitle->getFont()->getHeight() + textHeight + 40 + (Renderer::getScreenHeight() * 0.085f) * 6);
 		setSize(OSK_WIDTH, OSK_HEIGHT);
 		setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2);
-		animateTo(Vector2f((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2));
+		animateTo(Vector2f((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - OSK_HEIGHT)/*(Renderer::getScreenHeight() - mSize.y()) / 2)*/);
 	}
 }
 
