@@ -3834,7 +3834,7 @@ void GuiMenu::addVersionInfo()
 		else
 		{
 #ifdef _ENABLEEMUELEC
-		label = "H4CK-G0 v" + std::string("1.5") + /*" EMUELEC V" + ApiSystem::getInstance()->getVersion() + buildDate +*/ " IP:" + getShOutput(R"(/usr/bin/emuelec-utils getip)");
+		label = "H4CK-G0 v" + std::string("1.6") + /*" EMUELEC V" + ApiSystem::getInstance()->getVersion() + buildDate +*/ " IP:" + getShOutput(R"(/usr/bin/emuelec-utils getip)");
 #else
 			std::string aboutInfo = ApiSystem::getInstance()->getApplicationName() + " V" + ApiSystem::getInstance()->getVersion();
 			label = aboutInfo + buildDate;
