@@ -232,16 +232,13 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		openQuitMenu();
 	});*/
 	addButton(sTitle, _("quit"), [this] {
-		mWindow->pushGui(new GuiMsgBox(mWindow, _("REALLY SHUTDOWN?"),
-			_("YES"), [] { quitES(QuitMode::SHUTDOWN); },
-			_("NO"), nullptr));
+		openQuitMenu();
 	});
 
 	mapXcallback([this] {
-		openQuitMenu();
-		/*mWindow->pushGui(new GuiMsgBox(mWindow, _("REALLY SHUTDOWN?"),
+		mWindow->pushGui(new GuiMsgBox(mWindow, _("REALLY SHUTDOWN?"),
 			_("YES"), [] { quitES(QuitMode::SHUTDOWN); },
-			_("NO"), nullptr));*/
+			_("NO"), nullptr));
 	});
 	if(SystemConf::getInstance()->get("pe_hack.enabled") == "1")
 		{

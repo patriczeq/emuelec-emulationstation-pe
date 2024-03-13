@@ -5,7 +5,7 @@
 #include "LocaleES.h"
 #include "SystemConf.h"
 
-#define OSK_WIDTH (/*Renderer::isSmallScreen() ? Renderer::getScreenWidth() : */Renderer::getScreenWidth() * 0.78f)
+#define OSK_WIDTH (/*Renderer::isSmallScreen() ? Renderer::getScreenWidth() : */Renderer::getScreenWidth() /** 0.78f*/)
 #define OSK_HEIGHT (/*Renderer::isSmallScreen() ? Renderer::getScreenHeight() : */Renderer::getScreenHeight() * 0.60f)
 
 #define OSK_PADDINGX (Renderer::getScreenWidth() * 0.02f)
@@ -270,7 +270,7 @@ GuiTextEditPopupKeyboard::GuiTextEditPopupKeyboard(Window* window, const std::st
 		else*/
 			setSize(OSK_WIDTH, mTitle->getFont()->getHeight() + textHeight + mKeyboardGrid->getSize().y() + 40);
 
-		setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2);
+		setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - OSK_HEIGHT)/*(Renderer::getScreenHeight() - mSize.y()) / 2*/);
 	}
 	else
 	{
