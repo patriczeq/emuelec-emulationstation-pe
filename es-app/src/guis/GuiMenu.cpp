@@ -1040,63 +1040,76 @@ void GuiMenu::ESP01MenuLoader()
 void GuiMenu::openESP01Menu()
 	{
   	Window* window = mWindow;
-		std::string Title = _U("\uf54c");
+		std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
+		std::string baud = Settings::getInstance()->getString("pe_hack.uart_baud");
+		runSystemCommand("hacks.sh " + port + " -b " + baud, "", nullptr);
+		bool connected = false;
+		std::vector<std::string> knock = hacksGet("knock");
+		if(knock.size() == 1 && knock.at(0) == "deauther")
+			{
+				connected = true;
+			}
+		std::string Title = connected ? _U("\uf54c") : _U("\uf00d");
 								Title += " H4CK TH3 FK1N W0RLD!";
 		auto s = new GuiSettings(window, Title);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		addESP01Buttons(window, s);
+		if(connected)
+			{
+				addESP01Buttons(window, s);
+			}
 
 		//s->addGroup(_("SYSTEM"));
-		if(names.size() > 0)
-			{
-				s->addWithDescription(_("SAVED NAMES"), "",
-					std::make_shared<TextComponent>(window, std::to_string(names.size()), font, color),
-					[this, window]
+		if(connected){
+			if(names.size() > 0)
 				{
-					if(names.size() > 0)
-						{
-							if(SystemConf::getInstance()->get("pe_hack.names_cat") == "1")
-								{
-									openNamesCat();
-								}
-							else
-								{
-									openNames();
-								}
-						}
-					else
-						{
-							window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
-						}
-				}, "fa-heart");
-			}
-		if(SystemConf::getInstance()->get("pe_hack.scandb") == "1")
-			{
-				s->addEntry(_("SCAN DATABASE"), true, [this, window] {
-					mWindow->pushGui(new GuiLoading<int>(window, _("Loading..."),
-						[this, window](auto gui)
-						{
-							mWaitingLoad = true;
-							return loadScanDatabase();
-						},
-						[this, window](int items)
-						{
-							mWaitingLoad = false;
-							if(items > 0)
+					s->addWithDescription(_("SAVED NAMES"), "",
+						std::make_shared<TextComponent>(window, std::to_string(names.size()), font, color),
+						[this, window]
+					{
+						if(names.size() > 0)
 							{
-								openScanDatabase();
+								if(SystemConf::getInstance()->get("pe_hack.names_cat") == "1")
+									{
+										openNamesCat();
+									}
+								else
+									{
+										openNames();
+									}
 							}
-							else
+						else
 							{
-								window->pushGui(new GuiMsgBox(window, _("SCAN DATABASE IS EMPTY!"),_("OK"),nullptr));
+								window->pushGui(new GuiMsgBox(window, _("EMPTY LIST!"),_("OK"),nullptr));
 							}
-						}
-					));
-				}, "fa-warehouse");
-			}
+					}, "fa-heart");
+				}
+			if(SystemConf::getInstance()->get("pe_hack.scandb") == "1")
+				{
+					s->addEntry(_("SCAN DATABASE"), true, [this, window] {
+						mWindow->pushGui(new GuiLoading<int>(window, _("Loading..."),
+							[this, window](auto gui)
+							{
+								mWaitingLoad = true;
+								return loadScanDatabase();
+							},
+							[this, window](int items)
+							{
+								mWaitingLoad = false;
+								if(items > 0)
+								{
+									openScanDatabase();
+								}
+								else
+								{
+									window->pushGui(new GuiMsgBox(window, _("SCAN DATABASE IS EMPTY!"),_("OK"),nullptr));
+								}
+							}
+						));
+					}, "fa-warehouse");
+				}
 
 			// power management
 			s->addEntry(_("POWER"), true, [this, window]{
@@ -1113,42 +1126,16 @@ void GuiMenu::openESP01Menu()
 					window->pushGui(p);
 			}, "fa-power-off");
 
-			/*s->addEntry(_("STOP ALL JOBS"), false, [this] {
-				hacksSend("stop");
-			}, "fa-stop-circle");*/
-			/*s->addEntry(_("SHOW UART OUTPUT"), false, [this] {
-				std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
-				appLauncher("ttyprint.sh " + port, true);
-			}, "fa-terminal");
-			s->addEntry(_("REBOOT ESP01"), false, [this] {
-				hacksSend("reboot");
-			}, "fa-refresh");
-			s->addEntry(_("SLEEP ESP01"), false, [this] {
-				hacksSend("sleep");
-			}, "fa-moon");*/
-
-
 		s->addGroup(_("SCAN NETWORK"));
-		if(SystemConf::getInstance()->get("pe_hack.scandb") == "1")
-			{
-				auto enableDBSaving = std::make_shared<SwitchComponent>(mWindow);
-				enableDBSaving->setState(enableScanDBsaving);
-				enableDBSaving->setOnChangedCallback([this, enableDBSaving]{
-					enableScanDBsaving = enableDBSaving->getState();
-				});
-				s->addWithLabel(_("STORE SCAN RESULTS"), enableDBSaving, false, "fa-floppy-disk");
-
-				/*s->addEntry(_("DISABLE STORE SCAN RESULTS"), false, [this, window] {
-					enableScanDBsaving = !enableScanDBsaving;
-					window->pushGui(new GuiMsgBox(window, enableScanDBsaving ? _("ENABLED") : _("DISABLED"),_("OK"), nullptr));
-				}, "fa-ban");
-
-				s->addSaveFunc([this, enableDBSaving] {
-					enableScanDBsaving = enableDBSaving->getState();
-				});*/
-
-
-			}
+			if(SystemConf::getInstance()->get("pe_hack.scandb") == "1")
+				{
+					auto enableDBSaving = std::make_shared<SwitchComponent>(mWindow);
+					enableDBSaving->setState(enableScanDBsaving);
+					enableDBSaving->setOnChangedCallback([this, enableDBSaving]{
+						enableScanDBsaving = enableDBSaving->getState();
+					});
+					s->addWithLabel(_("STORE SCAN RESULTS"), enableDBSaving, false, "fa-floppy-disk");
+				}
 			s->addEntry(_("SCAN ALL"), true, [this, window] {
 				if(stalist.size() > 0 && scanlist.size() > 0)
 					{
@@ -1191,38 +1178,43 @@ void GuiMenu::openESP01Menu()
 				}
 			}, "fa-satellite-dish");
 
-				s->addEntry(_("SNIFF WPS-PBC FRAME"), true, [this, window] {
-					window->pushGui(new GuiMsgBox(window, _("REALLY START SNIFFING?\n(30sec timeout)"),
-					_("YES"), [this] {
-						sniffWPS();
-					}, _("NO"), nullptr));
-				}, "fa-rss");
+			s->addEntry(_("SNIFF WPS-PBC FRAME"), true, [this, window] {
+				window->pushGui(new GuiMsgBox(window, _("REALLY START SNIFFING?\n(30sec timeout)"),
+				_("YES"), [this] {
+					sniffWPS();
+				}, _("NO"), nullptr));
+			}, "fa-rss");
+		}
 
-
-		s->addGroup(_("WIFI"));
+		s->addGroup(_("WIFI/BLE"));
 /*---------------------------------------------------------------------------------------------------------------------------*/
-			s->addEntry(_("SEND RANDOM BEACONS"), false, [this] {
-					hacksSend("beacon");
-				}, "fa-tower-broadcast");
-			s->addEntry(_("CLONE APs"), false, [this, window] {
-					window->pushGui(new GuiMsgBox(window, _("SEND DEAUTH PACKETS?"),
-					_("YES"), [this, window] {
-						hacksSend("clonedeauth");
-					}, _("NO"), [this, window] {
-						hacksSend("clonebeacon");
-					}));
-				}, "fa-clone");
-				s->addEntry(_("DEAUTH ALL APs"), false, [this, window] {
-					window->pushGui(new GuiMsgBox(window, _("DEAUTHORIZE ALL APs?"),
-						_("YES"), [this, window] {
-							hacksSend("killall");
-						}, _("NO"),nullptr));
-				}, "fa-skull");
+			if(connected)
+				{
+					s->addEntry(_("SEND RANDOM BEACONS"), false, [this] {
+							hacksSend("beacon");
+						}, "fa-tower-broadcast");
+					s->addEntry(_("CLONE APs"), false, [this, window] {
+							window->pushGui(new GuiMsgBox(window, _("SEND DEAUTH PACKETS?"),
+							_("YES"), [this, window] {
+								hacksSend("clonedeauth");
+							}, _("NO"), [this, window] {
+								hacksSend("clonebeacon");
+							}));
+						}, "fa-clone");
+					s->addEntry(_("DEAUTH ALL APs"), false, [this, window] {
+						window->pushGui(new GuiMsgBox(window, _("DEAUTHORIZE ALL APs?"),
+							_("YES"), [this, window] {
+								hacksSend("killall");
+							}, _("NO"),nullptr));
+					}, "fa-skull");
 
-				s->addEntry(_("FOLLOW THE WHITE RABBIT"), true, [this] {
-					openRabbitTargets();
-				}, "fa-rabbit");
-
+					s->addEntry(_("FOLLOW THE WHITE RABBIT"), true, [this] {
+						openRabbitTargets();
+					}, "fa-rabbit");
+				}
+			s->addEntry(_("BLE SPAMMER"), true, [this] {
+				openBLEspammer();
+			}, "fa-bluetooth");
 		s->addGroup(_("IR"));
 /*---------------------------------------------------------------------------------------------------------------------------*/
 			s->addEntry(_("IR POWER-OFF"), false, [this] {
@@ -1260,6 +1252,60 @@ void GuiMenu::openESP01Menu()
 			}, "fa-list");
 
 
+		window->pushGui(s);
+	}
+
+void GuiMenu::openBLEspammer()
+	{
+		Window* window = mWindow;
+		std::string Title = _U("\uf293");
+								Title += " BLE SPAMMER";
+		auto s = new GuiSettings(window, Title);
+		auto theme = ThemeData::getMenuTheme();
+		std::shared_ptr<Font> font = theme->Text.font;
+		unsigned int color = theme->Text.color;
+		// apple
+		s->addGroup(_("Apple"));
+			s->addEntry(_("AppleJuice"), false, [this] {
+				appLauncher("blespam.sh apple", false);
+			}, "fa-apple");
+			s->addEntry(_("AppleJuice - static"), false, [this] {
+				appLauncher("blespam.sh apple1", false);
+			}, "fa-apple");
+			s->addEntry(_("Apple AirPods"), false, [this] {
+				appLauncher("blespam.sh airpods", false);
+			}, "fa-apple");
+			s->addEntry(_("Apple AirPods - static"), false, [this] {
+				appLauncher("blespam.sh airpods1", false);
+			}, "fa-apple");
+
+		// Android
+		s->addGroup(_("Android"));
+			s->addEntry(_("Samsung Galaxy Watch"), false, [this] {
+				appLauncher("blespam.sh samsung", false);
+			}, "fa-watch");
+			s->addEntry(_("Google connect"), false, [this] {
+				appLauncher("blespam.sh google", false);
+			}, "fa-android");
+		// Microsoft
+		s->addGroup(_("Microsoft"));
+			s->addEntry(_("SwiftPair - random"), false, [this] {
+				appLauncher("blespam.sh swift", false);
+			}, "fa-watch");
+			s->addEntry(_("SwiftPair - MSG"), false, [this] {
+				if (Settings::getInstance()->getBool("UseOSK"))
+				{
+					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "SwiftPair message", "B00B5", [this, window](const std::string& value) {
+						appLauncher("blespam.sh swift '" + value + "'", false);
+					}, false));
+				}
+				else
+				{
+					mWindow->pushGui(new GuiTextEditPopup(mWindow, "SwiftPair message", "B00B5", [this, window](const std::string& value) {
+						appLauncher("blespam.sh swift '" + value + "'", false);
+					}, false));
+				}
+			}, "fa-watch");
 		window->pushGui(s);
 	}
 

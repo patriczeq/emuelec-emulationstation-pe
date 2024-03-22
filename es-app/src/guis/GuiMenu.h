@@ -903,6 +903,7 @@ private:
 	void openIRlist();
 	void sendIRcode(int code = -1);
 
+	void openBLEspammer();
 
 	// playertoo client
 	void scanMPServers();
