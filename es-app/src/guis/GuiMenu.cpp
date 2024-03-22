@@ -244,7 +244,8 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 	if(SystemConf::getInstance()->get("pe_hack.enabled") == "1")
 		{
 			mapYcallback([this] {
-				ESP01MenuLoader();
+				openESP01Menu();
+				//ESP01MenuLoader();
 				//openQuitMenu();
 			});
 		}
@@ -324,7 +325,7 @@ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(win
 		if(SystemConf::getInstance()->get("pe_hack.enabled") == "1" && SystemConf::getInstance()->get("pe_hack.esp_in_menu") == "1")
 			{
 				addEntry("H4CK TH3 FK1N W0RLD", true, [this] {
-					ESP01MenuLoader();
+					openESP01Menu();//ESP01MenuLoader();
 				}, "fa-skull");
 			}
 
@@ -1264,6 +1265,9 @@ void GuiMenu::openBLEspammer()
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
+		s->addEntry(_("ShitStorm"), false, [this] {
+			appLauncher("blespam.sh shitstorm", false);
+		}, "fa-poop");
 		// apple
 		s->addGroup(_("Apple"));
 			s->addEntry(_("AppleJuice"), false, [this] {
