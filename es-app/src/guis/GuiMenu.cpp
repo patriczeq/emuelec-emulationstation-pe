@@ -1295,13 +1295,13 @@ void GuiMenu::openBLEspammer()
 			s->addEntry(_("SwiftPair - MSG"), false, [this] {
 				if (Settings::getInstance()->getBool("UseOSK"))
 				{
-					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "SwiftPair message", "B00B5", [this, window](const std::string& value) {
+					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "SwiftPair message", "B00B5", [this](const std::string& value) {
 						appLauncher("blespam.sh swift '" + value + "'", false);
 					}, false));
 				}
 				else
 				{
-					mWindow->pushGui(new GuiTextEditPopup(mWindow, "SwiftPair message", "B00B5", [this, window](const std::string& value) {
+					mWindow->pushGui(new GuiTextEditPopup(mWindow, "SwiftPair message", "B00B5", [this](const std::string& value) {
 						appLauncher("blespam.sh swift '" + value + "'", false);
 					}, false));
 				}
