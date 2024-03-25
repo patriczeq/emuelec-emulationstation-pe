@@ -1047,7 +1047,7 @@ void GuiMenu::openESP01Menu()
 		std::vector<std::string> knock = hacksGet("knock");
 		bool connected = knock.size() == 1 && knock.at(0) == "deauther";
 		//hcitool dev | grep -o "[[:xdigit:]:]\{11,17\}"
-		std::string bt_mac = getShOutput('hcitool dev | grep -o "[[:xdigit:]:]\\{11,17\\}"')
+		std::string bt_mac = getShOutput('hcitool dev | grep -o "[[:xdigit:]:]\\{11,17\\}"');
 
 		std::string Title = _U("\uf54c");
 								Title += " H4CK TH3 FK1N W0RLD!";
@@ -1284,7 +1284,8 @@ void GuiMenu::openBLEspammer()
 							std::string title = tokens.at(2);
 							s->addEntry(title, false, [this, type, code] {
 								appLauncher("blespam.sh " + type + " -n " + code, false);
-							}, type == "apple" || type == "airpods" ? "fa-apple" : (type == "samsung" ? "fa-watch" : "fa-bluetooth")
+								}, (type == "apple" || type == "airpods") ? "fa-apple" : (type == "samsung" ? "fa-watch" : "fa-bluetooth")
+							);
 						}
 				}
 				window->pushGui(s);
