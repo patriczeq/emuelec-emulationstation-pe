@@ -1044,26 +1044,31 @@ void GuiMenu::openESP01Menu()
 		std::string port = Settings::getInstance()->getString("pe_hack.uart_port");
 		std::string baud = Settings::getInstance()->getString("pe_hack.uart_baud");
 		runSystemCommand("hacks.sh " + port + " -b " + baud, "", nullptr);
-		bool connected = false;
 		std::vector<std::string> knock = hacksGet("knock");
-		if(knock.size() == 1 && knock.at(0) == "deauther")
-			{
-				connected = true;
-			}
-		std::string Title = connected ? _U("\uf54c") : _U("\uf00d");
+		bool connected = knock.size() == 1 && knock.at(0) == "deauther";
+		//hcitool dev | grep -o "[[:xdigit:]:]\{11,17\}"
+		std::string bt_mac = getShOutput('hcitool dev | grep -o "[[:xdigit:]:]\\{11,17\\}"')
+
+		std::string Title = _U("\uf54c");
 								Title += " H4CK TH3 FK1N W0RLD!";
 		auto s = new GuiSettings(window, Title);
 		auto theme = ThemeData::getMenuTheme();
 		std::shared_ptr<Font> font = theme->Text.font;
 		unsigned int color = theme->Text.color;
 
-		if(connected)
-			{
-				addESP01Buttons(window, s);
-			}
+		addESP01Buttons(window, s);
+
+		s->addGroup(_("STATUS"));
+			s->addWithDescription("ESP UART CONNECTION", "",
+				std::make_shared<TextComponent>(window, connected ? "OK" : "ERROR", font, connected ? 0x00ff00 : 0xff0000),
+				nullptr,
+				"fa-microchip");
+			s->addWithDescription("BT DEVICE", "",
+				std::make_shared<TextComponent>(window, bt_mac != "" ? bt_mac : "ERROR", font, bt_mac != "" ? color : 0xff0000),
+				nullptr,
+				"fa-bluetooth");
 
 		//s->addGroup(_("SYSTEM"));
-		if(connected){
 			if(names.size() > 0)
 				{
 					s->addWithDescription(_("SAVED NAMES"), "",
@@ -1185,37 +1190,35 @@ void GuiMenu::openESP01Menu()
 					sniffWPS();
 				}, _("NO"), nullptr));
 			}, "fa-rss");
-		}
 
 		s->addGroup(_("WIFI/BLE"));
 /*---------------------------------------------------------------------------------------------------------------------------*/
-			if(connected)
-				{
-					s->addEntry(_("SEND RANDOM BEACONS"), false, [this] {
-							hacksSend("beacon");
-						}, "fa-tower-broadcast");
-					s->addEntry(_("CLONE APs"), false, [this, window] {
-							window->pushGui(new GuiMsgBox(window, _("SEND DEAUTH PACKETS?"),
-							_("YES"), [this, window] {
-								hacksSend("clonedeauth");
-							}, _("NO"), [this, window] {
-								hacksSend("clonebeacon");
-							}));
-						}, "fa-clone");
-					s->addEntry(_("DEAUTH ALL APs"), false, [this, window] {
-						window->pushGui(new GuiMsgBox(window, _("DEAUTHORIZE ALL APs?"),
-							_("YES"), [this, window] {
-								hacksSend("killall");
-							}, _("NO"),nullptr));
-					}, "fa-skull");
+			s->addEntry(_("SEND RANDOM BEACONS"), false, [this] {
+					hacksSend("beacon");
+				}, "fa-tower-broadcast");
+			s->addEntry(_("CLONE APs"), false, [this, window] {
+					window->pushGui(new GuiMsgBox(window, _("SEND DEAUTH PACKETS?"),
+					_("YES"), [this, window] {
+						hacksSend("clonedeauth");
+					}, _("NO"), [this, window] {
+						hacksSend("clonebeacon");
+					}));
+				}, "fa-clone");
+			s->addEntry(_("DEAUTH ALL APs"), false, [this, window] {
+				window->pushGui(new GuiMsgBox(window, _("DEAUTHORIZE ALL APs?"),
+					_("YES"), [this, window] {
+						hacksSend("killall");
+					}, _("NO"),nullptr));
+			}, "fa-skull");
 
-					s->addEntry(_("FOLLOW THE WHITE RABBIT"), true, [this] {
-						openRabbitTargets();
-					}, "fa-rabbit");
-				}
+			s->addEntry(_("FOLLOW THE WHITE RABBIT"), true, [this] {
+				openRabbitTargets();
+			}, "fa-rabbit");
+
 			s->addEntry(_("BLE SPAMMER"), true, [this] {
 				openBLEspammer();
 			}, "fa-bluetooth");
+
 		s->addGroup(_("IR"));
 /*---------------------------------------------------------------------------------------------------------------------------*/
 			s->addEntry(_("IR POWER-OFF"), false, [this] {
@@ -1268,6 +1271,26 @@ void GuiMenu::openBLEspammer()
 		s->addEntry(_("ShitStorm"), false, [this] {
 			appLauncher("blespam.sh shitstorm", false);
 		}, "fa-poop");
+		s->addEntry(_("Select Device"), true, [this, window] {
+			auto s = new GuiSettings(window, "BLE Device list");
+			std::vector<std::string> list = ApiSystem::getInstance()->getScriptResults("blespam -p");
+			for(auto item : list)
+				{
+					std::vector<std::string> tokens = Utils::String::split(item, ';');
+					if(tokens.size() == 3)
+						{
+							std::string type = tokens.at(0);
+							std::string code = tokens.at(1);
+							std::string title = tokens.at(2);
+							p.PROC = tokens.at(3);
+
+							s->addEntry(title, false, [this, type, code] {
+								appLauncher("blespam.sh " + type + " -c " + code, false);
+							}, type == "apple" || type == "airpods" ? "fa-apple" : (type == "samsung" ? "fa-watch" : "fa-bluetooth");
+						}
+				}
+				window->pushGui(s);
+		}, "fa-list");
 		// apple
 		s->addGroup(_("Apple"));
 			s->addEntry(_("AppleJuice"), false, [this] {
