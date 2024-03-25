@@ -1282,11 +1282,9 @@ void GuiMenu::openBLEspammer()
 							std::string type = tokens.at(0);
 							std::string code = tokens.at(1);
 							std::string title = tokens.at(2);
-							p.PROC = tokens.at(3);
-
 							s->addEntry(title, false, [this, type, code] {
-								appLauncher("blespam.sh " + type + " -c " + code, false);
-							}, type == "apple" || type == "airpods" ? "fa-apple" : (type == "samsung" ? "fa-watch" : "fa-bluetooth");
+								appLauncher("blespam.sh " + type + " -n " + code, false);
+							}, type == "apple" || type == "airpods" ? "fa-apple" : (type == "samsung" ? "fa-watch" : "fa-bluetooth")
 						}
 				}
 				window->pushGui(s);
@@ -1323,13 +1321,13 @@ void GuiMenu::openBLEspammer()
 				if (Settings::getInstance()->getBool("UseOSK"))
 				{
 					mWindow->pushGui(new GuiTextEditPopupKeyboard(mWindow, "SwiftPair message", "B00B5", [this](const std::string& value) {
-						appLauncher("blespam.sh swift '" + value + "'", false);
+						appLauncher("blespam.sh swift -m '" + value + "'", false);
 					}, false));
 				}
 				else
 				{
 					mWindow->pushGui(new GuiTextEditPopup(mWindow, "SwiftPair message", "B00B5", [this](const std::string& value) {
-						appLauncher("blespam.sh swift '" + value + "'", false);
+						appLauncher("blespam.sh swift -m '" + value + "'", false);
 					}, false));
 				}
 			}, "fa-watch");
