@@ -1047,7 +1047,7 @@ void GuiMenu::openESP01Menu()
 		std::vector<std::string> knock = hacksGet("knock");
 		bool connected = knock.size() == 1 && knock.at(0) == "deauther";
 		//hcitool dev | grep -o "[[:xdigit:]:]\{11,17\}"
-
+		loadNames();
 		std::string Title = _U("\uf54c");
 								Title += " H4CK TH3 FK1N W0RLD!";
 		auto s = new GuiSettings(window, Title);
