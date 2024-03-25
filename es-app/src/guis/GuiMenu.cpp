@@ -1047,9 +1047,6 @@ void GuiMenu::openESP01Menu()
 		std::vector<std::string> knock = hacksGet("knock");
 		bool connected = knock.size() == 1 && knock.at(0) == "deauther";
 		//hcitool dev | grep -o "[[:xdigit:]:]\{11,17\}"
-		std::string bt_mac = "";
-		std::vector<std::string> btmac = ApiSystem::getInstance()->getScriptResults('hcitool dev | grep -o "[[:xdigit:]:]\\{11,17\\}"');
-		bt_mac = btmac.size() == 1 ? btmac.at(0) : bt_mac;
 
 		std::string Title = _U("\uf54c");
 								Title += " H4CK TH3 FK1N W0RLD!";
@@ -1060,15 +1057,10 @@ void GuiMenu::openESP01Menu()
 
 		addESP01Buttons(window, s);
 
-		s->addGroup(_("STATUS"));
 			s->addWithDescription("ESP UART CONNECTION", "",
 				std::make_shared<TextComponent>(window, connected ? "OK" : "ERROR", font, connected ? 0x00ff00 : 0xff0000),
 				nullptr,
 				"fa-microchip");
-			s->addWithDescription("BT DEVICE", "",
-				std::make_shared<TextComponent>(window, bt_mac != "" ? bt_mac : "ERROR", font, bt_mac != "" ? color : 0xff0000),
-				nullptr,
-				"fa-bluetooth");
 
 		//s->addGroup(_("SYSTEM"));
 			if(names.size() > 0)
