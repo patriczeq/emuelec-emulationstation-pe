@@ -1265,6 +1265,9 @@ void GuiMenu::openBLEspammer()
 		s->addEntry(_("ShitStorm"), false, [this] {
 			appLauncher("blespam.sh shitstorm", false);
 		}, "fa-poop");
+		s->addEntry(_("AppleJuice"), false, [this] {
+			appLauncher("blespam.sh applejuice", false);
+		}, "fa-apple");
 		s->addEntry(_("Select Device"), true, [this, window] {
 			auto s = new GuiSettings(window, "BLE Device list");
 			std::vector<std::string> list = ApiSystem::getInstance()->getScriptResults("blespam -p");
@@ -1286,7 +1289,7 @@ void GuiMenu::openBLEspammer()
 		}, "fa-list");
 		// apple
 		s->addGroup(_("Apple"));
-			s->addEntry(_("AppleJuice"), false, [this] {
+			s->addEntry(_("Apple Services"), false, [this] {
 				appLauncher("blespam.sh apple", false);
 			}, "fa-apple");
 			s->addEntry(_("AppleJuice - static"), false, [this] {
