@@ -1278,6 +1278,7 @@ void GuiMenu::openBLEspammer()
 					if(tokens.size() == 3)
 						{
 							std::string title			= tokens.at(2);
+							std::string type = tokens.at(0);
 							std::string _flavor			= tokens.at(0);
 							std::string _icon			  = "fa-bluetooth";
 							std::string code = tokens.at(1);
@@ -1311,10 +1312,9 @@ void GuiMenu::openBLEspammer()
 									s->addGroup(_flavor);
 									prevFlavor = _flavor;
 								}
-							s->addEntry(title, false, [this, type, code] {
-								appLauncher("blespam.sh " + type + " -n " + code, false);
-							}, _icon)
-							);
+								s->addEntry(title, false, [this, type, code] {
+									appLauncher("blespam.sh " + type + " -n " + code, false);
+								}, _icon);
 						}
 				}
 				window->pushGui(s);
