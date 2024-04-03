@@ -1271,17 +1271,49 @@ void GuiMenu::openBLEspammer()
 		s->addEntry(_("Select Device"), true, [this, window] {
 			auto s = new GuiSettings(window, "BLE Device list");
 			std::vector<std::string> list = ApiSystem::getInstance()->getScriptResults("blespam -p");
+			std::string prevFlavor = "";
 			for(auto item : list)
 				{
 					std::vector<std::string> tokens = Utils::String::split(item, ';');
 					if(tokens.size() == 3)
 						{
-							std::string type = tokens.at(0);
+							std::string title			= tokens.at(2);
+							std::string _flavor			= tokens.at(0);
+							std::string _icon			  = "fa-bluetooth";
 							std::string code = tokens.at(1);
-							std::string title = tokens.at(2);
+							if(_flavor == "apple")
+								{
+									_flavor = "Apple Proximity pair";
+									_icon = "fa-apple";
+								}
+							else if(_flavor == "airpods")
+								{
+									_flavor = "Apple AirPods";
+									_icon = "fa-headphones";
+								}
+							else if(_flavor == "samsung")
+								{
+									_flavor = "Samsung Galaxy Watch";
+									_icon = "fa-watch";
+								}
+							else if(_flavor == "samsungbuds")
+								{
+									_flavor = "Samsung Buds";
+									_icon = "fa-headphones";
+								}
+							else if(_flavor == "google")
+								{
+									_flavor = "Google fast-pair";
+									_icon = "fa-android";
+								}
+							if(_flavor != prevFlavor)
+								{
+									s->addGroup(_flavor);
+									prevFlavor = _flavor;
+								}
 							s->addEntry(title, false, [this, type, code] {
 								appLauncher("blespam.sh " + type + " -n " + code, false);
-								}, (type == "apple" || type == "airpods") ? "fa-apple" : (type == "samsung" ? "fa-watch" : "fa-bluetooth")
+							}, _icon)
 							);
 						}
 				}
